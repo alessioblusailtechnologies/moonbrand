@@ -1,0 +1,233 @@
+.content-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1120px;
+  margin: 0 auto;
+  animation: fade-up 240ms var(--ease);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  padding: 48px 16px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+
+  .title {
+    margin: 0;
+  }
+}
+
+.meta {
+  display: flex;
+  gap: 6px;
+}
+
+.head-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.channels {
+  align-self: flex-start;
+  width: min(420px, 100%);
+  background: var(--surface-card);
+
+  button.selected {
+    background: var(--navy-700);
+    color: var(--white);
+  }
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.visual {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+// Il carosello come sul telefono: una slide alla volta, che scivola.
+.slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  touch-action: pan-y;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--navy-700);
+    outline-offset: 3px;
+  }
+}
+
+.track {
+  display: flex;
+  transition: transform 360ms var(--ease);
+}
+
+.shot.slide {
+  flex: 0 0 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--navy-700);
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 8px rgba(28, 33, 80, 0.18);
+  transition: opacity 150ms var(--ease);
+
+  &:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &.prev {
+    left: 10px;
+  }
+
+  &.next {
+    right: 10px;
+  }
+}
+
+.counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(21, 23, 31, 0.6);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--grey-300);
+  cursor: pointer;
+  transition:
+    width 200ms var(--ease),
+    background-color 200ms var(--ease);
+
+  &.on {
+    width: 20px;
+    background: var(--navy-700);
+  }
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  cursor: zoom-in;
+  box-shadow: 0 1px 3px rgba(28, 33, 80, 0.1);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.text {
+  gap: 10px;
+}
+
+.text-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .label {
+    margin: 0;
+  }
+}
+
+.post {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.hashtags {
+  margin: 0;
+  color: var(--navy-500);
+}
+
+.edit {
+  position: sticky;
+  bottom: 16px;
+  padding: 10px;
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-menu);
+}
+
+@media (max-width: 900px) {
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .preview {
+    grid-template-columns: 1fr;
+  }
+}

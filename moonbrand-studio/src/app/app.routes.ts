@@ -19,6 +19,16 @@ export const routes: Routes = [
           { path: 'onboarding', loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding) },
         ],
       },
+      {
+        path: 'contenuti',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/contents/contents-page').then((m) => m.ContentsPage),
+      },
+      {
+        path: 'contenuti/:contentId',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/contents/content-page').then((m) => m.ContentPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -1,4 +1,4 @@
-import type { IdeasBrandContext } from '@moonbrand/shared/api/contract';
+import type { BrandContext } from '@moonbrand/shared/api/contract';
 import {
   currentVoiceCard,
   type ChannelId,
@@ -61,7 +61,7 @@ export async function updateIdeaStatus(db: Queryable, ideaId: string, status: Id
 }
 
 export interface BrandForIdeas {
-  context: IdeasBrandContext;
+  context: BrandContext;
   themes: Theme[];
 }
 
@@ -93,4 +93,9 @@ export async function activeIdeasJob(db: Queryable, brandId: string): Promise<st
     [brandId],
   );
   return rows[0]?.id ?? null;
+}
+
+export async function findIdea(db: Queryable, ideaId: string): Promise<Idea | null> {
+  const { rows } = await db.query<IdeaRow>(`select ${COLUMNS} from presenza.ideas where id = $1`, [ideaId]);
+  return rows[0] ? toIdea(rows[0]) : null;
 }

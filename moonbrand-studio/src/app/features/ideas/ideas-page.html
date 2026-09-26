@@ -99,10 +99,11 @@
                 <div class="actions">
                   @if (idea.status === 'new') {
                     <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'discarded')">Scarta</button>
-                    <button class="btn btn-primary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
+                    <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
                   } @else {
                     <button class="link-btn muted" type="button" (click)="decide(idea, 'new')">Rimetti tra le proposte</button>
                   }
+                  <button class="btn btn-primary btn-sm" type="button" (click)="creatingFrom.set(idea)">Crea contenuto</button>
                 </div>
               </article>
             }
@@ -111,5 +112,9 @@
       </div>
     }
   </section>
+}
+@if (creatingFrom(); as idea) {
+  <mb-create-content-dialog [idea]="idea" [channels]="channels()" [busy]="creating()" (closed)="creatingFrom.set(null)"
+    (created)="createContent($event)" />
 }
 <router-outlet />

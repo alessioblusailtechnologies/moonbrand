@@ -12,6 +12,7 @@ import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
+import { registerContentRoutes } from './modules/contents/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import type { MediaStorage } from './modules/media/storage';
@@ -49,6 +50,7 @@ export function buildApp(options: AppOptions) {
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
   registerIdeaRoutes(app, options.pool);
+  registerContentRoutes(app, options.pool, options.files);
 
   return app;
 }

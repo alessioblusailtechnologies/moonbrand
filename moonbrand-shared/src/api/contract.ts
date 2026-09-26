@@ -1,5 +1,6 @@
 import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
+import type { Content, ContentFormat, ContentStatus } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 
 export interface Account {
@@ -122,7 +123,7 @@ export interface VisualReading {
   examples: VisualExampleFile[];
 }
 
-export interface IdeasBrandContext {
+export interface BrandContext {
   identity: Identity;
   positioning: Positioning;
   channels: ChannelId[];
@@ -142,7 +143,7 @@ export interface IdeaPreferences {
 export interface IdeasJobInput {
   brandId: string;
   count: number;
-  brand: IdeasBrandContext;
+  brand: BrandContext;
   recent: { title: string; status: IdeaStatus; themeId: string | null; signal: IdeaSignalKind }[];
   preferences: IdeaPreferences;
 }
@@ -150,12 +151,75 @@ export interface IdeasJobInput {
 export interface IdeasResponse {
   ideas: Idea[];
   themes: { id: string; name: string; color: string }[];
+  // I canali del brand: tra questi si sceglie dove far uscire un contenuto.
+  channels: ChannelId[];
   // Il lavoro che sta preparando nuove idee, se c'è.
   jobId: string | null;
 }
 
 export interface IdeaStatusRequest {
   status: IdeaStatus;
+}
+
+// I formati che moonbrand sa preparare: il video arriverà dopo.
+export type WritableFormat = Exclude<ContentFormat, 'video'>;
+
+export interface CreateContentRequest {
+  format: WritableFormat;
+  channels: ChannelId[];
+}
+
+export interface ContentCreated {
+  id: string;
+  jobId: string;
+}
+
+export interface ContentSummary {
+  id: string;
+  title: string;
+  format: ContentFormat;
+  channels: ChannelId[];
+  status: ContentStatus;
+  coverUrl: string | null;
+  updatedAt: string;
+  preparing: boolean;
+}
+
+export interface ContentResponse {
+  content: Content;
+  // Il lavoro che sta preparando o ritoccando il contenuto, se c'è.
+  jobId: string | null;
+}
+
+export interface ContentEditRequest {
+  instruction: string;
+}
+
+// L'idea da cui nasce il contenuto, con il nome del tema invece dell'id.
+export interface ContentIdea {
+  title: string;
+  angleLabel: string;
+  angle: string;
+  rationale: string;
+  theme: string | null;
+}
+
+export interface ContentJobInput {
+  brandId: string;
+  contentId: string;
+  format: WritableFormat;
+  channels: ChannelId[];
+  brand: BrandContext;
+  idea: ContentIdea;
+}
+
+export interface ContentEditJobInput {
+  brandId: string;
+  contentId: string;
+  sessionId: string;
+  format: WritableFormat;
+  channels: ChannelId[];
+  instruction: string;
 }
 
 export interface ApiErrorBody {

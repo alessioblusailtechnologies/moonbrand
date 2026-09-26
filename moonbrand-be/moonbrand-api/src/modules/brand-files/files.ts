@@ -14,7 +14,8 @@ export const FOLLOW_DIR = 'riferimenti-da-seguire';
 // nella bozza dell'onboarding e sul DB arriva solo alla fine.
 const OWNER_FILE = '.account';
 
-const RELATIVE_PATH = /^[a-z0-9-]+\/[A-Za-z0-9_-][A-Za-z0-9._-]*$/;
+// Una cartella e uno o più livelli sotto; nessun segmento inizia col punto, quindi niente "..".
+const RELATIVE_PATH = /^[a-z0-9-]+(\/[A-Za-z0-9_-][A-Za-z0-9._-]*)+$/;
 
 const CONTENT_TYPES: Record<string, string> = {
   '.png': 'image/png',

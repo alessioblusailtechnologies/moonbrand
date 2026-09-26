@@ -39,6 +39,7 @@ export function getIdeas(pool: pg.Pool, identity: Identity, brandId: string): Pr
     return {
       ideas: await listIdeas(db, brandId),
       themes: brand.themes.map(({ id, name, color }) => ({ id, name, color })),
+      channels: brand.context.channels,
       jobId: await activeIdeasJob(db, brandId),
     };
   });

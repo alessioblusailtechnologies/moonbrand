@@ -7,8 +7,16 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { IdeasJobInput, VisualEditJobInput, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type {
+  ContentEditJobInput,
+  ContentJobInput,
+  IdeasJobInput,
+  VisualEditJobInput,
+  VisualJobRequest,
+  WebsiteJobRequest,
+} from '@moonbrand/shared/api/contract';
 
+import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
@@ -58,6 +66,20 @@ const JOBS: Record<string, JobKind> = {
       const saved = await saveIdeas(pool, job.account_id, job.input as IdeasJobInput, result);
       console.log(`[${job.id}] ${saved} idee salvate`);
     },
+  },
+  content: {
+    launch: (input) => {
+      const { brandId, ...rest } = input as ContentJobInput;
+      return { script: 'src/jobs/content.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentJobInput, result),
+  },
+  'content-edit': {
+    launch: (input) => {
+      const { brandId, ...rest } = input as ContentEditJobInput;
+      return { script: 'src/jobs/content-edit.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentEditJobInput, result),
   },
 };
 

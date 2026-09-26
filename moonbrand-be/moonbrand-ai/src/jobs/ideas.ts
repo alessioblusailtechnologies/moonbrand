@@ -3,9 +3,8 @@ import { mkdir } from 'node:fs/promises';
 import { query } from '@anthropic-ai/claude-agent-sdk';
 
 import type { IdeasJobInput } from '@moonbrand/shared/api/contract';
-import type { BrandKind } from '@moonbrand/shared/domain/brand';
-import { channelName, kindLabel } from '@moonbrand/shared/domain/catalog';
 
+import { describeBrand } from '../lib/brand-brief';
 import { HORIZON_DAYS, MAX_PER_THEME, MAX_TRENDS } from '../lib/ideas-rules';
 
 const [brandDir, inputJson] = process.argv.slice(2);
@@ -17,11 +16,6 @@ if (!brandDir || !inputJson) {
 const { count, brand, recent, preferences } = JSON.parse(inputJson) as Omit<IdeasJobInput, 'brandId'>;
 const { GEMINI_API_KEY: _gemini, ...env } = process.env;
 
-const PERSON: Record<BrandKind, string> = {
-  person: 'prima persona singolare: è un personal brand',
-  company: 'prima persona plurale: parla a nome dell’azienda e del team',
-  client: 'prima persona plurale, a nome del cliente: chi usa l’app ne cura la presenza',
-};
 const STATUS = { new: 'da decidere', saved: 'tenuta', discarded: 'scartata' } as const;
 const SIGNALS = { theme: 'tema', trend: 'trend', recurrence: 'ricorrenza', season: 'stagione' } as Record<string, string>;
 
@@ -29,44 +23,7 @@ const day = (date: Date) => date.toLocaleDateString('it-IT', { weekday: 'long', 
 const today = new Date();
 const horizon = new Date(today.getTime() + HORIZON_DAYS * 24 * 60 * 60 * 1000);
 const themeName = (id: string | null) => brand.themes.find((theme) => theme.id === id)?.name ?? 'nessun tema';
-const list = (items: readonly string[]) => (items.length > 0 ? items.join(', ') : 'non indicati');
 const score = (value: number) => `${value > 0 ? '+' : ''}${String(value).replace('.', ',')}`;
-
-function describeBrand(): string {
-  const { identity, positioning, voice } = brand;
-  const who = [
-    `Tipo: ${kindLabel(identity.kind)}`,
-    `Nome: ${identity.name || '(non indicato)'}`,
-    identity.kind === 'person' && identity.role ? `Ruolo: ${identity.role}` : '',
-    identity.kind === 'person' && identity.company ? `Azienda: ${identity.company}` : '',
-    identity.kind !== 'person' && identity.sector ? `Settore: ${identity.sector}` : '',
-    identity.site ? `Sito: ${identity.site}` : '',
-    identity.pitch ? `Cosa fa, in una frase: ${identity.pitch}` : '',
-    `Persona grammaticale dei post: ${PERSON[identity.kind]}`,
-  ];
-  const themes = [...brand.themes]
-    .sort((a, b) => b.weight - a.weight)
-    .map((theme) => `- ${theme.name} (id ${theme.id}, peso ${theme.weight}: più è alto, più spesso esce nel piano)`);
-  const voiceLines = voice
-    ? [`Registro: ${voice.register}`, `Ritmo: ${voice.rhythm}`, `Lessico: ${voice.lexicon}`, `Da evitare: ${voice.avoid}`]
-    : ['Non ancora definita: resta sobria e concreta.'];
-  return [
-    '## Chi è',
-    ...who.filter(Boolean),
-    '',
-    '## Per chi scrive e perché',
-    `Pubblici: ${list(positioning.audiences)}`,
-    `Obiettivi dei post: ${list(positioning.goals)}`,
-    `Frequenza: ${positioning.postsPerWeek} post a settimana`,
-    `Canali: ${brand.channels.map(channelName).join(', ')}`,
-    '',
-    '## Temi',
-    ...(themes.length > 0 ? themes : ['Nessun tema definito.']),
-    '',
-    '## Voce',
-    ...voiceLines,
-  ].join('\n');
-}
 
 function describeHistory(): string {
   const tastes =
@@ -168,7 +125,7 @@ Ricerca e trend:
 
 Rispondi in italiano.
 
-${describeBrand()}
+${describeBrand(brand)}
 
 ${describeHistory()}`;
 

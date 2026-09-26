@@ -11,7 +11,7 @@ import { REFERENCES_DIR, type BrandFiles } from './files';
 
 const brandParams = z.object({ brandId: z.uuid('Brand non valido.') });
 const referenceParams = brandParams.extend({ name: z.string().regex(/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/, 'File non valido.') });
-const fileParams = brandParams.extend({ folder: z.string(), name: z.string() });
+const fileParams = brandParams.extend({ '*': z.string().min(1) });
 const fileQuery = z.object({ sig: z.string().min(1) });
 
 export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles): void {
@@ -32,10 +32,9 @@ export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles)
   });
 
   // Pubblica: un <img> non può mandare il token, il link è firmato.
-  app.get('/v1/files/:brandId/:folder/:name', async (request, reply) => {
-    const { brandId, folder, name } = fileParams.parse(request.params);
+  app.get('/v1/files/:brandId/*', async (request, reply) => {
+    const { brandId, '*': path } = fileParams.parse(request.params);
     const { sig } = fileQuery.parse(request.query);
-    const path = `${folder}/${name}`;
     if (!files.verify(brandId, path, sig)) throw ApiError.notFound('File non trovato.');
     const { bytes, contentType } = await files.read(brandId, path);
     return reply.header('content-type', contentType).header('cache-control', 'private, max-age=3600').send(bytes);

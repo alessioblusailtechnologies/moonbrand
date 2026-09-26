@@ -6,7 +6,10 @@ import { Logo } from '../../ui/logo';
 import { BrandSwitcher } from './brand-switcher';
 
 // Le sezioni dell'app, nell'ordine della sidebar.
-const SECTIONS: { path: string; label: string; icon: IconName }[] = [{ path: '/', label: 'Idee', icon: 'lightbulb' }];
+const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[] = [
+  { path: '/', label: 'Idee', icon: 'lightbulb', exact: true },
+  { path: '/contenuti', label: 'Contenuti', icon: 'file-text', exact: false },
+];
 
 @Component({
   selector: 'mb-shell',
@@ -17,7 +20,8 @@ const SECTIONS: { path: string; label: string; icon: IconName }[] = [{ path: '/'
       <div class="brand-mark"><mb-logo /></div>
       <nav class="nav" aria-label="Sezioni">
         @for (section of sections; track section.path) {
-          <a class="nav-item" [routerLink]="section.path" routerLinkActive="active" ariaCurrentWhenActive="page" [attr.title]="section.label">
+          <a class="nav-item" [routerLink]="section.path" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label">
             <mb-icon [name]="section.icon" [size]="20" />
             <span class="nav-label">{{ section.label }}</span>
           </a>

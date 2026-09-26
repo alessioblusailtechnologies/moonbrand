@@ -10,19 +10,22 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { IdeasResponse } from '@moonbrand/shared/api/contract';
+import type { CreateContentRequest, IdeasResponse } from '@moonbrand/shared/api/contract';
+import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
+import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
 import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
+import { CreateContentDialog } from './create-content-dialog';
 import { SIGNAL_LABELS } from './labels';
 
 type View = 'new' | 'saved';
@@ -34,7 +37,7 @@ const COLUMN_GAP = 16;
 @Component({
   selector: 'mb-ideas-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, Icon, StepList],
+  imports: [RouterOutlet, Icon, StepList, CreateContentDialog],
   host: { '(window:resize)': 'updateScroll()' },
   templateUrl: './ideas-page.html',
   styleUrl: './ideas-page.scss',
@@ -43,12 +46,18 @@ export class IdeasPage {
   private readonly api = inject(IdeasService);
   private readonly ai = inject(AiJobsService);
   private readonly toast = inject(ToastService);
+  private readonly contents = inject(ContentsService);
+  private readonly router = inject(Router);
   protected readonly brands = inject(BrandsService);
 
   protected readonly view = signal<View>('new');
   protected readonly themeId = signal<string | null>(null);
   protected readonly ideas = signal<Idea[]>([]);
   protected readonly themes = signal<IdeasResponse['themes']>([]);
+  protected readonly channels = signal<ChannelId[]>([]);
+  // L'idea da cui si sta creando un contenuto: apre la finestra del formato e dei canali.
+  protected readonly creatingFrom = signal<Idea | null>(null);
+  protected readonly creating = signal(false);
   protected readonly loading = signal(true);
   protected readonly preparing = signal(false);
   protected readonly steps = signal<AiStep[]>([]);
@@ -115,6 +124,7 @@ export class IdeasPage {
       if (this.brand()?.id !== brandId) return;
       this.ideas.set(response.ideas);
       this.themes.set(response.themes);
+      this.channels.set(response.channels);
       if (response.jobId) void this.follow(brandId, response.jobId);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non riesco a caricare le idee. Riprova tra poco.'));
@@ -166,6 +176,21 @@ export class IdeasPage {
     this.lastDecision.set(null);
     await this.decide(last.idea, last.previous);
     this.lastDecision.set(null);
+  }
+
+  protected async createContent(request: CreateContentRequest): Promise<void> {
+    const idea = this.creatingFrom();
+    if (!idea || this.creating()) return;
+    this.creating.set(true);
+    try {
+      const { id } = await this.contents.create(idea.id, request);
+      this.creatingFrom.set(null);
+      await this.router.navigate(['/contenuti', id]);
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'Non sono riuscito a creare il contenuto. Riprova.'));
+    } finally {
+      this.creating.set(false);
+    }
   }
 
   protected signalLabel(idea: Idea): string {
