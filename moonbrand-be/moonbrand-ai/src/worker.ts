@@ -7,7 +7,9 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { VisualEditJobInput, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type { IdeasJobInput, VisualEditJobInput, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+
+import { saveIdeas } from './results/ideas';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 
@@ -19,24 +21,45 @@ const LEASE = '5 minutes';
 const HEARTBEAT_MS = 60_000;
 const MAX_ATTEMPTS = 3;
 
-// Ogni tipo di job è uno script autonomo in src/jobs: qui solo come lanciarlo.
-const JOBS: Record<string, (input: unknown) => { script: string; args: string[] }> = {
-  website: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }),
-  visual: (input) => {
-    const { brandId, brand } = input as VisualJobRequest;
-    return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(brand)] };
-  },
-  'visual-edit': (input) => {
-    const { brandId, sessionId, channels, instruction } = input as VisualEditJobInput;
-    return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), sessionId, JSON.stringify(channels), instruction] };
-  },
-};
-
 interface Job {
   id: string;
   kind: string;
   input: unknown;
+  account_id: string;
 }
+
+// Ogni tipo di job è uno script autonomo in src/jobs: qui come lanciarlo e,
+// quando il risultato va salvato altrove oltre al job, come salvarlo.
+interface JobKind {
+  launch: (input: unknown) => { script: string; args: string[] };
+  save?: (job: Job, result: unknown) => Promise<void>;
+}
+
+const JOBS: Record<string, JobKind> = {
+  website: { launch: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }) },
+  visual: {
+    launch: (input) => {
+      const { brandId, brand } = input as VisualJobRequest;
+      return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(brand)] };
+    },
+  },
+  'visual-edit': {
+    launch: (input) => {
+      const { brandId, sessionId, channels, instruction } = input as VisualEditJobInput;
+      return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), sessionId, JSON.stringify(channels), instruction] };
+    },
+  },
+  ideas: {
+    launch: (input) => {
+      const { brandId, ...rest } = input as IdeasJobInput;
+      return { script: 'src/jobs/ideas.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+    },
+    save: async (job, result) => {
+      const saved = await saveIdeas(pool, job.account_id, job.input as IdeasJobInput, result);
+      console.log(`[${job.id}] ${saved} idee salvate`);
+    },
+  },
+};
 
 const url = process.env.DATABASE_URL ?? '';
 
@@ -63,7 +86,7 @@ async function claim(): Promise<Job | null> {
        for update skip locked
        limit 1
      )
-     returning id, kind, input`,
+     returning id, kind, input, account_id`,
     [LEASE],
   );
   return rows[0] ?? null;
@@ -75,12 +98,12 @@ function detailOf(input: Record<string, unknown>): string | undefined {
 }
 
 async function run(job: Job): Promise<void> {
-  const launch = JOBS[job.kind];
-  if (!launch) {
+  const kind = JOBS[job.kind];
+  if (!kind) {
     await finish(job.id, { status: 'failed', error: `Tipo di lavoro sconosciuto: ${job.kind}` });
     return;
   }
-  const { script, args } = launch(job.input);
+  const { script, args } = kind.launch(job.input);
   console.log(`[${job.id}] ${job.kind} avviato`);
 
   const steps = new Map<string, AiStep>();
@@ -148,7 +171,13 @@ async function run(job: Job): Promise<void> {
   if (stopping) return;
 
   for (const step of steps.values()) if (step.status === 'running') steps.set(step.id, { ...step, status: 'done' });
-  const error = outcome.error ?? (outcome.result === undefined ? `Processo terminato (codice ${code}) senza risultato. ${stderr.trim()}` : undefined);
+  let error = outcome.error ?? (outcome.result === undefined ? `Processo terminato (codice ${code}) senza risultato. ${stderr.trim()}` : undefined);
+  if (!error && kind.save) {
+    error = await kind
+      .save(job, outcome.result)
+      .then(() => undefined)
+      .catch((saveError: unknown) => `Risultato non salvato: ${saveError instanceof Error ? saveError.message : String(saveError)}`);
+  }
   await finish(job.id, {
     status: error ? 'failed' : 'done',
     result: outcome.result,

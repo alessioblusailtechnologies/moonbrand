@@ -55,10 +55,15 @@ export class AiJobsService {
 
   private async runJob<Result>(url: string, body: unknown, onSteps?: OnAiSteps): Promise<{ id: string; result: Result }> {
     const { id } = await firstValueFrom(this.http.post<AiJobCreated>(url, body));
+    return { id, result: await this.follow<Result>(id, onSteps) };
+  }
+
+  // Segue un lavoro già in coda fino al risultato, passando gli step man mano.
+  async follow<Result>(jobId: string, onSteps?: OnAiSteps): Promise<Result> {
     for (;;) {
-      const job = await firstValueFrom(this.http.get<AiJob<Result>>(`/v1/ai/jobs/${id}`));
+      const job = await firstValueFrom(this.http.get<AiJob<Result>>(`/v1/ai/jobs/${jobId}`));
       onSteps?.(job.steps);
-      if (job.status === 'done' && job.result) return { id, result: job.result };
+      if (job.status === 'done' && job.result) return job.result;
       if (job.status === 'failed' || job.status === 'done') throw new Error(job.error ?? 'Lavoro AI senza risultato.');
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
     }

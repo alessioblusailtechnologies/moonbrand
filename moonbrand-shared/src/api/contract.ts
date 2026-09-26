@@ -1,5 +1,6 @@
 import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
+import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 
 export interface Account {
   id: string;
@@ -119,6 +120,42 @@ export interface VisualExampleFile {
 
 export interface VisualReading {
   examples: VisualExampleFile[];
+}
+
+export interface IdeasBrandContext {
+  identity: Identity;
+  positioning: Positioning;
+  channels: ChannelId[];
+  themes: { id: string; name: string; weight: number }[];
+  voice: VoiceCard | null;
+}
+
+// I gusti su tutta la storia del brand: ogni idea tenuta vale +1 per il suo tema e il suo segnale, ogni scartata -0,5.
+export interface IdeaPreferences {
+  decided: number;
+  saved: number;
+  themes: { themeId: string; score: number }[];
+  signals: { kind: IdeaSignalKind; score: number }[];
+}
+
+// Quello che l'API mette in coda: il brand dal DB, le idee più recenti (per non ripetersi) e i gusti.
+export interface IdeasJobInput {
+  brandId: string;
+  count: number;
+  brand: IdeasBrandContext;
+  recent: { title: string; status: IdeaStatus; themeId: string | null; signal: IdeaSignalKind }[];
+  preferences: IdeaPreferences;
+}
+
+export interface IdeasResponse {
+  ideas: Idea[];
+  themes: { id: string; name: string; color: string }[];
+  // Il lavoro che sta preparando nuove idee, se c'è.
+  jobId: string | null;
+}
+
+export interface IdeaStatusRequest {
+  status: IdeaStatus;
 }
 
 export interface ApiErrorBody {

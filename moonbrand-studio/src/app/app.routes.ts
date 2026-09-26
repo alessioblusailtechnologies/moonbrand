@@ -11,9 +11,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/shell/shell').then((m) => m.Shell),
     children: [
       {
-        // L'onboarding è una modale sopra la home: la home resta visibile sotto.
+        // Le idee sono la prima sezione; l'onboarding è una modale sopra, con l'app visibile sotto.
         path: '',
-        loadComponent: () => import('./features/home/home').then((m) => m.Home),
+        loadComponent: () => import('./features/ideas/ideas-page').then((m) => m.IdeasPage),
         children: [
           { path: '', canActivate: [hasBrandsGuard], children: [] },
           { path: 'onboarding', loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding) },

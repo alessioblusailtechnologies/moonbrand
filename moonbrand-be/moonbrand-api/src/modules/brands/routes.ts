@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
 import { FOLLOW_DIR, type BrandFiles } from '../brand-files/files';
+import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import { activeBrandSchema, createBrandSchema } from './schemas';
 import { chooseActiveBrand, createBrand, listBrands } from './service';
 
@@ -19,6 +20,10 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
         request.log.warn({ err: error, example }, 'esempio non copiato nei riferimenti da seguire');
       });
     }
+    // Le prime idee partono subito, lato server: si preparano anche se chi ha creato il brand chiude la pagina.
+    await queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).catch((error: unknown) => {
+      request.log.warn({ err: error }, 'prime idee non messe in coda');
+    });
     return reply.code(201).send(brand);
   });
 
