@@ -1,0 +1,186 @@
+@let value = visual();
+
+<section class="panel">
+  <p class="label">Logo</p>
+  <div class="row">
+    <span class="logo-box" [class.empty]="!value.logoUri">
+      @if (value.logoUri) {
+        <img [src]="value.logoUri" alt="Logo" />
+      } @else {
+        <mb-icon name="image-plus" [size]="20" />
+      }
+    </span>
+    <div class="grow">
+      <p class="strong-sm">{{ value.logoUri ? 'Logo caricato' : 'Nessun logo' }}</p>
+      <p class="caption">{{ value.logoUri ? 'Lo uso in piccolo sulle card.' : 'SVG o PNG con sfondo trasparente, almeno 512px.' }}</p>
+    </div>
+    <label class="btn btn-secondary btn-sm">
+      {{ value.logoUri ? 'Sostituisci' : 'Carica' }}
+      <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden (change)="pickLogo($event)" />
+    </label>
+  </div>
+  @if (value.logoUri) {
+    <label class="row switch-row">
+      <span class="grow">
+        <span class="strong-sm">Logo sulle card</span>
+        <span class="caption block">In piccolo accanto alla firma, in basso</span>
+      </span>
+      <input class="switch" type="checkbox" role="switch" [checked]="value.signature" (change)="set({ signature: $any($event.target).checked })" />
+    </label>
+    <button class="link-btn muted" type="button" (click)="set({ logoUri: null })">Rimuovi il logo</button>
+  }
+</section>
+
+<section class="panel">
+  <p class="label">Palette</p>
+  @if (sitePalette(); as site) {
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="!custom()" [class.selected]="!custom()" (click)="chooseSitePalette()">
+      <span class="swatches">
+        @for (color of site.colors; track $index) {
+          <span [style.background]="color"></span>
+        }
+      </span>
+      <span class="grow action">Dal sito · {{ store.insights()?.site ?? 'letto prima' }}</span>
+      <span class="radio-mark" [class.on]="!custom()"></span>
+    </button>
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="custom()" [class.selected]="custom()" (click)="chooseCustom()">
+      @if (custom()) {
+        <span class="swatches">
+          @for (color of value.palette.colors; track $index) {
+            <span [style.background]="color"></span>
+          }
+        </span>
+      } @else {
+        <span class="custom-icon"><mb-icon name="plus" [size]="14" /></span>
+      }
+      <span class="grow action">Usa i miei colori</span>
+      <span class="radio-mark" [class.on]="custom()"></span>
+    </button>
+  } @else {
+    <p class="caption">Scrivi i colori del marchio: li uso su tutte le card.</p>
+  }
+  @if (custom()) {
+    <div class="slots">
+      @for (label of slotLabels; track label; let i = $index) {
+        <label class="slot">
+          <input class="picker" type="color" [value]="value.palette.colors[i]" [attr.aria-label]="'Scegli il colore ' + label"
+            (input)="editHex(i, $any($event.target).value)" />
+          <span class="caption slot-label">{{ label }}</span>
+          <input class="sunken" maxlength="7" [attr.aria-label]="'Colore ' + label" [value]="hexDrafts()[i] ?? ''"
+            (input)="editHex(i, $any($event.target).value)" />
+        </label>
+      }
+    </div>
+  }
+</section>
+
+<section class="panel">
+  <p class="label">Immagini di riferimento</p>
+  <p class="caption">Post, foto o grafiche che ti piacciono, anche di altri. Ne ricavo caratteri, forme e stile delle foto.</p>
+  <div class="references">
+    @for (file of references(); track file.path ?? file.url; let i = $index) {
+      <div class="reference">
+        <img [src]="file.url" [alt]="'Riferimento ' + (i + 1)" />
+        <button class="icon-btn solid remove" type="button" [attr.aria-label]="'Togli il riferimento ' + (i + 1)" (click)="removeReference(file)">
+          <mb-icon name="x" [size]="12" [stroke]="3" />
+        </button>
+      </div>
+    }
+    @for (slot of placeholders(); track slot) {
+      <div class="reference empty"><span class="spinner"></span></div>
+    }
+    @if (references().length + uploading() < maxReferences) {
+      <label class="reference empty add" aria-label="Aggiungi immagini di riferimento">
+        <mb-icon name="plus" />
+        <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
+      </label>
+    }
+  </div>
+</section>
+
+<section class="panel">
+  <p class="label">Come escono le card</p>
+  @if (preparing()) {
+    <mb-step-list [steps]="steps()" waiting="Guardo i riferimenti" />
+  } @else if (line()) {
+    @if (value.direction?.summary; as summary) {
+      <p class="body ink">{{ summary }}</p>
+    }
+    <div class="line-rows">
+      @for (row of lineRows(); track row.label) {
+        <div class="line-row">
+          <span class="caption line-label">{{ row.label }}</span>
+          <span class="strong-sm grow">{{ row.text }}</span>
+        </div>
+      }
+    </div>
+    <div class="previews">
+      @for (card of previews(); track $index) {
+        <figure class="preview">
+          <div class="card" [style.aspect-ratio]="card.aspect" [style.background]="card.ground" [style.color]="card.ink">
+            @if (card.photo) {
+              <img class="card-photo" [src]="card.photo" alt="" />
+            }
+            <div class="card-text">
+              @if (card.kicker) {
+                <span class="card-kicker" [style.color]="card.accent" [style.font-family]="card.labelFont">{{ card.kicker }}</span>
+              }
+              <span class="card-headline" [style.font-family]="card.voiceFont" [style.font-weight]="card.voiceWeight"
+                [style.font-style]="card.voiceItalic ? 'italic' : 'normal'">{{ card.headline }}</span>
+            </div>
+            <div class="card-foot" [style.color]="card.muted" [style.font-family]="card.labelFont">
+              <span>{{ card.signature }}</span>
+              @if (card.logo) {
+                <img class="card-logo" [src]="card.logo" alt="" />
+              } @else {
+                <span>{{ card.address }}</span>
+              }
+            </div>
+          </div>
+          <figcaption class="caption">{{ card.name }}</figcaption>
+        </figure>
+      }
+    </div>
+  } @else {
+    <p class="caption">
+      Carica qualche immagine che ti piace o scrivi come vuoi apparire: preparo la linea delle tue card (fondo, caratteri, firma,
+      rubriche) e le prime card per i tuoi canali.
+    </p>
+  }
+
+  <div class="row">
+    <input class="sunken grow" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
+      (keydown.enter)="send()"
+      [placeholder]="line() ? 'Cosa cambio? es. foto a tutta larghezza, titoli più grandi' : 'Indicazioni, es. fondo chiaro, titoli con le grazie'" />
+    <button class="icon-btn solid" type="button" [attr.aria-label]="correctable() ? 'Applica le correzioni' : 'Prepara la linea'"
+      [disabled]="preparing() || (correctable() && !written())" (click)="send()">
+      <mb-icon name="arrow-up" />
+    </button>
+  </div>
+  @if (line() && !preparing()) {
+    <p class="caption">
+      @if (correctable()) {
+        Con la freccia cambio solo quello che scrivi: il resto della linea resta. «Rifai la linea da capo» riparte da zero.
+      } @else {
+        Hai cambiato le immagini di riferimento: la linea si rifà da capo con quelle nuove.
+      }
+    </p>
+  }
+  @if (!preparing()) {
+    <button class="btn btn-secondary btn-sm align-start" type="button" (click)="generate(line() !== null)">
+      {{ line() ? 'Rifai la linea da capo' : 'Prepara la linea' }}
+    </button>
+  }
+</section>
+
+@if (value.video; as video) {
+  <section class="panel">
+    <p class="label">Come si racconta in video</p>
+    <div class="line-rows">
+      <div class="line-row"><span class="caption line-label">Vero</span><span class="body ink grow">{{ video.real }}</span></div>
+      <div class="line-row"><span class="caption line-label">Generato</span><span class="body ink grow">{{ video.generated }}</span></div>
+      <div class="line-row"><span class="caption line-label">Look</span><span class="body ink grow">{{ video.look }}</span></div>
+      <div class="line-row"><span class="caption line-label">Suono</span><span class="body ink grow">{{ video.sound }}</span></div>
+    </div>
+  </section>
+}
