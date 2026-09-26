@@ -12,6 +12,10 @@
   align-self: flex-start;
 }
 
+.align-center {
+  align-self: center;
+}
+
 .logo-box {
   display: inline-flex;
   align-items: center;
@@ -209,9 +213,20 @@
   margin: 0 0 18px;
   break-inside: avoid;
 
-  .zoom {
+  .shot {
     position: relative;
+  }
+
+  .zoom {
     height: auto;
+  }
+
+  &.off img {
+    opacity: 0.4;
+  }
+
+  &.off figcaption {
+    opacity: 0.5;
   }
 
   img {
@@ -227,6 +242,29 @@
     font-size: 13px;
     white-space: pre-line;
     overflow-wrap: anywhere;
+  }
+}
+
+.pick {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid var(--white);
+  border-radius: 999px;
+  background: rgba(28, 33, 80, 0.25);
+  color: var(--white);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+  &[aria-checked='true'] {
+    border-color: var(--navy-700);
+    background: var(--navy-700);
   }
 }
 

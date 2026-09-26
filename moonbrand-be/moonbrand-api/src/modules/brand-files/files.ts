@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type pg from 'pg';
@@ -8,6 +8,7 @@ import { brandsDir, type Config } from '../../config';
 import { ApiError } from '../../errors';
 
 export const REFERENCES_DIR = 'file-riferimento';
+export const FOLLOW_DIR = 'riferimenti-da-seguire';
 
 // Chi ha aperto la cartella di un brand non ancora creato: il brand nasce
 // nella bozza dell'onboarding e sul DB arriva solo alla fine.
@@ -28,6 +29,7 @@ export interface BrandFiles {
   claim(brandId: string, accountId: string): Promise<void>;
   save(brandId: string, relativePath: string, bytes: Uint8Array): Promise<void>;
   remove(brandId: string, relativePath: string): Promise<void>;
+  copy(brandId: string, from: string, to: string): Promise<void>;
   read(brandId: string, relativePath: string): Promise<{ bytes: Buffer; contentType: string }>;
   url(brandId: string, relativePath: string): string;
   verify(brandId: string, relativePath: string, signature: string): boolean;
@@ -67,6 +69,11 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
     },
     async remove(brandId, relativePath) {
       await rm(filePath(brandId, relativePath), { force: true });
+    },
+    async copy(brandId, from, to) {
+      const target = filePath(brandId, to);
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(filePath(brandId, from), target);
     },
     async read(brandId, relativePath) {
       const target = filePath(brandId, relativePath);

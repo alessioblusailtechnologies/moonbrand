@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type { VisualEditJobRequest, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
 
 import { channelId, identity, positioning, voiceCard } from '../brands/schemas';
 
@@ -22,3 +22,8 @@ export const visualJobSchema = z.object({
 }) satisfies z.ZodType<VisualJobRequest>;
 
 export const jobParamsSchema = z.object({ id: z.uuid('Lavoro non trovato.') });
+
+export const visualEditJobSchema = z.object({
+  jobId: z.uuid('Esempi non trovati.'),
+  instruction: z.string().trim().min(3, 'Scrivi cosa cambiare.').max(2000),
+}) satisfies z.ZodType<VisualEditJobRequest>;

@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
 import type { BrandFiles } from '../brand-files/files';
-import { jobParamsSchema, visualJobSchema, websiteJobSchema } from './schemas';
-import { getJob, queueVisualJob, queueWebsiteJob } from './service';
+import { jobParamsSchema, visualEditJobSchema, visualJobSchema, websiteJobSchema } from './schemas';
+import { getJob, queueVisualEditJob, queueVisualJob, queueWebsiteJob } from './service';
 
 export function registerAiRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): void {
   app.post('/v1/ai/website', async (request, reply) => {
@@ -13,6 +13,11 @@ export function registerAiRoutes(app: FastifyInstance, pool: pg.Pool, files: Bra
 
   app.post('/v1/ai/visual', async (request, reply) => {
     const job = await queueVisualJob(pool, files, request.identity, visualJobSchema.parse(request.body));
+    return reply.code(202).send(job);
+  });
+
+  app.post('/v1/ai/visual/edit', async (request, reply) => {
+    const job = await queueVisualEditJob(pool, files, request.identity, visualEditJobSchema.parse(request.body));
     return reply.code(202).send(job);
   });
 

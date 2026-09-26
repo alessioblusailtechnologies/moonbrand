@@ -10,7 +10,8 @@
     "worker": "tsx src/worker.ts",
     "website": "tsx src/jobs/website.ts",
     "typecheck": "tsc --noEmit",
-    "visual": "tsx src/jobs/visual.ts"
+    "visual": "tsx src/jobs/visual.ts",
+    "visual-edit": "tsx src/jobs/visual-edit.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.283",

@@ -52,8 +52,9 @@ export class BrandsService {
     }
   }
 
-  async create(id: string, draft: BrandDraft): Promise<BrandSummary> {
-    const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', { ...draft, id } satisfies CreateBrandRequest));
+  async create(id: string, draft: BrandDraft, referenceExamples: string[]): Promise<BrandSummary> {
+    const body: CreateBrandRequest = { ...draft, id, referenceExamples };
+    const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', body));
     this.brands.update((list) => [...list, brand]);
     this.auth.activeBrandId.set(brand.id);
     return brand;

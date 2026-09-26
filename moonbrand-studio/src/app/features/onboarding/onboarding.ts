@@ -145,7 +145,7 @@ export class Onboarding {
     if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
     try {
-      await this.brands.create(brandId, draft);
+      await this.brands.create(brandId, draft, this.store.selectedExamples());
       this.store.reset();
       await this.router.navigateByUrl('/');
     } catch (error) {

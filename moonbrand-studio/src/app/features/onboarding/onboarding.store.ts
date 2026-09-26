@@ -23,6 +23,9 @@ interface State {
   themesEdited: boolean;
   positioningIdeas: { key: string; ideas: PositioningIdeas } | null;
   examples: VisualExampleFile[] | null;
+  examplesJobId: string | null;
+  // Gli esempi partono tutti scelti: qui solo quelli tolti.
+  unselectedExamples: string[];
 }
 
 const INITIAL: State = {
@@ -34,6 +37,8 @@ const INITIAL: State = {
   themesEdited: false,
   positioningIdeas: null,
   examples: null,
+  examplesJobId: null,
+  unselectedExamples: [],
 };
 
 // Un campo si riempie dal sito solo se è vuoto o contiene ancora quanto letto la volta prima.
@@ -64,6 +69,11 @@ export class OnboardingStore {
   readonly positioningIdeas = computed(() => this.state().positioningIdeas);
   readonly brandId = computed(() => this.state().brandId);
   readonly examples = computed(() => this.state().examples);
+  readonly unselectedExamples = computed(() => this.state().unselectedExamples);
+  readonly examplesJobId = computed(() => this.state().examplesJobId);
+  readonly selectedExamples = computed(() =>
+    (this.state().examples ?? []).map((example) => example.file).filter((file) => !this.state().unselectedExamples.includes(file)),
+  );
 
   constructor() {
     effect(() => {
@@ -148,8 +158,18 @@ export class OnboardingStore {
     });
   }
 
-  setExamples(examples: VisualExampleFile[] | null): void {
-    this.state.update((state) => ({ ...state, examples }));
+  // Una modifica tiene la selezione (i file hanno gli stessi nomi), una generazione nuova la azzera.
+  setExamples(examples: VisualExampleFile[] | null, jobId: string | null, keepSelection = false): void {
+    this.state.update((state) => ({ ...state, examples, examplesJobId: jobId, unselectedExamples: keepSelection ? state.unselectedExamples : [] }));
+  }
+
+  toggleExample(file: string): void {
+    this.state.update((state) => ({
+      ...state,
+      unselectedExamples: state.unselectedExamples.includes(file)
+        ? state.unselectedExamples.filter((item) => item !== file)
+        : [...state.unselectedExamples, file],
+    }));
   }
 
   reset(): void {

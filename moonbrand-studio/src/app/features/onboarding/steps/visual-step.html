@@ -105,13 +105,22 @@
   @if (preparing()) {
     <mb-step-list [steps]="steps()" waiting="Guardo i riferimenti" />
   } @else if (examples().length > 0) {
+    <p class="caption">{{ selectedCount() }} di {{ examples().length }} scelti: tocca il segno di spunta per togliere o rimettere un esempio.</p>
     <div class="masonry">
       @for (example of examples(); track example.file; let i = $index) {
-        <figure class="example">
-          <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci l’esempio ' + (i + 1) + ' per ' + example.name" (click)="openExample(i)">
-            <img [src]="example.url" [alt]="'Esempio per ' + example.name" loading="lazy" />
+        <figure class="example" [class.off]="!example.selected">
+          <div class="shot">
+            <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci l’esempio ' + (i + 1) + ' per ' + example.name" (click)="openExample(i)">
+              <img [src]="example.url" [alt]="'Esempio per ' + example.name" loading="lazy" />
+            </button>
             <span class="channel-chip">{{ example.name }}</span>
-          </button>
+            <button class="pick" type="button" role="checkbox" [attr.aria-checked]="example.selected"
+              [attr.aria-label]="'Scegli l’esempio ' + (i + 1) + ' per ' + example.name" (click)="store.toggleExample(example.file)">
+              @if (example.selected) {
+                <mb-icon name="check" [size]="14" [stroke]="3" />
+              }
+            </button>
+          </div>
           <figcaption class="body">{{ example.caption }}</figcaption>
         </figure>
       }
@@ -122,11 +131,16 @@
     </p>
   }
 
-  <input class="sunken" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
-    placeholder="Indicazioni, es. fondo chiaro, titoli con le grazie" />
+  <div class="row">
+    <input class="sunken grow" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
+      (keydown.enter)="sendNotes()" [placeholder]="examples().length > 0 ? 'Cosa cambio? es. titoli più grandi, più foto' : 'Indicazioni, es. fondo chiaro, titoli con le grazie'" />
+    <button class="icon-btn solid" type="button" aria-label="Invia le indicazioni" [disabled]="preparing() || !notes().trim()" (click)="sendNotes()">
+      <mb-icon name="arrow-up" />
+    </button>
+  </div>
   @if (!preparing()) {
-    <button class="btn btn-secondary btn-sm align-start" type="button" (click)="createExamples()">
-      {{ examples().length > 0 ? 'Rifai gli esempi' : 'Prepara gli esempi' }}
+    <button class="btn btn-secondary btn-sm align-center" type="button" (click)="createExamples()">
+      {{ examples().length > 0 ? 'Rigenera gli esempi da zero' : 'Prepara gli esempi' }}
     </button>
   }
 </section>

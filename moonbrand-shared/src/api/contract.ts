@@ -37,7 +37,8 @@ export interface BrandSummary {
   color: string;
 }
 
-export type CreateBrandRequest = BrandDraft & { id: string };
+// referenceExamples: gli esempi scelti nell'onboarding, che diventano i riferimenti da seguire del brand.
+export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[] };
 
 export interface ActiveBrandRequest {
   brandId: string;
@@ -93,6 +94,20 @@ export interface VisualBrandContext {
 export interface VisualJobRequest {
   brandId: string;
   brand: VisualBrandContext;
+}
+
+export interface VisualEditJobRequest {
+  jobId: string;
+  instruction: string;
+}
+
+// Quello che l'API mette in coda: la sessione e i canali vengono dal job da modificare.
+export interface VisualEditJobInput {
+  brandId: string;
+  sessionId: string;
+  channels: ChannelId[];
+  instruction: string;
+  fromJobId: string;
 }
 
 export interface VisualExampleFile {

@@ -1,11 +1,19 @@
 import type pg from 'pg';
 
-import type { AiJob, AiJobCreated, VisualJobRequest, VisualReading, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type {
+  AiJob,
+  AiJobCreated,
+  VisualEditJobInput,
+  VisualEditJobRequest,
+  VisualJobRequest,
+  VisualReading,
+  WebsiteJobRequest,
+} from '@moonbrand/shared/api/contract';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
-import { findJob, insertJob } from './repository';
+import { findExamplesJob, findJob, insertJob } from './repository';
 
 export function queueWebsiteJob(pool: pg.Pool, identity: Identity, request: WebsiteJobRequest): Promise<AiJobCreated> {
   return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'website', request) }));
@@ -14,6 +22,21 @@ export function queueWebsiteJob(pool: pg.Pool, identity: Identity, request: Webs
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
   await files.claim(request.brandId, identity.accountId);
   return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual', request) }));
+}
+
+export async function queueVisualEditJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualEditJobRequest): Promise<AiJobCreated> {
+  const previous = await withIdentity(pool, identity, (db) => findExamplesJob(db, request.jobId));
+  if (!previous?.brandId || !previous.channels) throw ApiError.notFound('Esempi non trovati.');
+  if (previous.status !== 'done' || !previous.sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Questi esempi non sono ancora pronti da modificare.');
+  await files.claim(previous.brandId, identity.accountId);
+  const input: VisualEditJobInput = {
+    brandId: previous.brandId,
+    sessionId: previous.sessionId,
+    channels: previous.channels,
+    instruction: request.instruction,
+    fromJobId: request.jobId,
+  };
+  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual-edit', input) }));
 }
 
 export function getJob(pool: pg.Pool, files: BrandFiles, identity: Identity, jobId: string): Promise<AiJob> {

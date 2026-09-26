@@ -13,7 +13,7 @@ export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSumm
   return withIdentity(pool, identity, (db) => listBrandSummaries(db, identity.accountId));
 }
 
-export function createBrand(pool: pg.Pool, identity: Identity, { id, ...draft }: CreateBrandRequest): Promise<BrandSummary> {
+export function createBrand(pool: pg.Pool, identity: Identity, { id, referenceExamples: _examples, ...draft }: CreateBrandRequest): Promise<BrandSummary> {
   const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
   return withIdentity(pool, identity, async (db) => {
     const brand = await insertBrand(db, identity.accountId, id, stored);

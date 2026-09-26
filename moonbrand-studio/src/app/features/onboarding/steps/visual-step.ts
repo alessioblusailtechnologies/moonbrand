@@ -53,8 +53,14 @@ export class VisualStep implements OnInit {
   // Un canale dopo l'altro, nell'ordine del catalogo.
   protected readonly examples = computed(() => {
     const examples = this.store.examples() ?? [];
-    return CHANNELS.flatMap(({ id }) => examples.filter((example) => example.channel === id).map((example) => ({ ...example, name: channelName(id) })));
+    const unselected = this.store.unselectedExamples();
+    return CHANNELS.flatMap(({ id }) =>
+      examples
+        .filter((example) => example.channel === id)
+        .map((example) => ({ ...example, name: channelName(id), selected: !unselected.includes(example.file) })),
+    );
   });
+  protected readonly selectedCount = computed(() => this.examples().filter((example) => example.selected).length);
 
   constructor() {
     effect(() => {
@@ -159,6 +165,29 @@ export class VisualStep implements OnInit {
     this.set({ palette: { id: 'custom', name: 'I miei colori', colors, origin: 'custom' } });
   }
 
+  // Con gli esempi già pronti le indicazioni li modificano (stessa sessione di Claude), altrimenti ne guidano la generazione.
+  protected sendNotes(): void {
+    const instruction = this.notes().trim();
+    const jobId = this.store.examplesJobId();
+    if (!instruction || this.preparing()) return;
+    if (jobId && this.examples().length > 0) void this.editExamples(jobId, instruction);
+    else void this.createExamples();
+  }
+
+  private async editExamples(jobId: string, instruction: string): Promise<void> {
+    this.preparing.set(true);
+    this.steps.set([]);
+    try {
+      const edited = await this.ai.editExamples({ jobId, instruction }, (steps) => this.steps.set(steps));
+      this.store.setExamples(edited.examples, edited.jobId, true);
+      this.notes.set('');
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'Non sono riuscito a modificare gli esempi. Riprova.'));
+    } finally {
+      this.preparing.set(false);
+    }
+  }
+
   protected async createExamples(): Promise<void> {
     const brandId = this.store.brandId();
     if (this.preparing() || !brandId) return;
@@ -177,7 +206,8 @@ export class VisualStep implements OnInit {
     this.preparing.set(true);
     this.steps.set([]);
     try {
-      this.store.setExamples(await this.ai.createExamples({ brandId, brand }, (steps) => this.steps.set(steps)));
+      const created = await this.ai.createExamples({ brandId, brand }, (steps) => this.steps.set(steps));
+      this.store.setExamples(created.examples, created.jobId);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non sono riuscito a preparare gli esempi. Riprova.'));
     } finally {

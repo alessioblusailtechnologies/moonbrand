@@ -7,7 +7,7 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type { VisualEditJobInput, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 
@@ -25,6 +25,10 @@ const JOBS: Record<string, (input: unknown) => { script: string; args: string[] 
   visual: (input) => {
     const { brandId, brand } = input as VisualJobRequest;
     return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(brand)] };
+  },
+  'visual-edit': (input) => {
+    const { brandId, sessionId, channels, instruction } = input as VisualEditJobInput;
+    return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), sessionId, JSON.stringify(channels), instruction] };
   },
 };
 

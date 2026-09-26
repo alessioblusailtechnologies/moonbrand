@@ -193,4 +193,10 @@ export const brandDraftSchema = z.object({
 
 export const activeBrandSchema = z.object({ brandId: z.uuid('Brand non trovato.') });
 
-export const createBrandSchema = brandDraftSchema.extend({ id: z.uuid('Brand non valido.') }) satisfies z.ZodType<CreateBrandRequest>;
+export const createBrandSchema = brandDraftSchema.extend({
+  id: z.uuid('Brand non valido.'),
+  referenceExamples: z
+    .array(z.string().regex(/^esempi\/[A-Za-z0-9._-]+\.(png|jpg)$/, 'Esempio non valido.'))
+    .max(30)
+    .optional(),
+}) satisfies z.ZodType<CreateBrandRequest>;

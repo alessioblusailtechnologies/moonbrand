@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
-import type { BrandFiles } from '../brand-files/files';
+import { FOLLOW_DIR, type BrandFiles } from '../brand-files/files';
 import { activeBrandSchema, createBrandSchema } from './schemas';
 import { chooseActiveBrand, createBrand, listBrands } from './service';
 
@@ -12,6 +12,13 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
     const body = createBrandSchema.parse(request.body);
     await files.claim(body.id, request.identity.accountId);
     const brand = await createBrand(pool, request.identity, body);
+    // Il brand esiste già: se una copia non riesce lo si segnala nei log, senza far fallire la creazione.
+    for (const example of body.referenceExamples ?? []) {
+      const name = example.split('/').pop() ?? '';
+      await files.copy(body.id, example, `${FOLLOW_DIR}/${name}`).catch((error: unknown) => {
+        request.log.warn({ err: error, example }, 'esempio non copiato nei riferimenti da seguire');
+      });
+    }
     return reply.code(201).send(brand);
   });
 
