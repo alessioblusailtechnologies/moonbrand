@@ -6,28 +6,14 @@ import {
   pickedDetail,
   POSITIONING_STEPS,
   THEMES_STEPS,
-  VISUAL_STEPS,
   VOICE_STEPS,
   type OnAiSteps,
   type PositioningIdeas,
   type WebsiteInsights,
 } from '@moonbrand/shared/ai/steps';
-import type {
-  BrandKind,
-  BrandLine,
-  BrandVideo,
-  ChannelId,
-  Identity,
-  ImageStyle,
-  TypographyId,
-  Visual,
-  VisualDirection,
-  VoiceCard,
-  VoiceSource,
-} from '@moonbrand/shared/domain/brand';
-import { AUDIENCES, channelName, GOALS, lineFontId, typographyOption } from '@moonbrand/shared/domain/catalog';
+import type { BrandKind, ChannelId, Identity, VoiceCard, VoiceSource } from '@moonbrand/shared/domain/brand';
+import { AUDIENCES, channelName, GOALS } from '@moonbrand/shared/domain/catalog';
 import { createRng, pick, sample, seedFromString } from '@moonbrand/shared/lib/random';
-import { normalizeSite } from '@moonbrand/shared/lib/site';
 
 export interface VoiceSample {
   source: VoiceSource;
@@ -36,22 +22,6 @@ export interface VoiceSample {
 }
 
 export type VoiceAnalysis = Omit<VoiceCard, 'version' | 'createdAt'>;
-
-export interface VisualStyleRequest {
-  identity: Identity;
-  themes: string[];
-  visual: Visual;
-  channels: ChannelId[];
-  restart: boolean;
-}
-
-export interface VisualStyle {
-  typography: TypographyId;
-  imageStyle: ImageStyle;
-  direction: VisualDirection;
-  line: BrandLine;
-  video?: BrandVideo;
-}
 
 type Group = 'person' | 'business';
 
@@ -152,49 +122,6 @@ function analyzeTexts(text: string, group: Group): Pick<VoiceAnalysis, 'rhythm' 
   };
 }
 
-function luminance(hex: string): number {
-  const match = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
-  if (!match) return 1;
-  const value = parseInt(match[1], 16);
-  const channel = (shift: number) => {
-    const c = ((value >> shift) & 255) / 255;
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * channel(16) + 0.7152 * channel(8) + 0.0722 * channel(0);
-}
-
-function siteLabel(site: string): string {
-  return normalizeSite(site).split('/')[0] ?? '';
-}
-
-function pickTypography(notes: string, rng: () => number): TypographyId {
-  if (/grazie|serif|elegant|classic/.test(notes)) return pick(rng, ['fraunces', 'playfair', 'dm-serif'] as TypographyId[]);
-  if (/tecnic|tech|moderno|minimal/.test(notes)) return pick(rng, ['space-grotesk', 'inter', 'ibm-plex'] as TypographyId[]);
-  return pick(rng, ['inter', 'archivo', 'manrope', 'fraunces', 'space-grotesk'] as TypographyId[]);
-}
-
-function mockVideoProfile(identity: Identity): BrandVideo {
-  const who = identity.name || 'il brand';
-  return {
-    real: `Il lavoro di ${who} e i suoi risultati: quello che si vende si mostra com'è, girato o in foto.`,
-    generated: 'Il luogo vuoto prima di aprire, gli attrezzi, i materiali da vicino, la luce che entra dalla finestra.',
-    shots: [
-      'Le mani al lavoro, dall’alto, con la luce della finestra di lato',
-      'Il risultato finito, da vicino, girandoci attorno lentamente',
-      'Il luogo di lavoro la mattina, un’inquadratura ferma di 5 secondi',
-      'Un dettaglio del materiale, a pochi centimetri',
-    ],
-    look: 'Colori naturali e caldi, un filo di grana, stacchi puliti ogni 2-3 secondi, titoli che salgono dal basso.',
-    sound: 'Strumentale acustico, chitarra e percussioni leggere, intorno ai 100 bpm, luminoso e tranquillo.',
-  };
-}
-
-export function exampleChannels(channels: readonly ChannelId[]): ChannelId[] {
-  const list = channels.length > 0 ? [...new Set(channels)] : (['instagram'] as ChannelId[]);
-  const count = Math.min(5, Math.max(3, list.length));
-  return Array.from({ length: count }, (_, i) => list[i % list.length]);
-}
-
 @Injectable({ providedIn: 'root' })
 export class MockAi {
   async suggestThemes(identity: Identity, onSteps?: OnAiSteps): Promise<string[]> {
@@ -269,64 +196,6 @@ export class MockAi {
       rhythm: RHYTHM_SHORT,
       lexicon: LEXICON[group],
       avoid: `${AVOID_BASE}, frasi fatte da comunicato stampa.`,
-    };
-  }
-
-  async proposeVisualStyle(request: VisualStyleRequest, onSteps?: OnAiSteps): Promise<VisualStyle> {
-    const { identity, themes, visual, channels, restart } = request;
-    const notes = (visual.notes ?? '').toLowerCase();
-    const references = visual.references ?? [];
-    const rng = createRng(seedFromString(`${identity.name}|${notes}|${references.length}|${restart ? Date.now() : ''}`));
-    const log = createStepLog(onSteps);
-
-    log.start('references', VISUAL_STEPS.references(references.length), notes ? `Indicazioni: ${visual.notes?.slice(0, 80)}` : undefined);
-    log.finish('references');
-
-    log.start('line', VISUAL_STEPS.line);
-    const typography = pickTypography(notes, rng);
-    const pair = typographyOption(typography);
-    const [primary, , accent, ground] = visual.palette.colors;
-    const heading = lineFontId(pair.heading.family) ?? 'inter-tight';
-    const body = lineFontId(pair.body.family) ?? 'inter';
-    const rubrics = themes.filter(Boolean).slice(0, 3).map((theme) => ({ name: theme.toLowerCase(), about: `I contenuti su ${theme.toLowerCase()}.` }));
-    const line: BrandLine = {
-      ground: luminance(primary) < 0.2 && !/chiar|bianc|light/.test(notes) ? primary : ground,
-      accent,
-      voice: { font: heading, weight: pair.heading.weight, italic: /corsivo/.test(notes) },
-      title: { font: heading, weight: pair.heading.weight, italic: false },
-      label: { font: body, weight: 600, italic: false, spaced: /spaziat/.test(notes) },
-      text: { font: body, weight: 400, italic: false },
-      signature: identity.name.trim(),
-      address: siteLabel(identity.site),
-      band: null,
-      rubrics,
-      copy: [],
-      from: references.map((file) => file.path).filter((path): path is string => Boolean(path)),
-    };
-    log.finish('line', { detail: `${pair.name}: ${pair.heading.family} e ${pair.body.family}` });
-
-    for (const [index, channel] of exampleChannels(channels).entries()) {
-      log.start(`card-${index}`, VISUAL_STEPS.card(channelName(channel)));
-      log.finish(`card-${index}`);
-    }
-
-    let video: BrandVideo | undefined;
-    if (!visual.video) {
-      log.start('video', VISUAL_STEPS.video);
-      video = mockVideoProfile(identity);
-      log.finish('video', { detail: `${video.shots.length} riprese da chiedere` });
-    }
-
-    const imageStyle: ImageStyle = /solo testo/.test(notes) ? 'text-only' : pick(rng, ['natural-photo', 'desaturated-photo'] as ImageStyle[]);
-    return {
-      typography,
-      imageStyle,
-      direction: {
-        summary: `${imageStyle === 'text-only' ? 'Card di solo testo' : 'Foto grandi'}, titoli in ${pair.heading.family}${notes ? ', come hai chiesto' : ''}.`,
-        photoStyle: 'Natural daylight, soft contrast, colors that harmonize with the brand palette.',
-      },
-      line,
-      ...(video && { video }),
     };
   }
 

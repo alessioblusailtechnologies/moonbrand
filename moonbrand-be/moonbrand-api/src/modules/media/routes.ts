@@ -10,7 +10,7 @@ import type { MediaStorage } from './storage';
 
 const MAX_BYTES = 3 * 1024 * 1024;
 
-const EXTENSIONS: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+export const EXTENSIONS: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
 
 const SIGNATURES: Record<string, (bytes: Uint8Array) => boolean> = {
   'image/png': (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
@@ -18,9 +18,9 @@ const SIGNATURES: Record<string, (bytes: Uint8Array) => boolean> = {
   'image/webp': (b) => b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45,
 };
 
-const uploadSchema = z.object({ dataUri: z.string().max(5_000_000) });
+export const uploadSchema = z.object({ dataUri: z.string().max(5_000_000) });
 
-function parseImage(dataUri: string): { bytes: Uint8Array; mimeType: string } {
+export function parseImage(dataUri: string): { bytes: Uint8Array; mimeType: string } {
   const match = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=\s]+)$/.exec(dataUri.trim());
   if (!match) throw ApiError.invalid('L’immagine deve essere un PNG, un JPEG o un WebP.');
   const [, mimeType, base64] = match;

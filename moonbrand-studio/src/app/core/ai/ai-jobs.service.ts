@@ -3,7 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import type { OnAiSteps, WebsiteInsights } from '@moonbrand/shared/ai/steps';
-import type { AiJob, AiJobCreated, WebsiteJobRequest, WebsiteReading } from '@moonbrand/shared/api/contract';
+import type {
+  AiJob,
+  AiJobCreated,
+  VisualExampleFile,
+  VisualJobRequest,
+  VisualReading,
+  WebsiteJobRequest,
+  WebsiteReading,
+} from '@moonbrand/shared/api/contract';
 import type { Palette } from '@moonbrand/shared/domain/brand';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
@@ -27,6 +35,11 @@ export class AiJobsService {
       audiences: reading.audiences,
       palette: { id: `site-${host}`, name: 'Dal sito', colors: reading.colors as Palette['colors'], origin: 'site' },
     };
+  }
+
+  async createExamples(request: VisualJobRequest, onSteps?: OnAiSteps): Promise<VisualExampleFile[]> {
+    const { examples } = await this.run<VisualReading>('/v1/ai/visual', request, onSteps);
+    return examples;
   }
 
   private async run<Result>(url: string, body: unknown, onSteps?: OnAiSteps): Promise<Result> {

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { CreateBrandRequest } from '@moonbrand/shared/api/contract';
+
 import type {
   BrandDraft,
   BrandLine,
@@ -17,9 +19,9 @@ import type {
 
 const text = (max: number) => z.string().max(max);
 
-const channelId = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
+export const channelId = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
 
-const identity = z.object({
+export const identity = z.object({
   kind: z.enum(['person', 'company', 'client']),
   name: text(200),
   role: text(200),
@@ -29,7 +31,7 @@ const identity = z.object({
   pitch: text(2000),
 }) satisfies z.ZodType<Identity>;
 
-const positioning = z.object({
+export const positioning = z.object({
   goals: z.array(text(200)).max(20),
   audiences: z.array(text(200)).max(20),
   postsPerWeek: z.number().int().min(0).max(21),
@@ -57,21 +59,19 @@ const themes = z
   )
   .max(6) satisfies z.ZodType<Theme[]>;
 
+export const voiceCard = z.object({
+  version: z.number().int().min(0),
+  createdAt: text(40),
+  source: z.enum(['pasted', 'history', 'recording']),
+  sourceLabel: text(200),
+  register: text(2000),
+  rhythm: text(2000),
+  lexicon: text(2000),
+  avoid: text(2000),
+});
+
 const voice = z.object({
-  cards: z
-    .array(
-      z.object({
-        version: z.number().int().min(0),
-        createdAt: text(40),
-        source: z.enum(['pasted', 'history', 'recording']),
-        sourceLabel: text(200),
-        register: text(2000),
-        rhythm: text(2000),
-        lexicon: text(2000),
-        avoid: text(2000),
-      }),
-    )
-    .max(50),
+  cards: z.array(voiceCard).max(50),
 }) satisfies z.ZodType<Voice>;
 
 const mediaFile = z.object({ path: text(500).nullable(), url: text(4000) }) satisfies z.ZodType<MediaFile>;
@@ -192,3 +192,5 @@ export const brandDraftSchema = z.object({
 }) satisfies z.ZodType<BrandDraft>;
 
 export const activeBrandSchema = z.object({ brandId: z.uuid('Brand non trovato.') });
+
+export const createBrandSchema = brandDraftSchema.extend({ id: z.uuid('Brand non valido.') }) satisfies z.ZodType<CreateBrandRequest>;

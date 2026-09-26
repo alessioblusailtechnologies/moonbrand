@@ -4,6 +4,7 @@ import { buildApp } from './app';
 import { config } from './config';
 import { createPool } from './db/pool';
 import { supabaseAuthGateway } from './modules/auth/gateway';
+import { localBrandFiles } from './modules/brand-files/files';
 import { supabaseStorage } from './modules/media/storage';
 import { supabaseVerifier } from './plugins/auth';
 
@@ -16,6 +17,7 @@ const app = buildApp({
   verifyToken: supabaseVerifier(settings),
   auth: supabaseAuthGateway(settings),
   storage: supabaseStorage(settings),
+  files: localBrandFiles(pool, settings),
   settings,
 });
 

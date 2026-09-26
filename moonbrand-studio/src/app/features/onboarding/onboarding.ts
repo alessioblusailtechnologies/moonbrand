@@ -141,10 +141,11 @@ export class Onboarding {
 
   private async create(): Promise<void> {
     const draft = this.store.draft();
-    if (!draft || this.creating()) return;
+    const brandId = this.store.brandId();
+    if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
     try {
-      await this.brands.create(draft);
+      await this.brands.create(brandId, draft);
       this.store.reset();
       await this.router.navigateByUrl('/');
     } catch (error) {

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { BrandSummary, ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
+import type { BrandSummary, CreateBrandRequest, ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
 import type { BrandDraft } from '@moonbrand/shared/domain/brand';
 
 import { AuthService } from '../auth/auth.service';
@@ -52,14 +52,19 @@ export class BrandsService {
     }
   }
 
-  async create(draft: BrandDraft): Promise<BrandSummary> {
-    const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', draft));
+  async create(id: string, draft: BrandDraft): Promise<BrandSummary> {
+    const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', { ...draft, id } satisfies CreateBrandRequest));
     this.brands.update((list) => [...list, brand]);
     this.auth.activeBrandId.set(brand.id);
     return brand;
   }
 
-  uploadReference(dataUri: string): Promise<ReferenceUploadResponse> {
-    return firstValueFrom(this.http.post<ReferenceUploadResponse>('/v1/media/references', { dataUri }));
+  uploadReference(brandId: string, dataUri: string): Promise<ReferenceUploadResponse> {
+    return firstValueFrom(this.http.post<ReferenceUploadResponse>(`/v1/brands/${brandId}/references`, { dataUri }));
+  }
+
+  async removeReference(brandId: string, path: string): Promise<void> {
+    const name = path.split('/').pop() ?? '';
+    await firstValueFrom(this.http.delete(`/v1/brands/${brandId}/references/${encodeURIComponent(name)}`));
   }
 }

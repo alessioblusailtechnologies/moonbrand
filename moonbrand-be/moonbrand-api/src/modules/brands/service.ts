@@ -1,10 +1,11 @@
 import type pg from 'pg';
 
-import type { BrandSummary } from '@moonbrand/shared/api/contract';
+import type { BrandSummary, CreateBrandRequest } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, MediaFile, Visual } from '@moonbrand/shared/domain/brand';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
+import { REFERENCES_DIR } from '../brand-files/files';
 import { setActiveBrand } from '../auth/accounts';
 import { brandExists, insertBrand, listBrandSummaries } from './repository';
 
@@ -12,10 +13,10 @@ export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSumm
   return withIdentity(pool, identity, (db) => listBrandSummaries(db, identity.accountId));
 }
 
-export function createBrand(pool: pg.Pool, identity: Identity, draft: BrandDraft): Promise<BrandSummary> {
+export function createBrand(pool: pg.Pool, identity: Identity, { id, ...draft }: CreateBrandRequest): Promise<BrandSummary> {
   const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
   return withIdentity(pool, identity, async (db) => {
-    const brand = await insertBrand(db, identity.accountId, stored);
+    const brand = await insertBrand(db, identity.accountId, id, stored);
     await setActiveBrand(db, identity.accountId, brand.id);
     return brand;
   });
@@ -29,7 +30,8 @@ export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: st
 }
 
 function storableVisual(accountId: string, visual: Visual): Visual {
-  const own = (file: MediaFile | null | undefined) => !file?.path || file.path.startsWith(`${accountId}/`);
+  const own = (file: MediaFile | null | undefined) =>
+    !file?.path || file.path.startsWith(`${accountId}/`) || file.path.startsWith(`${REFERENCES_DIR}/`);
   const unsigned = (file: MediaFile): MediaFile => (file.path ? { ...file, url: '' } : file);
   return {
     ...visual,

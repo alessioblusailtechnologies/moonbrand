@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
@@ -6,11 +7,12 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type { VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const BRANDS_DIR = path.resolve(process.env.BRANDS_DIR || path.join(ROOT, '../../moonbrand-brands'));
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY) || 2;
 const POLL_MS = 2000;
 const LEASE = '5 minutes';
@@ -20,6 +22,10 @@ const MAX_ATTEMPTS = 3;
 // Ogni tipo di job è uno script autonomo in src/jobs: qui solo come lanciarlo.
 const JOBS: Record<string, (input: unknown) => { script: string; args: string[] }> = {
   website: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }),
+  visual: (input) => {
+    const { brandId, brand } = input as VisualJobRequest;
+    return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(brand)] };
+  },
 };
 
 interface Job {
@@ -29,6 +35,9 @@ interface Job {
 }
 
 const url = process.env.DATABASE_URL ?? '';
+
+// Il DB è del worker: gli script dei job (e quindi Claude) non ne ricevono l'indirizzo.
+const { DATABASE_URL: _database, ...jobEnv } = process.env;
 const local = url.includes('localhost') || url.includes('127.0.0.1');
 const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { rejectUnauthorized: false } }), max: CONCURRENCY + 2 });
 
@@ -86,7 +95,7 @@ async function run(job: Job): Promise<void> {
     void pool.query(`update presenza.ai_jobs set locked_until = now() + $2::interval where id = $1`, [job.id, LEASE]).catch(() => undefined);
   }, HEARTBEAT_MS);
 
-  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], { cwd: ROOT, env: jobEnv, stdio: ['ignore', 'pipe', 'pipe'] });
   running.set(job.id, child);
 
   let stderr = '';

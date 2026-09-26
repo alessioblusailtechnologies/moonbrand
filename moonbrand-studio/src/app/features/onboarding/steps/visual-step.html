@@ -80,7 +80,9 @@
   <div class="references">
     @for (file of references(); track file.path ?? file.url; let i = $index) {
       <div class="reference">
-        <img [src]="file.url" [alt]="'Riferimento ' + (i + 1)" />
+        <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci il riferimento ' + (i + 1)" (click)="openReference(i)">
+          <img [src]="file.url" [alt]="'Riferimento ' + (i + 1)" />
+        </button>
         <button class="icon-btn solid remove" type="button" [attr.aria-label]="'Togli il riferimento ' + (i + 1)" (click)="removeReference(file)">
           <mb-icon name="x" [size]="12" [stroke]="3" />
         </button>
@@ -99,88 +101,32 @@
 </section>
 
 <section class="panel">
-  <p class="label">Come escono le card</p>
+  <p class="label">Esempi di post</p>
   @if (preparing()) {
     <mb-step-list [steps]="steps()" waiting="Guardo i riferimenti" />
-  } @else if (line()) {
-    @if (value.direction?.summary; as summary) {
-      <p class="body ink">{{ summary }}</p>
-    }
-    <div class="line-rows">
-      @for (row of lineRows(); track row.label) {
-        <div class="line-row">
-          <span class="caption line-label">{{ row.label }}</span>
-          <span class="strong-sm grow">{{ row.text }}</span>
-        </div>
-      }
-    </div>
-    <div class="previews">
-      @for (card of previews(); track $index) {
-        <figure class="preview">
-          <div class="card" [style.aspect-ratio]="card.aspect" [style.background]="card.ground" [style.color]="card.ink">
-            @if (card.photo) {
-              <img class="card-photo" [src]="card.photo" alt="" />
-            }
-            <div class="card-text">
-              @if (card.kicker) {
-                <span class="card-kicker" [style.color]="card.accent" [style.font-family]="card.labelFont">{{ card.kicker }}</span>
-              }
-              <span class="card-headline" [style.font-family]="card.voiceFont" [style.font-weight]="card.voiceWeight"
-                [style.font-style]="card.voiceItalic ? 'italic' : 'normal'">{{ card.headline }}</span>
-            </div>
-            <div class="card-foot" [style.color]="card.muted" [style.font-family]="card.labelFont">
-              <span>{{ card.signature }}</span>
-              @if (card.logo) {
-                <img class="card-logo" [src]="card.logo" alt="" />
-              } @else {
-                <span>{{ card.address }}</span>
-              }
-            </div>
-          </div>
-          <figcaption class="caption">{{ card.name }}</figcaption>
+  } @else if (examples().length > 0) {
+    <div class="masonry">
+      @for (example of examples(); track example.file; let i = $index) {
+        <figure class="example">
+          <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci l’esempio ' + (i + 1) + ' per ' + example.name" (click)="openExample(i)">
+            <img [src]="example.url" [alt]="'Esempio per ' + example.name" loading="lazy" />
+            <span class="channel-chip">{{ example.name }}</span>
+          </button>
+          <figcaption class="body">{{ example.caption }}</figcaption>
         </figure>
       }
     </div>
   } @else {
     <p class="caption">
-      Carica qualche immagine che ti piace o scrivi come vuoi apparire: preparo la linea delle tue card (fondo, caratteri, firma,
-      rubriche) e le prime card per i tuoi canali.
+      Carica qualche immagine che ti piace e, se vuoi, scrivi come vuoi apparire: preparo 3 esempi di post per ogni canale collegato.
     </p>
   }
 
-  <div class="row">
-    <input class="sunken grow" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
-      (keydown.enter)="send()"
-      [placeholder]="line() ? 'Cosa cambio? es. foto a tutta larghezza, titoli più grandi' : 'Indicazioni, es. fondo chiaro, titoli con le grazie'" />
-    <button class="icon-btn solid" type="button" [attr.aria-label]="correctable() ? 'Applica le correzioni' : 'Prepara la linea'"
-      [disabled]="preparing() || (correctable() && !written())" (click)="send()">
-      <mb-icon name="arrow-up" />
-    </button>
-  </div>
-  @if (line() && !preparing()) {
-    <p class="caption">
-      @if (correctable()) {
-        Con la freccia cambio solo quello che scrivi: il resto della linea resta. «Rifai la linea da capo» riparte da zero.
-      } @else {
-        Hai cambiato le immagini di riferimento: la linea si rifà da capo con quelle nuove.
-      }
-    </p>
-  }
+  <input class="sunken" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
+    placeholder="Indicazioni, es. fondo chiaro, titoli con le grazie" />
   @if (!preparing()) {
-    <button class="btn btn-secondary btn-sm align-start" type="button" (click)="generate(line() !== null)">
-      {{ line() ? 'Rifai la linea da capo' : 'Prepara la linea' }}
+    <button class="btn btn-secondary btn-sm align-start" type="button" (click)="createExamples()">
+      {{ examples().length > 0 ? 'Rifai gli esempi' : 'Prepara gli esempi' }}
     </button>
   }
 </section>
-
-@if (value.video; as video) {
-  <section class="panel">
-    <p class="label">Come si racconta in video</p>
-    <div class="line-rows">
-      <div class="line-row"><span class="caption line-label">Vero</span><span class="body ink grow">{{ video.real }}</span></div>
-      <div class="line-row"><span class="caption line-label">Generato</span><span class="body ink grow">{{ video.generated }}</span></div>
-      <div class="line-row"><span class="caption line-label">Look</span><span class="body ink grow">{{ video.look }}</span></div>
-      <div class="line-row"><span class="caption line-label">Suono</span><span class="body ink grow">{{ video.sound }}</span></div>
-    </div>
-  </section>
-}

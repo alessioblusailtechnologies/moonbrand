@@ -1,5 +1,5 @@
 import type { AiStep } from '../ai/steps';
-import type { BrandDraft, BrandKind, MediaFile } from '../domain/brand';
+import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
 
 export interface Account {
   id: string;
@@ -37,7 +37,7 @@ export interface BrandSummary {
   color: string;
 }
 
-export type CreateBrandRequest = BrandDraft;
+export type CreateBrandRequest = BrandDraft & { id: string };
 
 export interface ActiveBrandRequest {
   brandId: string;
@@ -78,6 +78,32 @@ export interface WebsiteReading {
   goals: string[];
   audiences: string[];
   colors: string[];
+}
+
+export interface VisualBrandContext {
+  identity: Identity;
+  positioning: Positioning;
+  channels: ChannelId[];
+  themes: string[];
+  voice: VoiceCard | null;
+  palette: string[];
+  notes: string;
+}
+
+export interface VisualJobRequest {
+  brandId: string;
+  brand: VisualBrandContext;
+}
+
+export interface VisualExampleFile {
+  channel: ChannelId;
+  file: string;
+  url: string;
+  caption: string;
+}
+
+export interface VisualReading {
+  examples: VisualExampleFile[];
 }
 
 export interface ApiErrorBody {

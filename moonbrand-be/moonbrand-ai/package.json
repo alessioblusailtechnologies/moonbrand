@@ -9,11 +9,14 @@
   "scripts": {
     "worker": "tsx src/worker.ts",
     "website": "tsx src/jobs/website.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "visual": "tsx src/jobs/visual.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.283",
-    "pg": "^8.23.0"
+    "@google/genai": "^2.24.0",
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

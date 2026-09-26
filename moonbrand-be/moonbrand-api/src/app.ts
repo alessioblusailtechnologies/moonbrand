@@ -9,6 +9,8 @@ import { registerAiRoutes } from './modules/ai/routes';
 import { accountExists } from './modules/auth/accounts';
 import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
+import type { BrandFiles } from './modules/brand-files/files';
+import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import type { MediaStorage } from './modules/media/storage';
@@ -20,6 +22,7 @@ export interface AppOptions {
   verifyToken: VerifyToken;
   auth: AuthGateway;
   storage: MediaStorage;
+  files: BrandFiles;
   settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE'>;
 }
 
@@ -40,9 +43,10 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.settings);
-  registerBrandRoutes(app, options.pool);
+  registerBrandRoutes(app, options.pool, options.files);
+  registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
-  registerAiRoutes(app, options.pool);
+  registerAiRoutes(app, options.pool, options.files);
 
   return app;
 }

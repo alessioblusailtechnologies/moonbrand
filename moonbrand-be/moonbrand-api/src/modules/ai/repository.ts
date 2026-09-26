@@ -10,7 +10,12 @@ export async function insertJob(db: Queryable, accountId: string, kind: string, 
   return rows[0].id;
 }
 
-export async function findJob(db: Queryable, jobId: string): Promise<AiJob | null> {
-  const { rows } = await db.query<AiJob>('select id, kind, status, steps, result, error from presenza.ai_jobs where id = $1', [jobId]);
-  return rows[0] ?? null;
+export async function findJob(db: Queryable, jobId: string): Promise<{ job: AiJob; brandId: string | null } | null> {
+  const { rows } = await db.query<AiJob & { brand_id: string | null }>(
+    `select id, kind, status, steps, result, error, input->>'brandId' as brand_id from presenza.ai_jobs where id = $1`,
+    [jobId],
+  );
+  if (!rows[0]) return null;
+  const { brand_id, ...job } = rows[0];
+  return { job, brandId: brand_id };
 }

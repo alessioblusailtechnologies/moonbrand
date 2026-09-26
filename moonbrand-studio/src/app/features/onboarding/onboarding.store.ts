@@ -1,6 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 
 import type { PositioningIdeas, WebsiteInsights } from '@moonbrand/shared/ai/steps';
+import type { VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { applyPatch, type BrandDraft, type BrandKind, type Identity, type SectionKey, type SectionPatch } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
@@ -13,15 +14,27 @@ export type OnboardingStep = 'intro' | SectionKey | 'summary';
 export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
 
 interface State {
+  // Id del brand scelto già con la bozza: i file di riferimento vanno nella sua cartella prima che il brand esista.
+  brandId: string | null;
   stepIndex: number;
   direction: 1 | -1;
   draft: BrandDraft | null;
   insights: WebsiteInsights | null;
   themesEdited: boolean;
   positioningIdeas: { key: string; ideas: PositioningIdeas } | null;
+  examples: VisualExampleFile[] | null;
 }
 
-const INITIAL: State = { stepIndex: 0, direction: 1, draft: null, insights: null, themesEdited: false, positioningIdeas: null };
+const INITIAL: State = {
+  brandId: null,
+  stepIndex: 0,
+  direction: 1,
+  draft: null,
+  insights: null,
+  themesEdited: false,
+  positioningIdeas: null,
+  examples: null,
+};
 
 // Un campo si riempie dal sito solo se è vuoto o contiene ancora quanto letto la volta prima.
 function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: WebsiteInsights | null): Identity {
@@ -49,6 +62,8 @@ export class OnboardingStore {
   readonly draft = computed(() => this.state().draft);
   readonly insights = computed(() => this.state().insights);
   readonly positioningIdeas = computed(() => this.state().positioningIdeas);
+  readonly brandId = computed(() => this.state().brandId);
+  readonly examples = computed(() => this.state().examples);
 
   constructor() {
     effect(() => {
@@ -76,7 +91,11 @@ export class OnboardingStore {
   }
 
   chooseKind(kind: BrandKind): void {
-    this.state.update((state) => ({ ...state, draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind) }));
+    this.state.update((state) => ({
+      ...state,
+      brandId: state.brandId ?? crypto.randomUUID(),
+      draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind),
+    }));
   }
 
   patch(patch: SectionPatch): void {
@@ -129,6 +148,10 @@ export class OnboardingStore {
     });
   }
 
+  setExamples(examples: VisualExampleFile[] | null): void {
+    this.state.update((state) => ({ ...state, examples }));
+  }
+
   reset(): void {
     this.state.set(INITIAL);
   }
@@ -136,7 +159,8 @@ export class OnboardingStore {
   private read(key: string): State {
     try {
       const raw = localStorage.getItem(key);
-      return raw ? { ...INITIAL, ...(JSON.parse(raw) as Partial<State>) } : INITIAL;
+      const state: State = raw ? { ...INITIAL, ...(JSON.parse(raw) as Partial<State>) } : INITIAL;
+      return state.draft && !state.brandId ? { ...state, brandId: crypto.randomUUID() } : state;
     } catch {
       return INITIAL;
     }

@@ -34,10 +34,10 @@ export async function brandExists(db: Queryable, brandId: string): Promise<boole
   return (rowCount ?? 0) > 0;
 }
 
-export async function insertBrand(db: Queryable, accountId: string, draft: BrandDraft): Promise<BrandSummary> {
+export async function insertBrand(db: Queryable, accountId: string, brandId: string, draft: BrandDraft): Promise<BrandSummary> {
   const { rows } = await db.query<SummaryRow>(
-    `insert into presenza.brands (account_id, identity, positioning, channels, themes, voice, visual, refs)
-     values ($1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb)
+    `insert into presenza.brands (id, account_id, identity, positioning, channels, themes, voice, visual, refs)
+     values ($9, $1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb)
      returning ${SUMMARY}`,
     [
       accountId,
@@ -48,6 +48,7 @@ export async function insertBrand(db: Queryable, accountId: string, draft: Brand
       JSON.stringify(draft.voice),
       JSON.stringify(draft.visual),
       JSON.stringify(draft.references),
+      brandId,
     ],
   );
   return toSummary(rows[0]);
