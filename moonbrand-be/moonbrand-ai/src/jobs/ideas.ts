@@ -96,14 +96,17 @@ const schema = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['title', 'angleLabel', 'angle', 'rationale', 'themeId', 'signal', 'formats', 'channels'],
+        required: ['title', 'angleLabel', 'angle', 'rationale', 'themeId', 'signal'],
         properties: {
           title: { type: 'string', description: 'L’idea in una frase specifica, massimo 110 caratteri, con la voce del brand' },
           angleLabel: {
             type: 'string',
             description: 'Il taglio in 2-4 parole, es. «Il caso con i numeri», «Il dietro le quinte», «Prima e dopo», «La domanda frequente»',
           },
-          angle: { type: 'string', description: 'Come svilupparla, in due o tre frasi pratiche: cosa mostrare, come aprire, come chiudere' },
+          angle: {
+            type: 'string',
+            description: 'Cosa raccontare e con quali elementi (esempi, dati, momenti), in due o tre frasi, senza legarla a un formato o a un canale',
+          },
           rationale: { type: 'string', description: 'Perché ha senso adesso, in una frase che cita il segnale da cui nasce' },
           themeId: {
             type: ['string', 'null'],
@@ -128,19 +131,6 @@ const schema = {
               },
             },
           },
-          formats: {
-            type: 'array',
-            minItems: 1,
-            maxItems: 2,
-            items: { type: 'string', enum: ['post', 'carousel', 'video', 'article'] },
-            description: 'I formati adatti',
-          },
-          channels: {
-            type: 'array',
-            minItems: 1,
-            items: { type: 'string', enum: brand.channels },
-            description: 'I canali del brand adatti ai formati',
-          },
         },
       },
     },
@@ -149,6 +139,7 @@ const schema = {
 
 const prompt = `Proponi fino a ${count} idee di contenuto nuove per il brand descritto sotto: saranno il punto di partenza dei prossimi post.
 Meglio meno idee, ma forti: non riempire il numero con idee deboli.
+Un’idea dice cosa raccontare e con quale taglio, non come confezionarlo: niente formati (post, carosello, video, reel, slide) né canali, che si scelgono dopo.
 
 Un’idea buona:
 - è specifica di questo brand: un concorrente non potrebbe pubblicarla uguale;

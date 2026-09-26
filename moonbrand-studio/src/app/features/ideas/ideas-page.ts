@@ -14,7 +14,6 @@ import { RouterOutlet } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { IdeasResponse } from '@moonbrand/shared/api/contract';
-import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
@@ -24,9 +23,13 @@ import { IdeasService } from '../../core/ideas/ideas.service';
 import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
-import { FORMAT_LABELS, SIGNAL_LABELS } from './labels';
+import { SIGNAL_LABELS } from './labels';
 
 type View = 'new' | 'saved';
+
+// Masonry: colonne larghe almeno così, separate da questo spazio.
+const MIN_COLUMN = 320;
+const COLUMN_GAP = 16;
 
 @Component({
   selector: 'mb-ideas-page',
@@ -53,6 +56,8 @@ export class IdeasPage {
   protected readonly canScrollLeft = signal(false);
   protected readonly canScrollRight = signal(false);
   private readonly filters = viewChild<ElementRef<HTMLElement>>('filters');
+  private readonly list = viewChild<ElementRef<HTMLElement>>('list');
+  protected readonly columnCount = signal(3);
 
   protected readonly brand = computed(() => this.brands.activeBrand());
   protected readonly counts = computed(() => ({
@@ -63,11 +68,25 @@ export class IdeasPage {
     const themeId = this.themeId();
     return this.ideas().filter((idea) => idea.status === this.view() && (!themeId || idea.themeId === themeId));
   });
+  // A rotazione tra le colonne: l'ordine si legge per righe, da sinistra a destra, e ogni colonna cresce da sé.
+  protected readonly columns = computed(() => {
+    const count = this.columnCount();
+    return Array.from({ length: count }, (_, column) => this.visible().filter((_, index) => index % count === column));
+  });
 
   constructor() {
     effect(() => {
       const brand = this.brand();
       if (brand) untracked(() => void this.load(brand.id));
+    });
+    effect((onCleanup) => {
+      const element = this.list()?.nativeElement;
+      if (!element) return;
+      const observer = new ResizeObserver(([entry]) => {
+        this.columnCount.set(Math.max(1, Math.floor((entry.contentRect.width + COLUMN_GAP) / (MIN_COLUMN + COLUMN_GAP))));
+      });
+      observer.observe(element);
+      onCleanup(() => observer.disconnect());
     });
     // I temi cambiano con il brand: dopo il disegno si ricontrolla se la riga scorre.
     afterRenderEffect(() => {
@@ -155,9 +174,5 @@ export class IdeasPage {
 
   protected theme(idea: Idea) {
     return this.themes().find((theme) => theme.id === idea.themeId) ?? null;
-  }
-
-  protected where(idea: Idea): string {
-    return [idea.formats.map((format) => FORMAT_LABELS[format]).join(', '), idea.channels.map(channelName).join(', ')].join(' · ');
   }
 }

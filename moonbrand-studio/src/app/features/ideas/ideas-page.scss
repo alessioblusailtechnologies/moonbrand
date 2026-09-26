@@ -135,11 +135,19 @@
   text-align: center;
 }
 
+// Masonry: le colonne crescono ognuna per conto suo, senza buchi tra card di altezza diversa.
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  display: flex;
   gap: 16px;
-  align-items: start;
+  align-items: flex-start;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 .idea {
@@ -199,7 +207,4 @@
     width: 100%;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-  }
 }

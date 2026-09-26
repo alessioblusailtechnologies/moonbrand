@@ -1,5 +1,5 @@
 @if (brand()) {
-  <section class="ideas">
+  <section #list class="ideas">
     <header class="head">
       <h1 class="title">Idee</h1>
       <button class="btn btn-primary btn-sm" type="button" [disabled]="preparing()" (click)="more()">
@@ -74,36 +74,39 @@
       }
     } @else {
       <div class="grid">
-        @for (idea of visible(); track idea.id) {
-          <article class="panel idea">
-            <div class="meta">
-              <span class="badge">{{ signalLabel(idea) }}</span>
-              @if (idea.signal.sourceUrl; as sourceUrl) {
-                <a class="source caption" [href]="sourceUrl" target="_blank" rel="noopener noreferrer">Fonte</a>
-              }
-              @if (theme(idea); as ideaTheme) {
-                <span class="theme caption"><span class="dot" [style.background]="ideaTheme.color"></span>{{ ideaTheme.name }}</span>
-              }
-            </div>
-            <div class="stack">
-              <p class="label">{{ idea.angleLabel }}</p>
-              <h2 class="heading">{{ idea.title }}</h2>
-            </div>
-            <p class="body">{{ idea.angle }}</p>
-            <div class="why">
-              <p class="label">Perché adesso</p>
-              <p class="body ink">{{ idea.rationale }}</p>
-            </div>
-            <p class="caption">{{ where(idea) }}</p>
-            <div class="actions">
-              @if (idea.status === 'new') {
-                <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'discarded')">Scarta</button>
-                <button class="btn btn-primary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
-              } @else {
-                <button class="link-btn muted" type="button" (click)="decide(idea, 'new')">Rimetti tra le proposte</button>
-              }
-            </div>
-          </article>
+        @for (column of columns(); track $index) {
+          <div class="column">
+            @for (idea of column; track idea.id) {
+              <article class="panel idea">
+                <div class="meta">
+                  <span class="badge">{{ signalLabel(idea) }}</span>
+                  @if (idea.signal.sourceUrl; as sourceUrl) {
+                    <a class="source caption" [href]="sourceUrl" target="_blank" rel="noopener noreferrer">Fonte</a>
+                  }
+                  @if (theme(idea); as ideaTheme) {
+                    <span class="theme caption"><span class="dot" [style.background]="ideaTheme.color"></span>{{ ideaTheme.name }}</span>
+                  }
+                </div>
+                <div class="stack">
+                  <p class="label">{{ idea.angleLabel }}</p>
+                  <h2 class="heading">{{ idea.title }}</h2>
+                </div>
+                <p class="body">{{ idea.angle }}</p>
+                <div class="why">
+                  <p class="label">Perché adesso</p>
+                  <p class="body ink">{{ idea.rationale }}</p>
+                </div>
+                <div class="actions">
+                  @if (idea.status === 'new') {
+                    <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'discarded')">Scarta</button>
+                    <button class="btn btn-primary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
+                  } @else {
+                    <button class="link-btn muted" type="button" (click)="decide(idea, 'new')">Rimetti tra le proposte</button>
+                  }
+                </div>
+              </article>
+            }
+          </div>
         }
       </div>
     }

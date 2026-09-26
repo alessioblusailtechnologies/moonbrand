@@ -1,12 +1,11 @@
 import type pg from 'pg';
 
 import type { IdeasJobInput } from '@moonbrand/shared/api/contract';
-import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import type { IdeaDraft, IdeaFormat } from '@moonbrand/shared/domain/idea';
+import type { IdeaDraft } from '@moonbrand/shared/domain/idea';
 
 import { MAX_PER_THEME, MAX_TRENDS } from '../lib/ideas-rules';
 
-type RawIdea = Omit<IdeaDraft, 'signal'> & { signal: { kind: IdeaDraft['signal']['kind']; label?: string; sourceUrl: string | null } };
+type RawIdea = Omit<IdeaDraft, 'signal' | 'formats' | 'channels'> & { signal: { kind: IdeaDraft['signal']['kind']; label?: string; sourceUrl: string | null } };
 
 const SOURCE_TIMEOUT_MS = 8000;
 
@@ -51,8 +50,6 @@ export async function saveIdeas(pool: pg.Pool, accountId: string, input: IdeasJo
     taken.add(key);
     if (themeId) perTheme.set(themeId, (perTheme.get(themeId) ?? 0) + 1);
     if (isTrend) trends += 1;
-    const formats: IdeaFormat[] = raw.formats.length > 0 ? [...new Set(raw.formats)].slice(0, 2) : ['post'];
-    const channels: ChannelId[] = [...new Set(raw.channels)].filter((channel) => brand.channels.includes(channel));
     drafts.push({
       title,
       angleLabel: raw.angleLabel.trim().slice(0, 120),
@@ -64,8 +61,9 @@ export async function saveIdeas(pool: pg.Pool, accountId: string, input: IdeasJo
         label: (raw.signal.label ?? '').trim().slice(0, 200),
         ...(isTrend && { sourceUrl: sourceUrl.slice(0, 2000) }),
       },
-      formats,
-      channels: channels.length > 0 ? channels : brand.channels,
+      // L'idea non dice come confezionarla: formato e canali si scelgono quando diventa un contenuto.
+      formats: [],
+      channels: [],
     });
   }
 
