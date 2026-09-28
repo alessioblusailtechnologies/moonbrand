@@ -16,6 +16,8 @@ import type {
 import type { Palette } from '@moonbrand/shared/domain/brand';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
+import { LOGO_SIDE, resizedDataUri } from '../images';
+
 const POLL_MS = 1000;
 
 // Un lavoro fermato da chi l'aveva chiesto.
@@ -38,6 +40,7 @@ export class AiJobsService {
       goals: reading.goals,
       audiences: reading.audiences,
       palette: { id: `site-${host}`, name: 'Dal sito', colors: reading.colors as Palette['colors'], origin: 'site' },
+      logoUri: reading.logo ? await siteLogo(reading.logo) : null,
     };
   }
 
@@ -71,5 +74,15 @@ export class AiJobsService {
       if (job.status === 'failed' || job.status === 'done') throw new Error(job.error ?? 'Lavoro AI senza risultato.');
       await new Promise((resolve) => setTimeout(resolve, pollMs));
     }
+  }
+}
+
+// Il logo del sito come quello caricato a mano: un PNG di al massimo LOGO_SIDE pixel. Se non si riesce a leggerlo, niente logo.
+async function siteLogo(dataUri: string): Promise<string | null> {
+  try {
+    const blob = await (await fetch(dataUri)).blob();
+    return await resizedDataUri(new File([blob], 'logo', { type: blob.type }), LOGO_SIDE, 'image/png');
+  } catch {
+    return null;
   }
 }

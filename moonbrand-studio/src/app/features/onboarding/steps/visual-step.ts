@@ -9,11 +9,12 @@ import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
 import { Icon } from '../../../ui/icon';
+import { LogoBackdrop } from '../../../ui/logo-backdrop';
 import { LightboxService } from '../../../ui/lightbox';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
-import { resizedDataUri } from '../../../core/images';
+import { LOGO_SIDE, resizedDataUri } from '../../../core/images';
 
 const MAX_REFERENCES = 6;
 
@@ -25,7 +26,7 @@ function normalizeHex(input: string): string | null {
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, StepList],
+  imports: [Icon, LogoBackdrop, StepList],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
@@ -91,7 +92,7 @@ export class VisualStep implements OnInit {
     inputEl.value = '';
     if (!file) return;
     try {
-      this.set({ logoUri: await resizedDataUri(file, 512, 'image/png') });
+      this.set({ logoUri: await resizedDataUri(file, LOGO_SIDE, 'image/png') });
       this.toast.show('Logo caricato.');
     } catch {
       this.toast.show('Questo file non è un’immagine che riesco a leggere: usa un PNG, un JPEG o un SVG.');

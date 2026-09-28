@@ -78,6 +78,9 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
         ? { ...createEmptyDraft(current.identity.kind), identity: current.identity, channels: current.channels }
         : current;
       const themesEdited = otherBrand ? false : state.themesEdited;
+      // Il logo del sito entra se non ce n'è uno o se era quello del sito letto prima; uno caricato a mano resta.
+      const siteLogo = !draft.visual.logoUri || draft.visual.logoUri === state.insights?.logoUri;
+      const visual = draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette };
       return {
         ...state,
         insights,
@@ -87,7 +90,7 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
           ...draft,
           identity: fillFromSite(draft.identity, insights, state.insights, otherBrand),
           themes: themesEdited ? draft.themes : createThemes(insights.themes),
-          visual: draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette },
+          visual: siteLogo && insights.logoUri ? { ...visual, logoUri: insights.logoUri } : visual,
         },
       };
     });

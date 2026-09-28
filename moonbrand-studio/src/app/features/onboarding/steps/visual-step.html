@@ -3,7 +3,7 @@
 <section class="panel">
   <p class="label">Logo</p>
   <div class="row">
-    <span class="logo-box" [class.empty]="!value.logoUri">
+    <span class="logo-box" [class.empty]="!value.logoUri" [mbLogoBackdrop]="value.logoUri">
       @if (value.logoUri) {
         <img [src]="value.logoUri" alt="Logo" />
       } @else {

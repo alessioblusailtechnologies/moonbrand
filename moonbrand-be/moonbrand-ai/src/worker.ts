@@ -20,6 +20,7 @@ import type {
 import { examplesDir } from './lib/examples';
 import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
+import { withLogo } from './results/website';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 
@@ -45,14 +46,16 @@ interface Job {
 // Ogni tipo di job è uno script autonomo in src/jobs: qui come lanciarlo (env: variabili in più per lo script) e,
 // quando il risultato va salvato altrove oltre al job, come salvarlo.
 // reply: il job non ha uno schema, il risultato è la risposta finale di Claude.
+// finish: completa il risultato prima di salvarlo (per esempio scarica un file che Claude ha indicato).
 interface JobKind {
   launch: (input: unknown, job: Job) => { script: string; args: string[]; env?: Record<string, string> };
+  finish?: (result: unknown) => Promise<unknown>;
   save?: (job: Job, result: unknown) => Promise<void>;
   reply?: boolean;
 }
 
 const JOBS: Record<string, JobKind> = {
-  website: { launch: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }) },
+  website: { launch: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }), finish: withLogo },
   visual: {
     launch: (input, job) => {
       const { brandId, brand } = input as VisualJobRequest;
@@ -271,6 +274,7 @@ async function run(job: Job): Promise<void> {
     return;
   }
   let error = outcome.error ?? (outcome.result === undefined ? `Processo terminato (codice ${code}) senza risultato. ${stderr.trim()}` : undefined);
+  if (!error && kind.finish) outcome.result = await kind.finish(outcome.result);
   if (!error && kind.save) {
     error = await kind
       .save(job, outcome.result)

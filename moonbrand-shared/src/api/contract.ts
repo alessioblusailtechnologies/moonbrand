@@ -91,6 +91,8 @@ export interface WebsiteReading {
   goals: string[];
   audiences: string[];
   colors: string[];
+  // Il logo del sito come data URI, pronto per il brand; null se non c'è o non si è riusciti a scaricarlo.
+  logo: string | null;
 }
 
 export interface VisualBrandContext {

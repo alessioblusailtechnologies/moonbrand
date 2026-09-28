@@ -46,6 +46,7 @@ export interface WebsiteInsights {
   goals: string[];
   audiences: string[];
   palette: Palette;
+  logoUri: string | null;
 }
 
 export interface PositioningIdeas {
