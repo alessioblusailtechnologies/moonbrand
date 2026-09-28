@@ -7,6 +7,7 @@ import { query, type McpServerConfig } from '@anthropic-ai/claude-agent-sdk';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
 import { audioTools } from '../tools/audio';
+import { clipTools } from '../tools/clip';
 import { imageTools } from '../tools/immagini';
 
 // Prova del video: Claude fa un video per il brand a partire da una richiesta libera.
@@ -30,7 +31,10 @@ await mkdir(temp, { recursive: true });
 const videoEnv = await prepareVideoProject(brandDir);
 
 const mcpServers: Record<string, McpServerConfig> = { audio: audioTools(brandDir, ELEVENLABS_API_KEY) };
-if (GEMINI_API_KEY) mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+if (GEMINI_API_KEY) {
+  mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+  mcpServers.clip = clipTools(brandDir, GEMINI_API_KEY);
+}
 
 const prompt = `Fai un video per il brand, pronto da pubblicare, seguendo la skill moonbrand:video; il brand è descritto in CLAUDE.md.
 

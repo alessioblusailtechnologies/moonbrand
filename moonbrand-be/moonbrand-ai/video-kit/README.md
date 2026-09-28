@@ -5,7 +5,7 @@ Il progetto Remotion di questo brand: i video sono pagine React che cambiano fot
 ## La cartella
 
 - `src/Root.tsx`: registra le composizioni, una per video e per proporzione.
-- `src/brand.ts`: colori, font e misure del brand per i video. Se non c'è ancora, crealo al primo video partendo dai riferimenti del brand.
+- `src/brand.ts`: colori, font, misure e voce fuori campo del brand per i video. Se non c'è ancora, crealo al primo video partendo dai riferimenti del brand.
 - `src/kit/`: i pezzi riusabili del brand (entrate, titoli, logo animato, sottotitoli, transizioni…). Si parte da pochi pezzi generici: migliorali e aggiungine quando un video ne crea uno che servirà ancora.
 - `src/contenuti/<id>/`: la composizione di ogni video.
 - `public/brand/`: logo e file del brand usati nei video.
@@ -19,3 +19,5 @@ Da questa cartella:
 - `npx remotion render <composizione> <cartella> --frames=0,30,90 --image-format=png`: più fotogrammi in una volta sola, salvati nella cartella.
 - `npx remotion render <composizione> <file.mp4>`: il video finale in MP4.
 - `pnpm check`: controlla i tipi.
+
+Per salvare fuori da questa cartella (fotogrammi, video finale) usa percorsi assoluti: con quelli relativi che contengono `..` Remotion può sbagliare cartella.

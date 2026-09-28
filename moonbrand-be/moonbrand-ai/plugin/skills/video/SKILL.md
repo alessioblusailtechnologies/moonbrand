@@ -1,6 +1,6 @@
 ---
 name: video
-description: Come si fa un video per il brand della cartella (Reels, TikTok, Shorts, video per il feed) con Remotion - copione, stile, animazione, musica, controllo dei fotogrammi ed esportazione. Da usare ogni volta che si crea o si ritocca un video.
+description: Come si fa un video per il brand della cartella (Reels, TikTok, Shorts, video per il feed) con Remotion - copione, stile, animazione, clip, musica, voce e sottotitoli, controllo dei fotogrammi ed esportazione. Da usare ogni volta che si crea o si ritocca un video.
 ---
 
 # Fare un video
@@ -40,11 +40,22 @@ Il testo a schermo segue le stesse regole dei testi del brand (skill moonbrand:c
 - Guarda le composizioni degli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri.
 - Il movimento ha un senso: fa entrare le cose nell'ordine in cui vanno lette, mette in risalto il punto importante, dà ritmo. Niente animazioni messe tanto per muovere.
 
-## Immagini, clip e audio
+## Immagini e clip
 
-- Foto e clip dell'utente sono in allegati/ o in file-riferimento/: copiale in video/public/contenuti/<id>/ e usale da lì.
+- Foto e clip dell'utente sono in allegati/ o in file-riferimento/: copiale in video/public/contenuti/<id>/ e usale da lì. Quando ci sono, vengono prima di quelle generate.
 - Le immagini nuove le generi con genera_immagine, salvandole direttamente in video/public/contenuti/<id>/.
-- La musica la componi con genera_musica, lunga quanto il video: descrivi genere, atmosfera, strumenti, tempo e come cresce e si chiude, in accordo con la voce del brand. Non puoi ascoltarla, quindi descrivila con precisione. Nel video chiudila con una dissolvenza negli ultimi secondi.
+- Le clip in movimento le generi con genera_clip (Veo): da 4 a 8 secondi, 9:16 o 16:9. Può partire da un'immagine della cartella e animarla, oppure seguire immagini di riferimento per tenere lo stesso soggetto. Per le altre proporzioni ritagliala nella composizione. Ci vogliono alcuni minuti per clip: generale insieme quando puoi e usale dove il movimento vero serve davvero.
+- Le clip hanno un audio loro: toglilo o abbassalo se c'è già musica o voce.
+- Per controllare una clip, guardane qualche fotogramma: ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi estrai un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
+
+## Audio
+
+Non puoi ascoltare niente di quello che generi: descrivi tutto con precisione e controlla i tempi sui file.
+
+- **Musica**: genera_musica, lunga quanto il video. Descrivi genere, atmosfera, strumenti, tempo e come cresce e si chiude, in accordo con la voce del brand. Nel video chiudila con una dissolvenza negli ultimi secondi e abbassala sotto la voce.
+- **Voce fuori campo**: scegli la voce con cerca_voci partendo dalla voce del brand, poi salvane l'id in video/src/brand.ts. Se c'è già, usa quella: il brand parla sempre con la stessa voce. Il testo lo leggi con genera_voce. Scrivilo come si pronuncia e segui la voce del brand come per i testi.
+- **Sottotitoli**: genera_voce salva accanto all'audio un .json con i tempi di ogni parola nel formato di @remotion/captions. Usalo per i sottotitoli (vedi le captions in moonbrand:remotion-best-practices) e per mettere a tempo scene e testi sulla voce. Con la voce, i sottotitoli ci vogliono sempre.
+- **Effetti**: genera_effetto per transizioni, colpi e ambienti, descritti in inglese. Pochi e al servizio del ritmo.
 
 ## Controllo
 
