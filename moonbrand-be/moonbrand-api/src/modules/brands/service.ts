@@ -1,13 +1,14 @@
 import type pg from 'pg';
 
-import type { BrandSummary, CreateBrandRequest } from '@moonbrand/shared/api/contract';
+import type { BrandProfile, BrandSummary, CreateBrandRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, MediaFile, Visual } from '@moonbrand/shared/domain/brand';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
-import { REFERENCES_DIR } from '../brand-files/files';
+import { REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
 import { setActiveBrand } from '../auth/accounts';
-import { brandExists, insertBrand, listBrandSummaries } from './repository';
+import type { MediaStorage } from '../media/storage';
+import { brandExists, findBrandDraft, insertBrand, listBrandSummaries, updateBrand } from './repository';
 
 export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSummary[]> {
   return withIdentity(pool, identity, (db) => listBrandSummaries(db, identity.accountId));
@@ -20,6 +21,32 @@ export function createBrand(pool: pg.Pool, identity: Identity, { id, referenceEx
     await setActiveBrand(db, identity.accountId, brand.id);
     return brand;
   });
+}
+
+export async function getBrandProfile(
+  pool: pg.Pool,
+  files: BrandFiles,
+  storage: MediaStorage,
+  identity: Identity,
+  brandId: string,
+): Promise<BrandProfile> {
+  const draft = await withIdentity(pool, identity, (db) => findBrandDraft(db, brandId));
+  if (!draft) throw ApiError.notFound('Brand non trovato.');
+  // I file di riferimento stanno nella cartella del brand, le altre immagini nello storage dell'account.
+  const sign = (path: string) => (path.startsWith(`${REFERENCES_DIR}/`) ? Promise.resolve(files.url(brandId, path)) : storage.sign(path));
+  return { id: brandId, draft: { ...draft, visual: await signedVisual(draft.visual, sign) } };
+}
+
+export async function saveBrand(
+  pool: pg.Pool,
+  identity: Identity,
+  brandId: string,
+  { referenceExamples: _examples, ...draft }: UpdateBrandRequest,
+): Promise<BrandSummary> {
+  const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
+  const brand = await withIdentity(pool, identity, (db) => updateBrand(db, brandId, stored));
+  if (!brand) throw ApiError.notFound('Brand non trovato.');
+  return brand;
 }
 
 export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: string): Promise<void> {
@@ -44,6 +71,28 @@ function storableVisual(accountId: string, visual: Visual): Visual {
     ...(visual.music && { music: visual.music.filter((track) => own(track.file)).map((track) => ({ ...track, file: unsigned(track.file) })) }),
     ...(visual.line?.band?.photo && {
       line: { ...visual.line, band: { ...visual.line.band, photo: own(visual.line.band.photo) ? unsigned(visual.line.band.photo) : null } },
+    }),
+  };
+}
+
+// Salvati, i link sono vuoti: si firmano a ogni lettura. Un file che non si firma resta senza link.
+async function signedVisual(visual: Visual, sign: (path: string) => Promise<string>): Promise<Visual> {
+  const signed = async (file: MediaFile): Promise<MediaFile> => (file.path ? { ...file, url: await sign(file.path).catch(() => '') } : file);
+  return {
+    ...visual,
+    ...(visual.references && { references: await Promise.all(visual.references.map(signed)) }),
+    ...(visual.examples && {
+      examples: await Promise.all(
+        visual.examples.map(async (example) => ({
+          ...example,
+          file: example.file && (await signed(example.file)),
+          ...(example.photo && { photo: await signed(example.photo) }),
+        })),
+      ),
+    }),
+    ...(visual.music && { music: await Promise.all(visual.music.map(async (track) => ({ ...track, file: await signed(track.file) }))) }),
+    ...(visual.line?.band?.photo && {
+      line: { ...visual.line, band: { ...visual.line.band, photo: await signed(visual.line.band.photo) } },
     }),
   };
 }

@@ -96,8 +96,36 @@
   white-space: nowrap;
 }
 
-.check {
-  color: var(--orange-500);
+.current {
+  gap: 12px;
+  padding: 10px 12px 10px 10px;
+  background: var(--navy-700);
+
+  &:hover {
+    background: var(--navy-500);
+  }
+
+  .strong-sm {
+    color: var(--white);
+  }
+
+  .caption {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.current-tag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 22px;
+  padding: 0 9px 0 7px;
+  border-radius: 999px;
+  background: var(--lime-400);
+  color: var(--navy-700);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .plus {

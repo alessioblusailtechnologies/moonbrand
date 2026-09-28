@@ -8,8 +8,8 @@ import { errorMessage } from '../../../core/errors';
 import { Icon, type IconName } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
+import { DraftStore } from '../draft-store';
 import { MockAi, type VoiceAnalysis, type VoiceSample } from '../mock-ai';
-import { OnboardingStore } from '../onboarding.store';
 
 const ROWS = [
   { key: 'register', label: 'Registro' },
@@ -33,7 +33,7 @@ const dateFormat = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'sh
 export class VoiceStep {
   private readonly ai = inject(MockAi);
   private readonly toast = inject(ToastService);
-  private readonly store = inject(OnboardingStore);
+  private readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly rows = ROWS;

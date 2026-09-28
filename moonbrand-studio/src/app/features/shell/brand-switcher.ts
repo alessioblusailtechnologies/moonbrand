@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { kindLabel } from '@moonbrand/shared/domain/catalog';
@@ -29,6 +29,8 @@ export class BrandSwitcher {
   protected readonly brands = inject(BrandsService);
   protected readonly open = signal(false);
   protected readonly kindLabel = kindLabel;
+  // Il brand attivo sta in cima, a parte: sotto gli altri, nell'ordine in cui sono nati.
+  protected readonly others = computed(() => this.brands.brands().filter((brand) => brand.id !== this.brands.activeBrand()?.id));
 
   protected onDocumentClick(event: MouseEvent): void {
     if (this.open() && !this.host.nativeElement.contains(event.target as Node)) this.open.set(false);
@@ -42,6 +44,11 @@ export class BrandSwitcher {
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non riesco a cambiare brand. Riprova.'));
     }
+  }
+
+  protected openSettings(): void {
+    this.open.set(false);
+    void this.router.navigateByUrl('/impostazioni');
   }
 
   protected createBrand(): void {

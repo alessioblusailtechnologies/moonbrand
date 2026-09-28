@@ -5,10 +5,11 @@ import { Icon, type IconName } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
 import { BrandSwitcher } from './brand-switcher';
 
-// Le sezioni dell'app, nell'ordine della sidebar.
-const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[] = [
+// Le sezioni dell'app, nell'ordine della sidebar; quelle con bottom stanno in fondo.
+const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; bottom?: boolean }[] = [
   { path: '/', label: 'Idee', icon: 'lightbulb', exact: true },
   { path: '/contenuti', label: 'Contenuti', icon: 'file-text', exact: false },
+  { path: '/impostazioni', label: 'Impostazioni brand', icon: 'settings', exact: true, bottom: true },
 ];
 
 @Component({
@@ -20,7 +21,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
       <div class="brand-mark"><mb-logo /></div>
       <nav class="nav" aria-label="Sezioni">
         @for (section of sections; track section.path) {
-          <a class="nav-item" [routerLink]="section.path" routerLinkActive="active"
+          <a class="nav-item" [class.bottom]="section.bottom" [routerLink]="section.path" routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label">
             <mb-icon [name]="section.icon" [size]="20" />
             <span class="nav-label">{{ section.label }}</span>
@@ -65,8 +66,12 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
     }
     .nav {
       display: flex;
+      flex: 1;
       flex-direction: column;
       gap: 4px;
+    }
+    .nav-item.bottom {
+      margin-top: auto;
     }
     .nav-item {
       display: flex;

@@ -10,6 +10,7 @@ import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
 import { ToastService } from '../../ui/toast';
+import { DraftStore } from './draft-store';
 import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
 import { ChannelsStep } from './steps/channels-step';
 import { IdentityStep } from './steps/identity-step';
@@ -41,6 +42,8 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string) {
   selector: 'mb-onboarding',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, Logo, IntroStep, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, SummaryStep],
+  // I passi scrivono nella bozza del brand nuovo.
+  providers: [{ provide: DraftStore, useExisting: OnboardingStore }],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.scss',
 })
@@ -114,7 +117,7 @@ export class Onboarding {
   }
 
   protected skip(): void {
-    this.toast.show('Saltato: lo ritrovi nel Profilo.');
+    this.toast.show('Saltato: lo ritrovi nelle Impostazioni brand.');
     this.store.next();
   }
 

@@ -6,8 +6,8 @@ import { AUDIENCES, GOALS } from '@moonbrand/shared/domain/catalog';
 
 import { Icon } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
+import { DraftStore } from '../draft-store';
 import { MockAi } from '../mock-ai';
-import { OnboardingStore } from '../onboarding.store';
 import { positioningSource } from '../positioning-source';
 
 const GOAL_LABEL: Record<BrandKind, string> = { person: 'Perché pubblichi', company: 'Perché pubblicate', client: 'Perché pubblica' };
@@ -117,7 +117,7 @@ function frequencyNote(perWeek: number): string {
 })
 export class PositioningStep implements OnInit {
   private readonly ai = inject(MockAi);
-  private readonly store = inject(OnboardingStore);
+  private readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly toggle = toggle;

@@ -42,6 +42,15 @@ export interface BrandSummary {
 // referenceExamples: gli esempi scelti nell'onboarding, che diventano i riferimenti da seguire del brand.
 export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[] };
 
+// Il profilo di un brand com'è salvato, con i link ai file già firmati.
+export interface BrandProfile {
+  id: string;
+  draft: BrandDraft;
+}
+
+// referenceExamples: gli esempi rifatti dal Profilo, che prendono il posto dei riferimenti da seguire.
+export type UpdateBrandRequest = BrandDraft & { referenceExamples?: string[] };
+
 export interface ActiveBrandRequest {
   brandId: string;
 }

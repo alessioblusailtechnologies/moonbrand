@@ -26,7 +26,7 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--yellow-400)'
       }
     </div>
     <p class="caption">
-      Tutto resta modificabile dal Profilo. Riferimenti e fonti li aggiungi da lì quando vuoi: danno un appiglio reale alle idee.
+      Tutto resta modificabile dalle Impostazioni brand. Riferimenti e fonti li aggiungi da lì quando vuoi: danno un appiglio reale alle idee.
     </p>
   `,
   styles: `

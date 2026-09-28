@@ -25,7 +25,7 @@ const SHAPES = [
       <h2 class="heading">Cinque minuti, una volta sola</h2>
       <p class="body">
         Ti chiedo chi sei, cosa vuoi ottenere, i canali, i temi, come scrivi e come vuoi apparire. Da lì genero proposte che
-        sembrano scritte da te. Ogni cosa si cambia anche dopo, dal Profilo.
+        sembrano scritte da te. Ogni cosa si cambia anche dopo, dalle Impostazioni brand.
       </p>
       <ul class="list">
         @for (item of list; track item.label) {

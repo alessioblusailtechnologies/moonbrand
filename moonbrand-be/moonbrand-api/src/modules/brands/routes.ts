@@ -1,37 +1,59 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
-import { activeBrandSchema, createBrandSchema } from './schemas';
-import { chooseActiveBrand, createBrand, listBrands } from './service';
+import type { MediaStorage } from '../media/storage';
+import { activeBrandSchema, brandParams, createBrandSchema, updateBrandSchema } from './schemas';
+import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, saveBrand } from './service';
 
-export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): void {
+// Gli esempi scelti diventano i riferimenti da seguire, al posto di quelli di prima. Poi le generazioni
+// dell'onboarding e i loro file di lavoro non servono più: lasciati lì, chi scrive i contenuti li troverebbe
+// nella cartella e potrebbe prenderne lo stile. Il brand esiste già: quello che non riesce si segnala nei log.
+async function adoptExamples(files: BrandFiles, brandId: string, examples: string[], log: FastifyBaseLogger): Promise<void> {
+  if (examples.length > 0) {
+    await files.removeDir(brandId, FOLLOW_DIR).catch((error: unknown) => log.warn({ err: error }, 'riferimenti da seguire non svuotati'));
+  }
+  for (const example of examples) {
+    const name = example.split('/').pop() ?? '';
+    await files.copy(brandId, example, `${FOLLOW_DIR}/${name}`).catch((error: unknown) => {
+      log.warn({ err: error, example }, 'esempio non copiato nei riferimenti da seguire');
+    });
+  }
+  for (const dir of [EXAMPLES_DIR, LEGACY_WORK_DIR]) {
+    await files.removeDir(brandId, dir).catch((error: unknown) => {
+      log.warn({ err: error, dir }, 'cartella dell’onboarding non eliminata');
+    });
+  }
+}
+
+export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles, storage: MediaStorage): void {
   app.get('/v1/brands', (request) => listBrands(pool, request.identity));
 
   app.post('/v1/brands', async (request, reply) => {
     const body = createBrandSchema.parse(request.body);
     await files.claim(body.id, request.identity.accountId);
     const brand = await createBrand(pool, request.identity, body);
-    // Il brand esiste già: se una copia non riesce lo si segnala nei log, senza far fallire la creazione.
-    for (const example of body.referenceExamples ?? []) {
-      const name = example.split('/').pop() ?? '';
-      await files.copy(body.id, example, `${FOLLOW_DIR}/${name}`).catch((error: unknown) => {
-        request.log.warn({ err: error, example }, 'esempio non copiato nei riferimenti da seguire');
-      });
-    }
-    // Scelti i riferimenti, le generazioni dell'onboarding e i loro file di lavoro non servono più:
-    // lasciati lì, chi scrive i contenuti li troverebbe nella cartella e potrebbe prenderne lo stile.
-    for (const dir of [EXAMPLES_DIR, LEGACY_WORK_DIR]) {
-      await files.removeDir(body.id, dir).catch((error: unknown) => {
-        request.log.warn({ err: error, dir }, 'cartella dell’onboarding non eliminata');
-      });
-    }
+    await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
     // Le prime idee partono subito, lato server: si preparano anche se chi ha creato il brand chiude la pagina.
     await queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).catch((error: unknown) => {
       request.log.warn({ err: error }, 'prime idee non messe in coda');
     });
     return reply.code(201).send(brand);
+  });
+
+  app.get('/v1/brands/:brandId', (request) => {
+    const { brandId } = brandParams.parse(request.params);
+    return getBrandProfile(pool, files, storage, request.identity, brandId);
+  });
+
+  // Dal Profilo: si riscrive tutto il brand. Gli esempi solo se ne sono stati rifatti e scelti.
+  app.put('/v1/brands/:brandId', async (request) => {
+    const { brandId } = brandParams.parse(request.params);
+    const body = updateBrandSchema.parse(request.body);
+    const brand = await saveBrand(pool, request.identity, brandId, body);
+    if (body.referenceExamples?.length) await adoptExamples(files, brandId, body.referenceExamples, request.log);
+    return brand;
   });
 
   app.put('/v1/me/active-brand', async (request, reply) => {

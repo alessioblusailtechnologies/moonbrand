@@ -1,57 +1,23 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 
-import type { PositioningIdeas, WebsiteInsights } from '@moonbrand/shared/ai/steps';
-import type { VisualExampleFile } from '@moonbrand/shared/api/contract';
-import { applyPatch, type BrandDraft, type BrandKind, type Identity, type SectionKey, type SectionPatch } from '@moonbrand/shared/domain/brand';
+import type { BrandKind, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
-import { createThemes } from '@moonbrand/shared/domain/themes';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { BrandsService } from '../../core/brands/brands.service';
+import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
 export type OnboardingStep = 'intro' | SectionKey | 'summary';
 
 export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
 
-interface State {
-  // Id del brand scelto già con la bozza: i file di riferimento vanno nella sua cartella prima che il brand esista.
-  brandId: string | null;
+interface State extends DraftState {
   stepIndex: number;
   direction: 1 | -1;
-  draft: BrandDraft | null;
-  insights: WebsiteInsights | null;
-  themesEdited: boolean;
-  positioningIdeas: { key: string; ideas: PositioningIdeas } | null;
-  examples: VisualExampleFile[] | null;
-  examplesJobId: string | null;
-  // Gli esempi partono tutti scelti: qui solo quelli tolti.
-  unselectedExamples: string[];
 }
 
-const INITIAL: State = {
-  brandId: null,
-  stepIndex: 0,
-  direction: 1,
-  draft: null,
-  insights: null,
-  themesEdited: false,
-  positioningIdeas: null,
-  examples: null,
-  examplesJobId: null,
-  unselectedExamples: [],
-};
-
-// Un campo si riempie dal sito solo se è vuoto o contiene ancora quanto letto la volta prima.
-function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: WebsiteInsights | null): Identity {
-  const fill = (value: string, next: string, before: string | undefined) => (next && (!value.trim() || value === before) ? next : value);
-  const nameKey = identity.kind === 'person' ? 'company' : 'name';
-  return {
-    ...identity,
-    [nameKey]: fill(identity[nameKey], insights.name, previous?.name),
-    ...(identity.kind !== 'person' && { sector: fill(identity.sector, insights.sector, previous?.sector) }),
-    pitch: fill(identity.pitch, insights.pitch, previous?.pitch),
-  };
-}
+const INITIAL: State = { ...EMPTY_DRAFT_STATE, stepIndex: 0, direction: 1 };
 
 const clamp = (index: number) => Math.max(0, Math.min(ONBOARDING_STEPS.length - 1, index));
 
@@ -66,27 +32,20 @@ function newBrandId(): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
+// La bozza del brand nuovo, passo dopo passo; resta nel browser finché il brand non è creato.
 @Injectable({ providedIn: 'root' })
-export class OnboardingStore {
+export class OnboardingStore extends DraftStore<State> {
   private readonly auth = inject(AuthService);
+  private readonly brands = inject(BrandsService);
   private readonly storageKey = computed(() => `moonbrand/onboarding/v1/${this.auth.account()?.id ?? 'anon'}`);
-  private readonly state = signal<State>(this.read(this.storageKey()));
+  protected readonly state = signal<State>(this.read(this.storageKey()));
 
   readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : 0));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
   readonly direction = computed(() => this.state().direction);
-  readonly draft = computed(() => this.state().draft);
-  readonly insights = computed(() => this.state().insights);
-  readonly positioningIdeas = computed(() => this.state().positioningIdeas);
-  readonly brandId = computed(() => this.state().brandId);
-  readonly examples = computed(() => this.state().examples);
-  readonly unselectedExamples = computed(() => this.state().unselectedExamples);
-  readonly examplesJobId = computed(() => this.state().examplesJobId);
-  readonly selectedExamples = computed(() =>
-    (this.state().examples ?? []).map((example) => example.file).filter((file) => !this.state().unselectedExamples.includes(file)),
-  );
 
   constructor() {
+    super();
     effect(() => {
       const key = this.storageKey();
       this.state.set(this.read(key));
@@ -119,68 +78,10 @@ export class OnboardingStore {
     }));
   }
 
-  patch(patch: SectionPatch): void {
-    this.state.update((state) =>
-      state.draft ? { ...state, draft: applyPatch(state.draft, patch), themesEdited: state.themesEdited || patch.key === 'themes' } : state,
-    );
-  }
-
-  applyInsights(insights: WebsiteInsights): void {
-    this.state.update((state) => {
-      const current = state.draft;
-      if (!current) return state;
-      const otherBrand = state.insights !== null && state.insights.site !== insights.site;
-      const draft = otherBrand
-        ? { ...createEmptyDraft(current.identity.kind), identity: current.identity, channels: current.channels }
-        : current;
-      const themesEdited = otherBrand ? false : state.themesEdited;
-      return {
-        ...state,
-        insights,
-        themesEdited,
-        positioningIdeas: otherBrand ? null : state.positioningIdeas,
-        draft: {
-          ...draft,
-          identity: fillFromSite(draft.identity, insights, state.insights),
-          themes: themesEdited ? draft.themes : createThemes(insights.themes),
-          visual: draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette },
-        },
-      };
-    });
-  }
-
-  applyPositioningIdeas(key: string, ideas: PositioningIdeas): void {
-    this.state.update((state) => {
-      const { draft } = state;
-      if (!draft || state.positioningIdeas?.key === key) return state;
-      const { goals, audiences } = draft.positioning;
-      return {
-        ...state,
-        positioningIdeas: { key, ideas },
-        draft: {
-          ...draft,
-          positioning: {
-            ...draft.positioning,
-            goals: goals.length > 0 ? goals : ideas.picked.goals,
-            audiences: audiences.length > 0 ? audiences : ideas.picked.audiences,
-          },
-        },
-      };
-    });
-  }
-
-  // Una modifica tiene la selezione (i file hanno gli stessi nomi), una generazione nuova la azzera.
-  setExamples(examples: VisualExampleFile[] | null, jobId: string | null, keepSelection = false): void {
-    this.state.update((state) => ({ ...state, examples, examplesJobId: jobId, unselectedExamples: keepSelection ? state.unselectedExamples : [] }));
-  }
-
-  toggleExample(file: string): void {
-    this.state.update((state) => ({
-      ...state,
-      unselectedExamples: state.unselectedExamples.includes(file)
-        ? state.unselectedExamples.filter((item) => item !== file)
-        : [...state.unselectedExamples, file],
-    }));
+  async removeReference(file: MediaFile): Promise<void> {
+    const brandId = this.state().brandId;
+    if (brandId && file.path) await this.brands.removeReference(brandId, file.path);
+    this.withoutReference(file);
   }
 
   reset(): void {

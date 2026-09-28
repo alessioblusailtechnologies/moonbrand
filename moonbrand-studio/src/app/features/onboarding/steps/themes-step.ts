@@ -7,8 +7,8 @@ import { addTheme, createThemes, MAX_THEMES, removeTheme, setThemeLevel, THEME_L
 import { Icon } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
+import { DraftStore } from '../draft-store';
 import { MockAi } from '../mock-ai';
-import { OnboardingStore } from '../onboarding.store';
 
 @Component({
   selector: 'mb-themes-step',
@@ -89,7 +89,7 @@ import { OnboardingStore } from '../onboarding.store';
 export class ThemesStep implements OnInit {
   private readonly ai = inject(MockAi);
   private readonly toast = inject(ToastService);
-  protected readonly store = inject(OnboardingStore);
+  protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly levels = THEME_LEVELS;

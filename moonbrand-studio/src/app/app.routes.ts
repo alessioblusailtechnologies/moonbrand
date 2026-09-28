@@ -29,6 +29,11 @@ export const routes: Routes = [
         canActivate: [hasBrandsGuard],
         loadComponent: () => import('./features/contents/content-page').then((m) => m.ContentPage),
       },
+      {
+        path: 'impostazioni',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/profile/profile-page').then((m) => m.ProfilePage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

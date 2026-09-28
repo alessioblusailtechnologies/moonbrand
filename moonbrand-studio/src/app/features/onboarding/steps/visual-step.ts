@@ -12,8 +12,8 @@ import { Icon } from '../../../ui/icon';
 import { LightboxService } from '../../../ui/lightbox';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
+import { DraftStore } from '../draft-store';
 import { resizedDataUri } from '../images';
-import { OnboardingStore } from '../onboarding.store';
 
 const MAX_REFERENCES = 6;
 
@@ -34,7 +34,7 @@ export class VisualStep implements OnInit {
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
   private readonly lightbox = inject(LightboxService);
-  protected readonly store = inject(OnboardingStore);
+  protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly slotLabels = PALETTE_SLOT_LABELS;
@@ -123,10 +123,8 @@ export class VisualStep implements OnInit {
   }
 
   protected async removeReference(file: MediaFile): Promise<void> {
-    const brandId = this.store.brandId();
     try {
-      if (brandId && file.path) await this.brands.removeReference(brandId, file.path);
-      this.set({ references: (this.current().references ?? []).filter((item) => item !== file) });
+      await this.store.removeReference(file);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non sono riuscito a togliere l’immagine. Riprova.'));
     }

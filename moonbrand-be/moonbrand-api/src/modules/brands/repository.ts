@@ -53,3 +53,31 @@ export async function insertBrand(db: Queryable, accountId: string, brandId: str
   );
   return toSummary(rows[0]);
 }
+
+export async function findBrandDraft(db: Queryable, brandId: string): Promise<BrandDraft | null> {
+  const { rows } = await db.query<BrandDraft>(
+    'select identity, positioning, channels, themes, voice, visual, refs as "references" from presenza.brands where id = $1',
+    [brandId],
+  );
+  return rows[0] ?? null;
+}
+
+export async function updateBrand(db: Queryable, brandId: string, draft: BrandDraft): Promise<BrandSummary | null> {
+  const { rows } = await db.query<SummaryRow>(
+    `update presenza.brands set identity = $2::jsonb, positioning = $3::jsonb, channels = $4::jsonb, themes = $5::jsonb,
+       voice = $6::jsonb, visual = $7::jsonb, refs = $8::jsonb
+     where id = $1
+     returning ${SUMMARY}`,
+    [
+      brandId,
+      JSON.stringify(draft.identity),
+      JSON.stringify(draft.positioning),
+      JSON.stringify(draft.channels),
+      JSON.stringify(draft.themes),
+      JSON.stringify(draft.voice),
+      JSON.stringify(draft.visual),
+      JSON.stringify(draft.references),
+    ],
+  );
+  return rows[0] ? toSummary(rows[0]) : null;
+}

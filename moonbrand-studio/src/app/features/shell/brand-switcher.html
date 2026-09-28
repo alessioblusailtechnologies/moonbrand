@@ -12,22 +12,32 @@
 
 @if (open()) {
   <div class="menu" role="menu">
-    <p class="label menu-label">I tuoi brand</p>
-    <div class="list">
-      @for (brand of brands.brands(); track brand.id) {
-        <button class="item" type="button" role="menuitemradio" [attr.aria-checked]="brand.id === active?.id"
-          (click)="choose(brand.id)">
-          <mb-brand-avatar [name]="brand.name" [logo]="brand.logoUri" [color]="brand.color" [size]="28" />
-          <span class="grow">
-            <span class="strong-sm name">{{ brand.name }}</span>
-            <span class="caption">{{ kindLabel(brand.kind) }}</span>
-          </span>
-          @if (brand.id === active?.id) {
-            <mb-icon name="check" [size]="16" class="check" />
-          }
-        </button>
-      }
-    </div>
+    @if (active) {
+      <p class="label menu-label">Brand attivo</p>
+      <button class="item current" type="button" role="menuitemradio" aria-checked="true" title="Apri le impostazioni del brand"
+        (click)="openSettings()">
+        <mb-brand-avatar [name]="active.name" [logo]="active.logoUri" [color]="active.color" [size]="36" />
+        <span class="grow">
+          <span class="strong-sm name">{{ active.name }}</span>
+          <span class="caption">{{ kindLabel(active.kind) }} · Impostazioni</span>
+        </span>
+        <span class="current-tag"><mb-icon name="check" [size]="12" [stroke]="3" />Attivo</span>
+      </button>
+    }
+    @if (others().length > 0) {
+      <p class="label menu-label">Passa a</p>
+      <div class="list">
+        @for (brand of others(); track brand.id) {
+          <button class="item" type="button" role="menuitemradio" aria-checked="false" (click)="choose(brand.id)">
+            <mb-brand-avatar [name]="brand.name" [logo]="brand.logoUri" [color]="brand.color" [size]="28" />
+            <span class="grow">
+              <span class="strong-sm name">{{ brand.name }}</span>
+              <span class="caption">{{ kindLabel(brand.kind) }}</span>
+            </span>
+          </button>
+        }
+      </div>
+    }
     <div class="divider"></div>
     <button class="item action" type="button" role="menuitem" (click)="createBrand()">
       <span class="plus"><mb-icon name="plus" [size]="16" /></span>

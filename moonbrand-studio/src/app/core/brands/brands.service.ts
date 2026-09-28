@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { BrandSummary, CreateBrandRequest, ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
+import type { BrandProfile, BrandSummary, CreateBrandRequest, ReferenceUploadResponse, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
 import type { BrandDraft } from '@moonbrand/shared/domain/brand';
 
 import { AuthService } from '../auth/auth.service';
@@ -57,6 +57,18 @@ export class BrandsService {
     const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', body));
     this.brands.update((list) => [...list, brand]);
     this.auth.activeBrandId.set(brand.id);
+    return brand;
+  }
+
+  profile(brandId: string): Promise<BrandProfile> {
+    return firstValueFrom(this.http.get<BrandProfile>(`/v1/brands/${brandId}`));
+  }
+
+  // Riscrive il brand; nome, logo e colore cambiano anche nell'elenco.
+  async update(brandId: string, draft: BrandDraft, referenceExamples: string[] = []): Promise<BrandSummary> {
+    const body: UpdateBrandRequest = { ...draft, ...(referenceExamples.length > 0 && { referenceExamples }) };
+    const brand = await firstValueFrom(this.http.put<BrandSummary>(`/v1/brands/${brandId}`, body));
+    this.brands.update((list) => list.map((item) => (item.id === brand.id ? brand : item)));
     return brand;
   }
 

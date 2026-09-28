@@ -45,7 +45,7 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.settings);
-  registerBrandRoutes(app, options.pool, options.files);
+  registerBrandRoutes(app, options.pool, options.files, options.storage);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);

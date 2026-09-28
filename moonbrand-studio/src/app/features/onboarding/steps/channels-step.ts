@@ -5,8 +5,8 @@ import { CHANNELS, channelName } from '@moonbrand/shared/domain/catalog';
 
 import { ChannelMark } from '../../../ui/channel-mark';
 import { ToastService } from '../../../ui/toast';
+import { DraftStore } from '../draft-store';
 import { MockAi } from '../mock-ai';
-import { OnboardingStore } from '../onboarding.store';
 
 @Component({
   selector: 'mb-channels-step',
@@ -33,7 +33,7 @@ import { OnboardingStore } from '../onboarding.store';
         }
       </div>
     }
-    <p class="caption">Scegline almeno uno. Collegarli serve solo per pubblicare: puoi farlo adesso o dal Profilo.</p>
+    <p class="caption">Scegline almeno uno. Collegarli serve solo per pubblicare: puoi farlo adesso o dalle Impostazioni brand.</p>
   `,
   styles: `
     :host {
@@ -76,7 +76,7 @@ import { OnboardingStore } from '../onboarding.store';
 export class ChannelsStep {
   private readonly ai = inject(MockAi);
   private readonly toast = inject(ToastService);
-  private readonly store = inject(OnboardingStore);
+  private readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly channels = CHANNELS;

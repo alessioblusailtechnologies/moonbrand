@@ -7,7 +7,7 @@ import { normalizeSite } from '@moonbrand/shared/lib/site';
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
-import { OnboardingStore } from '../onboarding.store';
+import { DraftStore } from '../draft-store';
 
 type TextField = 'name' | 'role' | 'company' | 'sector';
 
@@ -106,7 +106,7 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 export class IdentityStep {
   private readonly ai = inject(AiJobsService);
   private readonly toast = inject(ToastService);
-  protected readonly store = inject(OnboardingStore);
+  protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly reading = signal(false);

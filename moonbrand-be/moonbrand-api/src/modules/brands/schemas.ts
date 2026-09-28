@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { CreateBrandRequest } from '@moonbrand/shared/api/contract';
+import type { CreateBrandRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
 
 import type {
   BrandDraft,
@@ -193,11 +193,17 @@ export const brandDraftSchema = z.object({
 
 export const activeBrandSchema = z.object({ brandId: z.uuid('Brand non trovato.') });
 
+const referenceExamples = z
+  // Nella cartella della generazione (esempi/<job>/) o, per le bozze di prima, direttamente in esempi.
+  .array(z.string().regex(/^esempi\/([0-9a-f-]{36}\/)?[A-Za-z0-9._-]+\.(png|jpg)$/, 'Esempio non valido.'))
+  .max(30)
+  .optional();
+
 export const createBrandSchema = brandDraftSchema.extend({
   id: z.uuid('Brand non valido.'),
-  referenceExamples: z
-    // Nella cartella della generazione (esempi/<job>/) o, per le bozze di prima, direttamente in esempi.
-    .array(z.string().regex(/^esempi\/([0-9a-f-]{36}\/)?[A-Za-z0-9._-]+\.(png|jpg)$/, 'Esempio non valido.'))
-    .max(30)
-    .optional(),
+  referenceExamples,
 }) satisfies z.ZodType<CreateBrandRequest>;
+
+export const updateBrandSchema = brandDraftSchema.extend({ referenceExamples }) satisfies z.ZodType<UpdateBrandRequest>;
+
+export const brandParams = z.object({ brandId: z.uuid('Brand non valido.') });
