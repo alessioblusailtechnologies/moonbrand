@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, type ElementRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -26,8 +26,13 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher],
+  // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
+  host: { '[style.--topbar-height.px]': 'topbarHeight()', '(document:keydown.escape)': 'menuOpen.set(false)' },
   template: `
-    <aside class="sidebar">
+    @if (menuOpen()) {
+      <div class="scrim" (click)="menuOpen.set(false)"></div>
+    }
+    <aside class="sidebar" [class.open]="menuOpen()">
       <div class="brand-mark"><mb-logo /></div>
       <nav class="nav" aria-label="Sezioni">
         @for (section of sections; track section.path) {
@@ -62,7 +67,10 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       </nav>
     </aside>
     <div class="main">
-      <header class="topbar">
+      <header class="topbar" #topbar>
+        <button class="icon-btn burger" type="button" aria-label="Apri il menu" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
+          <mb-icon name="menu" [size]="20" />
+        </button>
         <nav class="crumbs" aria-label="Dove sei">
           @for (crumb of header.crumbs(); track $index; let last = $last) {
             @if (crumb.link && !last) {
@@ -87,6 +95,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
   `,
   styles: `
     :host {
+      --content-padding: 32px;
       display: flex;
       min-height: 100vh;
     }
@@ -298,7 +307,11 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
     }
     .content {
       flex: 1;
-      padding: 32px;
+      padding: var(--content-padding);
+    }
+    .burger,
+    .scrim {
+      display: none;
     }
     @media (max-width: 900px) {
       .sidebar {
@@ -321,6 +334,90 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
         display: none;
       }
     }
+    // Sul telefono la barra laterale diventa un menu che entra da sinistra, aperto dal pulsante nella barra in alto;
+    // in alto restano il titolo della pagina e il brand, e i pulsanti della pagina vanno su una seconda riga.
+    @media (max-width: 760px) {
+      :host {
+        --content-padding: 16px;
+      }
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 60;
+        align-items: stretch;
+        width: min(300px, 86vw);
+        height: 100dvh;
+        padding: 18px 14px;
+        transform: translateX(-100%);
+        transition: transform 220ms var(--ease);
+      }
+      .sidebar.open {
+        transform: none;
+        box-shadow: var(--shadow-menu);
+      }
+      .brand-mark {
+        width: auto;
+        padding: 0 10px;
+      }
+      .nav-item {
+        justify-content: flex-start;
+        width: auto;
+        padding: 0 12px;
+      }
+      .nav-label {
+        display: inline;
+      }
+      .sessions {
+        display: flex;
+      }
+      .expand {
+        display: grid;
+      }
+      .scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 55;
+        display: block;
+        background: var(--scrim);
+        animation: fade-in 160ms var(--ease);
+      }
+      .burger {
+        display: inline-flex;
+        flex: none;
+        margin-left: -6px;
+      }
+      .topbar {
+        flex-wrap: wrap;
+        gap: 8px 10px;
+        height: auto;
+        min-height: 56px;
+        padding: 8px 12px;
+      }
+      .crumbs {
+        font-size: 15px;
+      }
+      // mb-icon mette il suo display sull'elemento: senza !important la freccia resterebbe.
+      .crumb:not(.current),
+      .crumb-sep {
+        display: none !important;
+      }
+      .crumb.current {
+        max-width: none;
+      }
+      .page-actions {
+        order: 3;
+        width: 100%;
+        padding: 0 0 2px;
+        border-right: 0;
+        overflow-x: auto;
+      }
+      // Solo icone (il cestino della chat): stanno sulla prima riga, accanto al brand.
+      .page-actions:not(:has(.btn)) {
+        order: 0;
+        width: auto;
+        padding: 0;
+      }
+    }
   `,
 })
 export class Shell {
@@ -328,6 +425,11 @@ export class Shell {
   protected readonly chat = inject(ChatService);
   protected readonly header = inject(PageHeader);
   protected readonly sections = SECTIONS;
+
+  // Il menu sul telefono: si chiude cambiando pagina.
+  protected readonly menuOpen = signal(false);
+  protected readonly topbarHeight = signal<number | null>(null);
+  private readonly topbar = viewChild.required<ElementRef<HTMLElement>>('topbar');
 
   // Aperta o chiusa con la freccia; la scelta resta tra una visita e l'altra.
   protected readonly chatsOpen = signal(readChatsOpen());
@@ -339,6 +441,20 @@ export class Shell {
     ),
     { initialValue: this.router.url },
   );
+
+  constructor() {
+    effect(() => {
+      this.url();
+      this.menuOpen.set(false);
+    });
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const element = this.topbar().nativeElement;
+      const observer = new ResizeObserver(() => this.topbarHeight.set(element.offsetHeight));
+      observer.observe(element);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   // Le ultime conversazioni, più quella aperta se è più vecchia: si vede sempre dove si è.
   protected readonly recentChats = computed(() => {

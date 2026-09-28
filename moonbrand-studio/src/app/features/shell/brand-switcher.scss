@@ -155,3 +155,22 @@
     flex-direction: column;
   }
 }
+
+// Sul telefono nella barra in alto resta solo il logo del brand; il menu non esce dallo schermo.
+@media (max-width: 760px) {
+  .trigger {
+    gap: 4px;
+    padding: 3px 6px 3px 3px;
+  }
+
+  .trigger-text {
+    display: none;
+  }
+
+  .menu {
+    position: fixed;
+    top: 60px;
+    right: 12px;
+    width: min(300px, calc(100vw - 24px));
+  }
+}
