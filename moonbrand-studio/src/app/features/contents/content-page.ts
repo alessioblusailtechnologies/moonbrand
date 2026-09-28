@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, type TemplateRef, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
@@ -10,6 +10,7 @@ import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
+import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
@@ -36,6 +37,7 @@ export class ContentPage {
   // Dal percorso /contenuti/:contentId.
   readonly contentId = input.required<string>();
 
+  private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   protected readonly content = signal<Content | null>(null);
   protected readonly loading = signal(true);
   protected readonly preparing = signal(false);
@@ -70,6 +72,11 @@ export class ContentPage {
   protected readonly cssAspect = cssAspect;
 
   constructor() {
+    // Il titolo del contenuto nel percorso; i pulsanti quando il contenuto è pronto e nessuno ci sta lavorando.
+    pageHeader(
+      () => [{ label: 'Contenuti', link: '/contenuti' }, { label: this.content()?.title ?? '' }],
+      () => (this.ready() && !this.preparing() ? this.headerActions() : undefined),
+    );
     // Cambiando canale o immagini lo slider riparte dalla prima slide.
     effect(() => {
       this.images();

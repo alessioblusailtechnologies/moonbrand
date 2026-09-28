@@ -13,7 +13,7 @@ import { LightboxService } from '../../../ui/lightbox';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
-import { resizedDataUri } from '../images';
+import { resizedDataUri } from '../../../core/images';
 
 const MAX_REFERENCES = 6;
 

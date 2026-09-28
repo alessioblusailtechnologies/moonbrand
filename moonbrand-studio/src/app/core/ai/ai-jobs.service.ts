@@ -18,6 +18,9 @@ import { normalizeSite } from '@moonbrand/shared/lib/site';
 
 const POLL_MS = 1000;
 
+// Un lavoro fermato da chi l'aveva chiesto.
+export class StoppedJobError extends Error {}
+
 @Injectable({ providedIn: 'root' })
 export class AiJobsService {
   private readonly http = inject(HttpClient);
@@ -58,14 +61,15 @@ export class AiJobsService {
     return { id, result: await this.follow<Result>(id, onSteps) };
   }
 
-  // Segue un lavoro già in coda fino al risultato, passando gli step man mano.
-  async follow<Result>(jobId: string, onSteps?: OnAiSteps): Promise<Result> {
+  // Segue un lavoro già in coda fino al risultato, passando gli step man mano; pollMs più basso per le risposte che si leggono mentre arrivano.
+  async follow<Result>(jobId: string, onSteps?: OnAiSteps, pollMs = POLL_MS): Promise<Result> {
     for (;;) {
       const job = await firstValueFrom(this.http.get<AiJob<Result>>(`/v1/ai/jobs/${jobId}`));
       onSteps?.(job.steps);
       if (job.status === 'done' && job.result) return job.result;
+      if (job.status === 'stopped') throw new StoppedJobError('Fermato.');
       if (job.status === 'failed' || job.status === 'done') throw new Error(job.error ?? 'Lavoro AI senza risultato.');
-      await new Promise((resolve) => setTimeout(resolve, POLL_MS));
+      await new Promise((resolve) => setTimeout(resolve, pollMs));
     }
   }
 }

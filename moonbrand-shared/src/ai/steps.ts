@@ -1,10 +1,12 @@
 import type { BrandKind, Palette } from '../domain/brand';
 
+// kind: un blocco di testo di Claude o una chiamata a un tool; manca negli step scritti a mano.
 export interface AiStep {
   id: string;
   label: string;
   detail?: string;
   status: 'running' | 'done' | 'failed';
+  kind?: 'text' | 'tool';
 }
 
 export type OnAiSteps = (steps: AiStep[]) => void;

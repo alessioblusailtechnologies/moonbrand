@@ -8,7 +8,7 @@ import {
   type Theme,
   type Voice,
 } from '@moonbrand/shared/domain/brand';
-import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
+import type { Idea, IdeaDraft, IdeaStatus } from '@moonbrand/shared/domain/idea';
 
 import type { Queryable } from '../../db/pool';
 
@@ -93,6 +93,15 @@ export async function activeIdeasJob(db: Queryable, brandId: string): Promise<st
     [brandId],
   );
   return rows[0]?.id ?? null;
+}
+
+export async function insertIdea(db: Queryable, brandId: string, accountId: string, draft: IdeaDraft): Promise<Idea> {
+  const { rows } = await db.query<IdeaRow>(
+    `insert into presenza.ideas (brand_id, account_id, title, angle_label, angle, rationale, theme_id, signal, formats, channels)
+     values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10) returning ${COLUMNS}`,
+    [brandId, accountId, draft.title, draft.angleLabel, draft.angle, draft.rationale, draft.themeId, JSON.stringify(draft.signal), draft.formats, draft.channels],
+  );
+  return toIdea(rows[0]);
 }
 
 export async function findIdea(db: Queryable, ideaId: string): Promise<Idea | null> {

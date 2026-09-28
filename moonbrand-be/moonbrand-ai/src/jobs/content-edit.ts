@@ -12,6 +12,6 @@ const { contentId, sessionId, format, channels, instruction } = JSON.parse(input
 
 const prompt = `${instruction}
 
-Aggiorna il contenuto di conseguenza: testi e immagini in ${contentDir(contentId)}. Restituisci il contenuto completo, anche le parti che non hai cambiato.`;
+Aggiorna il contenuto di conseguenza, sempre seguendo la skill moonbrand:contenuti: testi e immagini in ${contentDir(contentId)}. Restituisci il contenuto completo, anche le parti che non hai cambiato.`;
 
 await runContentAgent({ brandDir, contentId, format, channels, prompt, resume: sessionId });

@@ -7,6 +7,7 @@ import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary,
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
@@ -79,7 +80,6 @@ const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      max-width: 760px;
       margin: 0 auto;
       animation: fade-up 240ms var(--ease);
     }
@@ -184,6 +184,7 @@ export class ProfilePage {
   });
 
   constructor() {
+    pageHeader(() => [{ label: 'Impostazioni brand' }]);
     effect(() => {
       const brandId = this.activeId();
       if (brandId) untracked(() => void this.load(brandId));

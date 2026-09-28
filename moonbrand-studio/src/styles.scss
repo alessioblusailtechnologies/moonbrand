@@ -12,12 +12,19 @@
   --grey-500: #8a8f9a;
   --white: #ffffff;
 
-  --surface-app: var(--grey-100);
+  --surface-app: var(--white);
   --surface-card: var(--white);
+  // La sidebar si stacca dal bianco del contenuto con un grigio caldo; la voce attiva con un grigio più scuro.
+  --surface-sidebar: #f7f7f5;
+  --surface-sidebar-active: #ebebe8;
+  // Le finestre (onboarding, modifica di una sezione) restano grigie: dentro ci sono pannelli bianchi.
+  --surface-dialog: var(--grey-100);
   --surface-sunken: var(--grey-100);
   --text-title: var(--navy-700);
   --text-body: var(--grey-500);
   --border-subtle: var(--grey-100);
+  // Il bordo dei pannelli bianchi sul fondo bianco.
+  --border-card: rgba(47, 52, 82, 0.1);
   --border-field: var(--grey-300);
   --border-strong: var(--navy-700);
 
@@ -267,6 +274,7 @@ p {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-xl);
   background: var(--surface-card);
 }

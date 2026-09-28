@@ -7,22 +7,13 @@ import type { WritableFormat } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import { imageTools } from '../tools/immagini';
+import { MOONBRAND_PLUGINS } from './plugin';
 
-// Regole di scrittura per canale e formato, riprese da social-app.
-
-export const CHANNEL_GUIDE: Record<ChannelId, string> = {
-  linkedin:
-    'la prima riga deve fermare lo scorrimento; paragrafi brevi separati da una riga vuota; da 700 a 1.500 caratteri, fino a 2.900 per un articolo',
-  instagram: 'didascalia da 300 a 900 caratteri con l’aggancio nella prima riga; per un carosello invita a scorrere',
-  facebook: 'tono vicino e discorsivo, da 300 a 1.000 caratteri',
-  tiktok: 'didascalia cortissima, una o due righe sotto i 150 caratteri',
-  x: 'al massimo 250 caratteri, una sola idea',
-};
-
-export const HASHTAGS: Record<ChannelId, number> = { linkedin: 3, instagram: 6, facebook: 2, tiktok: 4, x: 2 };
+// Le regole di scrittura e di stile stanno nella skill moonbrand:contenuti (plugin/skills); qui i numeri che servono
+// allo schema e al prompt del job.
 
 // Le proporzioni della copertina di un post, per canale.
-const POST_ASPECT: Record<ChannelId, string> = { instagram: '4:5', facebook: '4:5', linkedin: '1:1', tiktok: '9:16', x: '16:9' };
+export const POST_ASPECT: Record<ChannelId, string> = { instagram: '4:5', facebook: '4:5', linkedin: '1:1', tiktok: '9:16', x: '16:9' };
 export const CAROUSEL_ASPECT = '4:5';
 export const ARTICLE_ASPECT = '1.91:1';
 export const SLIDES = { min: 5, max: 7 };
@@ -34,28 +25,6 @@ export function neededImages(format: WritableFormat, channels: readonly ChannelI
   const aspects = [...new Set(channels.map((channel) => POST_ASPECT[channel]))];
   return `la copertina del post in ${aspects.join(', ')}: una per proporzione, con lo stesso visivo adattato (role «cover», index da 0)`;
 }
-
-export const FORMAT_GUIDE: Record<WritableFormat, string> = {
-  post: 'Post: testo e un’immagine. headline è il titolo dell’immagine, fino a 60 caratteri, se l’immagine ne ha uno; slides resta vuoto.',
-  carousel: `Carosello: da ${SLIDES.min} a ${SLIDES.max} slide. La prima è l’aggancio, le centrali sviluppano un punto ciascuna, l’ultima chiude con un’azione; titoli fino a 40 caratteri, testi fino a 160. headline è il titolo della prima slide.`,
-  article:
-    'Articolo: su LinkedIn il testo lungo, con un’apertura forte e tre o quattro paragrafi; sugli altri canali un testo breve che lo presenta. headline è il titolo dell’articolo; slides resta vuoto.',
-};
-
-export const WRITING_RULES = [
-  'Scrivi in italiano semplice e concreto: niente gergo di marketing, niente frasi fatte, niente trattini lunghi.',
-  'Segui la voce del brand alla lettera: se «Da evitare» nomina esclamativi o emoji, non usarne; se il lessico chiede i numeri in cifre, scrivi 3 e non tre.',
-  'Non inventare fatti, numeri, prezzi, nomi di clienti o risultati: quando serve un dato che non conosci, metti il segnaposto tra parentesi quadre, per esempio [prezzo].',
-  'Ogni canale ha la sua variante, scritta per quel canale e non copiata dalle altre.',
-  'Gli hashtag stanno solo nel campo hashtags e mai nel testo: pochi e specifici, con # davanti e senza spazi.',
-].join('\n');
-
-// I riferimenti danno lo stile del brand, non un modello da ricalcare.
-export const STYLE_RULES = [
-  'I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.',
-  'Lo stile si prende solo da lì: le cartelle esempi e lavoro alla radice del brand, se ci sono, sono bozze dell’onboarding che possono essere state scartate; non aprirle e non usarle.',
-  'Scegli la composizione che serve a questa idea e alternala: guarda le immagini finali degli ultimi contenuti in contenuti e usa un’impaginazione diversa. Ogni contenuto deve essere riconoscibile come del brand e diverso dagli altri.',
-].join('\n');
 
 export function contentDir(contentId: string): string {
   return `contenuti/${contentId}`;
@@ -149,6 +118,7 @@ export async function runContentAgent(options: {
       cwd: options.brandDir,
       env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers: { immagini: imageTools(options.brandDir, GEMINI_API_KEY) },
+      plugins: MOONBRAND_PLUGINS,
       permissionMode: 'bypassPermissions',
       allowDangerouslySkipPermissions: true,
       outputFormat: { type: 'json_schema', schema: contentSchema(options.contentId, options.format, options.channels) },

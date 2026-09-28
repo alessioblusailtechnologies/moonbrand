@@ -3,10 +3,11 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
 
-export async function insertJob(db: Queryable, accountId: string, kind: string, input: unknown): Promise<string> {
+// agentToken: il token con cui i tool del job chiamano l'API (solo per i job della chat).
+export async function insertJob(db: Queryable, accountId: string, kind: string, input: unknown, agentToken?: string): Promise<string> {
   const { rows } = await db.query<{ id: string }>(
-    'insert into presenza.ai_jobs (account_id, kind, input) values ($1, $2, $3::jsonb) returning id',
-    [accountId, kind, JSON.stringify(input)],
+    'insert into presenza.ai_jobs (account_id, kind, input, agent_token) values ($1, $2, $3::jsonb, $4) returning id',
+    [accountId, kind, JSON.stringify(input), agentToken ?? null],
   );
   return rows[0].id;
 }

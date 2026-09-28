@@ -7,6 +7,7 @@ interface ContentRow {
   id: string;
   brand_id: string;
   idea_id: string | null;
+  conversation_id: string | null;
   title: string;
   theme_id: string | null;
   channels: ChannelId[];
@@ -20,12 +21,14 @@ interface ContentRow {
   approved_at: Date | null;
 }
 
-const COLUMNS = 'id, brand_id, idea_id, title, theme_id, channels, format, variants, visual, status, revision, created_at, updated_at, approved_at';
+const COLUMNS =
+  'id, brand_id, idea_id, conversation_id, title, theme_id, channels, format, variants, visual, status, revision, created_at, updated_at, approved_at';
 
 const toContent = (row: ContentRow): Content => ({
   id: row.id,
   brandId: row.brand_id,
   ideaId: row.idea_id,
+  conversationId: row.conversation_id,
   title: row.title,
   themeId: row.theme_id,
   channels: row.channels,
@@ -52,6 +55,49 @@ export async function insertContent(
     [draft.brandId, draft.accountId, draft.ideaId, draft.title, draft.themeId, draft.channels, draft.format, JSON.stringify(EMPTY_VISUAL)],
   );
   return rows[0].id;
+}
+
+// Un contenuto scritto nella chat: nasce già completo, con l'id scelto prima per la sua cartella.
+export async function insertChatContent(
+  db: Queryable,
+  content: Pick<Content, 'id' | 'brandId' | 'conversationId' | 'title' | 'channels' | 'format' | 'variants' | 'visual'> & { accountId: string },
+): Promise<void> {
+  await db.query(
+    `insert into presenza.contents (id, brand_id, account_id, conversation_id, title, channels, format, variants, visual)
+     values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::jsonb)`,
+    [
+      content.id,
+      content.brandId,
+      content.accountId,
+      content.conversationId,
+      content.title,
+      content.channels,
+      content.format,
+      JSON.stringify(content.variants),
+      JSON.stringify(content.visual),
+    ],
+  );
+}
+
+// Riscrive un contenuto dalla chat: torna bozza, con una revisione in più.
+export async function rewriteContent(
+  db: Queryable,
+  content: Pick<Content, 'id' | 'title' | 'channels' | 'format' | 'variants' | 'visual'>,
+): Promise<void> {
+  await db.query(
+    `update presenza.contents set title = $2, channels = $3, format = $4, variants = $5::jsonb, visual = $6::jsonb,
+       revision = revision + 1, status = 'draft', approved_at = null, updated_at = now()
+     where id = $1`,
+    [content.id, content.title, content.channels, content.format, JSON.stringify(content.variants), JSON.stringify(content.visual)],
+  );
+}
+
+export async function listConversationContents(db: Queryable, conversationId: string): Promise<Content[]> {
+  const { rows } = await db.query<ContentRow>(
+    `select ${COLUMNS} from presenza.contents where conversation_id = $1 order by created_at`,
+    [conversationId],
+  );
+  return rows.map(toContent);
 }
 
 export async function findContent(db: Queryable, contentId: string): Promise<Content | null> {

@@ -1,0 +1,355 @@
+// La chat sta sul bianco della pagina, senza riquadro e a tutta larghezza: il filo e la casella in fondo.
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height) - 64px);
+  min-height: 480px;
+  margin: 0 auto;
+  animation: fade-up 240ms var(--ease);
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 28px;
+  padding: 0 4px 24px;
+  overflow-y: auto;
+}
+
+.empty {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+// Una conversazione nuova: titolo, testo, la casella e gli spunti in una colonna al centro,
+// con margini larghi ai lati come nel riferimento; la conversazione aperta usa invece tutta la pagina.
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(880px, 100%);
+  margin: auto;
+  padding-bottom: 8vh;
+
+  .display {
+    font-size: 36px;
+  }
+
+  .body {
+    max-width: 620px;
+    margin-bottom: 12px;
+  }
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.suggestion {
+  padding: 9px 14px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--text-title);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--grey-500);
+  }
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fade-up 200ms var(--ease);
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  align-self: flex-end;
+  max-width: 80%;
+}
+
+.photo {
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  cursor: zoom-in;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.mine {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
+  background: var(--surface-sidebar-active);
+  color: var(--text-title);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.reply {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+  margin-top: 4px;
+}
+
+.tools {
+  align-self: flex-start;
+  max-width: 100%;
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--border-card);
+    border-radius: 999px;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .spinner {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.tool-now {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0 0 0 12px;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+  }
+}
+
+.tool-name {
+  flex: none;
+  color: var(--text-title);
+  font-weight: 600;
+}
+
+.tool-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.failed {
+  color: var(--orange-600);
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.saved {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.saved-card {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  max-width: 280px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--grey-500);
+  }
+}
+
+.thumb {
+  flex: none;
+  width: 36px;
+  height: 45px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--grey-300);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.saved-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.saved-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// La casella: il testo sopra, allegati e invio in una barra sotto.
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 10px 16px;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  transition: border-color 120ms var(--ease);
+
+  &:focus-within {
+    border-color: var(--grey-500);
+  }
+}
+
+.composer-input {
+  width: 100%;
+  min-height: 24px;
+  max-height: 240px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-title);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--grey-500);
+  }
+}
+
+.welcome .composer-input {
+  min-height: 64px;
+}
+
+.composer-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: -8px;
+
+  .send {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.pending {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pending-photo {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.failed img {
+    opacity: 0.35;
+  }
+}
+
+.pending-state {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--navy-700);
+}
+
+.pending-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(28, 33, 80, 0.75);
+  color: var(--white);
+  cursor: pointer;
+}

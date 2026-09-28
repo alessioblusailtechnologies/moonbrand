@@ -5,6 +5,7 @@ import type pg from 'pg';
 
 import type { Config } from './config';
 import { registerErrorHandler } from './errors';
+import { registerAgentRoutes } from './modules/agent/routes';
 import { registerAiRoutes } from './modules/ai/routes';
 import { accountExists } from './modules/auth/accounts';
 import type { AuthGateway } from './modules/auth/gateway';
@@ -13,6 +14,7 @@ import type { BrandFiles } from './modules/brand-files/files';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
+import { registerConversationRoutes } from './modules/conversations/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import type { MediaStorage } from './modules/media/storage';
@@ -51,6 +53,8 @@ export function buildApp(options: AppOptions) {
   registerAiRoutes(app, options.pool, options.files);
   registerIdeaRoutes(app, options.pool);
   registerContentRoutes(app, options.pool, options.files);
+  registerConversationRoutes(app, options.pool, options.files);
+  void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;
 }

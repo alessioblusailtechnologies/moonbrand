@@ -41,6 +41,8 @@ export interface Content {
   id: string;
   brandId: string;
   ideaId: string | null;
+  // La conversazione in cui è nato, se viene dalla chat.
+  conversationId: string | null;
   title: string;
   themeId: string | null;
   channels: ChannelId[];
@@ -52,4 +54,16 @@ export interface Content {
   createdAt: string;
   updatedAt: string;
   approvedAt: string | null;
+}
+
+// Gli hashtag che ogni canale regge al massimo.
+export const HASHTAGS: Record<ChannelId, number> = { linkedin: 3, instagram: 6, facebook: 2, tiktok: 4, x: 2 };
+
+// Con # davanti, senza spazi né doppioni, al massimo quelli del canale.
+export function cleanHashtags(hashtags: readonly string[], channel: ChannelId): string[] {
+  const clean = hashtags
+    .map((tag) => tag.trim().replace(/\s+/g, '').replace(/^#*/, ''))
+    .filter(Boolean)
+    .map((tag) => `#${tag}`);
+  return [...new Set(clean)].slice(0, HASHTAGS[channel]);
 }

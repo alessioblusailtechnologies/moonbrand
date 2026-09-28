@@ -4,9 +4,9 @@ import path from 'node:path';
 import type pg from 'pg';
 
 import type { ContentEditJobInput, ContentJobInput } from '@moonbrand/shared/api/contract';
-import type { ChannelVariant, ContentFile, ContentVisual } from '@moonbrand/shared/domain/content';
+import { cleanHashtags, type ChannelVariant, type ContentFile, type ContentVisual } from '@moonbrand/shared/domain/content';
 
-import { contentDir, HASHTAGS } from '../lib/content';
+import { contentDir } from '../lib/content';
 
 interface ContentResult {
   title: string;
@@ -20,14 +20,6 @@ const exists = (file: string) =>
     () => false,
   );
 
-function cleanHashtags(hashtags: readonly string[], max: number): string[] {
-  const clean = hashtags
-    .map((tag) => tag.trim().replace(/\s+/g, '').replace(/^#*/, ''))
-    .filter(Boolean)
-    .map((tag) => `#${tag}`);
-  return [...new Set(clean)].slice(0, max);
-}
-
 // Il contenuto scritto dal job va nella sua riga di presenza.contents, nella forma che legge anche social-app.
 // Qui valgono le regole che il modello potrebbe non rispettare: solo i canali richiesti,
 // hashtag puliti e contati, solo le immagini che esistono davvero nella cartella del contenuto.
@@ -39,7 +31,7 @@ export async function saveContent(pool: pg.Pool, brandsDir: string, input: Conte
 
   const variants: ChannelVariant[] = channels.flatMap((channel) => {
     const variant = written.variants.find((item) => item.channel === channel);
-    return variant ? [{ channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, HASHTAGS[channel]) }] : [];
+    return variant ? [{ channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, channel) }] : [];
   });
   if (variants.length === 0) throw new Error('nessuna variante di testo per i canali richiesti');
 

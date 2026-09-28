@@ -12,6 +12,8 @@ export const FOLLOW_DIR = 'riferimenti-da-seguire';
 // Gli esempi dell'onboarding, una cartella per generazione; LEGACY_WORK_DIR è dove finivano i file di lavoro prima.
 export const EXAMPLES_DIR = 'esempi';
 export const LEGACY_WORK_DIR = 'lavoro';
+// Le foto allegate ai messaggi della chat.
+export const ATTACHMENTS_DIR = 'allegati';
 
 // Chi ha aperto la cartella di un brand non ancora creato: il brand nasce
 // nella bozza dell'onboarding e sul DB arriva solo alla fine.

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, type TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import type { ContentSummary } from '@moonbrand/shared/api/contract';
@@ -7,6 +7,7 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
+import { pageHeader } from '../../core/layout/page-header';
 import { ToastService } from '../../ui/toast';
 import { FORMAT_LABELS, STATUS_LABELS } from './labels';
 
@@ -20,11 +21,6 @@ const REFRESH_MS = 5000;
   template: `
     @if (brands.activeBrand()) {
       <section class="contents">
-        <header class="head">
-          <h1 class="title">Contenuti</h1>
-          <a class="btn btn-secondary btn-sm" routerLink="/">Crea da un’idea</a>
-        </header>
-
         @if (loading()) {
           <div class="empty"><span class="spinner"></span></div>
         } @else if (contents().length === 0) {
@@ -59,26 +55,20 @@ const REFRESH_MS = 5000;
         }
       </section>
     }
+
+    <ng-template #headerActions>
+      <a class="btn btn-secondary btn-sm from-idea" routerLink="/">Crea da un’idea</a>
+    </ng-template>
   `,
   styles: `
     .contents {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      max-width: 1120px;
       margin: 0 auto;
       animation: fade-up 240ms var(--ease);
     }
-    .head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .title {
-      margin: 0;
-    }
-    .head .btn {
+    .from-idea {
       text-decoration: none;
     }
     .empty {
@@ -135,11 +125,16 @@ export class ContentsPage {
   private readonly toast = inject(ToastService);
   protected readonly brands = inject(BrandsService);
 
+  private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   protected readonly contents = signal<ContentSummary[]>([]);
   protected readonly loading = signal(true);
   private readonly preparing = computed(() => this.contents().some((content) => content.preparing));
 
   constructor() {
+    pageHeader(
+      () => [{ label: 'Contenuti' }],
+      () => this.headerActions(),
+    );
     effect(() => {
       const brand = this.brands.activeBrand();
       if (brand) untracked(() => void this.load(brand.id, true));

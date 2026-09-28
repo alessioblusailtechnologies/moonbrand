@@ -98,7 +98,7 @@ import { ReferencesEditor } from './references-editor';
       height: min(880px, 100%);
       overflow: hidden;
       border-radius: var(--radius-card);
-      background: var(--surface-app);
+      background: var(--surface-dialog);
       box-shadow: var(--shadow-menu);
       animation: fade-up 240ms var(--ease);
     }

@@ -1,12 +1,5 @@
 @if (brand()) {
   <section #list class="ideas">
-    <header class="head">
-      <h1 class="title">Idee</h1>
-      <button class="btn btn-primary btn-sm" type="button" [disabled]="preparing()" (click)="more()">
-        {{ preparing() ? 'Preparo le idee…' : 'Proponi altre idee' }}
-      </button>
-    </header>
-
     <div class="toolbar">
       <div class="segmented tabs" role="tablist" aria-label="Quali idee mostrare">
         <button type="button" role="tab" [attr.aria-selected]="view() === 'new'" [class.selected]="view() === 'new'" (click)="view.set('new')">
@@ -118,3 +111,9 @@
     (created)="createContent($event)" />
 }
 <router-outlet />
+
+<ng-template #headerActions>
+  <button class="btn btn-primary btn-sm" type="button" [disabled]="preparing()" (click)="more()">
+    {{ preparing() ? 'Preparo le idee…' : 'Proponi altre idee' }}
+  </button>
+</ng-template>

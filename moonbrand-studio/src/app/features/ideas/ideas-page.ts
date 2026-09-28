@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  type TemplateRef,
   afterRenderEffect,
   computed,
   effect,
@@ -22,6 +23,7 @@ import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
+import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
@@ -66,6 +68,7 @@ export class IdeasPage {
   protected readonly canScrollRight = signal(false);
   private readonly filters = viewChild<ElementRef<HTMLElement>>('filters');
   private readonly list = viewChild<ElementRef<HTMLElement>>('list');
+  private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   protected readonly columnCount = signal(3);
 
   protected readonly brand = computed(() => this.brands.activeBrand());
@@ -84,6 +87,10 @@ export class IdeasPage {
   });
 
   constructor() {
+    pageHeader(
+      () => [{ label: 'Idee' }],
+      () => this.headerActions(),
+    );
     effect(() => {
       const brand = this.brand();
       if (brand) untracked(() => void this.load(brand.id));

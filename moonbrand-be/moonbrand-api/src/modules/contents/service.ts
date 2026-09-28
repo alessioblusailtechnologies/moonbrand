@@ -87,22 +87,25 @@ function withUrls(content: Content, files: BrandFiles): Content {
   };
 }
 
+// Per le card: la prima copertina o la prima slide, e se un job ci sta lavorando.
+export function summarize(content: Content, files: BrandFiles, preparing: boolean): ContentSummary {
+  const cover = withUrls(content, files).visual.files?.find((file) => file.index === 0 && (file.role === 'cover' || file.role === 'slide'));
+  return {
+    id: content.id,
+    title: content.title,
+    format: content.format,
+    channels: content.channels,
+    status: content.status,
+    coverUrl: cover?.url ?? null,
+    updatedAt: content.updatedAt,
+    preparing,
+  };
+}
+
 export function listBrandContents(pool: pg.Pool, files: BrandFiles, identity: Identity, brandId: string): Promise<ContentSummary[]> {
   return withIdentity(pool, identity, async (db) => {
     const [contents, jobs] = await Promise.all([listContents(db, brandId), activeContentJobs(db, brandId)]);
-    return contents.map((content) => {
-      const cover = withUrls(content, files).visual.files?.find((file) => file.index === 0 && (file.role === 'cover' || file.role === 'slide'));
-      return {
-        id: content.id,
-        title: content.title,
-        format: content.format,
-        channels: content.channels,
-        status: content.status,
-        coverUrl: cover?.url ?? null,
-        updatedAt: content.updatedAt,
-        preparing: jobs.has(content.id),
-      };
-    });
+    return contents.map((content) => summarize(content, files, jobs.has(content.id)));
   });
 }
 
@@ -120,6 +123,11 @@ function writable(content: Content): WritableFormat {
   return content.format;
 }
 
+// Un contenuto nato in chat si ritocca nella sua conversazione, dove Claude sa come l'ha fatto.
+function requireOutsideChat(content: Content): void {
+  if (content.conversationId) throw ApiError.conflict('IN_CHAT', 'Questo contenuto è nato in chat: ritoccalo nella sua conversazione.');
+}
+
 async function requireIdle(db: Queryable, content: Content): Promise<void> {
   if ((await activeContentJobs(db, content.brandId)).has(content.id)) {
     throw ApiError.conflict('BUSY', 'Sto già lavorando su questo contenuto: aspetta che finisca.');
@@ -131,6 +139,7 @@ export function editContent(pool: pg.Pool, identity: Identity, contentId: string
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    requireOutsideChat(content);
     await requireIdle(db, content);
     const sessionId = await lastContentSession(db, contentId);
     if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Questo contenuto non è ancora pronto da ritoccare.');
@@ -151,6 +160,7 @@ export function regenerateContent(pool: pg.Pool, identity: Identity, contentId: 
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    requireOutsideChat(content);
     await requireIdle(db, content);
     const input = await contentJobInput(db, content, writable(content));
     await bumpRevision(db, contentId);

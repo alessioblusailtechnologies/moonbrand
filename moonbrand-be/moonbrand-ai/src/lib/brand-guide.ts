@@ -1,0 +1,33 @@
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
+import type { BrandContext } from '@moonbrand/shared/api/contract';
+
+import { describeBrand } from './brand-brief';
+
+// Il CLAUDE.md della cartella del brand: chi apre Claude lì dentro sa già chi è il brand e dove sono le cose.
+// Le regole per scrivere e proporre idee stanno nelle skill di moonbrand. Si riscrive prima di ogni job dal brand com'è sul DB.
+export function brandGuide(brand: BrandContext): string {
+  const name = brand.identity.name || 'Brand';
+  return `# ${name}
+
+La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
+
+${describeBrand(brand)}
+
+## La cartella
+- file-riferimento/: i file caricati per il brand (logo, foto, materiali).
+- riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.
+- allegati/: le foto mandate nella chat.
+- contenuti/<id>/: i contenuti salvati, con le immagini finali e i file di lavoro in lavoro/.
+- chat/<id>/: la cartella di lavoro di ogni conversazione.
+
+## Le regole
+- Per scrivere o ritoccare un contenuto: la skill moonbrand:contenuti.
+- Per proporre idee: la skill moonbrand:idee.
+`;
+}
+
+export async function writeBrandGuide(brandDir: string, brand: BrandContext): Promise<void> {
+  await writeFile(path.join(brandDir, 'CLAUDE.md'), brandGuide(brand));
+}

@@ -1,6 +1,6 @@
 import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
-import type { Content, ContentFormat, ContentStatus } from '../domain/content';
+import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 
 export interface Account {
@@ -61,7 +61,8 @@ export interface ReferenceUploadRequest {
 
 export type ReferenceUploadResponse = MediaFile;
 
-export type AiJobStatus = 'queued' | 'running' | 'done' | 'failed';
+// stopped: fermato da chi l'aveva chiesto (per ora solo i turni della chat).
+export type AiJobStatus = 'queued' | 'running' | 'done' | 'failed' | 'stopped';
 
 export interface AiJob<Result = unknown> {
   id: string;
@@ -230,6 +231,97 @@ export interface ContentEditJobInput {
   format: WritableFormat;
   channels: ChannelId[];
   instruction: string;
+}
+
+// La chat: tante conversazioni per brand, ognuna una sessione di Claude nella cartella del brand.
+// Ogni messaggio è un turno, cioè un job chat che riprende la sessione del turno prima.
+
+export interface ConversationSummary {
+  id: string;
+  brandId: string;
+  title: string;
+  updatedAt: string;
+  // Un turno in coda o in corso.
+  busy: boolean;
+}
+
+// La risposta finale di Claude al turno; il resto (testi intermedi e tool) sta negli step del job.
+export interface ChatReply {
+  text: string;
+}
+
+// Una foto allegata a un messaggio: il percorso nella cartella del brand e il link firmato.
+export interface ChatAttachment {
+  file: string;
+  url: string;
+}
+
+export interface ChatAttachmentUpload {
+  dataUri: string;
+}
+
+export interface ConversationTurn {
+  id: string;
+  message: string;
+  attachments: ChatAttachment[];
+  createdAt: string;
+  job: AiJob<ChatReply>;
+}
+
+export interface ConversationResponse {
+  conversation: ConversationSummary;
+  turns: ConversationTurn[];
+  // I contenuti nati in questa conversazione.
+  contents: ContentSummary[];
+}
+
+// attachments: i percorsi delle foto già caricate con /attachments.
+export interface ChatMessageRequest {
+  message: string;
+  attachments?: string[];
+}
+
+export interface ChatTurnCreated {
+  conversationId: string;
+  turnId: string;
+  jobId: string;
+}
+
+export interface ChatJobInput {
+  brandId: string;
+  conversationId: string;
+  // La sessione da riprendere: null al primo turno.
+  sessionId: string | null;
+  brand: BrandContext;
+  message: string;
+  attachments: string[];
+}
+
+// L'API che i tool della chat chiamano con il token del job: agisce solo sul brand del job.
+
+export interface AgentContentRequest {
+  title: string;
+  format: WritableFormat;
+  channels: ChannelId[];
+  variants: ChannelVariant[];
+  headline: string;
+  slides: CarouselSlide[];
+  // Le immagini finali, ovunque siano nella cartella del brand: l'API le copia in quella del contenuto.
+  files: { file: string; role: ContentFile['role']; index: number; aspect: string }[];
+}
+
+export interface AgentContentSaved {
+  id: string;
+  title: string;
+  files: string[];
+}
+
+export interface AgentIdeaRequest {
+  title: string;
+  angleLabel: string;
+  angle: string;
+  rationale: string;
+  themeId: string | null;
 }
 
 export interface ApiErrorBody {

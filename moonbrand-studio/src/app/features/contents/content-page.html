@@ -1,27 +1,11 @@
 <section class="content-page">
-  <a class="back link-btn muted" routerLink="/contenuti"><mb-icon name="chevron-left" [size]="16" /> Contenuti</a>
-
   @if (loading()) {
     <div class="empty"><span class="spinner"></span></div>
   } @else if (content(); as current) {
-    <header class="head">
-      <div class="titles">
-        <div class="meta">
-          <span class="badge">{{ formatLabel() }}</span>
-          <span class="badge" [class.mint]="current.status === 'approved'">{{ statusLabel() }}</span>
-        </div>
-        <h1 class="title">{{ current.title }}</h1>
-      </div>
-      @if (ready() && !preparing()) {
-        <div class="head-actions">
-          <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">Rigenera da zero</button>
-          <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
-            (click)="toggleApproved()">
-            {{ current.status === 'approved' ? 'Riapri' : 'Approva' }}
-          </button>
-        </div>
-      }
-    </header>
+    <div class="meta">
+      <span class="badge">{{ formatLabel() }}</span>
+      <span class="badge" [class.mint]="current.status === 'approved'">{{ statusLabel() }}</span>
+    </div>
 
     @if (preparing()) {
       <div class="panel">
@@ -93,13 +77,32 @@
         }
       </div>
 
-      <div class="row edit">
-        <input class="sunken grow" aria-label="Cosa ritoccare" placeholder="Cosa cambio? es. più corto su Instagram, un’altra foto in copertina"
-          [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
-        <button class="icon-btn solid" type="button" aria-label="Invia il ritocco" [disabled]="preparing() || !instruction().trim()" (click)="send()">
-          <mb-icon name="arrow-up" />
-        </button>
-      </div>
+      @if (current.conversationId) {
+        <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
+          <mb-icon name="message-circle" [size]="16" /> Ritocca nella conversazione
+        </a>
+      } @else {
+        <div class="row edit">
+          <input class="sunken grow" aria-label="Cosa ritoccare" placeholder="Cosa cambio? es. più corto su Instagram, un’altra foto in copertina"
+            [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
+          <button class="icon-btn solid" type="button" aria-label="Invia il ritocco" [disabled]="preparing() || !instruction().trim()" (click)="send()">
+            <mb-icon name="arrow-up" />
+          </button>
+        </div>
+      }
     }
   }
 </section>
+
+<!-- Nella topbar, accanto al brand. -->
+<ng-template #headerActions>
+  @if (content(); as current) {
+    @if (!current.conversationId) {
+      <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">Rigenera da zero</button>
+    }
+    <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
+      (click)="toggleApproved()">
+      {{ current.status === 'approved' ? 'Riapri' : 'Approva' }}
+    </button>
+  }
+</ng-template>
