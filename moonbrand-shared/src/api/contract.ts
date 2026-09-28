@@ -103,9 +103,10 @@ export interface VisualEditJobRequest {
   instruction: string;
 }
 
-// Quello che l'API mette in coda: la sessione e i canali vengono dal job da modificare.
+// Quello che l'API mette in coda: la sessione, la cartella degli esempi e i canali vengono dal job da modificare.
 export interface VisualEditJobInput {
   brandId: string;
+  dir: string;
   sessionId: string;
   channels: ChannelId[];
   instruction: string;
@@ -220,6 +221,26 @@ export interface ContentEditJobInput {
   format: WritableFormat;
   channels: ChannelId[];
   instruction: string;
+}
+
+// Una foto caricata per uno slot, nella cartella del contenuto: la usa il job che riempie gli slot.
+export interface ContentPhotoUploadResponse {
+  path: string;
+  url: string;
+}
+
+// Gli slot da riempire tutti insieme: con upload la foto caricata, senza la genera l'AI.
+export interface ContentPhotosRequest {
+  slots: { id: string; upload?: string }[];
+}
+
+export interface ContentPhotosJobInput {
+  brandId: string;
+  contentId: string;
+  sessionId: string;
+  format: WritableFormat;
+  channels: ChannelId[];
+  slots: { id: string; description: string; aspect: string; upload: string | null }[];
 }
 
 export interface ApiErrorBody {

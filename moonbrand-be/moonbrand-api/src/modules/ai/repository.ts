@@ -25,16 +25,19 @@ export interface ExamplesJob {
   status: string;
   sessionId: string | null;
   brandId: string | null;
+  dir: string;
   channels: ChannelId[] | null;
 }
 
 // Un job di esempi (generazione o modifica) da cui riprendere la sessione.
+// La cartella: una modifica la eredita, una generazione la prende dal suo id (come examplesDir in moonbrand-ai).
 export async function findExamplesJob(db: Queryable, jobId: string): Promise<ExamplesJob | null> {
-  const { rows } = await db.query<{ status: string; session_id: string | null; brand_id: string | null; channels: ChannelId[] | null }>(
-    `select status, session_id, input->>'brandId' as brand_id, coalesce(input->'brand'->'channels', input->'channels') as channels
+  const { rows } = await db.query<{ status: string; session_id: string | null; brand_id: string | null; dir: string; channels: ChannelId[] | null }>(
+    `select status, session_id, input->>'brandId' as brand_id, coalesce(input->>'dir', 'esempi/' || id) as dir,
+       coalesce(input->'brand'->'channels', input->'channels') as channels
      from presenza.ai_jobs where id = $1 and kind in ('visual', 'visual-edit')`,
     [jobId],
   );
   const row = rows[0];
-  return row ? { status: row.status, sessionId: row.session_id, brandId: row.brand_id, channels: row.channels } : null;
+  return row ? { status: row.status, sessionId: row.session_id, brandId: row.brand_id, dir: row.dir, channels: row.channels } : null;
 }

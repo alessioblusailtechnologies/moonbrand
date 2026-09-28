@@ -31,6 +31,7 @@ export async function queueVisualEditJob(pool: pg.Pool, files: BrandFiles, ident
   await files.claim(previous.brandId, identity.accountId);
   const input: VisualEditJobInput = {
     brandId: previous.brandId,
+    dir: previous.dir,
     sessionId: previous.sessionId,
     channels: previous.channels,
     instruction: request.instruction,

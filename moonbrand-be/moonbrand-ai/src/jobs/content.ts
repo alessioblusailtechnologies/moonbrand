@@ -5,7 +5,17 @@ import type { ContentJobInput } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 
 import { describeBrand } from '../lib/brand-brief';
-import { CHANNEL_GUIDE, contentDir, FORMAT_GUIDE, HASHTAGS, neededImages, runContentAgent, WRITING_RULES } from '../lib/content';
+import {
+  CHANNEL_GUIDE,
+  contentDir,
+  FORMAT_GUIDE,
+  HASHTAGS,
+  neededImages,
+  photoRules,
+  runContentAgent,
+  STYLE_RULES,
+  WRITING_RULES,
+} from '../lib/content';
 
 const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
@@ -45,7 +55,8 @@ ${WRITING_RULES}
 
 ## Immagini
 Servono ${neededImages(format, channels)}.
-Segui lo stile dei riferimenti in riferimenti-da-seguire (i post scelti come modello) e, se servono, le immagini in file-riferimento.
+${STYLE_RULES}
+${photoRules(contentId)}
 Salva le immagini finali in ${dir} e tieni i file di lavoro (HTML, script, foto intermedie) in ${dir}/lavoro.
 Controlla ogni immagine finale prima di consegnarla: testo leggibile, niente tagli, colori del brand.
 

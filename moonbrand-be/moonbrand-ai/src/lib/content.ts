@@ -50,8 +50,30 @@ export const WRITING_RULES = [
   'Gli hashtag stanno solo nel campo hashtags e mai nel testo: pochi e specifici, con # davanti e senza spazi.',
 ].join('\n');
 
+// I riferimenti danno lo stile del brand, non un modello da ricalcare.
+export const STYLE_RULES = [
+  'I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.',
+  'Lo stile si prende solo da lì: le cartelle esempi e lavoro alla radice del brand, se ci sono, sono bozze dell’onboarding che possono essere state scartate; non aprirle e non usarle.',
+  'Scegli la composizione che serve a questa idea e alternala: guarda le immagini finali degli ultimi contenuti in contenuti e usa un’impaginazione diversa. Ogni contenuto deve essere riconoscibile come del brand e diverso dagli altri.',
+].join('\n');
+
 export function contentDir(contentId: string): string {
   return `contenuti/${contentId}`;
+}
+
+// Dove l'HTML carica la foto di uno slot: riempirlo vuol dire mettere il file e ricomporre.
+export function slotFile(contentId: string, slotId: string): string {
+  return `${contentDir(contentId)}/lavoro/slot-${slotId}.jpg`;
+}
+
+// Le foto che chi guarda prende per vere non si inventano: al loro posto uno slot, che poi riempie l'utente.
+export function photoRules(contentId: string): string {
+  return [
+    'Un’immagine che chi guarda prenderà per vera, perché mostra persone, luoghi, lavori, prodotti o risultati del brand, non generarla: al suo posto metti uno slot foto. Tutto il resto (atmosfera, dettagli, sfondi, illustrazioni) generalo come sempre.',
+    'Per ogni slot dai un id breve in minuscolo (es. prima, dopo, titolare), una descrizione in una frase di cosa deve mostrare la foto, chiara per chi la deve scattare, e le proporzioni del riquadro.',
+    `Nell’impaginazione l’HTML carica la foto dello slot da ${slotFile(contentId, '<id>')}: finché il file non c’è mostra un segnaposto sobrio nei colori del brand, con la descrizione in piccolo. Riempire lo slot deve voler dire solo mettere il file e ricomporre.`,
+    'Nel risultato ogni slot ha file vuoto.',
+  ].join('\n');
 }
 
 export function contentSchema(contentId: string, format: WritableFormat, channels: ChannelId[]) {
@@ -80,7 +102,7 @@ export function contentSchema(contentId: string, format: WritableFormat, channel
       visual: {
         type: 'object',
         additionalProperties: false,
-        required: ['headline', 'slides', 'files'],
+        required: ['headline', 'slides', 'files', 'slots'],
         properties: {
           headline: { type: 'string', description: 'Il titolo dell’immagine o della prima slide; vuoto se l’immagine non ha testo' },
           slides: {
@@ -110,6 +132,21 @@ export function contentSchema(contentId: string, format: WritableFormat, channel
                 role: { type: 'string', enum: ['cover', 'slide'] },
                 index: { type: 'integer', minimum: 0, description: 'L’ordine: 0 per la prima copertina o la prima slide' },
                 aspect: { type: 'string', enum: ['4:5', '1:1', '9:16', '16:9', '1.91:1'] },
+              },
+            },
+          },
+          slots: {
+            type: 'array',
+            description: 'Gli slot foto dell’impaginazione; vuoto se non ce ne sono',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['id', 'description', 'aspect', 'file'],
+              properties: {
+                id: { type: 'string', pattern: '^[a-z0-9-]{1,30}$' },
+                description: { type: 'string', description: 'Cosa deve mostrare la foto, in una frase' },
+                aspect: { type: 'string', description: 'Le proporzioni del riquadro, es. 3:4' },
+                file: { type: 'string', description: `La foto messa nello slot (${slotFile(contentId, '<id>')}), vuoto se c’è ancora il segnaposto` },
               },
             },
           },

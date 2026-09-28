@@ -9,11 +9,19 @@ import { imageTools } from '../tools/immagini';
 
 export const PER_CHANNEL = 3;
 
-// File di lavoro di Claude (HTML, script, foto intermedie): restano nella cartella del brand,
-// così una modifica successiva li ritrova.
-export const WORK_DIR = 'lavoro';
+// Ogni generazione di esempi ha la sua cartella, così due generazioni dello stesso brand non si sovrascrivono;
+// una modifica riprende la sessione e lavora nella cartella della generazione da cui parte.
+export function examplesDir(jobId: string): string {
+  return `esempi/${jobId}`;
+}
 
-function examplesSchema(channels: ChannelId[]) {
+// File di lavoro di Claude (HTML, script, foto intermedie): restano accanto agli esempi,
+// così una modifica successiva li ritrova.
+export function workDir(dir: string): string {
+  return `${dir}/lavoro`;
+}
+
+function examplesSchema(dir: string, channels: ChannelId[]) {
   return {
     type: 'object',
     additionalProperties: false,
@@ -31,8 +39,8 @@ function examplesSchema(channels: ChannelId[]) {
             channel: { type: 'string', enum: channels, description: 'Canale del post' },
             file: {
               type: 'string',
-              pattern: '^esempi/[A-Za-z0-9._-]+\\.(png|jpg)$',
-              description: 'Immagine del post (PNG o JPEG), percorso relativo alla cartella del brand (es. esempi/instagram-1.png)',
+              pattern: `^${dir}/[A-Za-z0-9._-]+\\.(png|jpg)$`,
+              description: `Immagine del post (PNG o JPEG), percorso relativo alla cartella del brand (es. ${dir}/instagram-1.png)`,
             },
             caption: { type: 'string', description: 'Il testo del post che accompagna l’immagine' },
           },
@@ -43,13 +51,14 @@ function examplesSchema(channels: ChannelId[]) {
 }
 
 // Sessione Claude Code nella cartella del brand; con resume riprende quella di una generazione precedente.
-export async function runExamples({ brandDir, channels, prompt, resume }: { brandDir: string; channels: ChannelId[]; prompt: string; resume?: string }) {
+export async function runExamples(options: { brandDir: string; dir: string; channels: ChannelId[]; prompt: string; resume?: string }) {
+  const { brandDir, dir, channels, prompt, resume } = options;
   const { GEMINI_API_KEY, ...env } = process.env;
   if (!GEMINI_API_KEY) {
     console.error('Manca GEMINI_API_KEY nel .env di moonbrand-ai.');
     process.exit(1);
   }
-  const temp = path.join(brandDir, WORK_DIR, 'tmp');
+  const temp = path.join(brandDir, workDir(dir), 'tmp');
   await mkdir(temp, { recursive: true });
 
   for await (const message of query({
@@ -60,7 +69,7 @@ export async function runExamples({ brandDir, channels, prompt, resume }: { bran
       mcpServers: { immagini: imageTools(brandDir, GEMINI_API_KEY) },
       permissionMode: 'bypassPermissions',
       allowDangerouslySkipPermissions: true,
-      outputFormat: { type: 'json_schema', schema: examplesSchema(channels) },
+      outputFormat: { type: 'json_schema', schema: examplesSchema(dir, channels) },
       ...(resume && { resume }),
     },
   })) {

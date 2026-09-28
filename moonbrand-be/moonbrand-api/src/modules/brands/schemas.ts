@@ -196,7 +196,8 @@ export const activeBrandSchema = z.object({ brandId: z.uuid('Brand non trovato.'
 export const createBrandSchema = brandDraftSchema.extend({
   id: z.uuid('Brand non valido.'),
   referenceExamples: z
-    .array(z.string().regex(/^esempi\/[A-Za-z0-9._-]+\.(png|jpg)$/, 'Esempio non valido.'))
+    // Nella cartella della generazione (esempi/<job>/) o, per le bozze di prima, direttamente in esempi.
+    .array(z.string().regex(/^esempi\/([0-9a-f-]{36}\/)?[A-Za-z0-9._-]+\.(png|jpg)$/, 'Esempio non valido.'))
     .max(30)
     .optional(),
 }) satisfies z.ZodType<CreateBrandRequest>;

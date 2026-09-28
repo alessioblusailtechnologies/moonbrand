@@ -9,6 +9,9 @@ import { ApiError } from '../../errors';
 
 export const REFERENCES_DIR = 'file-riferimento';
 export const FOLLOW_DIR = 'riferimenti-da-seguire';
+// Gli esempi dell'onboarding, una cartella per generazione; LEGACY_WORK_DIR è dove finivano i file di lavoro prima.
+export const EXAMPLES_DIR = 'esempi';
+export const LEGACY_WORK_DIR = 'lavoro';
 
 // Chi ha aperto la cartella di un brand non ancora creato: il brand nasce
 // nella bozza dell'onboarding e sul DB arriva solo alla fine.
@@ -16,6 +19,8 @@ const OWNER_FILE = '.account';
 
 // Una cartella e uno o più livelli sotto; nessun segmento inizia col punto, quindi niente "..".
 const RELATIVE_PATH = /^[a-z0-9-]+(\/[A-Za-z0-9_-][A-Za-z0-9._-]*)+$/;
+// Una cartella al primo livello del brand.
+const DIR_NAME = /^[a-z0-9-]+$/;
 
 const CONTENT_TYPES: Record<string, string> = {
   '.png': 'image/png',
@@ -30,6 +35,7 @@ export interface BrandFiles {
   claim(brandId: string, accountId: string): Promise<void>;
   save(brandId: string, relativePath: string, bytes: Uint8Array): Promise<void>;
   remove(brandId: string, relativePath: string): Promise<void>;
+  removeDir(brandId: string, dir: string): Promise<void>;
   copy(brandId: string, from: string, to: string): Promise<void>;
   read(brandId: string, relativePath: string): Promise<{ bytes: Buffer; contentType: string }>;
   url(brandId: string, relativePath: string): string;
@@ -70,6 +76,10 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
     },
     async remove(brandId, relativePath) {
       await rm(filePath(brandId, relativePath), { force: true });
+    },
+    async removeDir(brandId, dir) {
+      if (!DIR_NAME.test(dir)) throw ApiError.invalid('Cartella non valida.');
+      await rm(path.join(brandDir(brandId), dir), { recursive: true, force: true });
     },
     async copy(brandId, from, to) {
       const target = filePath(brandId, to);

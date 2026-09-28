@@ -5,6 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import type {
   ContentCreated,
   ContentEditRequest,
+  ContentPhotosRequest,
+  ContentPhotoUploadResponse,
   ContentResponse,
   ContentSummary,
   CreateContentRequest,
@@ -34,6 +36,15 @@ export class ContentsService {
 
   regenerate(contentId: string): Promise<{ jobId: string }> {
     return firstValueFrom(this.http.post<{ jobId: string }>(`/v1/contents/${contentId}/regenerate`, {}));
+  }
+
+  uploadPhoto(contentId: string, dataUri: string): Promise<ContentPhotoUploadResponse> {
+    return firstValueFrom(this.http.post<ContentPhotoUploadResponse>(`/v1/contents/${contentId}/photos`, { dataUri }));
+  }
+
+  // Riempie tutti insieme gli slot scelti: il lavoro si segue con AiJobsService.follow.
+  fillPhotos(contentId: string, slots: ContentPhotosRequest['slots']): Promise<{ jobId: string }> {
+    return firstValueFrom(this.http.post<{ jobId: string }>(`/v1/contents/${contentId}/photos/fill`, { slots } satisfies ContentPhotosRequest));
   }
 
   setApproved(contentId: string, approved: boolean): Promise<Content> {

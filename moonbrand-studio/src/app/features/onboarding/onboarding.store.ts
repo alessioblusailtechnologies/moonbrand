@@ -55,6 +55,17 @@ function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: W
 
 const clamp = (index: number) => Math.max(0, Math.min(ONBOARDING_STEPS.length - 1, index));
 
+// crypto.randomUUID c'è solo in un contesto sicuro (https o localhost): aperto da un indirizzo in http
+// l'id nasce da getRandomValues, che c'è sempre, nello stesso formato UUID v4.
+function newBrandId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 @Injectable({ providedIn: 'root' })
 export class OnboardingStore {
   private readonly auth = inject(AuthService);
@@ -103,7 +114,7 @@ export class OnboardingStore {
   chooseKind(kind: BrandKind): void {
     this.state.update((state) => ({
       ...state,
-      brandId: state.brandId ?? crypto.randomUUID(),
+      brandId: state.brandId ?? newBrandId(),
       draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind),
     }));
   }
@@ -180,7 +191,7 @@ export class OnboardingStore {
     try {
       const raw = localStorage.getItem(key);
       const state: State = raw ? { ...INITIAL, ...(JSON.parse(raw) as Partial<State>) } : INITIAL;
-      return state.draft && !state.brandId ? { ...state, brandId: crypto.randomUUID() } : state;
+      return state.draft && !state.brandId ? { ...state, brandId: newBrandId() } : state;
     } catch {
       return INITIAL;
     }

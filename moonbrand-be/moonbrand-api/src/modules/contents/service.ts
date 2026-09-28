@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import type pg from 'pg';
 
 import type {
@@ -5,6 +7,9 @@ import type {
   ContentEditJobInput,
   ContentIdea,
   ContentJobInput,
+  ContentPhotosJobInput,
+  ContentPhotosRequest,
+  ContentPhotoUploadResponse,
   ContentResponse,
   ContentSummary,
   CreateContentRequest,
@@ -17,6 +22,7 @@ import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import type { BrandFiles } from '../brand-files/files';
+import { EXTENSIONS } from '../media/routes';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import {
   activeContentJobs,
@@ -83,6 +89,9 @@ function withUrls(content: Content, files: BrandFiles): Content {
     visual: {
       ...content.visual,
       files: (content.visual.files ?? []).map((file) => ({ ...file, url: `${files.url(content.brandId, file.file)}&v=${version}` })),
+      slots: (content.visual.slots ?? []).map((slot) =>
+        slot.file ? { ...slot, url: `${files.url(content.brandId, slot.file)}&v=${version}` } : slot,
+      ),
     },
   };
 }
@@ -158,6 +167,52 @@ export function regenerateContent(pool: pg.Pool, identity: Identity, contentId: 
   });
 }
 
+// Le foto caricate per gli slot stanno nella cartella del contenuto: il job le sistema e le mette al loro posto.
+const uploadsDir = (contentId: string) => `contenuti/${contentId}/caricate`;
+
+export function uploadContentPhoto(
+  pool: pg.Pool,
+  files: BrandFiles,
+  identity: Identity,
+  contentId: string,
+  image: { bytes: Uint8Array; mimeType: string },
+): Promise<ContentPhotoUploadResponse> {
+  return withIdentity(pool, identity, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    const path = `${uploadsDir(contentId)}/${randomUUID()}.${EXTENSIONS[image.mimeType]}`;
+    await files.save(content.brandId, path, image.bytes);
+    return { path, url: files.url(content.brandId, path) };
+  });
+}
+
+// Tutti gli slot scelti in un solo job, che riprende la sessione: si ricompone una volta sola.
+export function fillContentPhotos(pool: pg.Pool, identity: Identity, contentId: string, request: ContentPhotosRequest): Promise<{ jobId: string }> {
+  return withIdentity(pool, identity, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    await requireIdle(db, content);
+    const sessionId = await lastContentSession(db, contentId);
+    if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Questo contenuto non è ancora pronto.');
+    const known = new Map((content.visual.slots ?? []).map((slot) => [slot.id, slot]));
+    const slots = request.slots.map(({ id, upload }) => {
+      const slot = known.get(id);
+      if (!slot) throw ApiError.invalid('Questa foto non è più nel contenuto: ricarica la pagina.');
+      if (upload && !upload.startsWith(`${uploadsDir(contentId)}/`)) throw ApiError.invalid('Foto caricata non valida.');
+      return { id, description: slot.description, aspect: slot.aspect, upload: upload ?? null };
+    });
+    const input: ContentPhotosJobInput = {
+      brandId: content.brandId,
+      contentId,
+      sessionId,
+      format: writable(content),
+      channels: content.channels,
+      slots,
+    };
+    return { jobId: await insertJob(db, identity.accountId, 'content-photos', input) };
+  });
+}
+
 export function changeContentStatus(
   pool: pg.Pool,
   files: BrandFiles,
@@ -166,6 +221,12 @@ export function changeContentStatus(
   status: ContentStatus,
 ): Promise<Content> {
   return withIdentity(pool, identity, async (db) => {
+    if (status === 'approved') {
+      const current = await findContent(db, contentId);
+      if (current?.visual.slots?.some((slot) => !slot.file)) {
+        throw ApiError.conflict('PHOTOS_MISSING', 'Mancano delle foto: caricale o falle generare prima di approvare.');
+      }
+    }
     const content = await setContentStatus(db, contentId, status);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     return withUrls(content, files);

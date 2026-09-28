@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
-import { FOLLOW_DIR, type BrandFiles } from '../brand-files/files';
+import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import { activeBrandSchema, createBrandSchema } from './schemas';
 import { chooseActiveBrand, createBrand, listBrands } from './service';
@@ -18,6 +18,13 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
       const name = example.split('/').pop() ?? '';
       await files.copy(body.id, example, `${FOLLOW_DIR}/${name}`).catch((error: unknown) => {
         request.log.warn({ err: error, example }, 'esempio non copiato nei riferimenti da seguire');
+      });
+    }
+    // Scelti i riferimenti, le generazioni dell'onboarding e i loro file di lavoro non servono più:
+    // lasciati lì, chi scrive i contenuti li troverebbe nella cartella e potrebbe prenderne lo stile.
+    for (const dir of [EXAMPLES_DIR, LEGACY_WORK_DIR]) {
+      await files.removeDir(body.id, dir).catch((error: unknown) => {
+        request.log.warn({ err: error, dir }, 'cartella dell’onboarding non eliminata');
       });
     }
     // Le prime idee partono subito, lato server: si preparano anche se chi ha creato il brand chiude la pagina.

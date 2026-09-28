@@ -10,12 +10,14 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type {
   ContentEditJobInput,
   ContentJobInput,
+  ContentPhotosJobInput,
   IdeasJobInput,
   VisualEditJobInput,
   VisualJobRequest,
   WebsiteJobRequest,
 } from '@moonbrand/shared/api/contract';
 
+import { examplesDir } from './lib/examples';
 import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
 
@@ -39,22 +41,22 @@ interface Job {
 // Ogni tipo di job è uno script autonomo in src/jobs: qui come lanciarlo e,
 // quando il risultato va salvato altrove oltre al job, come salvarlo.
 interface JobKind {
-  launch: (input: unknown) => { script: string; args: string[] };
+  launch: (input: unknown, jobId: string) => { script: string; args: string[] };
   save?: (job: Job, result: unknown) => Promise<void>;
 }
 
 const JOBS: Record<string, JobKind> = {
   website: { launch: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }) },
   visual: {
-    launch: (input) => {
+    launch: (input, jobId) => {
       const { brandId, brand } = input as VisualJobRequest;
-      return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(brand)] };
+      return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), examplesDir(jobId), JSON.stringify(brand)] };
     },
   },
   'visual-edit': {
     launch: (input) => {
-      const { brandId, sessionId, channels, instruction } = input as VisualEditJobInput;
-      return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), sessionId, JSON.stringify(channels), instruction] };
+      const { brandId, dir, sessionId, channels, instruction } = input as VisualEditJobInput;
+      return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), dir, sessionId, JSON.stringify(channels), instruction] };
     },
   },
   ideas: {
@@ -80,6 +82,13 @@ const JOBS: Record<string, JobKind> = {
       return { script: 'src/jobs/content-edit.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
     },
     save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentEditJobInput, result),
+  },
+  'content-photos': {
+    launch: (input) => {
+      const { brandId, ...rest } = input as ContentPhotosJobInput;
+      return { script: 'src/jobs/content-photos.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentPhotosJobInput, result),
   },
 };
 
@@ -125,7 +134,7 @@ async function run(job: Job): Promise<void> {
     await finish(job.id, { status: 'failed', error: `Tipo di lavoro sconosciuto: ${job.kind}` });
     return;
   }
-  const { script, args } = kind.launch(job.input);
+  const { script, args } = kind.launch(job.input, job.id);
   console.log(`[${job.id}] ${job.kind} avviato`);
 
   const steps = new Map<string, AiStep>();

@@ -81,7 +81,7 @@ export async function bumpRevision(db: Queryable, contentId: string): Promise<vo
 export async function activeContentJobs(db: Queryable, brandId: string): Promise<Map<string, string>> {
   const { rows } = await db.query<{ id: string; content_id: string }>(
     `select id, input->>'contentId' as content_id from presenza.ai_jobs
-     where kind in ('content', 'content-edit') and input->>'brandId' = $1 and status in ('queued', 'running')
+     where kind in ('content', 'content-edit', 'content-photos') and input->>'brandId' = $1 and status in ('queued', 'running')
      order by created_at`,
     [brandId],
   );
@@ -92,7 +92,7 @@ export async function activeContentJobs(db: Queryable, brandId: string): Promise
 export async function lastContentSession(db: Queryable, contentId: string): Promise<string | null> {
   const { rows } = await db.query<{ session_id: string }>(
     `select session_id from presenza.ai_jobs
-     where kind in ('content', 'content-edit') and input->>'contentId' = $1 and status = 'done' and session_id is not null
+     where kind in ('content', 'content-edit', 'content-photos') and input->>'contentId' = $1 and status = 'done' and session_id is not null
      order by finished_at desc limit 1`,
     [contentId],
   );
