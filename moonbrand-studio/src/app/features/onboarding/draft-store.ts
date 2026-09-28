@@ -15,6 +15,9 @@ export interface DraftState {
   positioningIdeas: { key: string; ideas: PositioningIdeas } | null;
   examples: VisualExampleFile[] | null;
   examplesJobId: string | null;
+  // Il lavoro sugli esempi ancora in corso: resta nella bozza, così si riprende anche dopo un ricaricamento della pagina
+  // (sul telefono il browser la ricarica spesso quando si torna da un'altra app). edit: modifica degli esempi già fatti.
+  examplesPending: { jobId: string; edit: boolean } | null;
   // Gli esempi partono tutti scelti: qui solo quelli tolti.
   unselectedExamples: string[];
 }
@@ -27,6 +30,7 @@ export const EMPTY_DRAFT_STATE: DraftState = {
   positioningIdeas: null,
   examples: null,
   examplesJobId: null,
+  examplesPending: null,
   unselectedExamples: [],
 };
 
@@ -56,6 +60,7 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
   readonly examples = computed(() => this.state().examples);
   readonly unselectedExamples = computed(() => this.state().unselectedExamples);
   readonly examplesJobId = computed(() => this.state().examplesJobId);
+  readonly examplesPending = computed(() => this.state().examplesPending);
   readonly selectedExamples = computed(() =>
     (this.state().examples ?? []).map((example) => example.file).filter((file) => !this.state().unselectedExamples.includes(file)),
   );
@@ -119,6 +124,10 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
   // Una modifica tiene la selezione (i file hanno gli stessi nomi), una generazione nuova la azzera.
   setExamples(examples: VisualExampleFile[] | null, jobId: string | null, keepSelection = false): void {
     this.state.update((state) => ({ ...state, examples, examplesJobId: jobId, unselectedExamples: keepSelection ? state.unselectedExamples : [] }));
+  }
+
+  setExamplesPending(pending: { jobId: string; edit: boolean } | null): void {
+    this.state.update((state) => ({ ...state, examplesPending: pending }));
   }
 
   toggleExample(file: string): void {

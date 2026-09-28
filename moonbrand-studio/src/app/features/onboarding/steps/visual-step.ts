@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, type OnInit, type WritableSignal } from '@angular/core';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { VisualBrandContext } from '@moonbrand/shared/api/contract';
+import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { currentVoiceCard, type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName, PALETTE_SLOT_LABELS } from '@moonbrand/shared/domain/catalog';
 
@@ -17,6 +17,10 @@ import { DraftStore } from '../draft-store';
 import { LOGO_SIDE, resizedDataUri } from '../../../core/images';
 
 const MAX_REFERENCES = 6;
+
+// I lavori sugli esempi che si stanno seguendo, per id: tornando al passo il lavoro si riprende senza seguirlo due volte,
+// e il risultato va nella bozza una volta sola.
+const running = new Map<string, { steps: WritableSignal<AiStep[]>; result: Promise<VisualExampleFile[]> }>();
 
 function normalizeHex(input: string): string | null {
   const match = /^#?([0-9a-f]{6})$/i.exec(input.trim());
@@ -43,7 +47,9 @@ export class VisualStep implements OnInit {
   protected readonly notes = signal('');
   protected readonly uploading = signal(0);
   protected readonly preparing = signal(false);
-  protected readonly steps = signal<AiStep[]>([]);
+  // Gli step del lavoro che si sta seguendo.
+  private readonly stepsSource = signal<WritableSignal<AiStep[]>>(signal([]));
+  protected readonly steps = computed(() => this.stepsSource()());
   protected readonly hexDrafts = signal<string[]>([]);
 
   protected readonly visual = computed(() => this.draft().visual);
@@ -71,6 +77,9 @@ export class VisualStep implements OnInit {
 
   ngOnInit(): void {
     this.notes.set(this.visual().notes ?? '');
+    // Un lavoro partito prima (anche prima di un ricaricamento della pagina) si riprende da dove è.
+    const pending = this.store.examplesPending();
+    if (pending) void this.track(pending.jobId, pending.edit);
   }
 
   private selectedChannels(): ChannelId[] {
@@ -175,13 +184,45 @@ export class VisualStep implements OnInit {
 
   private async editExamples(jobId: string, instruction: string): Promise<void> {
     this.preparing.set(true);
-    this.steps.set([]);
     try {
-      const edited = await this.ai.editExamples({ jobId, instruction }, (steps) => this.steps.set(steps));
-      this.store.setExamples(edited.examples, edited.jobId, true);
-      this.notes.set('');
+      const editJobId = await this.ai.queueExamplesEdit({ jobId, instruction });
+      this.store.setExamplesPending({ jobId: editJobId, edit: true });
+      if (await this.track(editJobId, true)) this.notes.set('');
     } catch (error) {
+      this.preparing.set(false);
       this.toast.show(errorMessage(error, 'Non sono riuscito a modificare gli esempi. Riprova.'));
+    }
+  }
+
+  // Segue il lavoro fino agli esempi e li mette nella bozza; true se sono arrivati.
+  private async track(jobId: string, edit: boolean): Promise<boolean> {
+    let run = running.get(jobId);
+    if (!run) {
+      const steps = signal<AiStep[]>([]);
+      const result = this.ai
+        .followExamples(jobId, (value) => steps.set(value))
+        .then((examples) => {
+          // Una modifica tiene la selezione (i file hanno gli stessi nomi), una generazione nuova la azzera.
+          this.store.setExamples(examples, jobId, edit);
+          return examples;
+        })
+        .finally(() => {
+          running.delete(jobId);
+          if (this.store.examplesPending()?.jobId === jobId) this.store.setExamplesPending(null);
+        });
+      run = { steps, result };
+      running.set(jobId, run);
+    }
+    this.stepsSource.set(run.steps);
+    this.preparing.set(true);
+    try {
+      await run.result;
+      return true;
+    } catch (error) {
+      this.toast.show(
+        errorMessage(error, edit ? 'Non sono riuscito a modificare gli esempi. Riprova.' : 'Non sono riuscito a preparare gli esempi. Riprova.'),
+      );
+      return false;
     } finally {
       this.preparing.set(false);
     }
@@ -203,14 +244,13 @@ export class VisualStep implements OnInit {
       notes,
     };
     this.preparing.set(true);
-    this.steps.set([]);
     try {
-      const created = await this.ai.createExamples({ brandId, brand }, (steps) => this.steps.set(steps));
-      this.store.setExamples(created.examples, created.jobId);
+      const jobId = await this.ai.queueExamples({ brandId, brand });
+      this.store.setExamplesPending({ jobId, edit: false });
+      await this.track(jobId, false);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a preparare gli esempi. Riprova.'));
-    } finally {
       this.preparing.set(false);
+      this.toast.show(errorMessage(error, 'Non sono riuscito a preparare gli esempi. Riprova.'));
     }
   }
 }

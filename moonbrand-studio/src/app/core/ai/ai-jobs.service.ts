@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
@@ -19,6 +19,12 @@ import { normalizeSite } from '@moonbrand/shared/lib/site';
 import { LOGO_SIDE, resizedDataUri } from '../images';
 
 const POLL_MS = 1000;
+// La rete può mancare per un po', per esempio al rientro nel browser del telefono: si riprova con attese crescenti
+// fino a MAX_WAIT_MS tra un tentativo e l'altro, per MAX_FAILURES volte di fila (qualche minuto).
+const MAX_WAIT_MS = 10_000;
+const MAX_FAILURES = 30;
+
+const transient = (error: unknown) => error instanceof HttpErrorResponse && (error.status === 0 || error.status >= 502);
 
 // Un lavoro fermato da chi l'aveva chiesto.
 export class StoppedJobError extends Error {}
@@ -44,15 +50,18 @@ export class AiJobsService {
     };
   }
 
-  // Si tiene l'id del job: una modifica successiva riprende la sua sessione.
-  async createExamples(request: VisualJobRequest, onSteps?: OnAiSteps): Promise<{ jobId: string; examples: VisualExampleFile[] }> {
-    const { id, result } = await this.runJob<VisualReading>('/v1/ai/visual', request, onSteps);
-    return { jobId: id, examples: result.examples };
+  // Gli esempi si mettono in coda e poi si seguono a parte: chi li chiede tiene l'id, per riprenderli dopo un ricaricamento
+  // e perché una modifica successiva riprende la sessione del job.
+  async queueExamples(request: VisualJobRequest): Promise<string> {
+    return (await firstValueFrom(this.http.post<AiJobCreated>('/v1/ai/visual', request))).id;
   }
 
-  async editExamples(request: VisualEditJobRequest, onSteps?: OnAiSteps): Promise<{ jobId: string; examples: VisualExampleFile[] }> {
-    const { id, result } = await this.runJob<VisualReading>('/v1/ai/visual/edit', request, onSteps);
-    return { jobId: id, examples: result.examples };
+  async queueExamplesEdit(request: VisualEditJobRequest): Promise<string> {
+    return (await firstValueFrom(this.http.post<AiJobCreated>('/v1/ai/visual/edit', request))).id;
+  }
+
+  async followExamples(jobId: string, onSteps?: OnAiSteps): Promise<VisualExampleFile[]> {
+    return (await this.follow<VisualReading>(jobId, onSteps)).examples;
   }
 
   private async run<Result>(url: string, body: unknown, onSteps?: OnAiSteps): Promise<Result> {
@@ -66,8 +75,17 @@ export class AiJobsService {
 
   // Segue un lavoro già in coda fino al risultato, passando gli step man mano; pollMs più basso per le risposte che si leggono mentre arrivano.
   async follow<Result>(jobId: string, onSteps?: OnAiSteps, pollMs = POLL_MS): Promise<Result> {
+    let failures = 0;
     for (;;) {
-      const job = await firstValueFrom(this.http.get<AiJob<Result>>(`/v1/ai/jobs/${jobId}`));
+      let job: AiJob<Result>;
+      try {
+        job = await firstValueFrom(this.http.get<AiJob<Result>>(`/v1/ai/jobs/${jobId}`));
+        failures = 0;
+      } catch (error) {
+        if (!transient(error) || ++failures > MAX_FAILURES) throw error;
+        await new Promise((resolve) => setTimeout(resolve, Math.min(pollMs * 2 ** failures, MAX_WAIT_MS)));
+        continue;
+      }
       onSteps?.(job.steps);
       if (job.status === 'done' && job.result) return job.result;
       if (job.status === 'stopped') throw new StoppedJobError('Fermato.');
