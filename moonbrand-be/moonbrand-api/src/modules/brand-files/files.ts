@@ -1,6 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createReadStream, createWriteStream, type ReadStream } from 'node:fs';
+import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { Transform, type Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import type pg from 'pg';
 
@@ -31,15 +34,28 @@ const CONTENT_TYPES: Record<string, string> = {
   '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
   '.gif': 'image/gif',
+  '.mp4': 'video/mp4',
+  '.mp3': 'audio/mpeg',
 };
+
+// Un file da mandare a pezzi: i video si scorrono chiedendo solo la parte che serve (Range).
+export interface OpenFile {
+  size: number;
+  contentType: string;
+  stream(start: number, end: number): ReadStream;
+}
 
 export interface BrandFiles {
   claim(brandId: string, accountId: string): Promise<void>;
   save(brandId: string, relativePath: string, bytes: Uint8Array): Promise<void>;
+  // Scrive un file man mano che arriva, senza tenerlo in memoria; oltre maxBytes si ferma e lo toglie.
+  saveStream(brandId: string, relativePath: string, stream: Readable, maxBytes: number): Promise<void>;
+  // Il percorso sul disco, per gli strumenti che lavorano sui file (ffmpeg).
+  localPath(brandId: string, relativePath: string): string;
   remove(brandId: string, relativePath: string): Promise<void>;
   removeDir(brandId: string, dir: string): Promise<void>;
   copy(brandId: string, from: string, to: string): Promise<void>;
-  read(brandId: string, relativePath: string): Promise<{ bytes: Buffer; contentType: string }>;
+  open(brandId: string, relativePath: string): Promise<OpenFile>;
   url(brandId: string, relativePath: string): string;
   verify(brandId: string, relativePath: string, signature: string): boolean;
 }
@@ -76,6 +92,24 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
       await mkdir(path.dirname(target), { recursive: true });
       await writeFile(target, bytes);
     },
+    async saveStream(brandId, relativePath, stream, maxBytes) {
+      const target = filePath(brandId, relativePath);
+      await mkdir(path.dirname(target), { recursive: true });
+      let size = 0;
+      const limit = new Transform({
+        transform(chunk: Buffer, _encoding, done) {
+          size += chunk.length;
+          done(size > maxBytes ? ApiError.invalid(`Il file supera ${Math.round(maxBytes / 1024 ** 3)} GB.`) : null, chunk);
+        },
+      });
+      await pipeline(stream, limit, createWriteStream(target)).catch(async (error: unknown) => {
+        await rm(target, { force: true });
+        throw error;
+      });
+    },
+    localPath(brandId, relativePath) {
+      return filePath(brandId, relativePath);
+    },
     async remove(brandId, relativePath) {
       await rm(filePath(brandId, relativePath), { force: true });
     },
@@ -88,12 +122,15 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
       await mkdir(path.dirname(target), { recursive: true });
       await copyFile(filePath(brandId, from), target);
     },
-    async read(brandId, relativePath) {
+    async open(brandId, relativePath) {
       const target = filePath(brandId, relativePath);
-      const bytes = await readFile(target).catch(() => {
-        throw ApiError.notFound('File non trovato.');
-      });
-      return { bytes, contentType: CONTENT_TYPES[path.extname(target).toLowerCase()] ?? 'application/octet-stream' };
+      const info = await stat(target).catch(() => null);
+      if (!info?.isFile()) throw ApiError.notFound('File non trovato.');
+      return {
+        size: info.size,
+        contentType: CONTENT_TYPES[path.extname(target).toLowerCase()] ?? 'application/octet-stream',
+        stream: (start, end) => createReadStream(target, { start, end }),
+      };
     },
     url(brandId, relativePath) {
       return `/v1/files/${brandId}/${relativePath}?sig=${sign(brandId, relativePath)}`;

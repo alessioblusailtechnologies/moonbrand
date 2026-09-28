@@ -5,7 +5,7 @@ const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
 
 const content = {
   title: z.string().min(1).describe('Il titolo del contenuto in una frase'),
-  format: z.enum(['post', 'carousel', 'article']),
+  format: z.enum(['post', 'carousel', 'article', 'video']),
   channels: z.array(channel).min(1).describe('I canali su cui esce, tra quelli del brand'),
   variants: z
     .array(
@@ -16,21 +16,34 @@ const content = {
       }),
     )
     .describe('Una variante di testo per ogni canale'),
-  headline: z.string().describe('Il titolo dell’immagine o della prima slide; vuoto se l’immagine non ha testo'),
+  headline: z.string().describe('Il titolo dell’immagine, della prima slide o del video; vuoto se non ha testo'),
   slides: z
     .array(z.object({ title: z.string(), body: z.string() }))
     .describe('Titolo e testo di ogni slide del carosello, nell’ordine; vuoto negli altri formati'),
+  script: z.string().optional().describe('Solo nei video: l’idea in breve, cioè tono, ritmo, musica e voce'),
+  scenes: z
+    .array(
+      z.object({
+        seconds: z.number().positive().describe('Quanto dura, in secondi'),
+        shot: z.string().describe('Cosa si vede: soggetto, tipo di inquadratura, movimento di macchina'),
+        source: z.enum(['clip', 'photo', 'user', 'graphics']).describe('clip generata, foto generata, foto o clip dell’utente, solo grafica'),
+        onScreen: z.string().describe('Il testo a schermo; vuoto se non c’è'),
+        voice: z.string().describe('La voce fuori campo; vuota se non c’è'),
+      }),
+    )
+    .optional()
+    .describe('Solo nei video: le inquadrature del copione, nell’ordine'),
   files: z
     .array(
       z.object({
-        file: z.string().describe('L’immagine finale, percorso relativo alla cartella del brand, es. chat/<id>/cover-4x5.png'),
-        role: z.enum(['cover', 'slide']),
+        file: z.string().describe('Il file finale, percorso relativo alla cartella del brand, es. chat/<id>/cover-4x5.png o chat/<id>/video-9x16.mp4'),
+        role: z.enum(['cover', 'slide', 'video']).describe('video: l’MP4 di un video, che vuole una copertina (cover) nella stessa proporzione'),
         index: z.number().int().min(0).describe('L’ordine: 0 per la prima copertina o la prima slide'),
         aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
       }),
     )
     .min(1)
-    .describe('Le immagini finali, PNG o JPEG: moonbrand le copia nella cartella del contenuto'),
+    .describe('Le immagini finali in PNG o JPEG e i video in MP4: moonbrand li copia nella cartella del contenuto'),
 };
 
 // I tool della chat per i dati di moonbrand: contenuti e idee passano dall'API, con il token del job.
@@ -56,28 +69,29 @@ export function moonbrandTools(apiUrl: string, token: string) {
   const tools = [
     tool(
       'contenuti_elenca',
-      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved) e immagini.',
+      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved) e file.',
       {},
       () => call('GET', '/contents'),
       { alwaysLoad: true },
     ),
     tool(
       'contenuto_leggi',
-      'Legge un contenuto salvato: i testi per canale, le slide e i percorsi delle immagini nella cartella del brand.',
+      'Legge un contenuto salvato: i testi per canale, le slide, il copione dei video e i percorsi dei file nella cartella del brand.',
       { id: z.string().describe('L’id del contenuto') },
       ({ id }) => call('GET', `/contents/${encodeURIComponent(id)}`),
       { alwaysLoad: true },
     ),
     tool(
       'contenuto_salva',
-      'Salva un contenuto nuovo nella sezione Contenuti, come bozza. Da usare appena il contenuto è pronto: testi per ogni canale e immagini finali controllate.',
+      'Salva un contenuto nuovo nella sezione Contenuti, come bozza: post, carosello, articolo o video. Da usare appena il contenuto è pronto: testi per ogni canale e immagini o video finali controllati. ' +
+        'Un video si salva con format «video»: l’MP4 con role «video» e la copertina (PNG o JPEG) con role «cover», nella stessa proporzione; in chat compare con il suo lettore.',
       content,
       (input) => call('POST', '/contents', input),
       { alwaysLoad: true },
     ),
     tool(
       'contenuto_aggiorna',
-      'Riscrive un contenuto già salvato, che torna bozza. Va passato il contenuto completo, anche le parti che non cambiano.',
+      'Riscrive un contenuto già salvato, che torna bozza, anche cambiandone il formato (per esempio da post a video). Va passato il contenuto completo, anche le parti che non cambiano.',
       { id: z.string().describe('L’id del contenuto'), ...content },
       ({ id, ...input }) => call('PUT', `/contents/${encodeURIComponent(id)}`, input),
       { alwaysLoad: true },

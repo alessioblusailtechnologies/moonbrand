@@ -1,5 +1,5 @@
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import type { ChannelVariant, Content, ContentFormat, ContentStatus, ContentVisual } from '@moonbrand/shared/domain/content';
+import type { ChannelVariant, Content, ContentFormat, ContentStatus, ContentVisual, VideoScene } from '@moonbrand/shared/domain/content';
 
 import type { Queryable } from '../../db/pool';
 
@@ -119,6 +119,17 @@ export async function setContentStatus(db: Queryable, contentId: string, status:
   return rows[0] ? toContent(rows[0]) : null;
 }
 
+// Il copione di un video corretto a mano: il resto del contenuto non cambia, e torna bozza.
+export async function setContentScript(db: Queryable, contentId: string, script: string, scenes: VideoScene[]): Promise<Content | null> {
+  const { rows } = await db.query<ContentRow>(
+    `update presenza.contents
+       set visual = visual || jsonb_build_object('script', $2::text, 'scenes', $3::jsonb), status = 'draft', approved_at = null, updated_at = now()
+     where id = $1 returning ${COLUMNS}`,
+    [contentId, script, JSON.stringify(scenes)],
+  );
+  return rows[0] ? toContent(rows[0]) : null;
+}
+
 export async function bumpRevision(db: Queryable, contentId: string): Promise<void> {
   await db.query(`update presenza.contents set revision = revision + 1, status = 'draft', approved_at = null where id = $1`, [contentId]);
 }
@@ -127,7 +138,7 @@ export async function bumpRevision(db: Queryable, contentId: string): Promise<vo
 export async function activeContentJobs(db: Queryable, brandId: string): Promise<Map<string, string>> {
   const { rows } = await db.query<{ id: string; content_id: string }>(
     `select id, input->>'contentId' as content_id from presenza.ai_jobs
-     where kind in ('content', 'content-edit') and input->>'brandId' = $1 and status in ('queued', 'running')
+     where kind in ('content', 'content-edit', 'content-video') and input->>'brandId' = $1 and status in ('queued', 'running')
      order by created_at`,
     [brandId],
   );
@@ -138,7 +149,7 @@ export async function activeContentJobs(db: Queryable, brandId: string): Promise
 export async function lastContentSession(db: Queryable, contentId: string): Promise<string | null> {
   const { rows } = await db.query<{ session_id: string }>(
     `select session_id from presenza.ai_jobs
-     where kind in ('content', 'content-edit') and input->>'contentId' = $1 and status = 'done' and session_id is not null
+     where kind in ('content', 'content-edit', 'content-video') and input->>'contentId' = $1 and status = 'done' and session_id is not null
      order by finished_at desc limit 1`,
     [contentId],
   );

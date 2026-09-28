@@ -7,6 +7,9 @@ import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
+import { prepareVideoProject } from '../lib/video';
+import { audioTools } from '../tools/audio';
+import { clipTools } from '../tools/clip';
 import { imageTools } from '../tools/immagini';
 import { moonbrandTools } from '../tools/moonbrand';
 
@@ -17,7 +20,7 @@ if (!brandDir || !inputJson) {
 }
 
 // Chiavi e token restano in questo processo: Claude vede solo i tool.
-const { GEMINI_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
+const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
 if (!MOONBRAND_AGENT_TOKEN) {
   console.error('Manca il token del job: la chat parte solo dal worker.');
   process.exit(1);
@@ -28,9 +31,15 @@ const workDir = `chat/${conversationId}`;
 const temp = path.join(brandDir, workDir, 'tmp');
 await mkdir(temp, { recursive: true });
 await writeBrandGuide(brandDir, brand);
+// Il progetto video del brand è pronto a ogni turno: un video si può chiedere in qualsiasi momento.
+const videoEnv = await prepareVideoProject(brandDir);
 
 const mcpServers: Record<string, McpServerConfig> = { moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN) };
-if (GEMINI_API_KEY) mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+if (GEMINI_API_KEY) {
+  mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+  mcpServers.clip = clipTools(brandDir, GEMINI_API_KEY);
+}
+if (ELEVENLABS_API_KEY) mcpServers.audio = audioTools(brandDir, ELEVENLABS_API_KEY);
 
 const guide = `# moonbrand
 
@@ -38,13 +47,15 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 
 - Rispondi in italiano, diretto e concreto. Se ti manca qualcosa di importante per fare bene il lavoro, chiedilo invece di inventarlo.
 - La cartella di lavoro di questa conversazione è ${workDir}: lì bozze, HTML, script e immagini. Le cartelle dei contenuti si cambiano solo con i tool di moonbrand.
-- Per scrivere o ritoccare un contenuto segui la skill moonbrand:contenuti; per proporre idee la skill moonbrand:idee.
-- Quando prepari un contenuto, salvalo con contenuto_salva appena testi e immagini finali sono pronti e controllati: finisce subito nella sezione Contenuti, come bozza. Per cambiare un contenuto già salvato usa contenuto_aggiorna con il suo id.
+- Per scrivere o ritoccare un contenuto segui la skill moonbrand:contenuti; per un video anche la skill moonbrand:video; per proporre idee la skill moonbrand:idee.
+- Un video costa tempo e generazioni: prima proponi in chat il copione, cioè l’idea in breve e le inquadrature con durata, cosa si vede, da dove viene, testo a schermo e voce, e aspetta l’ok. Vai dritto al video solo se l’utente lo chiede. Nel progetto video il suo id è un nome breve e unico finché non è salvato.
+- Quando prepari un contenuto, salvalo con contenuto_salva appena testi e immagini o video finali sono pronti e controllati, anche se è una prova: finisce subito nella sezione Contenuti, come bozza, e l’utente lo vede in chat. Per cambiare un contenuto già salvato usa contenuto_aggiorna con il suo id.
+- Un video si salva come gli altri contenuti: format «video», l’MP4 con role «video» e la copertina con role «cover» nella stessa proporzione, più copione (script) e inquadrature (scenes).
 - Le idee proponile in chat; salva con idea_salva solo quelle che l’utente vuole tenere: finiscono nella sezione Idee.
-- Le foto che l’utente allega al messaggio sono in allegati/: guardale prima di rispondere.
+- Le foto e i video che l’utente allega al messaggio sono in allegati/: guardali prima di rispondere. Un video è un MP4 con accanto la copertina in JPEG; per vederlo meglio estrai qualche fotogramma come dice la skill moonbrand:video.
 - Dopo un salvataggio di’ all’utente dove lo trova.`;
 
-const prompt = attachments.length > 0 ? `${message}\n\nFoto allegate:\n${attachments.map((file) => `- ${file}`).join('\n')}` : message;
+const prompt = attachments.length > 0 ? `${message}\n\nAllegati:\n${attachments.map((file) => `- ${file}`).join('\n')}` : message;
 
 // Lo stop arriva dal worker sullo stdin: Claude si ferma e la sessione resta riprendibile.
 const abort = new AbortController();
@@ -57,7 +68,7 @@ try {
     prompt,
     options: {
       cwd: brandDir,
-      env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
+      env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,
       plugins: MOONBRAND_PLUGINS,
       includePartialMessages: true,

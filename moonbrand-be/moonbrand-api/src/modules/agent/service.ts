@@ -16,6 +16,7 @@ import { findBrandForIdeas, insertIdea, listIdeas } from '../ideas/repository';
 import type { AgentJob } from './repository';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
+const VIDEO_EXTENSIONS = new Set(['.mp4']);
 
 const contentDir = (contentId: string) => `contenuti/${contentId}`;
 
@@ -35,6 +36,8 @@ function describe(content: Content, agent: AgentJob) {
     variants: content.variants,
     headline: content.visual.headline,
     slides: content.visual.slides,
+    script: content.visual.script,
+    scenes: content.visual.scenes,
     files: filesOf(content),
   };
 }
@@ -56,7 +59,7 @@ export function getAgentContent(pool: pg.Pool, agent: AgentJob, contentId: strin
   });
 }
 
-// Le immagini finali vanno nella cartella del contenuto con un nome nuovo a ogni salvataggio:
+// Immagini e video finali vanno nella cartella del contenuto con un nome nuovo a ogni salvataggio:
 // così la sorgente può essere anche un'immagine già del contenuto, senza sovrascriverla mentre si copia.
 async function publishFiles(files: BrandFiles, brandId: string, contentId: string, requested: AgentContentRequest['files']): Promise<ContentFile[]> {
   const stamp = Date.now().toString(36);
@@ -67,7 +70,8 @@ async function publishFiles(files: BrandFiles, brandId: string, contentId: strin
     if (taken.has(key)) throw ApiError.invalid(`Due immagini con role «${item.role}» e index ${item.index}: ogni immagine ha il suo index.`);
     taken.add(key);
     const extension = path.extname(item.file).toLowerCase();
-    if (!IMAGE_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: servono immagini PNG o JPEG.`);
+    if (item.role === 'video' && !VIDEO_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: il video va in MP4.`);
+    if (item.role !== 'video' && !IMAGE_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: servono immagini PNG o JPEG.`);
     const target = `${contentDir(contentId)}/${key}-${stamp}${extension === '.jpeg' ? '.jpg' : extension}`;
     await files.copy(brandId, item.file, target).catch((error: unknown) => {
       throw error instanceof ApiError
@@ -76,11 +80,12 @@ async function publishFiles(files: BrandFiles, brandId: string, contentId: strin
     });
     published.push({ file: target, role: item.role, index: item.index, aspect: item.aspect });
   }
-  return published.sort((a, b) => (a.role === b.role ? a.index - b.index : a.role === 'cover' ? -1 : 1));
+  const order = { cover: 0, slide: 1, video: 2 };
+  return published.sort((a, b) => (a.role === b.role ? a.index - b.index : order[a.role] - order[b.role]));
 }
 
 // Le regole che valgono anche per i job dei contenuti: solo i canali del brand, una variante per canale,
-// hashtag puliti e contati, le immagini giuste per il formato.
+// hashtag puliti e contati, le immagini giuste per il formato; un video ha la sua copertina in ogni proporzione.
 function check(request: AgentContentRequest, brandChannels: readonly string[]): ChannelVariant[] {
   const channels = [...new Set(request.channels)];
   const outside = channels.filter((channel) => !brandChannels.includes(channel));
@@ -95,6 +100,14 @@ function check(request: AgentContentRequest, brandChannels: readonly string[]): 
   if (request.format !== 'carousel' && !request.files.some((file) => file.role === 'cover')) {
     throw ApiError.invalid('Serve almeno un’immagine con role «cover».');
   }
+  const videos = request.files.filter((file) => file.role === 'video');
+  if (request.format === 'video') {
+    if (videos.length === 0) throw ApiError.invalid('Un video ha almeno un file MP4 con role «video».');
+    const missing = videos.filter((video) => !request.files.some((file) => file.role === 'cover' && file.aspect === video.aspect));
+    if (missing.length > 0) throw ApiError.invalid(`Manca la copertina per il video in ${missing.map((video) => video.aspect).join(', ')}.`);
+  } else if (videos.length > 0) {
+    throw ApiError.invalid('I file con role «video» vanno solo nel formato video.');
+  }
   return variants;
 }
 
@@ -102,8 +115,8 @@ function visualOf(request: AgentContentRequest, files: ContentFile[]): ContentVi
   return {
     headline: request.headline.trim(),
     slides: request.format === 'carousel' ? request.slides.map((slide) => ({ title: slide.title.trim(), body: slide.body.trim() })) : [],
-    script: '',
-    scenes: [],
+    script: request.format === 'video' ? (request.script ?? '').trim() : '',
+    scenes: request.format === 'video' ? (request.scenes ?? []) : [],
     design: null,
     files,
   };

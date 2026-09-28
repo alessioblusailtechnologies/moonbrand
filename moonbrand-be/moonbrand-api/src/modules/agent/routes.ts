@@ -7,6 +7,7 @@ import type { AgentContentRequest, AgentIdeaRequest } from '@moonbrand/shared/ap
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { channelId } from '../brands/schemas';
+import { sceneSchema } from '../contents/routes';
 import { findAgentJob, type AgentJob } from './repository';
 import { createAgentContent, createAgentIdea, getAgentContent, listAgentContents, listAgentIdeas, updateAgentContent } from './service';
 
@@ -20,18 +21,20 @@ const contentParams = z.object({ contentId: z.uuid('Contenuto non trovato.') });
 
 const contentSchema = z.object({
   title: z.string().trim().min(1).max(300),
-  format: z.enum(['post', 'carousel', 'article']),
+  format: z.enum(['post', 'carousel', 'article', 'video']),
   channels: z.array(channelId).min(1).max(5),
   variants: z
     .array(z.object({ channel: channelId, text: z.string().trim().min(1).max(5000), hashtags: z.array(z.string().max(100)).max(30) }))
     .min(1),
   headline: z.string().max(200),
   slides: z.array(z.object({ title: z.string().max(200), body: z.string().max(1000) })).max(10),
+  script: z.string().max(4000).optional(),
+  scenes: z.array(sceneSchema).max(100).optional(),
   files: z
     .array(
       z.object({
         file: z.string().min(1).max(300),
-        role: z.enum(['cover', 'slide']),
+        role: z.enum(['cover', 'slide', 'video']),
         index: z.number().int().min(0).max(20),
         aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
       }),

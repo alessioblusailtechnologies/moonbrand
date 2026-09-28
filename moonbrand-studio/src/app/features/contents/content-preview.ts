@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, li
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import type { Content, ContentFile } from '@moonbrand/shared/domain/content';
+import { VIDEO_ASPECT, type Content, type ContentFile } from '@moonbrand/shared/domain/content';
 
 import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { ToastService } from '../../ui/toast';
 import { cssAspect, POST_ASPECT } from './labels';
 
-// Il contenuto come si pubblica: le immagini (slider per il carosello) e il testo del canale scelto.
+// Il contenuto come si pubblica: le immagini (slider per il carosello) o il video, e il testo del canale scelto.
 // Nella pagina del contenuto a tutta larghezza; nella chat (compact) dentro una card, con le immagini più strette.
 @Component({
   selector: 'mb-content-preview',
@@ -48,6 +48,17 @@ export class ContentPreview {
     const channel = this.channel();
     const fitting = channel && content.format === 'post' ? covers.find((file) => file.aspect === POST_ASPECT[channel]) : null;
     return [fitting ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
+  });
+
+  // Il video nella proporzione del canale scelto, con la sua copertina come fermo immagine.
+  protected readonly video = computed(() => {
+    const files = this.content().visual.files ?? [];
+    const videos = files.filter((file) => file.role === 'video');
+    const channel = this.channel();
+    const video = (channel && videos.find((file) => file.aspect === VIDEO_ASPECT[channel])) || videos[0];
+    if (!video) return null;
+    const poster = files.find((file) => file.role === 'cover' && file.aspect === video.aspect);
+    return { file: video, poster: poster?.url ?? null };
   });
 
   protected readonly name = channelName;

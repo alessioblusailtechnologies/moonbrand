@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
@@ -11,6 +11,7 @@ import type {
   ConversationSummary,
 } from '@moonbrand/shared/api/contract';
 
+import { AuthService } from '../auth/auth.service';
 import { BrandsService } from '../brands/brands.service';
 
 // Le conversazioni con l'assistente: ogni messaggio mette in coda un turno, che si segue con AiJobsService.follow.
@@ -18,6 +19,7 @@ import { BrandsService } from '../brands/brands.service';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   private readonly brands = inject(BrandsService);
 
   readonly conversations = signal<ConversationSummary[]>([]);
@@ -55,6 +57,30 @@ export class ChatService {
 
   async stop(conversationId: string): Promise<void> {
     await firstValueFrom(this.http.post(`/v1/conversations/${conversationId}/stop`, {}));
+  }
+
+  // Un video parte così com'è, anche di qualche GB: con XMLHttpRequest, perché fetch non dice quanto è già partito.
+  // progress va da 0 a 1; a 1 il server sta ancora convertendo il video. Come l'interceptor, a token scaduto riprova una volta.
+  async uploadVideo(brandId: string, file: File, progress: (fraction: number) => void): Promise<ChatAttachment> {
+    const send = (token: string | null) =>
+      new Promise<{ status: number; body: unknown }>((resolve) => {
+        const request = new XMLHttpRequest();
+        request.open('POST', `/v1/brands/${brandId}/attachments/video`);
+        if (token) request.setRequestHeader('Authorization', `Bearer ${token}`);
+        request.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+        request.responseType = 'json';
+        request.upload.onprogress = (event) => event.lengthComputable && progress(event.loaded / event.total);
+        request.onload = () => resolve({ status: request.status, body: request.response });
+        request.onerror = () => resolve({ status: 0, body: null });
+        request.send(file);
+      });
+    let response = await send(this.auth.token());
+    if (response.status === 401) {
+      const token = await this.auth.refresh();
+      if (token) response = await send(token);
+    }
+    if (response.status < 200 || response.status >= 300) throw new HttpErrorResponse({ status: response.status, error: response.body });
+    return response.body as ChatAttachment;
   }
 
   upload(brandId: string, dataUri: string): Promise<ChatAttachment> {

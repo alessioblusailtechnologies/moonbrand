@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, output, signal, type OnInit } from '@angular/core';
 
-import type { CreateContentRequest, WritableFormat } from '@moonbrand/shared/api/contract';
+import type { CreateContentRequest } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
+import type { ContentFormat } from '@moonbrand/shared/domain/content';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
@@ -125,7 +126,7 @@ export class CreateContentDialog implements OnInit {
   }
 
   protected readonly formats = FORMAT_OPTIONS;
-  protected readonly format = signal<WritableFormat>('post');
+  protected readonly format = signal<ContentFormat>('post');
   protected readonly selected = signal<ChannelId[]>([]);
   protected readonly name = channelName;
 

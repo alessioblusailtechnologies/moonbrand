@@ -16,7 +16,7 @@
     "content": "tsx src/jobs/content.ts",
     "content-edit": "tsx src/jobs/content-edit.ts",
     "chat": "tsx src/jobs/chat.ts",
-    "video": "tsx src/jobs/video.ts"
+    "content-video": "tsx src/jobs/content-video.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.283",

@@ -1,6 +1,6 @@
 ---
 name: contenuti
-description: Come si scrive e si prepara un contenuto social per il brand della cartella (post, carosello, articolo) - testi per canale, hashtag, formati, immagini e controllo finale. Da usare ogni volta che si scrive, si prepara o si ritocca un contenuto.
+description: Come si scrive e si prepara un contenuto social per il brand della cartella (post, carosello, articolo, video) - testi per canale, hashtag, formati, immagini e video, controllo finale. Da usare ogni volta che si scrive, si prepara o si ritocca un contenuto.
 ---
 
 # Scrivere un contenuto
@@ -35,8 +35,10 @@ Si scrive solo per i canali del brand, o per quelli richiesti.
   Immagini: una per slide, tutte in 4:5: role «slide», index da 0.
 - **Articolo**: su LinkedIn il testo lungo, con un’apertura forte e tre o quattro paragrafi; sugli altri canali un testo breve che lo presenta. headline è il titolo dell’articolo; slides resta vuoto.
   Immagini: una copertina in 1.91:1: role «cover», index 0.
+- **Video**: si fa con la skill moonbrand:video; i testi per canale seguono le regole di questa skill, come didascalie del video. headline è il titolo del video, se ne ha uno; slides resta vuoto; script e scenes sono il copione.
+  File: per ogni proporzione dei canali (9:16 per Instagram, Facebook e TikTok, 4:5 per LinkedIn, 16:9 per X) il video in MP4 con role «video» e la sua copertina con role «cover», stessa proporzione e stesso index, da 0.
 
-Le immagini finali sono PNG o JPEG.
+Le immagini finali sono PNG o JPEG, i video MP4.
 
 ## Immagini
 

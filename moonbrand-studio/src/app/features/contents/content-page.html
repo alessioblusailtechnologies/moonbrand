@@ -9,21 +9,28 @@
 
     @if (preparing()) {
       <div class="panel">
-        <p class="strong-sm">{{ editing() ? 'Ritocco il contenuto' : 'Preparo testo e immagini' }}</p>
+        <p class="strong-sm">{{ workLabel() }}</p>
         <mb-step-list [steps]="steps()" waiting="Rileggo l’idea e il brand" />
       </div>
     }
 
     @if (ready()) {
       <mb-content-preview [content]="current" />
+    }
 
+    @if (scripted() && !current.conversationId) {
+      <mb-script-editor [content]="current" [busy]="preparing()" (saved)="saveScript($event)" (generated)="generateVideo($event)" />
+    }
+
+    @if (ready() || scripted()) {
       @if (current.conversationId) {
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
           <mb-icon name="message-circle" [size]="16" /> Ritocca nella conversazione
         </a>
       } @else {
         <div class="row edit">
-          <input class="sunken grow" aria-label="Cosa ritoccare" placeholder="Cosa cambio? es. più corto su Instagram, un’altra foto in copertina"
+          <input class="sunken grow" aria-label="Cosa ritoccare"
+            [placeholder]="ready() ? 'Cosa cambio? es. più corto su Instagram, un’altra foto in copertina' : 'Cosa cambio nel copione? es. più breve, apri con una domanda'"
             [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
           <button class="icon-btn solid" type="button" aria-label="Invia il ritocco" [disabled]="preparing() || !instruction().trim()" (click)="send()">
             <mb-icon name="arrow-up" />

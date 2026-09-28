@@ -6,6 +6,8 @@ const PATHS = {
   'chevron-right': ['m9 18 6-6-6-6'],
   check: ['M20 6 9 17l-5-5'],
   plus: ['M5 12h14', 'M12 5v14'],
+  play: ['M6 3 20 12 6 21Z'],
+  menu: ['M4 6h16', 'M4 12h16', 'M4 18h16'],
   minus: ['M5 12h14'],
   x: ['M18 6 6 18', 'm6 6 12 12'],
   'arrow-up': ['m5 12 7-7 7 7', 'M12 19V5'],

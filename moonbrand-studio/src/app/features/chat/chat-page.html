@@ -23,14 +23,18 @@
             @if (turn.attachments.length > 0) {
               <div class="photos">
                 @for (photo of turn.attachments; track photo.file; let i = $index) {
-                  <button
-                    class="photo"
-                    type="button"
-                    [attr.aria-label]="'Apri la foto ' + (i + 1)"
-                    (click)="openPhoto(turn, i)"
-                  >
-                    <img [src]="photo.url" alt="" loading="lazy" />
-                  </button>
+                  @if (photo.poster) {
+                    <video class="attached-video" [src]="photo.url" [poster]="photo.poster" controls playsinline preload="none"></video>
+                  } @else {
+                    <button
+                      class="photo"
+                      type="button"
+                      [attr.aria-label]="'Apri la foto ' + (i + 1)"
+                      (click)="openPhoto(turn, photo.file)"
+                    >
+                      <img [src]="photo.url" alt="" loading="lazy" />
+                    </button>
+                  }
                 }
               </div>
             }
@@ -128,11 +132,23 @@
         <div class="pending">
           @for (item of attachments(); track item.id) {
             <div class="pending-photo" [class.failed]="item.failed">
-              <img [src]="item.preview" alt="" />
-              @if (!item.file && !item.failed) {
-                <span class="pending-state"><span class="spinner"></span></span>
+              @if (item.video) {
+                <video [src]="item.preview" muted playsinline preload="metadata"></video>
+              } @else {
+                <img [src]="item.preview" alt="" />
               }
-              <button class="pending-remove" type="button" aria-label="Togli la foto" (click)="unattach(item.id)">
+              @if (!item.file && !item.failed) {
+                <span class="pending-state">
+                  @if (item.video && item.progress < 1) {
+                    <span class="pending-progress">{{ progressLabel(item.progress) }}</span>
+                  } @else {
+                    <span class="spinner"></span>
+                  }
+                </span>
+              } @else if (item.video) {
+                <span class="pending-video"><mb-icon name="play" [size]="14" /></span>
+              }
+              <button class="pending-remove" type="button" [attr.aria-label]="item.video ? 'Togli il video' : 'Togli la foto'" (click)="unattach(item.id)">
                 <mb-icon name="x" [size]="12" [stroke]="3" />
               </button>
             </div>
@@ -151,8 +167,8 @@
         (paste)="pasted($event)"
       ></textarea>
       <div class="composer-bar">
-        <input #picker type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="picked($event)" />
-        <button class="icon-btn" type="button" aria-label="Allega foto" title="Allega foto" (click)="pick()">
+        <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
+        <button class="icon-btn" type="button" aria-label="Allega foto o video" title="Allega foto o video" (click)="pick()">
           <mb-icon name="image-plus" />
         </button>
         <span class="grow"></span>

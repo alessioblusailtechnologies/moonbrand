@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from 'node:crypto';
+import type { Readable } from 'node:stream';
 
 import type pg from 'pg';
 
@@ -13,6 +14,7 @@ import { listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
 import { findBrandForIdeas } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
+import { normalizeVideo } from '../media/video';
 import {
   activeJob,
   deleteConversation,
@@ -89,7 +91,7 @@ export function getConversation(pool: pg.Pool, files: BrandFiles, identity: Iden
     const [turns, contents] = await Promise.all([listTurns(db, conversationId), listConversationContents(db, conversationId)]);
     return {
       conversation,
-      turns: turns.map((turn) => ({ ...turn, attachments: turn.attachments.map((file) => ({ file, url: files.url(conversation.brandId, file) })) })),
+      turns: turns.map((turn) => ({ ...turn, attachments: turn.attachments.map((file) => attachment(files, conversation.brandId, file)) })),
       contents: contents.map((content) => withUrls(content, files)),
     };
   });
@@ -105,6 +107,12 @@ export function removeConversation(pool: pg.Pool, identity: Identity, conversati
   });
 }
 
+// Accanto a un video allegato c'è la sua copertina, con lo stesso nome in JPEG.
+function attachment(files: BrandFiles, brandId: string, file: string): ChatAttachment {
+  const url = files.url(brandId, file);
+  return file.endsWith('.mp4') ? { file, url, poster: files.url(brandId, file.replace(/\.mp4$/, '.jpg')) } : { file, url };
+}
+
 // Una foto per la chat: finisce in allegati/ nella cartella del brand, e il messaggio la cita per percorso.
 export async function uploadAttachment(files: BrandFiles, identity: Identity, brandId: string, dataUri: string): Promise<ChatAttachment> {
   const { bytes, mimeType } = parseImage(dataUri);
@@ -112,6 +120,28 @@ export async function uploadAttachment(files: BrandFiles, identity: Identity, br
   const file = `${ATTACHMENTS_DIR}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
   await files.save(brandId, file, bytes);
   return { file, url: files.url(brandId, file) };
+}
+
+// Un video per la chat, com'è uscito dal telefono: arriva a pezzi su disco, poi diventa un MP4 che si guarda
+// ovunque e che Remotion sa montare, con la copertina accanto. L'originale non resta.
+export const MAX_VIDEO_BYTES = 2 * 1024 ** 3;
+
+export async function uploadVideoAttachment(files: BrandFiles, identity: Identity, brandId: string, stream: Readable): Promise<ChatAttachment> {
+  await files.claim(brandId, identity.accountId);
+  const id = randomUUID();
+  const upload = `${ATTACHMENTS_DIR}/${id}.upload`;
+  const file = `${ATTACHMENTS_DIR}/${id}.mp4`;
+  const poster = `${ATTACHMENTS_DIR}/${id}.jpg`;
+  await files.saveStream(brandId, upload, stream, MAX_VIDEO_BYTES);
+  try {
+    await normalizeVideo(files.localPath(brandId, upload), files.localPath(brandId, file), files.localPath(brandId, poster));
+  } catch {
+    await Promise.all([files.remove(brandId, file), files.remove(brandId, poster)]);
+    throw ApiError.invalid('Non riesco a leggere questo video: prova con un MP4 o un MOV.');
+  } finally {
+    await files.remove(brandId, upload);
+  }
+  return attachment(files, brandId, file);
 }
 
 // Ferma il turno in corso: se è ancora in coda si chiude subito, altrimenti lo chiude il worker quando vede la richiesta.

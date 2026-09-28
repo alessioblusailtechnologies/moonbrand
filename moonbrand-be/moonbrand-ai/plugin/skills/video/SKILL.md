@@ -9,15 +9,26 @@ Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto v
 
 ## Il copione
 
-Prima di scrivere codice, scrivi il copione: le scene in ordine, per ognuna quanto dura, cosa si vede, il testo a schermo e cosa succede nell'audio.
+Un video nasce in due tempi: prima il copione, che l'utente legge e corregge, poi il video. Non generare immagini, clip o audio finché il copione non è approvato, a meno che il lavoro non dica di andare dritto.
+
+Il copione è l'idea in breve (tono, ritmo, musica, voce) e la lista delle inquadrature, in ordine. Ogni inquadratura ha:
+- **durata** in secondi;
+- **cosa si vede**: soggetto, tipo di inquadratura (dettaglio, primo piano, mezza figura, totale) e movimento di macchina;
+- **da dove viene**: clip generata, foto generata, foto o clip dell'utente, solo grafica e testo;
+- **testo a schermo**, se c'è;
+- **voce fuori campo**, se c'è.
+
+Scegli la fonte pensando a cosa sembrerà vero: persone, luoghi e lavori del brand rendono meglio con foto e clip dell'utente. Quando le proponi, chi legge il copione sa cosa preparare.
 
 - I primi 1 o 2 secondi devono fermare lo scorrimento: una frase, un numero o un'immagine che fa venire voglia di restare.
-- Una scena porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
+- Un'inquadratura porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
 - Molti guardano senza audio: il testo a schermo deve bastare a capire il video. Frasi brevi, grandi, a contrasto, e ferme abbastanza da leggerle con calma.
 - La durata è quella che serve all'idea, senza allungare.
 - La chiusura lascia il brand riconoscibile, di solito con il logo o un'azione.
 
-Il testo a schermo segue le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
+Testo a schermo e voce seguono le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
+
+Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare qualcosa (una durata, una fonte che manca), cambialo e dillo.
 
 ## Formati
 
@@ -66,6 +77,8 @@ Non puoi guardare il video mentre scorre: lo controlli dai fotogrammi.
 - Poi esporta il video finale in MP4 e una copertina in JPEG o PNG, scegliendo il fotogramma che meglio lo rappresenta.
 
 ## Dove vanno i file
+
+<id> è l'id del contenuto; in chat, finché il video non è salvato, un nome breve e unico.
 
 - La composizione in video/src/contenuti/<id>/, registrata in video/src/Root.tsx.
 - Musica, immagini e clip in video/public/contenuti/<id>/.

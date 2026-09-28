@@ -1,5 +1,19 @@
-import { ChangeDetectionStrategy, Component, type TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  type ElementRef,
+  type TemplateRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+import { Icon } from '../../ui/icon';
 
 import type { ContentSummary } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
@@ -9,15 +23,27 @@ import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { ToastService } from '../../ui/toast';
-import { FORMAT_LABELS, STATUS_LABELS } from './labels';
+import { cssAspect, FORMAT_LABELS, STATUS_LABELS } from './labels';
 
 // Mentre un contenuto si prepara, l'elenco si aggiorna da solo.
 const REFRESH_MS = 5000;
 
+// La griglia masonry: colonne di almeno COLUMN_MIN px; ogni card va nella colonna più corta, così le copertine
+// restano intere in ogni proporzione (un Reel 9:16 accanto a un post 4:5) e l'ordine si legge per righe.
+const COLUMN_MIN = 240;
+const GAP = 16;
+// L'altezza della card oltre la copertina (badge, titolo, canali), in proporzione alla larghezza: basta per scegliere la colonna.
+const CARD_TEXT = 0.55;
+
+function aspectRatio(aspect: string | null): number {
+  const [width, height] = (aspect ?? '4:5').split(':').map(Number);
+  return width > 0 && height > 0 ? height / width : 1.25;
+}
+
 @Component({
   selector: 'mb-contents-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, Icon],
   template: `
     @if (brands.activeBrand()) {
       <section class="contents">
@@ -29,27 +55,36 @@ const REFRESH_MS = 5000;
             <p class="caption">Parti da un’idea: scegli formato e canali, e preparo testo e immagini.</p>
           </div>
         } @else {
-          <div class="grid">
-            @for (content of contents(); track content.id) {
-              <a class="panel card" [routerLink]="['/contenuti', content.id]">
-                <div class="cover">
-                  @if (content.coverUrl) {
-                    <img [src]="content.coverUrl" alt="" loading="lazy" />
-                  } @else {
-                    <span class="caption">{{ content.preparing ? 'Preparo testo e immagini…' : 'Senza immagine' }}</span>
-                  }
-                </div>
-                <div class="meta">
-                  <span class="badge">{{ formatLabel(content) }}</span>
-                  @if (content.preparing) {
-                    <span class="badge">In preparazione</span>
-                  } @else {
-                    <span class="badge" [class.mint]="content.status === 'approved'">{{ statusLabel(content) }}</span>
-                  }
-                </div>
-                <h2 class="strong">{{ content.title }}</h2>
-                <p class="caption">{{ channelsLabel(content) }}</p>
-              </a>
+          <div class="grid" #grid>
+            @for (column of columns(); track $index) {
+              <div class="column">
+                @for (content of column; track content.id) {
+                  <a class="panel card" [routerLink]="['/contenuti', content.id]">
+                    <div class="cover" [style.aspect-ratio]="cssAspect(content.coverAspect ?? '4:5')">
+                      @if (content.coverUrl) {
+                        <img [src]="content.coverUrl" alt="" loading="lazy" />
+                        @if (content.format === 'video') {
+                          <span class="play"><mb-icon name="play" [size]="18" /></span>
+                        }
+                      } @else if (content.format === 'video') {
+                        <span class="caption">{{ content.preparing ? 'Preparo il video…' : 'Video ancora da fare' }}</span>
+                      } @else {
+                        <span class="caption">{{ content.preparing ? 'Preparo testo e immagini…' : 'Senza immagine' }}</span>
+                      }
+                    </div>
+                    <div class="meta">
+                      <span class="badge">{{ formatLabel(content) }}</span>
+                      @if (content.preparing) {
+                        <span class="badge">In preparazione</span>
+                      } @else {
+                        <span class="badge" [class.mint]="content.status === 'approved'">{{ statusLabel(content) }}</span>
+                      }
+                    </div>
+                    <h2 class="strong">{{ content.title }}</h2>
+                    <p class="caption">{{ channelsLabel(content) }}</p>
+                  </a>
+                }
+              </div>
             }
           </div>
         }
@@ -80,9 +115,16 @@ const REFRESH_MS = 5000;
       text-align: center;
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      display: flex;
+      align-items: flex-start;
       gap: 16px;
+    }
+    .column {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
     }
     .card {
       gap: 10px;
@@ -97,7 +139,6 @@ const REFRESH_MS = 5000;
     .cover {
       display: grid;
       place-items: center;
-      aspect-ratio: 4 / 5;
       overflow: hidden;
       border-radius: var(--radius-md);
       background: var(--surface-sunken);
@@ -106,6 +147,19 @@ const REFRESH_MS = 5000;
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    .cover {
+      position: relative;
+    }
+    .play {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--navy-700);
     }
     .meta {
       display: flex;
@@ -129,6 +183,22 @@ export class ContentsPage {
   protected readonly contents = signal<ContentSummary[]>([]);
   protected readonly loading = signal(true);
   private readonly preparing = computed(() => this.contents().some((content) => content.preparing));
+  private readonly grid = viewChild<ElementRef<HTMLElement>>('grid');
+  private readonly columnCount = signal(1);
+  protected readonly cssAspect = cssAspect;
+
+  // Le card nella colonna più corta, nell'ordine dell'elenco.
+  protected readonly columns = computed(() => {
+    const count = this.columnCount();
+    const columns: ContentSummary[][] = Array.from({ length: count }, () => []);
+    const heights = new Array<number>(count).fill(0);
+    for (const content of this.contents()) {
+      const shortest = heights.indexOf(Math.min(...heights));
+      columns[shortest].push(content);
+      heights[shortest] += aspectRatio(content.coverAspect) + CARD_TEXT;
+    }
+    return columns;
+  });
 
   constructor() {
     pageHeader(
@@ -139,6 +209,17 @@ export class ContentsPage {
       const brand = this.brands.activeBrand();
       if (brand) untracked(() => void this.load(brand.id, true));
     });
+    // Quante colonne ci stanno: si ricalcola quando cambia la larghezza della pagina.
+    // La griglia compare solo quando ci sono contenuti.
+    const observer = new ResizeObserver(([entry]) =>
+      this.columnCount.set(Math.max(1, Math.floor((entry.contentRect.width + GAP) / (COLUMN_MIN + GAP)))),
+    );
+    effect(() => {
+      const grid = this.grid()?.nativeElement;
+      observer.disconnect();
+      if (grid) observer.observe(grid);
+    });
+    inject(DestroyRef).onDestroy(() => observer.disconnect());
     effect((onCleanup) => {
       const brand = this.brands.activeBrand();
       if (!brand || !this.preparing()) return;

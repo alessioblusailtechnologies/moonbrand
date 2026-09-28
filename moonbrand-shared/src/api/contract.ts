@@ -1,6 +1,6 @@
 import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
-import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus } from '../domain/content';
+import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 
 export interface Account {
@@ -174,11 +174,8 @@ export interface IdeaStatusRequest {
   status: IdeaStatus;
 }
 
-// I formati che moonbrand sa preparare: il video arriverà dopo.
-export type WritableFormat = Exclude<ContentFormat, 'video'>;
-
 export interface CreateContentRequest {
-  format: WritableFormat;
+  format: ContentFormat;
   channels: ChannelId[];
 }
 
@@ -194,6 +191,8 @@ export interface ContentSummary {
   channels: ChannelId[];
   status: ContentStatus;
   coverUrl: string | null;
+  // La proporzione della copertina, es. 9:16: la griglia sa quanto è alta la card prima che l'immagine arrivi.
+  coverAspect: string | null;
   updatedAt: string;
   preparing: boolean;
 }
@@ -208,6 +207,12 @@ export interface ContentEditRequest {
   instruction: string;
 }
 
+// Il copione di un video, come lo corregge l'utente prima di generare il video.
+export interface ContentScriptRequest {
+  script: string;
+  scenes: VideoScene[];
+}
+
 // L'idea da cui nasce il contenuto, con il nome del tema invece dell'id.
 export interface ContentIdea {
   title: string;
@@ -217,22 +222,36 @@ export interface ContentIdea {
   theme: string | null;
 }
 
+// Per un video il job content scrive solo il copione; il video lo fa content-video quando il copione è approvato.
 export interface ContentJobInput {
   brandId: string;
   contentId: string;
-  format: WritableFormat;
+  format: ContentFormat;
   channels: ChannelId[];
   brand: BrandContext;
   idea: ContentIdea;
 }
 
+// scriptOnly: un video di cui c'è solo il copione, quindi si ritocca il copione.
 export interface ContentEditJobInput {
   brandId: string;
   contentId: string;
   sessionId: string;
-  format: WritableFormat;
+  format: ContentFormat;
   channels: ChannelId[];
   instruction: string;
+  scriptOnly: boolean;
+}
+
+// Il video dal copione approvato, com'è sul DB dopo le correzioni dell'utente.
+export interface ContentVideoJobInput {
+  brandId: string;
+  contentId: string;
+  sessionId: string;
+  format: 'video';
+  channels: ChannelId[];
+  script: string;
+  scenes: VideoScene[];
 }
 
 // La chat: tante conversazioni per brand, ognuna una sessione di Claude nella cartella del brand.
@@ -252,10 +271,12 @@ export interface ChatReply {
   text: string;
 }
 
-// Una foto allegata a un messaggio: il percorso nella cartella del brand e il link firmato.
+// Una foto o un video allegato a un messaggio: il percorso nella cartella del brand e il link firmato.
+// Un video è sempre un MP4, con il link alla sua copertina.
 export interface ChatAttachment {
   file: string;
   url: string;
+  poster?: string;
 }
 
 export interface ChatAttachmentUpload {
@@ -303,12 +324,15 @@ export interface ChatJobInput {
 
 export interface AgentContentRequest {
   title: string;
-  format: WritableFormat;
+  format: ContentFormat;
   channels: ChannelId[];
   variants: ChannelVariant[];
   headline: string;
   slides: CarouselSlide[];
-  // Le immagini finali, ovunque siano nella cartella del brand: l'API le copia in quella del contenuto.
+  // Solo nei video: l'idea in breve e le inquadrature del copione.
+  script?: string;
+  scenes?: VideoScene[];
+  // Le immagini e i video finali, ovunque siano nella cartella del brand: l'API li copia in quella del contenuto.
   files: { file: string; role: ContentFile['role']; index: number; aspect: string }[];
 }
 

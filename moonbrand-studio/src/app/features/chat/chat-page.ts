@@ -42,11 +42,14 @@ import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
 type Block = { kind: 'text'; id: string; text: string } | { kind: 'tools'; id: string; steps: AiStep[] };
 
 // Una foto scelta per il prossimo messaggio: si carica subito, il messaggio la cita quando è pronta.
+// progress: per un video, quanto è già partito (da 0 a 1); a 1 il server lo sta convertendo.
 interface PendingAttachment {
   id: number;
   preview: string;
   file: string | null;
   failed: boolean;
+  video: boolean;
+  progress: number;
 }
 
 // Spunti per la prima domanda: riempiono la casella, non partono da soli.
@@ -322,23 +325,42 @@ export class ChatPage {
     element.value = '';
   }
 
-  // Una foto incollata nella casella vale come una scelta dal pulsante.
+  // Una foto o un video incollato nella casella vale come una scelta dal pulsante.
   protected pasted(event: ClipboardEvent): void {
-    const images = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/'));
-    if (images.length === 0) return;
+    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/'));
+    if (media.length === 0) return;
     event.preventDefault();
-    this.attach(images);
+    this.attach(media);
   }
 
   private attach(files: File[]): void {
     const brand = this.brands.activeBrand();
     if (!brand) return;
     const room = MAX_ATTACHMENTS - this.attachments().length;
-    if (files.length > room) this.toast.show(`Al massimo ${MAX_ATTACHMENTS} foto per messaggio.`);
+    if (files.length > room) this.toast.show(`Al massimo ${MAX_ATTACHMENTS} allegati per messaggio.`);
     for (const file of files.slice(0, Math.max(0, room))) {
-      const pending: PendingAttachment = { id: ++this.nextAttachment, preview: URL.createObjectURL(file), file: null, failed: false };
+      const pending: PendingAttachment = {
+        id: ++this.nextAttachment,
+        preview: URL.createObjectURL(file),
+        file: null,
+        failed: false,
+        video: file.type.startsWith('video/'),
+        progress: 0,
+      };
       this.attachments.update((list) => [...list, pending]);
-      void this.upload(brand.id, file, pending.id);
+      void (pending.video ? this.uploadVideo(brand.id, file, pending.id) : this.upload(brand.id, file, pending.id));
+    }
+  }
+
+  private async uploadVideo(brandId: string, file: File, id: number): Promise<void> {
+    const set = (patch: Partial<PendingAttachment>) =>
+      this.attachments.update((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+    try {
+      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => set({ progress }));
+      set({ file: uploaded.file, progress: 1 });
+    } catch (error) {
+      set({ failed: true });
+      this.toast.show(errorMessage(error, 'Non riesco a caricare il video. Riprova.'));
     }
   }
 
@@ -355,6 +377,10 @@ export class ChatPage {
     }
   }
 
+  protected progressLabel(progress: number): string {
+    return `${Math.floor(progress * 100)}%`;
+  }
+
   protected unattach(id: number): void {
     const item = this.attachments().find((attachment) => attachment.id === id);
     if (item) URL.revokeObjectURL(item.preview);
@@ -366,10 +392,12 @@ export class ChatPage {
     this.attachments.set([]);
   }
 
-  protected openPhoto(turn: ConversationTurn, index: number): void {
+  // Nella lightbox solo le foto: i video si guardano nel messaggio.
+  protected openPhoto(turn: ConversationTurn, file: string): void {
+    const photos = turn.attachments.filter((item) => !item.poster);
     this.lightbox.open(
-      turn.attachments.map((item, i) => ({ url: item.url, alt: `Foto ${i + 1}` })),
-      index,
+      photos.map((item, i) => ({ url: item.url, alt: `Foto ${i + 1}` })),
+      photos.findIndex((item) => item.file === file),
     );
   }
 

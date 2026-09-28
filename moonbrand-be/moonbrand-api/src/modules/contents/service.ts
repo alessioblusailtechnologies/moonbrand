@@ -6,11 +6,12 @@ import type {
   ContentIdea,
   ContentJobInput,
   ContentResponse,
+  ContentScriptRequest,
   ContentSummary,
+  ContentVideoJobInput,
   CreateContentRequest,
-  WritableFormat,
 } from '@moonbrand/shared/api/contract';
-import type { Content, ContentStatus } from '@moonbrand/shared/domain/content';
+import { hasScript, hasVideo, type Content, type ContentStatus } from '@moonbrand/shared/domain/content';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
@@ -25,11 +26,12 @@ import {
   insertContent,
   lastContentSession,
   listContents,
+  setContentScript,
   setContentStatus,
 } from './repository';
 
 // Il job del contenuto: il brand come lo vede l'AI e l'idea di partenza.
-async function contentJobInput(db: Queryable, content: Pick<Content, 'id' | 'brandId' | 'ideaId' | 'title' | 'channels'>, format: WritableFormat) {
+async function contentJobInput(db: Queryable, content: Pick<Content, 'id' | 'brandId' | 'ideaId' | 'title' | 'channels' | 'format'>) {
   const brand = await findBrandForIdeas(db, content.brandId);
   if (!brand) throw ApiError.notFound('Brand non trovato.');
   const idea = content.ideaId ? await findIdea(db, content.ideaId) : null;
@@ -40,7 +42,7 @@ async function contentJobInput(db: Queryable, content: Pick<Content, 'id' | 'bra
   const input: ContentJobInput = {
     brandId: content.brandId,
     contentId: content.id,
-    format,
+    format: content.format,
     channels: content.channels,
     brand: brand.context,
     idea: source,
@@ -69,7 +71,7 @@ export function createContent(pool: pg.Pool, identity: Identity, ideaId: string,
       channels,
       format: request.format,
     });
-    const input = await contentJobInput(db, { id, brandId: idea.brandId, ideaId: idea.id, title: idea.title, channels }, request.format);
+    const input = await contentJobInput(db, { id, brandId: idea.brandId, ideaId: idea.id, title: idea.title, channels, format: request.format });
     const jobId = await insertJob(db, identity.accountId, 'content', input);
     return { id, jobId };
   });
@@ -97,6 +99,7 @@ export function summarize(content: Content, files: BrandFiles, preparing: boolea
     channels: content.channels,
     status: content.status,
     coverUrl: cover?.url ?? null,
+    coverAspect: cover?.aspect ?? null,
     updatedAt: content.updatedAt,
     preparing,
   };
@@ -116,11 +119,6 @@ export function getContent(pool: pg.Pool, files: BrandFiles, identity: Identity,
     const jobs = await activeContentJobs(db, content.brandId);
     return { content: withUrls(content, files), jobId: jobs.get(content.id) ?? null };
   });
-}
-
-function writable(content: Content): WritableFormat {
-  if (content.format === 'video') throw ApiError.conflict('NOT_SUPPORTED', 'I video non si preparano ancora qui.');
-  return content.format;
 }
 
 // Un contenuto nato in chat si ritocca nella sua conversazione, dove Claude sa come l'ha fatto.
@@ -147,9 +145,10 @@ export function editContent(pool: pg.Pool, identity: Identity, contentId: string
       brandId: content.brandId,
       contentId,
       sessionId,
-      format: writable(content),
+      format: content.format,
       channels: content.channels,
       instruction,
+      scriptOnly: content.format === 'video' && !hasVideo(content),
     };
     return { jobId: await insertJob(db, identity.accountId, 'content-edit', input) };
   });
@@ -162,9 +161,52 @@ export function regenerateContent(pool: pg.Pool, identity: Identity, contentId: 
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     requireOutsideChat(content);
     await requireIdle(db, content);
-    const input = await contentJobInput(db, content, writable(content));
+    const input = await contentJobInput(db, content);
     await bumpRevision(db, contentId);
     return { jobId: await insertJob(db, identity.accountId, 'content', input) };
+  });
+}
+
+// Il copione corretto dall'utente: vale per il prossimo "Genera il video", e il contenuto torna bozza.
+export function saveContentScript(
+  pool: pg.Pool,
+  files: BrandFiles,
+  identity: Identity,
+  contentId: string,
+  request: ContentScriptRequest,
+): Promise<Content> {
+  return withIdentity(pool, identity, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    if (!hasScript(content)) throw ApiError.conflict('NO_SCRIPT', 'Questo contenuto non ha un copione.');
+    requireOutsideChat(content);
+    await requireIdle(db, content);
+    const saved = await setContentScript(db, contentId, request.script.trim(), request.scenes);
+    if (!saved) throw ApiError.notFound('Contenuto non trovato.');
+    return withUrls(saved, files);
+  });
+}
+
+// Il video dal copione com'è adesso sul DB, nella sessione che l'ha scritto: Claude sa perché ha scelto ogni inquadratura.
+export function generateContentVideo(pool: pg.Pool, identity: Identity, contentId: string): Promise<{ jobId: string }> {
+  return withIdentity(pool, identity, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    if (!hasScript(content)) throw ApiError.conflict('NO_SCRIPT', 'Prima serve il copione del video.');
+    requireOutsideChat(content);
+    await requireIdle(db, content);
+    const sessionId = await lastContentSession(db, contentId);
+    if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Il copione non è ancora pronto.');
+    const input: ContentVideoJobInput = {
+      brandId: content.brandId,
+      contentId,
+      sessionId,
+      format: 'video',
+      channels: content.channels,
+      script: content.visual.script,
+      scenes: content.visual.scenes,
+    };
+    return { jobId: await insertJob(db, identity.accountId, 'content-video', input) };
   });
 }
 

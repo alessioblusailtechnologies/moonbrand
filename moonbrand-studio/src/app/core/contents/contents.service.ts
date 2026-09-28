@@ -6,6 +6,7 @@ import type {
   ContentCreated,
   ContentEditRequest,
   ContentResponse,
+  ContentScriptRequest,
   ContentSummary,
   CreateContentRequest,
 } from '@moonbrand/shared/api/contract';
@@ -34,6 +35,16 @@ export class ContentsService {
 
   regenerate(contentId: string): Promise<{ jobId: string }> {
     return firstValueFrom(this.http.post<{ jobId: string }>(`/v1/contents/${contentId}/regenerate`, {}));
+  }
+
+  // Il copione di un video corretto a mano.
+  saveScript(contentId: string, request: ContentScriptRequest): Promise<Content> {
+    return firstValueFrom(this.http.put<Content>(`/v1/contents/${contentId}/script`, request));
+  }
+
+  // Il video dal copione: il lavoro si segue con AiJobsService.follow.
+  generateVideo(contentId: string): Promise<{ jobId: string }> {
+    return firstValueFrom(this.http.post<{ jobId: string }>(`/v1/contents/${contentId}/video`, {}));
   }
 
   setApproved(contentId: string, approved: boolean): Promise<Content> {

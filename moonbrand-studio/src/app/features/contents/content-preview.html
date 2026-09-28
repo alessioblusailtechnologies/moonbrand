@@ -12,7 +12,10 @@
 
 <div class="preview">
   <div class="visual">
-    @if (images().length > 1) {
+    @if (video(); as clip) {
+      <video class="clip" [src]="clip.file.url" [attr.poster]="clip.poster" [style.aspect-ratio]="cssAspect(clip.file.aspect)" controls
+        playsinline preload="metadata"></video>
+    } @else if (images().length > 1) {
       <div class="slider" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Slide del carosello"
         (keydown.arrowleft)="move(-1)" (keydown.arrowright)="move(1)" (pointerdown)="dragStart($event)" (pointerup)="dragEnd($event)"
         (pointercancel)="dragFrom = null">

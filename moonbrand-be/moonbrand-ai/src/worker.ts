@@ -11,6 +11,7 @@ import type {
   ChatJobInput,
   ContentEditJobInput,
   ContentJobInput,
+  ContentVideoJobInput,
   IdeasJobInput,
   VisualEditJobInput,
   VisualJobRequest,
@@ -83,14 +84,28 @@ const JOBS: Record<string, JobKind> = {
       const { brandId, ...rest } = input as ContentJobInput;
       return { script: 'src/jobs/content.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
     },
-    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentJobInput, result),
+    // Di un video il job content scrive solo il copione.
+    save: (job, result) => {
+      const input = job.input as ContentJobInput;
+      return saveContent(pool, BRANDS_DIR, input, result, input.format === 'video');
+    },
   },
   'content-edit': {
     launch: (input) => {
       const { brandId, ...rest } = input as ContentEditJobInput;
       return { script: 'src/jobs/content-edit.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
     },
-    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentEditJobInput, result),
+    save: (job, result) => {
+      const input = job.input as ContentEditJobInput;
+      return saveContent(pool, BRANDS_DIR, input, result, input.scriptOnly);
+    },
+  },
+  'content-video': {
+    launch: (input) => {
+      const { brandId, ...rest } = input as ContentVideoJobInput;
+      return { script: 'src/jobs/content-video.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentVideoJobInput, result),
   },
   // Il token arriva allo script per variabile d'ambiente: i tool della chat lo usano per chiamare l'API.
   chat: {
