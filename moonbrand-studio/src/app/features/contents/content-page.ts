@@ -4,8 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import type { ContentPhotoUploadResponse } from '@moonbrand/shared/api/contract';
-import type { Content, ContentFile, ContentPhotoSlot } from '@moonbrand/shared/domain/content';
+import type { Content, ContentFile } from '@moonbrand/shared/domain/content';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
@@ -16,26 +15,7 @@ import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
-import { resizedDataUri } from '../onboarding/images';
 import { cssAspect, FORMAT_LABELS, POST_ASPECT, STATUS_LABELS } from './labels';
-
-// Cosa sta facendo il lavoro in corso, per il titolo del pannello e per l'errore.
-type Work = 'prepare' | 'edit' | 'photos';
-
-const WORK_LABELS: Record<Work, string> = {
-  prepare: 'Preparo testo e immagini',
-  edit: 'Ritocco il contenuto',
-  photos: 'Metto le foto al loro posto',
-};
-
-const WORK_ERRORS: Record<Work, string> = {
-  prepare: 'Non sono riuscito a preparare il contenuto. Riprova.',
-  edit: 'Non sono riuscito a ritoccare il contenuto. Riprova.',
-  photos: 'Non sono riuscito a mettere le foto. Riprova.',
-};
-
-// La scelta per uno slot, prima di mandarle tutte insieme: la foto caricata o farla generare.
-type PhotoChoice = { upload: ContentPhotoUploadResponse } | 'ai';
 
 @Component({
   selector: 'mb-content-page',
@@ -59,13 +39,11 @@ export class ContentPage {
   protected readonly content = signal<Content | null>(null);
   protected readonly loading = signal(true);
   protected readonly preparing = signal(false);
-  protected readonly work = signal<Work>('prepare');
+  protected readonly editing = signal(false);
   protected readonly steps = signal<AiStep[]>([]);
   protected readonly channel = signal<ChannelId | null>(null);
   protected readonly instruction = signal('');
   protected readonly slide = signal(0);
-  protected readonly choices = signal<Record<string, PhotoChoice>>({});
-  protected readonly uploading = signal<string | null>(null);
   // Punto di partenza di un trascinamento sullo slider; dragged evita che la fine del gesto apra la slide.
   protected dragFrom: number | null = null;
   private dragged = false;
@@ -87,11 +65,6 @@ export class ContentPage {
     const fitting = channel && content.format === 'post' ? covers.find((file) => file.aspect === POST_ASPECT[channel]) : null;
     return [fitting ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
   });
-
-  protected readonly slots = computed(() => this.content()?.visual.slots ?? []);
-  protected readonly missingPhotos = computed(() => this.slots().filter((slot) => !slot.file).length);
-  protected readonly chosen = computed(() => Object.keys(this.choices()).length);
-  protected readonly workLabel = computed(() => WORK_LABELS[this.work()]);
 
   protected readonly name = channelName;
   protected readonly cssAspect = cssAspect;
@@ -119,7 +92,7 @@ export class ContentPage {
     try {
       const { content, jobId } = await this.api.get(contentId);
       this.show(content);
-      if (jobId) void this.follow(jobId, 'prepare');
+      if (jobId) void this.follow(jobId, false);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non trovo questo contenuto.'));
       void this.router.navigateByUrl('/contenuti');
@@ -130,22 +103,21 @@ export class ContentPage {
 
   private show(content: Content): void {
     this.content.set(content);
-    this.choices.set({});
     if (!this.channel() || !content.channels.includes(this.channel()!)) this.channel.set(content.channels[0] ?? null);
   }
 
   // Il worker salva il contenuto a lavoro finito: allora si rilegge.
-  private async follow(jobId: string, work: Work): Promise<void> {
+  private async follow(jobId: string, editing: boolean): Promise<void> {
     this.preparing.set(true);
-    this.work.set(work);
+    this.editing.set(editing);
     this.steps.set([]);
     try {
       await this.ai.follow(jobId, (steps) => this.steps.set(steps));
       const { content } = await this.api.get(this.contentId());
       this.show(content);
-      if (work === 'edit') this.instruction.set('');
+      if (editing) this.instruction.set('');
     } catch (error) {
-      this.toast.show(errorMessage(error, WORK_ERRORS[work]));
+      this.toast.show(errorMessage(error, editing ? 'Non sono riuscito a ritoccare il contenuto. Riprova.' : 'Non sono riuscito a preparare il contenuto. Riprova.'));
     } finally {
       this.preparing.set(false);
     }
@@ -156,7 +128,7 @@ export class ContentPage {
     if (!instruction || this.preparing() || !this.ready()) return;
     try {
       const { jobId } = await this.api.edit(this.contentId(), instruction);
-      void this.follow(jobId, 'edit');
+      void this.follow(jobId, true);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non riesco a chiedere il ritocco. Riprova.'));
     }
@@ -173,7 +145,7 @@ export class ContentPage {
     if (!confirmed) return;
     try {
       const { jobId } = await this.api.regenerate(this.contentId());
-      void this.follow(jobId, 'prepare');
+      void this.follow(jobId, false);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non riesco a rigenerare il contenuto. Riprova.'));
     }
@@ -186,63 +158,6 @@ export class ContentPage {
       this.show(await this.api.setApproved(content.id, content.status !== 'approved'));
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non sono riuscito a cambiare lo stato. Riprova.'));
-    }
-  }
-
-  // La foto per uno slot: si carica subito, e parte insieme alle altre scelte.
-  protected async pickPhoto(slot: ContentPhotoSlot, event: Event): Promise<void> {
-    const inputEl = event.target as HTMLInputElement;
-    const file = inputEl.files?.[0];
-    inputEl.value = '';
-    if (!file) return;
-    this.uploading.set(slot.id);
-    try {
-      const upload = await this.api.uploadPhoto(this.contentId(), await resizedDataUri(file, 2048, 'image/jpeg'));
-      this.choices.update((choices) => ({ ...choices, [slot.id]: { upload } }));
-    } catch (error) {
-      this.toast.show(errorMessage(error, 'Questa foto è troppo pesante o non si legge: usa un JPEG, un PNG o un WebP.'));
-    } finally {
-      this.uploading.set(null);
-    }
-  }
-
-  protected generatePhoto(slot: ContentPhotoSlot): void {
-    this.choices.update((choices) => ({ ...choices, [slot.id]: 'ai' }));
-  }
-
-  protected clearChoice(slot: ContentPhotoSlot): void {
-    this.choices.update(({ [slot.id]: _removed, ...rest }) => rest);
-  }
-
-  protected choice(slot: ContentPhotoSlot): PhotoChoice | null {
-    return this.choices()[slot.id] ?? null;
-  }
-
-  // Quello che si vede nel riquadro dello slot: la foto appena caricata, altrimenti quella già messa.
-  protected slotPreview(slot: ContentPhotoSlot): string | null {
-    const choice = this.choice(slot);
-    if (choice && choice !== 'ai') return choice.upload.url;
-    return slot.url ?? null;
-  }
-
-  // Lo stato dello slot in una riga, sotto la descrizione.
-  protected slotStatus(slot: ContentPhotoSlot): string {
-    const choice = this.choice(slot);
-    if (choice === 'ai') return 'La genero con l’AI';
-    if (choice) return 'Foto caricata: la metto al suo posto';
-    if (slot.source === 'ai') return 'Generata con l’AI';
-    if (slot.source === 'upload') return 'La tua foto';
-    return slot.file ? 'Foto messa' : 'Da scegliere';
-  }
-
-  protected async fillPhotos(): Promise<void> {
-    const slots = Object.entries(this.choices()).map(([id, choice]) => (choice === 'ai' ? { id } : { id, upload: choice.upload.path }));
-    if (slots.length === 0 || this.preparing()) return;
-    try {
-      const { jobId } = await this.api.fillPhotos(this.contentId(), slots);
-      void this.follow(jobId, 'photos');
-    } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a mettere le foto. Riprova.'));
     }
   }
 

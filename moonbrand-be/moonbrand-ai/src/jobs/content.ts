@@ -11,7 +11,6 @@ import {
   FORMAT_GUIDE,
   HASHTAGS,
   neededImages,
-  photoRules,
   runContentAgent,
   STYLE_RULES,
   WRITING_RULES,
@@ -56,7 +55,6 @@ ${WRITING_RULES}
 ## Immagini
 Servono ${neededImages(format, channels)}.
 ${STYLE_RULES}
-${photoRules(contentId)}
 Salva le immagini finali in ${dir} e tieni i file di lavoro (HTML, script, foto intermedie) in ${dir}/lavoro.
 Controlla ogni immagine finale prima di consegnarla: testo leggibile, niente tagli, colori del brand.
 

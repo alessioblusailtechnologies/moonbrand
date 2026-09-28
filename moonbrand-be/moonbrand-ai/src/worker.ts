@@ -10,7 +10,6 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type {
   ContentEditJobInput,
   ContentJobInput,
-  ContentPhotosJobInput,
   IdeasJobInput,
   VisualEditJobInput,
   VisualJobRequest,
@@ -82,13 +81,6 @@ const JOBS: Record<string, JobKind> = {
       return { script: 'src/jobs/content-edit.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
     },
     save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentEditJobInput, result),
-  },
-  'content-photos': {
-    launch: (input) => {
-      const { brandId, ...rest } = input as ContentPhotosJobInput;
-      return { script: 'src/jobs/content-photos.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
-    },
-    save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentPhotosJobInput, result),
   },
 };
 

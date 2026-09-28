@@ -27,19 +27,6 @@ export interface ContentFile {
   url?: string;
 }
 
-// Una foto che chi guarda prende per vera (persone, luoghi, lavori, prodotti del brand): l'AI non la inventa,
-// nell'impaginazione lascia un segnaposto. L'utente carica la sua foto o sceglie di farla generare.
-export interface ContentPhotoSlot {
-  id: string;
-  // Cosa deve mostrare la foto, detto a chi la deve scattare.
-  description: string;
-  aspect: string;
-  // La foto messa nello slot; vuoto finché resta il segnaposto.
-  file: string;
-  source: 'upload' | 'ai' | null;
-  url?: string;
-}
-
 // Stessa forma che legge social-app, più i file che produce moonbrand.
 export interface ContentVisual {
   headline: string;
@@ -48,7 +35,6 @@ export interface ContentVisual {
   scenes: unknown[];
   design: unknown;
   files?: ContentFile[];
-  slots?: ContentPhotoSlot[];
 }
 
 export interface Content {

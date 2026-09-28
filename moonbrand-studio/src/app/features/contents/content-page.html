@@ -16,8 +16,7 @@
         <div class="head-actions">
           <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">Rigenera da zero</button>
           <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
-            [disabled]="current.status !== 'approved' && missingPhotos() > 0"
-            [attr.title]="current.status !== 'approved' && missingPhotos() > 0 ? 'Prima completa le foto' : null" (click)="toggleApproved()">
+            (click)="toggleApproved()">
             {{ current.status === 'approved' ? 'Riapri' : 'Approva' }}
           </button>
         </div>
@@ -26,7 +25,7 @@
 
     @if (preparing()) {
       <div class="panel">
-        <p class="strong-sm">{{ workLabel() }}</p>
+        <p class="strong-sm">{{ editing() ? 'Ritocco il contenuto' : 'Preparo testo e immagini' }}</p>
         <mb-step-list [steps]="steps()" waiting="Rileggo l’idea e il brand" />
       </div>
     }
@@ -93,59 +92,6 @@
           </div>
         }
       </div>
-
-      @if (slots().length > 0) {
-        <section class="panel photos">
-          <div class="photos-head">
-            <div>
-              <p class="label">Foto</p>
-              <p class="caption">
-                {{ missingPhotos() > 0 ? 'Qui serve una foto vera: carica la tua, la sistemo io se serve, oppure falla generare.'
-                  : 'Puoi cambiare una foto caricandone un’altra o facendola rigenerare.' }}
-              </p>
-            </div>
-            <button class="btn btn-primary btn-sm" type="button" [disabled]="chosen() === 0 || preparing() || uploading() !== null" (click)="fillPhotos()">
-              {{ chosen() > 1 ? 'Metti le ' + chosen() + ' foto' : 'Metti la foto' }}
-            </button>
-          </div>
-          <ul class="slots">
-            @for (slot of slots(); track slot.id) {
-              <li class="slot" [class.missing]="!slot.file && !choice(slot)">
-                <div class="slot-shot" [style.aspect-ratio]="cssAspect(slot.aspect)">
-                  @if (uploading() === slot.id) {
-                    <span class="spinner"></span>
-                  } @else if (choice(slot) === 'ai') {
-                    <mb-icon name="lightbulb" [size]="20" />
-                  } @else if (slotPreview(slot); as url) {
-                    <img [src]="url" [alt]="slot.description" />
-                  } @else {
-                    <mb-icon name="image-plus" [size]="20" />
-                  }
-                </div>
-                <div class="slot-body">
-                  <p class="body ink">{{ slot.description }}</p>
-                  <p class="caption">{{ slotStatus(slot) }}</p>
-                  <div class="slot-actions">
-                    <label class="btn btn-secondary btn-sm" [class.disabled]="preparing() || uploading() !== null">
-                      {{ slot.file || choice(slot) ? 'Carica un’altra' : 'Carica la tua foto' }}
-                      <input type="file" accept="image/png,image/jpeg,image/webp" hidden [disabled]="preparing() || uploading() !== null"
-                        (change)="pickPhoto(slot, $event)" />
-                    </label>
-                    @if (choice(slot) !== 'ai') {
-                      <button class="btn btn-secondary btn-sm" type="button" [disabled]="preparing() || uploading() !== null" (click)="generatePhoto(slot)">
-                        Genera con AI
-                      </button>
-                    }
-                    @if (choice(slot)) {
-                      <button class="link-btn muted" type="button" (click)="clearChoice(slot)">Annulla</button>
-                    }
-                  </div>
-                </div>
-              </li>
-            }
-          </ul>
-        </section>
-      }
 
       <div class="row edit">
         <input class="sunken grow" aria-label="Cosa ritoccare" placeholder="Cosa cambio? es. più corto su Instagram, un’altra foto in copertina"
