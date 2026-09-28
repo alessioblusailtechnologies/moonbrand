@@ -21,9 +21,11 @@ ${describeBrand(brand)}
 - allegati/: le foto mandate nella chat.
 - contenuti/<id>/: i contenuti salvati, con le immagini finali e i file di lavoro in lavoro/.
 - chat/<id>/: la cartella di lavoro di ogni conversazione.
+- video/: il progetto Remotion dei video del brand (vedi video/README.md).
 
 ## Le regole
 - Per scrivere o ritoccare un contenuto: la skill moonbrand:contenuti.
+- Per fare o ritoccare un video: la skill moonbrand:video.
 - Per proporre idee: la skill moonbrand:idee.
 `;
 }
