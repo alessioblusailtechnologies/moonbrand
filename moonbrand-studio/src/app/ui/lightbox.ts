@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Injectable, computed, inject, signal } from '@angular/core';
 
 import { Icon } from './icon';
+import { lockPageScroll } from './scroll-lock';
 
 export interface LightboxImage {
   url: string;
@@ -164,4 +165,8 @@ export class Lightbox {
   protected readonly service = inject(LightboxService);
   protected readonly count = computed(() => this.service.images().length);
   protected readonly current = computed(() => this.service.images()[this.service.index()] ?? null);
+
+  constructor() {
+    lockPageScroll(() => this.current() !== null);
+  }
 }

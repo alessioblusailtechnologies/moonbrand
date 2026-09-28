@@ -9,6 +9,7 @@ import { errorMessage } from '../../core/errors';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
+import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
 import { DraftStore } from './draft-store';
 import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
@@ -82,6 +83,7 @@ export class Onboarding {
   protected readonly canClose = computed(() => this.brands.brands().length > 0);
 
   constructor() {
+    lockPageScroll();
     void this.brands.ensureLoaded();
     const fromNewBrand = this.router.currentNavigation()?.extras.state?.['newBrand'] === true;
     if (fromNewBrand && this.store.draft()) void this.askRestart();

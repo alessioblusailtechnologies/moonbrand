@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Injectable, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
 
+import { lockPageScroll } from './scroll-lock';
+
 export interface ConfirmOptions {
   title: string;
   message?: string;
@@ -61,7 +63,7 @@ export class ConfirmService {
       position: fixed;
       inset: 0;
       z-index: 90;
-      background: rgba(28, 33, 80, 0.32);
+      background: var(--scrim);
       animation: fade-in 160ms var(--ease);
     }
     .dialog {
@@ -108,5 +110,6 @@ export class Confirm {
 
   constructor() {
     afterRenderEffect(() => this.cancel()?.nativeElement.focus());
+    lockPageScroll(() => this.service.current() !== null);
   }
 }

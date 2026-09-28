@@ -10,7 +10,7 @@
 .scrim {
   position: absolute;
   inset: 0;
-  background: rgba(28, 33, 80, 0.4);
+  background: var(--scrim);
   animation: fade-in 200ms var(--ease);
 }
 

@@ -5,6 +5,7 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
+import { lockPageScroll } from '../../ui/scroll-lock';
 import { FORMAT_OPTIONS } from '../contents/labels';
 
 @Component({
@@ -60,7 +61,7 @@ import { FORMAT_OPTIONS } from '../contents/labels';
       position: fixed;
       inset: 0;
       z-index: 70;
-      background: rgba(28, 33, 80, 0.32);
+      background: var(--scrim);
       animation: fade-in 160ms var(--ease);
     }
     .dialog {
@@ -118,6 +119,10 @@ export class CreateContentDialog implements OnInit {
   readonly busy = input(false);
   readonly closed = output();
   readonly created = output<CreateContentRequest>();
+
+  constructor() {
+    lockPageScroll();
+  }
 
   protected readonly formats = FORMAT_OPTIONS;
   protected readonly format = signal<WritableFormat>('post');

@@ -6,6 +6,7 @@ import { sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 import { errorMessage } from '../../core/errors';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
+import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
 import { DraftStore } from '../onboarding/draft-store';
 import { ChannelsStep } from '../onboarding/steps/channels-step';
@@ -87,7 +88,7 @@ import { ReferencesEditor } from './references-editor';
     .scrim {
       position: absolute;
       inset: 0;
-      background: rgba(28, 33, 80, 0.4);
+      background: var(--scrim);
       animation: fade-in 200ms var(--ease);
     }
     .dialog {
@@ -164,6 +165,10 @@ export class SectionEditor implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   protected readonly store = inject(ProfileDraftStore);
+
+  constructor() {
+    lockPageScroll();
+  }
 
   readonly brandId = input.required<string>();
   readonly draft = input.required<BrandDraft>();

@@ -36,6 +36,9 @@
   --radius-xl: 20px;
   --radius-card: 24px;
 
+  // Il velo dietro le finestre modali: sul fondo bianco deve scurire davvero la pagina.
+  --scrim: rgba(15, 19, 48, 0.55);
+
   --shadow-menu: 0 18px 48px rgba(15, 19, 48, 0.18);
   --shadow-toast: 0 10px 24px rgba(28, 33, 80, 0.4);
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
