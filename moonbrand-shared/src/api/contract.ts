@@ -273,8 +273,8 @@ export interface ConversationTurn {
 export interface ConversationResponse {
   conversation: ConversationSummary;
   turns: ConversationTurn[];
-  // I contenuti nati in questa conversazione.
-  contents: ContentSummary[];
+  // I contenuti nati in questa conversazione, completi: la chat li mostra interi, con i link alle immagini.
+  contents: Content[];
 }
 
 // attachments: i percorsi delle foto già caricate con /attachments.

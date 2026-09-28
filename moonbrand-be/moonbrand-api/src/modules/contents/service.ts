@@ -76,7 +76,7 @@ export function createContent(pool: pg.Pool, identity: Identity, ideaId: string,
 }
 
 // I link alle immagini cambiano a ogni aggiornamento: il browser non mostra quelle vecchie dalla cache.
-function withUrls(content: Content, files: BrandFiles): Content {
+export function withUrls(content: Content, files: BrandFiles): Content {
   const version = new Date(content.updatedAt).getTime();
   return {
     ...content,

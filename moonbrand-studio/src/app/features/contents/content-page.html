@@ -15,67 +15,7 @@
     }
 
     @if (ready()) {
-      @if (current.channels.length > 1) {
-        <div class="segmented channels" role="tablist" aria-label="Canale">
-          @for (item of current.channels; track item) {
-            <button type="button" role="tab" [attr.aria-selected]="channel() === item" [class.selected]="channel() === item" (click)="channel.set(item)">
-              {{ name(item) }}
-            </button>
-          }
-        </div>
-      }
-
-      <div class="preview">
-        <div class="visual">
-          @if (images().length > 1) {
-            <div class="slider" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Slide del carosello"
-              (keydown.arrowleft)="move(-1)" (keydown.arrowright)="move(1)" (pointerdown)="dragStart($event)" (pointerup)="dragEnd($event)"
-              (pointercancel)="dragFrom = null">
-              <div class="track" [style.transform]="'translateX(' + -slide() * 100 + '%)'">
-                @for (file of images(); track file.file; let i = $index) {
-                  <button class="shot slide" type="button" [style.aspect-ratio]="cssAspect(file.aspect)" [attr.aria-hidden]="i !== slide()"
-                    [attr.tabindex]="i === slide() ? 0 : -1" [attr.aria-label]="'Slide ' + (i + 1) + ' di ' + images().length + ': ingrandisci'"
-                    (click)="openSlide(i)">
-                    <img [src]="file.url" [alt]="'Slide ' + (i + 1)" draggable="false" />
-                  </button>
-                }
-              </div>
-              <button class="nav prev" type="button" aria-label="Slide precedente" [disabled]="slide() === 0" (click)="move(-1)">
-                <mb-icon name="chevron-left" [size]="18" />
-              </button>
-              <button class="nav next" type="button" aria-label="Slide successiva" [disabled]="slide() === images().length - 1" (click)="move(1)">
-                <mb-icon name="chevron-right" [size]="18" />
-              </button>
-              <span class="counter">{{ slide() + 1 }} / {{ images().length }}</span>
-            </div>
-            <div class="dots" role="tablist" aria-label="Vai alla slide">
-              @for (file of images(); track file.file; let i = $index) {
-                <button class="dot" type="button" role="tab" [attr.aria-selected]="i === slide()" [attr.aria-label]="'Slide ' + (i + 1)"
-                  [class.on]="i === slide()" (click)="slide.set(i)"></button>
-              }
-            </div>
-          } @else {
-            @for (file of images(); track file.file) {
-              <button class="shot" type="button" [style.aspect-ratio]="cssAspect(file.aspect)" aria-label="Ingrandisci l’immagine" (click)="open(0)">
-                <img [src]="file.url" alt="Immagine del contenuto" />
-              </button>
-            }
-          }
-        </div>
-
-        @if (variant(); as text) {
-          <div class="panel text">
-            <div class="text-head">
-              <p class="label">{{ channel() ? name(channel()!) : '' }}</p>
-              <button class="link-btn" type="button" (click)="copy()">Copia testo</button>
-            </div>
-            <p class="body ink post">{{ text.text }}</p>
-            @if (text.hashtags.length > 0) {
-              <p class="caption hashtags">{{ text.hashtags.join(' ') }}</p>
-            }
-          </div>
-        }
-      </div>
+      <mb-content-preview [content]="current" />
 
       @if (current.conversationId) {
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">

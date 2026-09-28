@@ -10,7 +10,7 @@ import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
 import { listConversationContents } from '../contents/repository';
-import { summarize } from '../contents/service';
+import { withUrls } from '../contents/service';
 import { findBrandForIdeas } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
 import {
@@ -90,7 +90,7 @@ export function getConversation(pool: pg.Pool, files: BrandFiles, identity: Iden
     return {
       conversation,
       turns: turns.map((turn) => ({ ...turn, attachments: turn.attachments.map((file) => ({ file, url: files.url(conversation.brandId, file) })) })),
-      contents: contents.map((content) => summarize(content, files, false)),
+      contents: contents.map((content) => withUrls(content, files)),
     };
   });
 }

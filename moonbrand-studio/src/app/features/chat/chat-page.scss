@@ -353,3 +353,40 @@
   color: var(--white);
   cursor: pointer;
 }
+
+// Un contenuto salvato nella conversazione, intero: immagini e testi come nella pagina del contenuto.
+.content-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 6px;
+  padding: 18px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+
+.content-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.content-card-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.content-card-meta {
+  display: flex;
+  gap: 6px;
+}
+
+.open-content {
+  flex: none;
+  gap: 4px;
+  text-decoration: none;
+}

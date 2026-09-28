@@ -17,9 +17,9 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
+import type { Content } from '@moonbrand/shared/domain/content';
 import type {
   ChatAttachment,
-  ContentSummary,
   ConversationSummary,
   ConversationTurn,
 } from '@moonbrand/shared/api/contract';
@@ -35,6 +35,7 @@ import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { Markdown } from '../../ui/markdown';
 import { ToastService } from '../../ui/toast';
+import { ContentPreview } from '../contents/content-preview';
 import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
 
 // Nella risposta di un turno i testi di Claude si leggono, i tool di fila si raccolgono in un blocco solo.
@@ -67,7 +68,7 @@ const STICK_PX = 80;
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, ContentPreview],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -85,7 +86,7 @@ export class ChatPage {
 
   protected readonly current = signal<ConversationSummary | null>(null);
   protected readonly turns = signal<ConversationTurn[]>([]);
-  protected readonly contents = signal<ContentSummary[]>([]);
+  protected readonly contents = signal<Content[]>([]);
   protected readonly loading = signal(false);
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
@@ -116,9 +117,19 @@ export class ChatPage {
       (this.draft().trim().length > 0 || this.attachments().some((item) => item.file)),
   );
   private readonly turnCount = computed(() => this.turns().length);
-  protected readonly view = computed(() =>
-    this.turns().map((turn) => ({ ...turn, blocks: blocksOf(turn.job.steps) })),
-  );
+  // Ogni contenuto sta nella risposta del turno in cui è nato: l'ultimo turno partito prima che venisse creato.
+  protected readonly view = computed(() => {
+    const turns = this.turns();
+    const contents = this.contents();
+    return turns.map((turn, index) => {
+      const next = turns[index + 1]?.createdAt;
+      return {
+        ...turn,
+        blocks: blocksOf(turn.job.steps),
+        contents: contents.filter((content) => content.createdAt >= turn.createdAt && (!next || content.createdAt < next)),
+      };
+    });
+  });
 
   constructor() {
     pageHeader(
@@ -202,13 +213,25 @@ export class ChatPage {
     this.contents.set(contents);
   }
 
+  private async refreshContents(conversationId: string): Promise<void> {
+    const { contents } = await this.chat.get(conversationId).catch(() => ({ contents: null }));
+    if (contents && this.conversationId() === conversationId) this.contents.set(contents);
+  }
+
   // Gli step arrivano man mano; a turno finito si rilegge tutto, per i contenuti salvati e lo stato finale.
   private async follow(conversationId: string, jobId: string): Promise<void> {
     if (this.live()?.jobId === jobId) return;
     const turn = this.turns().find((item) => item.job.id === jobId);
     this.live.set({ jobId, known: new Set(blocksOf(turn?.job.steps ?? []).map((block) => block.id)) });
+    let saved = savesOf(turn?.job.steps ?? []);
     const update = (steps: AiStep[]) => {
       if (this.live()?.jobId !== jobId) return;
+      // Un contenuto appena salvato o aggiornato compare subito, senza aspettare la fine del turno.
+      const now = savesOf(steps);
+      if (now > saved) {
+        saved = now;
+        void this.refreshContents(conversationId);
+      }
       this.turns.update((turns) =>
         turns.map((item) =>
           item.job.id === jobId ? { ...item, job: { ...item.job, status: 'running', steps } } : item,
@@ -383,13 +406,23 @@ export class ChatPage {
     return steps.find((step) => step.status === 'running');
   }
 
-  protected formatLabel(content: ContentSummary): string {
+  // La copertina o la prima slide, per la chip in fondo.
+  protected coverOf(content: Content): string | null {
+    return content.visual.files?.find((file) => file.index === 0)?.url ?? null;
+  }
+
+  protected formatLabel(content: Content): string {
     return FORMAT_LABELS[content.format];
   }
 
-  protected statusLabel(content: ContentSummary): string {
+  protected statusLabel(content: Content): string {
     return STATUS_LABELS[content.status];
   }
+}
+
+// I tool che salvano o aggiornano un contenuto, già conclusi.
+function savesOf(steps: AiStep[]): number {
+  return steps.filter((step) => step.kind === 'tool' && /contenuto_(salva|aggiorna)$/.test(step.label) && step.status === 'done').length;
 }
 
 function blocksOf(steps: AiStep[]): Block[] {
