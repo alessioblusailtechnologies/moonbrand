@@ -14,9 +14,11 @@
 
   --surface-app: var(--white);
   --surface-card: var(--white);
-  // La sidebar si stacca dal bianco del contenuto con un grigio caldo; la voce attiva con un grigio più scuro.
-  --surface-sidebar: #f7f7f5;
-  --surface-sidebar-active: #ebebe8;
+  // La sidebar è blu come i messaggi dell'utente in chat: testi chiari, la voce attiva schiarita.
+  --surface-sidebar: var(--navy-700);
+  --surface-sidebar-active: rgba(255, 255, 255, 0.12);
+  --sidebar-text: rgba(255, 255, 255, 0.68);
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
   // Le finestre (onboarding, modifica di una sezione) restano grigie: dentro ci sono pannelli bianchi.
   --surface-dialog: var(--grey-100);
   --surface-sunken: var(--grey-100);

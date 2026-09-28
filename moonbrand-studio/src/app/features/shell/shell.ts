@@ -101,8 +101,8 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       width: 232px;
       height: 100vh;
       padding: 18px 14px;
-      border-right: 1px solid rgba(47, 52, 82, 0.08);
       background: var(--surface-sidebar);
+      color: var(--white);
     }
     .brand-mark {
       display: flex;
@@ -138,12 +138,13 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       border: 0;
       border-radius: var(--radius-sm);
       background: transparent;
-      color: var(--text-body);
+      color: var(--sidebar-text);
       cursor: pointer;
       transform: translateY(-50%);
     }
     .expand:hover {
-      background: rgba(47, 52, 82, 0.08);
+      background: var(--sidebar-hover);
+      color: var(--white);
     }
     .expand mb-icon {
       transform: rotate(-90deg);
@@ -153,7 +154,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       transform: none;
     }
     .nav-row:has(.nav-item.active) .expand {
-      color: var(--text-title);
+      color: var(--white);
     }
     .sessions {
       display: flex;
@@ -172,7 +173,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       min-height: 34px;
       padding: 0 12px;
       border-radius: var(--radius-sm);
-      color: var(--text-body);
+      color: var(--sidebar-text);
       font-size: 13px;
       text-decoration: none;
       transition:
@@ -180,12 +181,12 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
         color 120ms var(--ease);
     }
     .session:hover {
-      background: rgba(47, 52, 82, 0.05);
-      color: var(--text-title);
+      background: var(--sidebar-hover);
+      color: var(--white);
     }
     .session.active {
       background: var(--surface-sidebar-active);
-      color: var(--text-title);
+      color: var(--white);
     }
     .session-title {
       flex: 1;
@@ -206,15 +207,14 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       gap: 4px;
       margin-top: 8px;
       padding: 5px 10px 5px 12px;
-      border: 1px solid var(--grey-300);
+      border: 1px solid rgba(255, 255, 255, 0.28);
       border-radius: var(--radius-sm);
-      background: var(--white);
-      color: var(--text-title);
+      color: var(--white);
       font-size: 12px;
       text-decoration: none;
     }
     .show-all:hover {
-      border-color: var(--grey-500);
+      border-color: rgba(255, 255, 255, 0.6);
     }
     .nav-item {
       display: flex;
@@ -223,7 +223,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       min-height: 42px;
       padding: 0 12px;
       border-radius: var(--radius-md);
-      color: var(--text-body);
+      color: var(--sidebar-text);
       font-size: 14px;
       font-weight: 500;
       text-decoration: none;
@@ -232,12 +232,12 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
         color 120ms var(--ease);
     }
     .nav-item:hover {
-      background: rgba(47, 52, 82, 0.05);
-      color: var(--text-title);
+      background: var(--sidebar-hover);
+      color: var(--white);
     }
     .nav-item.active {
       background: var(--surface-sidebar-active);
-      color: var(--text-title);
+      color: var(--white);
       font-weight: 600;
     }
     .main {
