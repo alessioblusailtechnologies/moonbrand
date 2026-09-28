@@ -30,9 +30,11 @@ export const EMPTY_DRAFT_STATE: DraftState = {
   unselectedExamples: [],
 };
 
-// Un campo si riempie dal sito solo se è vuoto o contiene ancora quanto letto la volta prima.
-function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: WebsiteInsights | null): Identity {
-  const fill = (value: string, next: string, before: string | undefined) => (next && (!value.trim() || value === before) ? next : value);
+// Un campo si riempie dal sito solo se è vuoto o contiene ancora quanto letto la volta prima;
+// se il sito è di un altro brand, quello che c'era parlava del brand di prima e si sostituisce.
+function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: WebsiteInsights | null, otherBrand: boolean): Identity {
+  const fill = (value: string, next: string, before: string | undefined) =>
+    otherBrand || (next && (!value.trim() || value === before)) ? next : value;
   const nameKey = identity.kind === 'person' ? 'company' : 'name';
   return {
     ...identity,
@@ -83,7 +85,7 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
         positioningIdeas: otherBrand ? null : state.positioningIdeas,
         draft: {
           ...draft,
-          identity: fillFromSite(draft.identity, insights, state.insights),
+          identity: fillFromSite(draft.identity, insights, state.insights, otherBrand),
           themes: themesEdited ? draft.themes : createThemes(insights.themes),
           visual: draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette },
         },
