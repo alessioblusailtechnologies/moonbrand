@@ -1,8 +1,13 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { promisify } from 'node:util';
 
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
+
+import { ffmpeg } from '../lib/video';
 
 const API = 'https://api.elevenlabs.io/v1';
 const VOICE_MODEL = 'eleven_v3';
@@ -59,7 +64,15 @@ function toCaptions({ characters, character_start_times_seconds: starts, charact
   return captions;
 }
 
-// Voce fuori campo ed effetti con ElevenLabs (la musica la fa Mureka, in musica.ts).
+// Una parola con i suoi tempi, dall'allineamento (con il testo) o dalla trascrizione (senza).
+interface TimedWord {
+  text: string;
+  start: number;
+  end: number;
+  type?: string;
+}
+
+// Voce fuori campo, effetti e tempi delle parole con ElevenLabs (la musica la fa Mureka, in musica.ts).
 // La chiave resta in questo processo: Claude vede solo i tool, non le chiamate a ElevenLabs.
 export function audioTools(folder: string, apiKey: string) {
   const root = path.resolve(folder);
@@ -79,6 +92,12 @@ export function audioTools(folder: string, apiKey: string) {
       headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
       ...(init && { body: JSON.stringify(init.body) }),
     });
+    if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
+    return response;
+  };
+  // Le chiamate con un file: il content-type lo mette FormData.
+  const upload = async (endpoint: string, form: FormData) => {
+    const response = await fetch(`${API}${endpoint}`, { method: 'POST', headers: { 'xi-api-key': apiKey }, body: form });
     if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
     return response;
   };
@@ -159,6 +178,87 @@ export function audioTools(folder: string, apiKey: string) {
     { alwaysLoad: true },
   );
 
+  const words = tool(
+    'tempi_parole',
+    'Trova quando viene detta o cantata ogni parola di un audio della cartella (una canzone di Mureka, una voce registrata) e salva i tempi ' +
+      'nel formato Caption di @remotion/captions: per sottotitoli e parole che si accendono a tempo. Con il testo esatto lo allinea, ed è il modo più preciso; ' +
+      'senza testo lo trascrive. Per una canzone prima separa la voce dalla musica. Con da e a lavora solo su quel pezzo, ma i tempi restano quelli del brano intero. ' +
+      'Per la voce fatta con genera_voce non serve: i tempi li ha già salvati lei.',
+    {
+      audio: z.string().describe('Il file audio, relativo alla cartella del brand, es. video/public/contenuti/<id>/canzone.mp3'),
+      testo: z
+        .string()
+        .optional()
+        .describe(
+          'Il testo esattamente come si sente, nell’ordine e con le ripetizioni (i tag come [Chorus] si ignorano); se non lo sai con certezza lascialo vuoto e il tool trascrive',
+        ),
+      canzone: z.boolean().optional().describe('true (di base) se sotto la voce c’è musica da separare; false per una voce sola'),
+      da: z.number().min(0).optional().describe('Secondo del brano da cui partire'),
+      a: z.number().positive().optional().describe('Secondo del brano a cui fermarsi'),
+      lingua: z.string().optional().describe('Codice della lingua per la trascrizione, es. it (di base) o en'),
+      file: z
+        .string()
+        .regex(/^[A-Za-z0-9._\/-]+\.json$/)
+        .describe('Dove salvare i tempi, relativo alla cartella del brand, es. video/public/contenuti/<id>/canzone.parole.json'),
+    },
+    async ({ audio, testo, canzone = true, da = 0, a, lingua = 'it', file }) => {
+      const work = await mkdtemp(path.join(tmpdir(), 'moonbrand-parole-'));
+      try {
+        // Il pezzo che serve, in WAV mono: meno da mandare e da pagare, e ogni ffmpeg lo sa scrivere.
+        const piece = path.join(work, 'pezzo.wav');
+        const { bin, dir } = ffmpeg();
+        const range = [...(da > 0 ? ['-ss', String(da)] : []), ...(a !== undefined ? ['-to', String(a)] : [])];
+        await promisify(execFile)(bin, ['-hide_banner', '-loglevel', 'error', '-y', ...range, '-i', inside(audio), '-vn', '-ac', '1', '-ar', '22050', piece], {
+          cwd: dir,
+          env: { ...process.env, LD_LIBRARY_PATH: dir },
+        });
+
+        let voice = new Blob([await readFile(piece)]);
+        if (canzone) {
+          const form = new FormData();
+          form.append('audio', voice, 'pezzo.wav');
+          voice = new Blob([await (await upload('/audio-isolation', form)).arrayBuffer()]);
+        }
+
+        const lyrics = testo?.replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim();
+        const form = new FormData();
+        form.append('file', voice, canzone ? 'voce.mp3' : 'pezzo.wav');
+        let found: TimedWord[];
+        let loss: number | undefined;
+        if (lyrics) {
+          form.append('text', lyrics);
+          const result = (await (await upload('/forced-alignment', form)).json()) as { words: TimedWord[]; loss: number };
+          found = result.words;
+          loss = result.loss;
+        } else {
+          form.append('model_id', 'scribe_v1');
+          form.append('language_code', lingua);
+          form.append('timestamps_granularity', 'word');
+          found = ((await (await upload('/speech-to-text', form)).json()) as { words: TimedWord[] }).words.filter((item) => item.type === 'word');
+        }
+
+        const spoken = found.filter((item) => item.text.trim());
+        if (spoken.length === 0) return failure(new Error('nessuna parola trovata in questo pezzo'));
+        const captions: Caption[] = spoken.map((item, index) => {
+          const startMs = Math.round((item.start + da) * 1000);
+          return { text: `${index > 0 ? ' ' : ''}${item.text.trim()}`, startMs, endMs: Math.round((item.end + da) * 1000), timestampMs: startMs, confidence: null };
+        });
+        await save(file, JSON.stringify(captions, null, 2));
+        const first = (captions[0].startMs / 1000).toFixed(2);
+        const last = (captions[captions.length - 1].endMs / 1000).toFixed(2);
+        const how = lyrics
+          ? `allineate al testo (loss ${loss?.toFixed(2)}: più è basso, più il testo coincide con quello che si sente)`
+          : `trascritte: "${captions.map((item) => item.text).join('').slice(0, 300)}"`;
+        return text(`${captions.length} parole in ${file}, da ${first} a ${last} secondi del brano, ${how}.`);
+      } catch (error) {
+        return failure(error);
+      } finally {
+        await rm(work, { recursive: true, force: true });
+      }
+    },
+    { alwaysLoad: true },
+  );
+
   const effect = tool(
     'genera_effetto',
     'Crea un effetto sonoro con ElevenLabs e lo salva in MP3: transizioni, colpi, fruscii, ambienti, rumori di oggetti. ' +
@@ -183,5 +283,5 @@ export function audioTools(folder: string, apiKey: string) {
     { alwaysLoad: true },
   );
 
-  return createSdkMcpServer({ name: 'audio', tools: [voices, voiceOver, effect] });
+  return createSdkMcpServer({ name: 'audio', tools: [voices, voiceOver, words, effect] });
 }
