@@ -1,14 +1,15 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { query, type McpServerConfig } from '@anthropic-ai/claude-agent-sdk';
+import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { VIDEO_ASPECT, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
-import { clipTools } from '../tools/clip';
+import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
+import { musicTools } from '../tools/musica';
 import { MOONBRAND_PLUGINS } from './plugin';
 import { prepareVideoProject } from './video';
 
@@ -148,7 +149,8 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
   };
 }
 
-// Claude Code nella cartella del brand, con i tool per immagini (e per i video: clip, musica, voce, effetti);
+// Claude Code nella cartella del brand, con i tool per immagini (e per i video: Higgsfield per le clip, Mureka per la musica,
+// ElevenLabs per voce ed effetti);
 // con resume riprende la sessione di prima. scriptOnly: il copione di un video, senza testi per canale né file.
 export async function runContentAgent(options: {
   brandDir: string;
@@ -159,7 +161,7 @@ export async function runContentAgent(options: {
   scriptOnly?: boolean;
   resume?: string;
 }): Promise<void> {
-  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, ...env } = process.env;
+  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MUREKA_API_KEY, ...env } = process.env;
   if (!GEMINI_API_KEY) {
     console.error('Manca GEMINI_API_KEY nel .env di moonbrand-ai.');
     process.exit(1);
@@ -169,14 +171,23 @@ export async function runContentAgent(options: {
 
   const mcpServers: Record<string, McpServerConfig> = { immagini: imageTools(options.brandDir, GEMINI_API_KEY) };
   let videoEnv: Record<string, string> = {};
+  let clips: Pick<Options, 'disallowedTools' | 'hooks'> = {};
   if (options.format === 'video') {
     if (!ELEVENLABS_API_KEY) {
       console.error('Manca ELEVENLABS_API_KEY nel .env di moonbrand-ai.');
       process.exit(1);
     }
-    mcpServers.clip = clipTools(options.brandDir, GEMINI_API_KEY);
     mcpServers.audio = audioTools(options.brandDir, ELEVENLABS_API_KEY);
+    if (MUREKA_API_KEY) mcpServers.musica = musicTools(options.brandDir, MUREKA_API_KEY);
+    else console.error('Manca MUREKA_API_KEY nel .env di moonbrand-ai: il video si fa senza musica generata.');
     videoEnv = await prepareVideoProject(options.brandDir);
+    // Le clip le gira Higgsfield; i suoi file arrivano nella cartella di lavoro del contenuto.
+    const token = await higgsfieldToken();
+    if (token) {
+      const { server, disallowedTools, hooks } = higgsfield(token, options.brandDir, `${contentDir(options.contentId)}/lavoro/higgsfield`);
+      mcpServers.higgsfield = server;
+      clips = { disallowedTools, hooks };
+    }
   }
 
   for await (const message of query({
@@ -185,6 +196,7 @@ export async function runContentAgent(options: {
       cwd: options.brandDir,
       env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,
+      ...clips,
       plugins: MOONBRAND_PLUGINS,
       permissionMode: 'bypassPermissions',
       allowDangerouslySkipPermissions: true,

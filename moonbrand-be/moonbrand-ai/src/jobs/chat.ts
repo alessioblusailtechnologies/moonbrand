@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { query, type McpServerConfig } from '@anthropic-ai/claude-agent-sdk';
+import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
@@ -9,8 +9,9 @@ import { writeBrandGuide } from '../lib/brand-guide';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
 import { audioTools } from '../tools/audio';
-import { clipTools } from '../tools/clip';
+import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
+import { musicTools } from '../tools/musica';
 import { moonbrandTools } from '../tools/moonbrand';
 
 const [brandDir, inputJson] = process.argv.slice(2);
@@ -20,7 +21,7 @@ if (!brandDir || !inputJson) {
 }
 
 // Chiavi e token restano in questo processo: Claude vede solo i tool.
-const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
+const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MUREKA_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
 if (!MOONBRAND_AGENT_TOKEN) {
   console.error('Manca il token del job: la chat parte solo dal worker.');
   process.exit(1);
@@ -35,11 +36,17 @@ await writeBrandGuide(brandDir, brand);
 const videoEnv = await prepareVideoProject(brandDir);
 
 const mcpServers: Record<string, McpServerConfig> = { moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN) };
-if (GEMINI_API_KEY) {
-  mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
-  mcpServers.clip = clipTools(brandDir, GEMINI_API_KEY);
+if (GEMINI_API_KEY) mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+// Le clip dei video le gira Higgsfield; i suoi file arrivano nella cartella della conversazione.
+let clips: Pick<Options, 'disallowedTools' | 'hooks'> = {};
+const higgsfieldSession = await higgsfieldToken();
+if (higgsfieldSession) {
+  const { server, disallowedTools, hooks } = higgsfield(higgsfieldSession, brandDir, `${workDir}/higgsfield`);
+  mcpServers.higgsfield = server;
+  clips = { disallowedTools, hooks };
 }
 if (ELEVENLABS_API_KEY) mcpServers.audio = audioTools(brandDir, ELEVENLABS_API_KEY);
+if (MUREKA_API_KEY) mcpServers.musica = musicTools(brandDir, MUREKA_API_KEY);
 
 const guide = `# moonbrand
 
@@ -70,6 +77,7 @@ try {
       cwd: brandDir,
       env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,
+      ...clips,
       plugins: MOONBRAND_PLUGINS,
       includePartialMessages: true,
       abortController: abort,

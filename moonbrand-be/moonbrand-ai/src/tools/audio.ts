@@ -5,7 +5,6 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 const API = 'https://api.elevenlabs.io/v1';
-const MUSIC_MODEL = 'music_v2_5';
 const VOICE_MODEL = 'eleven_v3';
 
 interface SharedVoice {
@@ -60,6 +59,7 @@ function toCaptions({ characters, character_start_times_seconds: starts, charact
   return captions;
 }
 
+// Voce fuori campo ed effetti con ElevenLabs (la musica la fa Mureka, in musica.ts).
 // La chiave resta in questo processo: Claude vede solo i tool, non le chiamate a ElevenLabs.
 export function audioTools(folder: string, apiKey: string) {
   const root = path.resolve(folder);
@@ -92,31 +92,6 @@ export function audioTools(folder: string, apiKey: string) {
       .string()
       .regex(/^[A-Za-z0-9._\/-]+\.mp3$/)
       .describe(`Dove salvarlo, relativo alla cartella del brand, es. video/public/contenuti/<id>/${example}`);
-
-  const music = tool(
-    'genera_musica',
-    'Compone una musica originale con ElevenLabs e la salva in MP3 nella cartella del brand. ' +
-      'Descrivi genere, atmosfera, strumenti, tempo (BPM) e come evolve: per esempio un inizio che aggancia, una crescita, un finale netto. ' +
-      'Dura quanto chiedi, così segue la durata del video.',
-    {
-      descrizione: z.string().min(10).describe('Com’è la musica: genere, atmosfera, strumenti, tempo, andamento'),
-      secondi: z.number().min(3).max(600).describe('Durata in secondi'),
-      voce: z.boolean().optional().describe('true per avere anche una parte cantata; di base è solo strumentale'),
-      file: mp3('musica.mp3'),
-    },
-    async ({ descrizione, secondi, voce = false, file }) => {
-      try {
-        const response = await call('/music?output_format=mp3_44100_192', {
-          body: { prompt: descrizione, music_length_ms: Math.round(secondi * 1000), model_id: MUSIC_MODEL, force_instrumental: !voce },
-        });
-        await save(file, Buffer.from(await response.arrayBuffer()));
-        return text(`Musica salvata in ${file}`);
-      } catch (error) {
-        return failure(error);
-      }
-    },
-    { alwaysLoad: true },
-  );
 
   const voices = tool(
     'cerca_voci',
@@ -208,5 +183,5 @@ export function audioTools(folder: string, apiKey: string) {
     { alwaysLoad: true },
   );
 
-  return createSdkMcpServer({ name: 'audio', tools: [music, voices, voiceOver, effect] });
+  return createSdkMcpServer({ name: 'audio', tools: [voices, voiceOver, effect] });
 }

@@ -55,7 +55,13 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 - Foto e clip dell'utente sono in allegati/ o in file-riferimento/: copiale in video/public/contenuti/<id>/ e usale da lì. Quando ci sono, vengono prima di quelle generate.
 - Le immagini nuove le generi con genera_immagine, salvandole direttamente in video/public/contenuti/<id>/.
-- Le clip in movimento le generi con genera_clip (Veo): da 4 a 8 secondi, 9:16 o 16:9. Può partire da un'immagine della cartella e animarla, oppure seguire immagini di riferimento per tenere lo stesso soggetto. Per le altre proporzioni ritagliala nella composizione. Ci vogliono alcuni minuti per clip: generale insieme quando puoi e usale dove il movimento vero serve davvero.
+- Le clip in movimento le generi con Higgsfield (i tool mcp__higgsfield__), e usale dove il movimento vero serve davvero:
+  - scegli il modello con models_explore (con action «recommend» se non sai quale) in base a quello che serve: realismo, movimento di macchina, durata, proporzione;
+  - genera con generate_video, con aspect_ratio della proporzione del video; più clip indipendenti insieme con generate_video_batch;
+  - ci vogliono minuti: aspetta con jobs_wait finché ogni clip è finita, e non chiudere il lavoro con una clip ancora in corso;
+  - per partire da un'immagine della cartella (per esempio una foto fatta con genera_immagine o una dell'utente): media_upload con il nome del file, carica il file con curl sull'upload_url che ti restituisce, media_confirm, poi passa il media_id a generate_video.
+- I file che Higgsfield genera arrivano già scaricati nella cartella di lavoro, e il risultato del tool ti dice dove: copiali in video/public/contenuti/<id>/. Gli indirizzi di Higgsfield scadono, usa sempre i file.
+- Con Higgsfield fai le clip; le immagini restano con genera_immagine, la musica con Mureka, voce ed effetti con ElevenLabs.
 - Le clip hanno un audio loro: toglilo o abbassalo se c'è già musica o voce.
 - Per controllare una clip, guardane qualche fotogramma: ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi estrai un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
 
@@ -63,7 +69,8 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 Non puoi ascoltare niente di quello che generi: descrivi tutto con precisione e controlla i tempi sui file.
 
-- **Musica**: genera_musica, lunga quanto il video. Descrivi genere, atmosfera, strumenti, tempo e come cresce e si chiude, in accordo con la voce del brand. Nel video chiudila con una dissolvenza negli ultimi secondi e abbassala sotto la voce.
+- **Musica**: genera_musica (Mureka) compone un brano strumentale. Descrivi in inglese genere, atmosfera, strumenti, tempo e andamento, in accordo con la voce del brand. La durata la sceglie Mureka: nel video prendi la parte che serve, chiudila con una dissolvenza negli ultimi secondi e abbassala sotto la voce.
+- **Canzone o jingle**: quando il video chiede una parte cantata, genera_canzone (Mureka) la compone sul testo che scrivi tu. Il testo segue la voce del brand, con le sezioni [Verse], [Chorus], [Bridge] e [Outro]; lo stile si descrive in inglese, con la voce che serve. Con una canzone, le parole cantate importanti vanno anche a schermo.
 - **Voce fuori campo**: scegli la voce con cerca_voci partendo dalla voce del brand, poi salvane l'id in video/src/brand.ts. Se c'è già, usa quella: il brand parla sempre con la stessa voce. Il testo lo leggi con genera_voce. Scrivilo come si pronuncia e segui la voce del brand come per i testi.
 - **Sottotitoli**: genera_voce salva accanto all'audio un .json con i tempi di ogni parola nel formato di @remotion/captions. Usalo per i sottotitoli (vedi le captions in moonbrand:remotion-best-practices) e per mettere a tempo scene e testi sulla voce. Con la voce, i sottotitoli ci vogliono sempre.
 - **Effetti**: genera_effetto per transizioni, colpi e ambienti, descritti in inglese. Pochi e al servizio del ritmo.
