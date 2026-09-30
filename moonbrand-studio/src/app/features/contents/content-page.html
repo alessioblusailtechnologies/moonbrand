@@ -42,6 +42,7 @@
       <div class="panel">
         <p class="strong-sm">{{ workLabel() }}</p>
         <mb-step-list [steps]="steps()" waiting="Rileggo l’idea e il brand" />
+        <mb-pending-media [tiles]="pending()" />
       </div>
     }
 

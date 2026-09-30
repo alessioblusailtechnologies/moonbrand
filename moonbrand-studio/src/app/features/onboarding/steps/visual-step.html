@@ -104,6 +104,7 @@
   <p class="label">Esempi di post</p>
   @if (preparing()) {
     <mb-step-list [steps]="steps()" waiting="Guardo i riferimenti" />
+    <mb-pending-media [tiles]="pending(steps())" />
   } @else if (examples().length > 0) {
     <p class="caption">{{ selectedCount() }} di {{ examples().length }} scelti: tocca il segno di spunta per togliere o rimettere un esempio.</p>
     <div class="masonry">

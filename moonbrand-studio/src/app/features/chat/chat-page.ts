@@ -36,6 +36,7 @@ import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
+import { PendingMedia, pendingFromSteps } from '../../ui/pending-media';
 import { Markdown } from '../../ui/markdown';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
@@ -76,7 +77,7 @@ const STICK_PX = 80;
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, ContentPreview],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -135,6 +136,8 @@ export class ChatPage {
         ...turn,
         blocks: blocksOf(turn.job.steps),
         contents: contents.filter((content) => content.createdAt >= turn.createdAt && (!next || content.createdAt < next)),
+        // Le card che il turno in corso sta preparando: al loro posto arriva il contenuto, quando lo salva.
+        pending: turn.job.status === 'queued' || turn.job.status === 'running' ? pendingFromSteps(turn.job.steps) : [],
       };
     });
   });

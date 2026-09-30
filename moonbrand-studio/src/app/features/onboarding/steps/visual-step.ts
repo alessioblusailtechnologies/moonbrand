@@ -9,6 +9,7 @@ import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
 import { Icon } from '../../../ui/icon';
+import { PendingMedia, pendingFromSteps } from '../../../ui/pending-media';
 import { LogoBackdrop } from '../../../ui/logo-backdrop';
 import { LightboxService } from '../../../ui/lightbox';
 import { StepList } from '../../../ui/step-list';
@@ -30,11 +31,14 @@ function normalizeHex(input: string): string | null {
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, LogoBackdrop, StepList],
+  imports: [Icon, LogoBackdrop, StepList, PendingMedia],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
 export class VisualStep implements OnInit {
+  // Gli esempi in arrivo, dai passaggi del job.
+  protected readonly pending = pendingFromSteps;
+
   private readonly ai = inject(AiJobsService);
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);

@@ -3,6 +3,7 @@ import type { BrandKind, Palette } from '../domain/brand';
 // kind: un blocco di testo di Claude o una chiamata a un tool; manca negli step scritti a mano.
 // tool: il nome del tool chiamato, per il codice; a chi aspetta si mostrano solo label e detail.
 // startedAt, endedAt: in millisecondi, per il tempo di ogni passaggio; mancano negli step salvati prima.
+// media: le immagini e i video che il passaggio sta producendo: lo studio mostra i segnaposto di quello che arriverà.
 export interface AiStep {
   id: string;
   label: string;
@@ -12,6 +13,15 @@ export interface AiStep {
   tool?: string;
   startedAt?: number;
   endedAt?: number;
+  media?: StepMedia[];
+}
+
+// Un'immagine o un video in arrivo: la proporzione per il segnaposto e, quando si sa, il file nella cartella del brand,
+// per contare una volta sola un file rifatto più volte.
+export interface StepMedia {
+  kind: 'image' | 'video';
+  aspect: string;
+  file?: string;
 }
 
 export type OnAiSteps = (steps: AiStep[]) => void;
@@ -201,4 +211,55 @@ function lookLabel(files: string[]): string {
   const videos = files.filter((file) => /\.(mp4|mov|webm)$/i.test(file)).length;
   if (videos > 0) return videos === 1 ? 'Guardo il video' : 'Guardo i video';
   return files.length === 1 ? 'Guardo l’immagine' : 'Guardo le immagini';
+}
+
+// I file del brand si mostrano solo con un percorso pulito, relativo alla sua cartella.
+const BRAND_FILE = /^[a-z0-9-]+(\/[A-Za-z0-9_-][A-Za-z0-9._-]*)+$/;
+const ASPECT = /^\d+(\.\d+)?:\d+(\.\d+)?$/;
+// Al massimo tanti segnaposto per passaggio: un lotto grande non riempie la chat.
+const MAX_MEDIA = 8;
+
+const brandFile = (value: unknown): string | undefined => (typeof value === 'string' && BRAND_FILE.test(value) ? value : undefined);
+const aspectOf = (value: unknown, fallback: string): string => (typeof value === 'string' && ASPECT.test(value) ? value : fallback);
+
+// La proporzione scritta nel nome di un file, come video-9x16.mp4.
+const aspectInName = (file: string): string | undefined => /(\d+(?:\.\d+)?)x(\d+)(?=[._-][^/]*$|$)/.exec(file.replace(/\.[^.]+$/, ''))?.slice(1).join(':');
+
+// Il video che un comando esporta con Remotion: l'MP4 nel comando, riportato alla cartella del brand se si è entrati in video/.
+function remotionRender(command: string): StepMedia | null {
+  if (!/remotion(\.cmd)?["']?\s+render\b/.test(command)) return null;
+  const out = [...command.matchAll(/(?:^|\s)["']?([^\s"']+\.mp4)["']?/g)].pop()?.[1];
+  const inVideo = /\bcd\s+["']?video["']?\s*(&&|;)/.test(command);
+  const relative = out?.replace(/^\.\//, '');
+  const file = relative && (inVideo ? (relative.startsWith('../') ? brandFile(relative.slice(3)) : brandFile(`video/${relative}`)) : brandFile(relative));
+  return { kind: 'video', aspect: (file && aspectInName(file)) ?? '9:16', ...(file && { file }) };
+}
+
+// Le immagini e i video che una chiamata a un tool produce: le card di renderizza, le foto di genera_immagine,
+// le immagini e le clip di Higgsfield, il video esportato da Remotion. undefined se non produce media.
+export function toolMedia(name: string, input: Record<string, unknown>): StepMedia[] | undefined {
+  if (name === 'mcp__grafica__renderizza' && Array.isArray(input['uscite'])) {
+    const outputs = (input['uscite'] as Record<string, unknown>[]).filter((output) => output && typeof output === 'object');
+    return outputs.slice(0, MAX_MEDIA).map((output) => {
+      const file = brandFile(output['file']);
+      return { kind: 'image' as const, aspect: aspectOf(output['formato'], '1:1'), ...(file && { file }) };
+    });
+  }
+  if (name === 'mcp__immagini__genera_immagine') {
+    const file = brandFile(input['file']);
+    return [{ kind: 'image', aspect: aspectOf(input['formato'], '1:1'), ...(file && { file }) }];
+  }
+  const higgsfield = /^mcp__higgsfield__generate_(image|video)(_batch)?$/.exec(name);
+  if (higgsfield) {
+    const kind = higgsfield[1] === 'video' ? 'video' : 'image';
+    // Un lotto è una lista di richieste, ognuna con la sua proporzione.
+    const batch = Object.values(input).find((value): value is Record<string, unknown>[] => Array.isArray(value) && value.some((item) => item && typeof item === 'object'));
+    const requests = higgsfield[2] && batch ? batch : [input];
+    return requests.slice(0, MAX_MEDIA).map((request) => ({ kind, aspect: aspectOf(request['aspect_ratio'], kind === 'video' ? '9:16' : '1:1') }));
+  }
+  if (name === 'Bash' && typeof input['command'] === 'string') {
+    const video = remotionRender(input['command']);
+    return video ? [video] : undefined;
+  }
+  return undefined;
 }

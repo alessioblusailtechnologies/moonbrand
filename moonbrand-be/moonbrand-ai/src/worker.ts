@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
-import { toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
+import { toolMedia, toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
 import type {
   ChatJobInput,
   ContentEditJobInput,
@@ -305,7 +305,18 @@ async function run(job: Job): Promise<void> {
           const input = block.input as Record<string, unknown>;
           const known = toolStep(block.name, input);
           const label = known?.label ?? FALLBACK_STEP;
-          steps.set(block.id, { id: block.id, label, ...(known?.detail && { detail: known.detail }), status: 'running', kind: 'tool', tool: block.name, startedAt: now });
+          // Immagini e video in arrivo: lo studio mostra i segnaposto nella loro proporzione, e poi il file.
+          const media = toolMedia(block.name, input);
+          steps.set(block.id, {
+            id: block.id,
+            label,
+            ...(known?.detail && { detail: known.detail }),
+            status: 'running',
+            kind: 'tool',
+            tool: block.name,
+            startedAt: now,
+            ...(media && { media }),
+          });
           if (known === null) hidden.add(block.id);
           else if (known === undefined) readStep(block.id, block.name, input, FALLBACK_STEP);
         }

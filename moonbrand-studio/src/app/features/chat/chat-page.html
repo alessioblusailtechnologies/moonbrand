@@ -84,6 +84,7 @@
                   <mb-content-preview [content]="content" [compact]="true" />
                 </article>
               }
+              <mb-pending-media [tiles]="turn.pending" />
               @if (waiting(turn.blocks, turn)) {
                 <p class="caption thinking"><span class="spinner"></span> Ci penso</p>
               } @else if (turn.job.status === 'stopped') {

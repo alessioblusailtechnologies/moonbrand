@@ -5,7 +5,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ContentScriptRequest, SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import { hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
+import { formatAspects, hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
@@ -14,6 +14,7 @@ import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
+import { PendingMedia, type PendingTile } from '../../ui/pending-media';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from './content-preview';
@@ -28,7 +29,7 @@ type Work = 'prepare' | 'edit' | 'video' | 'channel';
 @Component({
   selector: 'mb-content-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, StepList, ContentPreview, ContentSchedule, ScriptEditor],
+  imports: [RouterLink, Icon, StepList, PendingMedia, ContentPreview, ContentSchedule, ScriptEditor],
   templateUrl: './content-page.html',
   styleUrl: './content-page.scss',
 })
@@ -83,6 +84,21 @@ export class ContentPage {
       .filter((channel) => !supportsFormat(content.format, channel))
       .map(channelName);
     return names.length > 0 ? `Su ${names.join(' e ')} ${FORMAT_NAMES[content.format]} non c’è.` : '';
+  });
+  // Le card in arrivo mentre si preparano testo e immagini o si fa il video: una per proporzione dei canali.
+  // Il copione di un video non ne ha, e un ritocco mostra il contenuto di prima finché non è finito.
+  protected readonly pending = computed<PendingTile[]>(() => {
+    const content = this.content();
+    const work = this.work();
+    if (!content || !this.preparing()) return [];
+    const video = content.format === 'video';
+    if (!(work === 'video' || (work === 'prepare' && !video))) return [];
+    return formatAspects(content.format, content.channels).map((aspect) => ({
+      kind: video ? 'video' : 'image',
+      aspect,
+      count: content.format === 'carousel' ? 3 : 1,
+      ...(content.format === 'carousel' && { label: 'Preparo le slide' }),
+    }));
   });
   protected readonly workLabel = computed(() => {
     const video = this.content()?.format === 'video';
