@@ -20,6 +20,9 @@ const schema = z.object({
   CORS_ORIGINS: optional,
   COOKIE_SECURE: flag.default(false),
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
+  // La dettatura nella casella dell'assistente, con Voxtral di Mistral: senza chiave il microfono dice che non è configurato.
+  MISTRAL_API_KEY: optional,
+  TRANSCRIPTION_MODEL: z.string().min(1).default('voxtral-mini-latest'),
 });
 
 export type Config = z.infer<typeof schema>;

@@ -339,6 +339,11 @@ export interface ConversationResponse {
   contents: Content[];
 }
 
+// La dettatura: il testo di quello che si è detto al microfono, da rileggere nella casella.
+export interface TranscriptionResponse {
+  text: string;
+}
+
 // attachments: i percorsi delle foto già caricate con /attachments; ideaId e slotId: l'idea o l'uscita del piano menzionate.
 export interface ChatMessageRequest {
   message: string;

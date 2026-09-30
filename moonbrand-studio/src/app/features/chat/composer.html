@@ -43,6 +43,26 @@
       <mb-icon name="image-plus" />
     </button>
     <span class="grow"></span>
+    @if (dictation() === 'recording') {
+      <span class="elapsed" aria-live="polite">{{ elapsedLabel() }}</span>
+    }
+    <button
+      class="icon-btn mic"
+      type="button"
+      [class.recording]="dictation() === 'recording'"
+      [attr.aria-label]="dictation() === 'recording' ? 'Ferma e trascrivi' : dictation() === 'transcribing' ? 'Sto trascrivendo' : 'Detta a voce'"
+      [attr.title]="dictation() === 'recording' ? 'Ferma e trascrivi' : 'Detta a voce'"
+      [disabled]="dictation() === 'transcribing' || busy()"
+      (click)="toggleDictation()"
+    >
+      @if (dictation() === 'transcribing') {
+        <span class="spinner"></span>
+      } @else if (dictation() === 'recording') {
+        <mb-icon name="square" [size]="12" />
+      } @else {
+        <mb-icon name="mic" />
+      }
+    </button>
     @if (running()) {
       <button class="icon-btn solid send" type="button" aria-label="Ferma la risposta" title="Ferma la risposta" [disabled]="stopping()"
         (click)="stopped.emit()">

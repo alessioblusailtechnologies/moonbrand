@@ -4,6 +4,7 @@ import type { ChatAttachment } from '@moonbrand/shared/api/contract';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { MicrophoneError, Recorder } from '../../core/chat/recorder';
 import { errorMessage } from '../../core/errors';
 import { resizedDataUri } from '../../core/images';
 import { Icon } from '../../ui/icon';
@@ -29,9 +30,12 @@ export interface ComposerMessage {
 // Le foto si rimpiccioliscono prima di partire: bastano per i post e restano sotto il limite dell'API.
 const ATTACHMENT_SIDE = 2560;
 const MAX_ATTACHMENTS = 10;
+// Una dettatura si chiude da sola dopo cinque minuti: oltre, meglio in più riprese.
+const MAX_DICTATION_S = 300;
 
-// La casella dell'assistente: il testo sopra, allegati e invio in una barra sotto. Foto e video si scelgono dal
-// pulsante o si incollano, e partono subito. La usano la chat e la finestra che crea un contenuto da un'idea.
+// La casella dell'assistente: il testo sopra, allegati, dettatura e invio in una barra sotto. Foto e video si scelgono dal
+// pulsante o si incollano, e partono subito. Il microfono registra fino al secondo clic e il testo trascritto (Voxtral)
+// si aggiunge a quello scritto, da rileggere prima di mandarlo. La usano la chat e la finestra che crea un contenuto da un'idea.
 // empty: si può mandare anche senza testo né allegati (c'è già altro, come l'idea). send: false toglie la freccia,
 // quando a mandare è un pulsante di chi la usa; Invio manda comunque.
 @Component({
@@ -63,6 +67,10 @@ export class Composer {
   protected readonly draft = signal('');
   protected readonly attachments = signal<PendingAttachment[]>([]);
   private nextAttachment = 0;
+  protected readonly dictation = signal<'idle' | 'recording' | 'transcribing'>('idle');
+  protected readonly elapsed = signal(0);
+  private readonly recorder = new Recorder();
+  private timer?: ReturnType<typeof setInterval>;
 
   readonly uploading = computed(() => this.attachments().some((item) => !item.file && !item.failed));
   readonly canSend = computed(
@@ -70,11 +78,16 @@ export class Composer {
       !this.running() &&
       !this.busy() &&
       !this.uploading() &&
+      this.dictation() === 'idle' &&
       (this.empty() || this.draft().trim().length > 0 || this.attachments().some((item) => item.file)),
   );
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.clear());
+    inject(DestroyRef).onDestroy(() => {
+      this.clear();
+      clearInterval(this.timer);
+      this.recorder.cancel();
+    });
   }
 
   // Quello che si manderebbe adesso, o null se non si può ancora (un allegato che sta caricando).
@@ -178,6 +191,53 @@ export class Composer {
       this.set(id, { failed: true });
       this.toast.show(errorMessage(error, 'Non riesco a caricare la foto: usa un PNG, un JPEG o un WebP.'));
     }
+  }
+
+  protected async toggleDictation(): Promise<void> {
+    if (this.dictation() === 'transcribing') return;
+    if (this.dictation() === 'recording') return this.finishDictation();
+    try {
+      await this.recorder.start();
+    } catch (error) {
+      this.toast.show(error instanceof MicrophoneError ? error.message : 'Non riesco ad aprire il microfono.');
+      return;
+    }
+    this.elapsed.set(0);
+    this.dictation.set('recording');
+    this.timer = setInterval(() => {
+      this.elapsed.update((seconds) => seconds + 1);
+      if (this.elapsed() >= MAX_DICTATION_S) void this.finishDictation();
+    }, 1000);
+  }
+
+  // Si chiude il microfono e si trascrive: il testo va in coda a quello già scritto.
+  private async finishDictation(): Promise<void> {
+    clearInterval(this.timer);
+    const brand = this.brands.activeBrand();
+    const audio = await this.recorder.stop();
+    if (!brand || audio.size === 0) {
+      this.dictation.set('idle');
+      return;
+    }
+    this.dictation.set('transcribing');
+    try {
+      const text = await this.chat.transcribe(brand.id, audio);
+      if (text) {
+        const current = this.draft().trimEnd();
+        this.setDraft(current ? `${current} ${text}` : text);
+      } else {
+        this.toast.show('Non ho sentito niente: riprova più vicino al microfono.');
+      }
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'Non sono riuscito a trascrivere. Riprova.'));
+    } finally {
+      this.dictation.set('idle');
+    }
+  }
+
+  protected elapsedLabel(): string {
+    const seconds = this.elapsed();
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
   }
 
   protected progressLabel(progress: number): string {

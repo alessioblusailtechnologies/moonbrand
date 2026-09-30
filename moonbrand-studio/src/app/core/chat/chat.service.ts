@@ -9,6 +9,7 @@ import type {
   ChatTurnCreated,
   ConversationResponse,
   ConversationSummary,
+  TranscriptionResponse,
 } from '@moonbrand/shared/api/contract';
 
 import { AuthService } from '../auth/auth.service';
@@ -81,6 +82,14 @@ export class ChatService {
     }
     if (response.status < 200 || response.status >= 300) throw new HttpErrorResponse({ status: response.status, error: response.body });
     return response.body as ChatAttachment;
+  }
+
+  // La dettatura: l'audio del microfono così com'è, e torna il testo da rileggere nella casella.
+  async transcribe(brandId: string, audio: Blob): Promise<string> {
+    const { text } = await firstValueFrom(
+      this.http.post<TranscriptionResponse>(`/v1/brands/${brandId}/transcriptions`, audio, { headers: { 'Content-Type': audio.type || 'audio/webm' } }),
+    );
+    return text;
   }
 
   upload(brandId: string, dataUri: string): Promise<ChatAttachment> {

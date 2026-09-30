@@ -126,3 +126,33 @@
   color: var(--white);
   cursor: pointer;
 }
+
+// Il microfono: rosso e pulsante mentre registra, con il tempo accanto.
+.mic.recording {
+  background: var(--danger);
+  color: var(--white);
+  animation: listening 1.4s ease-in-out infinite;
+
+  &:hover {
+    background: var(--danger);
+  }
+}
+
+.elapsed {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes listening {
+  50% {
+    box-shadow: 0 0 0 6px rgba(214, 69, 40, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic.recording {
+    animation: none;
+  }
+}

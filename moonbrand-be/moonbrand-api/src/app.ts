@@ -18,6 +18,7 @@ import { registerConversationRoutes } from './modules/conversations/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import { registerPlanRoutes } from './modules/plan/routes';
+import { registerTranscriptionRoutes } from './modules/transcription/routes';
 import type { MediaStorage } from './modules/media/storage';
 import { registerAuth, type VerifyToken } from './plugins/auth';
 
@@ -28,7 +29,7 @@ export interface AppOptions {
   auth: AuthGateway;
   storage: MediaStorage;
   files: BrandFiles;
-  settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE'>;
+  settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'MISTRAL_API_KEY' | 'TRANSCRIPTION_MODEL'>;
 }
 
 export function buildApp(options: AppOptions) {
@@ -56,6 +57,7 @@ export function buildApp(options: AppOptions) {
   registerContentRoutes(app, options.pool, options.files);
   registerConversationRoutes(app, options.pool, options.files);
   registerPlanRoutes(app, options.pool, options.files);
+  registerTranscriptionRoutes(app, options.pool, options.settings);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;
