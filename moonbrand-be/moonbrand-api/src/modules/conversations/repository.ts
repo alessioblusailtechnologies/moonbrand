@@ -67,6 +67,7 @@ export async function listTurns(db: Queryable, conversationId: string): Promise<
     id: string;
     message: string;
     attachments: string[];
+    idea: { id: string; title: string } | null;
     created_at: Date;
     job_id: string;
     kind: string;
@@ -75,7 +76,9 @@ export async function listTurns(db: Queryable, conversationId: string): Promise<
     result: ConversationTurn['job']['result'];
     error: string | null;
   }>(
-    `select t.id, t.message, t.attachments, t.created_at, j.id as job_id, j.kind, j.status, j.steps, j.result, j.error
+    `select t.id, t.message, t.attachments, t.created_at, j.id as job_id,
+       case when jsonb_typeof(j.input->'idea') = 'object'
+         then jsonb_build_object('id', j.input->'idea'->>'id', 'title', j.input->'idea'->>'title') end as idea, j.kind, j.status, j.steps, j.result, j.error
      from presenza.conversation_turns t join presenza.ai_jobs j on j.id = t.job_id
      where t.conversation_id = $1 order by t.created_at`,
     [conversationId],
@@ -84,6 +87,7 @@ export async function listTurns(db: Queryable, conversationId: string): Promise<
     id: row.id,
     message: row.message,
     attachments: row.attachments,
+    idea: row.idea,
     createdAt: row.created_at.toISOString(),
     job: { id: row.job_id, kind: row.kind, status: row.status, steps: row.steps, result: row.result, error: row.error },
   }));

@@ -26,7 +26,7 @@ const conversationParams = z.object({ conversationId: z.uuid('Conversazione non 
 const MAX_ATTACHMENTS = 10;
 const attachmentPath = new RegExp(`^${ATTACHMENTS_DIR}/[0-9a-f-]{36}\\.(png|jpg|webp|mp4)$`);
 
-// Il testo può mancare se ci sono allegati: «ecco le foto del salone» è anche solo tre immagini.
+// Il testo può mancare se ci sono allegati: «ecco le foto del salone» è anche solo tre immagini. O se c'è l'idea da cui partire.
 const messageSchema = z
   .object({
     message: z.string().trim().max(8000, 'Il messaggio è troppo lungo.'),
@@ -34,8 +34,9 @@ const messageSchema = z
       .array(z.string().regex(attachmentPath, 'Allegato non valido.'))
       .max(MAX_ATTACHMENTS, `Al massimo ${MAX_ATTACHMENTS} allegati per messaggio.`)
       .default([]),
+    ideaId: z.uuid('Idea non trovata.').optional(),
   })
-  .refine((body) => body.message.length > 0 || body.attachments.length > 0, 'Scrivi un messaggio.') satisfies z.ZodType<
+  .refine((body) => body.message.length > 0 || body.attachments.length > 0 || body.ideaId !== undefined, 'Scrivi un messaggio.') satisfies z.ZodType<
   ChatMessage,
   ChatMessageRequest
 >;

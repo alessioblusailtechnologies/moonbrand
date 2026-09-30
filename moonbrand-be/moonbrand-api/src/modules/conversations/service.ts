@@ -3,7 +3,7 @@ import type { Readable } from 'node:stream';
 
 import type pg from 'pg';
 
-import type { ChatAttachment, ChatJobInput, ChatTurnCreated, ConversationResponse, ConversationSummary } from '@moonbrand/shared/api/contract';
+import type { ChatAttachment, ChatIdea, ChatJobInput, ChatTurnCreated, ConversationResponse, ConversationSummary } from '@moonbrand/shared/api/contract';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
@@ -13,7 +13,7 @@ import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
 import { ensureStyleJob } from '../brands/style';
 import { listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
-import { findBrandForIdeas } from '../ideas/repository';
+import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
 import { normalizeVideo } from '../media/video';
 import {
@@ -29,26 +29,47 @@ import {
 
 const TITLE_MAX = 80;
 
-// Un messaggio: il testo e le foto già caricate nella cartella del brand. Il testo può mancare se ci sono foto.
+// Un messaggio: il testo, le foto già caricate nella cartella del brand e l'idea menzionata.
+// Il testo può mancare se ci sono foto o l'idea.
 export interface ChatMessage {
   message: string;
   attachments: string[];
+  ideaId?: string;
 }
 
-// Il titolo è il primo messaggio, accorciato.
-function titleOf({ message }: ChatMessage): string {
-  const line = message.replace(/\s+/g, ' ').trim();
+// Il titolo è l'idea da cui parte la conversazione, o il primo messaggio, accorciato.
+function titleOf({ message }: ChatMessage, idea: ChatIdea | null): string {
+  const line = (idea?.title ?? message).replace(/\s+/g, ' ').trim();
   if (!line) return 'Foto allegate';
   return line.length > TITLE_MAX ? `${line.slice(0, TITLE_MAX - 1).trimEnd()}…` : line;
 }
 
+// L'idea menzionata, per Claude: tutta, con il nome del tema. Partire da un'idea la tiene, come farne un contenuto.
+async function mentionedIdea(db: Queryable, brandId: string, ideaId: string | undefined): Promise<ChatIdea | null> {
+  if (!ideaId) return null;
+  const idea = await findIdea(db, ideaId);
+  if (!idea || idea.brandId !== brandId) throw ApiError.notFound('Idea non trovata in questo brand.');
+  const brand = await findBrandForIdeas(db, brandId);
+  if (idea.status !== 'saved') await updateIdeaStatus(db, idea.id, 'saved');
+  return {
+    id: idea.id,
+    title: idea.title,
+    angleLabel: idea.angleLabel,
+    angle: idea.angle,
+    rationale: idea.rationale,
+    theme: brand?.themes.find((theme) => theme.id === idea.themeId)?.name ?? null,
+  };
+}
+
 // Un turno: il job chat riprende la sessione della conversazione, con il brand com'è adesso.
 // Il token è la chiave dei tool per l'API: vale solo per questo job e solo mentre gira.
+// L'idea menzionata sta nell'input del job: da lì la legge Claude e la mostra la conversazione.
 async function queueTurn(
   db: Queryable,
   identity: Identity,
   conversation: Pick<ConversationSummary, 'id' | 'brandId'>,
   { message, attachments }: ChatMessage,
+  idea: ChatIdea | null,
 ): Promise<ChatTurnCreated> {
   const brand = await findBrandForIdeas(db, conversation.brandId);
   if (!brand) throw ApiError.notFound('Brand non trovato.');
@@ -60,6 +81,7 @@ async function queueTurn(
     brand: brand.context,
     message,
     attachments,
+    idea,
   };
   const jobId = await insertJob(db, identity.accountId, 'chat', input, randomBytes(32).toString('base64url'));
   const turnId = await insertTurn(db, { conversationId: conversation.id, accountId: identity.accountId, message, attachments, jobId });
@@ -72,8 +94,9 @@ export function getConversations(pool: pg.Pool, identity: Identity, brandId: str
 
 export function startConversation(pool: pg.Pool, identity: Identity, brandId: string, message: ChatMessage): Promise<ChatTurnCreated> {
   return withIdentity(pool, identity, async (db) => {
-    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message));
-    return queueTurn(db, identity, { id, brandId }, message);
+    const idea = await mentionedIdea(db, brandId, message.ideaId);
+    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, idea));
+    return queueTurn(db, identity, { id, brandId }, message, idea);
   });
 }
 
@@ -82,7 +105,7 @@ export function sendMessage(pool: pg.Pool, identity: Identity, conversationId: s
     const conversation = await findConversation(db, conversationId);
     if (!conversation) throw ApiError.notFound('Conversazione non trovata.');
     if (conversation.busy) throw ApiError.conflict('BUSY', 'Sto ancora rispondendo al messaggio di prima.');
-    return queueTurn(db, identity, conversation, message);
+    return queueTurn(db, identity, conversation, message, await mentionedIdea(db, conversation.brandId, message.ideaId));
   });
 }
 

@@ -19,6 +19,7 @@ import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
       <div class="stack">
         <h2 id="create-content-title" class="dialog-title">Crea il contenuto</h2>
         <p class="body">{{ idea().title }}</p>
+        <p class="caption">Si apre una conversazione nuova con l’assistente, che parte da questa idea.</p>
       </div>
 
       <div class="stack">
@@ -55,7 +56,7 @@ import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
       <div class="actions">
         <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="closed.emit()">Annulla</button>
         <button class="btn btn-primary" type="button" [disabled]="busy() || selected().length === 0" (click)="submit()">
-          {{ busy() ? 'Creo…' : 'Crea il contenuto' }}
+          {{ busy() ? 'Apro la chat…' : 'Crea in chat' }}
         </button>
       </div>
     </div>

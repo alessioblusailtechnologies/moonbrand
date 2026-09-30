@@ -16,17 +16,19 @@ import { Router, RouterOutlet } from '@angular/router';
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { CreateContentRequest, IdeasResponse } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
+import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
-import { ContentsService } from '../../core/contents/contents.service';
+import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
+import { FORMAT_REQUEST } from '../contents/labels';
 import { CreateContentDialog } from './create-content-dialog';
 import { SIGNAL_LABELS } from './labels';
 
@@ -48,7 +50,7 @@ export class IdeasPage {
   private readonly api = inject(IdeasService);
   private readonly ai = inject(AiJobsService);
   private readonly toast = inject(ToastService);
-  private readonly contents = inject(ContentsService);
+  private readonly chat = inject(ChatService);
   private readonly router = inject(Router);
   protected readonly brands = inject(BrandsService);
 
@@ -185,16 +187,22 @@ export class IdeasPage {
     this.lastDecision.set(null);
   }
 
+  // Il contenuto nasce in una conversazione nuova con l'assistente: il messaggio chiede formato e canali e menziona l'idea.
   protected async createContent(request: CreateContentRequest): Promise<void> {
     const idea = this.creatingFrom();
-    if (!idea || this.creating()) return;
+    const brand = this.brands.activeBrand();
+    if (!idea || !brand || this.creating()) return;
     this.creating.set(true);
     try {
-      const { id } = await this.contents.create(idea.id, request);
+      const names = request.channels.map(channelName);
+      const channels = names.length > 1 ? `${names.slice(0, -1).join(', ')} e ${names.at(-1)}` : names[0];
+      const message = `Crea ${FORMAT_REQUEST[request.format]} per ${channels} da questa idea.`;
+      const { conversationId } = await this.chat.start(brand.id, { message, ideaId: idea.id });
       this.creatingFrom.set(null);
-      await this.router.navigate(['/contenuti', id]);
+      void this.chat.refresh();
+      await this.router.navigate(['/assistente', conversationId]);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a creare il contenuto. Riprova.'));
+      this.toast.show(errorMessage(error, 'Non sono riuscito ad aprire la chat. Riprova.'));
     } finally {
       this.creating.set(false);
     }

@@ -41,6 +41,15 @@
             @if (turn.message) {
               <p class="mine">{{ turn.message }}</p>
             }
+            @if (turn.idea; as idea) {
+              <a class="mention" routerLink="/" [attr.aria-label]="'Idea menzionata: ' + idea.title">
+                <mb-icon name="lightbulb" [size]="15" />
+                <span class="mention-texts">
+                  <span class="mention-kind">Idea</span>
+                  <span class="mention-title">{{ idea.title }}</span>
+                </span>
+              </a>
+            }
             <div class="reply">
               @for (block of turn.blocks; track block.id; let lastBlock = $last) {
                 @if (block.kind === 'text') {

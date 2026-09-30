@@ -29,7 +29,7 @@ if (!MOONBRAND_AGENT_TOKEN) {
   process.exit(1);
 }
 
-const { conversationId, sessionId, brand, message, attachments } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
+const { conversationId, sessionId, brand, message, attachments, idea = null } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
 const workDir = `chat/${conversationId}`;
 const temp = path.join(brandDir, workDir, 'tmp');
 await mkdir(temp, { recursive: true });
@@ -66,13 +66,32 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 - La cartella di lavoro di questa conversazione è ${workDir}: lì bozze, HTML, script e immagini. Le cartelle dei contenuti si cambiano solo con i tool di moonbrand.
 - Per scrivere o ritoccare un contenuto segui la skill moonbrand:contenuti; per un video anche la skill moonbrand:video; per proporre idee la skill moonbrand:idee.
 - Un video costa tempo e generazioni: prima proponi in chat il copione, cioè l’idea in breve e le inquadrature con durata, cosa si vede, da dove viene, testo a schermo e voce, e aspetta l’ok. Vai dritto al video solo se l’utente lo chiede. Nel progetto video il suo id è un nome breve e unico finché non è salvato.
+- Se il messaggio menziona un’idea della sezione Idee, il contenuto nasce da quella, nel formato e sui canali chiesti nel messaggio.
 - Quando prepari un contenuto, salvalo con contenuto_salva appena testi e immagini o video finali sono pronti e controllati, anche se è una prova: finisce subito nella sezione Contenuti, come bozza, e l’utente lo vede in chat. Per cambiare un contenuto già salvato usa contenuto_aggiorna con il suo id.
 - Un video si salva come gli altri contenuti: format «video», l’MP4 con role «video» e la copertina con role «cover» nella stessa proporzione, più copione (script) e inquadrature (scenes).
 - Le idee proponile in chat; salva con idea_salva solo quelle che l’utente vuole tenere: finiscono nella sezione Idee.
 - Le foto e i video che l’utente allega al messaggio sono in allegati/: prima di rispondere falli guardare con il tool guarda, i video interi come MP4 (accanto c’è anche la copertina in JPEG). Chiedi subito tutto quello che ti può servire, cosa si vede e si sente e con quali tempi: la risposta resta nella conversazione e ti basta anche per i messaggi dopo.
 - Dopo un salvataggio di’ all’utente dove lo trova.`;
 
-const prompt = attachments.length > 0 ? `${message}\n\nAllegati:\n${attachments.map((file) => `- ${file}`).join('\n')}` : message;
+// L'idea menzionata nel messaggio, tutta: è il punto di partenza del contenuto che l'utente chiede.
+const ideaBlock =
+  idea &&
+  [
+    `L’idea menzionata: ${idea.title}`,
+    idea.angleLabel && `Taglio: ${idea.angleLabel}`,
+    idea.angle && `Cosa raccontare: ${idea.angle}`,
+    idea.rationale && `Perché adesso: ${idea.rationale}`,
+    idea.theme && `Tema: ${idea.theme}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+const prompt = [
+  message,
+  ideaBlock,
+  attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`,
+]
+  .filter(Boolean)
+  .join('\n\n');
 
 // Lo stop arriva dal worker sullo stdin: Claude si ferma e la sessione resta riprendibile.
 const abort = new AbortController();

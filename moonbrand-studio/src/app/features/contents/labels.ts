@@ -27,6 +27,9 @@ export const STATUS_LABELS: Record<ContentStatus, string> = {
   approved: 'Approvato',
 };
 
+// Il formato in una richiesta: «crea un carosello per LinkedIn».
+export const FORMAT_REQUEST: Record<ContentFormat, string> = { post: 'un post', carousel: 'un carosello', article: 'un articolo', video: 'un video' };
+
 // Il formato dentro una frase: «su X il carosello non c'è».
 export const FORMAT_NAMES: Record<ContentFormat, string> = { post: 'il post', carousel: 'il carosello', article: 'l’articolo', video: 'il video' };
 

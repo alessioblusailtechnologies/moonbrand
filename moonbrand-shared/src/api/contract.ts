@@ -312,6 +312,8 @@ export interface ConversationTurn {
   id: string;
   message: string;
   attachments: ChatAttachment[];
+  // L'idea menzionata nel messaggio, se c'è.
+  idea: { id: string; title: string } | null;
   createdAt: string;
   job: AiJob<ChatReply>;
 }
@@ -323,10 +325,16 @@ export interface ConversationResponse {
   contents: Content[];
 }
 
-// attachments: i percorsi delle foto già caricate con /attachments.
+// attachments: i percorsi delle foto già caricate con /attachments; ideaId: l'idea menzionata nel messaggio.
 export interface ChatMessageRequest {
   message: string;
   attachments?: string[];
+  ideaId?: string;
+}
+
+// L'idea menzionata in un messaggio, per Claude: tutta, con il nome del tema.
+export interface ChatIdea extends ContentIdea {
+  id: string;
 }
 
 export interface ChatTurnCreated {
@@ -343,6 +351,7 @@ export interface ChatJobInput {
   brand: BrandContext;
   message: string;
   attachments: string[];
+  idea: ChatIdea | null;
 }
 
 // L'API che i tool della chat chiamano con il token del job: agisce solo sul brand del job.
