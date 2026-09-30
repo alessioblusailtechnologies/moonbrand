@@ -19,6 +19,7 @@ import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import { registerPlanRoutes } from './modules/plan/routes';
 import { registerTranscriptionRoutes } from './modules/transcription/routes';
+import { registerWelcomeRoutes } from './modules/welcome/routes';
 import type { MediaStorage } from './modules/media/storage';
 import { registerAuth, type VerifyToken } from './plugins/auth';
 
@@ -58,6 +59,7 @@ export function buildApp(options: AppOptions) {
   registerConversationRoutes(app, options.pool, options.files);
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
+  registerWelcomeRoutes(app, options.pool);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;

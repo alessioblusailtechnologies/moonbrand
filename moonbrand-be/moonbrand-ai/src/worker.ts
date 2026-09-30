@@ -17,6 +17,7 @@ import type {
   VisualEditJobInput,
   VisualJobRequest,
   WebsiteJobRequest,
+  WelcomeJobInput,
 } from '@moonbrand/shared/api/contract';
 
 import { examplesDir } from './lib/examples';
@@ -24,6 +25,7 @@ import { createStepReader } from './lib/step-reader';
 import { USAGE_MESSAGE, type ToolUsage } from './lib/usage';
 import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
+import { saveWelcome } from './results/welcome';
 import { withLogo } from './results/website';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
@@ -127,6 +129,14 @@ const JOBS: Record<string, JobKind> = {
         [(job.input as StyleJobInput).brandId, (result as { style: string }).style, job.id],
       );
     },
+  },
+  // I saluti e gli spunti della chat per un brand: nel prompt c'è già tutto, quindi niente cartella.
+  welcome: {
+    launch: (input) => {
+      const { brandId: _brand, ...rest } = input as WelcomeJobInput;
+      return { script: 'src/jobs/welcome.ts', args: [JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveWelcome(pool, job.id, job.input as WelcomeJobInput, result),
   },
   // Il token arriva allo script per variabile d'ambiente: i tool della chat lo usano per chiamare l'API.
   chat: {

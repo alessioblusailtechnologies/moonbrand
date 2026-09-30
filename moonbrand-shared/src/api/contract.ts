@@ -3,6 +3,7 @@ import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { PlanRequest, PlanSlot, SlotDraft, SlotStatus } from '../domain/plan';
+import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 
 export interface Account {
   id: string;
@@ -481,4 +482,39 @@ export interface SlotPatchRequest {
 // Aggiungere un'idea al piano: la prima uscita vuota del suo tema, altrimenti il primo giorno buono libero.
 export interface PlanIdeaRequest {
   ideaId: string;
+}
+
+// Il benvenuto della chat: i saluti e gli spunti di oggi per il brand, vuoti se non sono ancora pronti.
+// jobId: il job che li sta scrivendo, da seguire per mostrarli appena arrivano.
+export interface WelcomeResponse {
+  greetings: Greeting[];
+  suggestions: WelcomeSuggestion[];
+  jobId: string | null;
+}
+
+// Quello che succede nel brand, contato dall'API: gli spunti nascono da qui e dal piano del BrandContext.
+export interface WelcomeSignals {
+  // Le ricorrenze e le date del brand da oggi alla settimana prossima.
+  occasions: Occasion[];
+  milestones: { label: string; date: string; anniversary: boolean }[];
+  // Le uscite di questa settimana (da lunedì a domenica) con qualcosa dentro, e quante ne chiede il ritmo del brand.
+  week: { planned: number; target: number };
+  // L'ultima uscita già pubblicata, se c'è.
+  lastPublished: string | null;
+  // Le bozze non ancora approvate e le idee tenute ma non ancora nel piano né in un contenuto, le più recenti.
+  drafts: { title: string; updatedAt: string }[];
+  savedIdeas: string[];
+  // I titoli delle ultime conversazioni con l'assistente.
+  recentChats: string[];
+}
+
+// day: il giorno (a Roma) per cui valgono; fingerprint: lo stato del brand da cui nascono, per sapere quando rifarli.
+export interface WelcomeJobInput {
+  brandId: string;
+  day: string;
+  fingerprint: string;
+  // Il nome di chi usa l'app, com'è nell'account.
+  name: string;
+  brand: BrandContext;
+  signals: WelcomeSignals;
 }

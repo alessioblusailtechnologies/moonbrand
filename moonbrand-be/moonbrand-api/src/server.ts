@@ -6,6 +6,7 @@ import { createPool } from './db/pool';
 import { supabaseAuthGateway } from './modules/auth/gateway';
 import { localBrandFiles } from './modules/brand-files/files';
 import { supabaseStorage } from './modules/media/storage';
+import { scheduleMorningWelcome } from './modules/welcome/service';
 import { supabaseVerifier } from './plugins/auth';
 
 const settings = config();
@@ -23,7 +24,10 @@ const app = buildApp({
 
 const port = Number(process.env.PORT) || settings.API_PORT;
 
+const stopMorningWelcome = scheduleMorningWelcome(pool, app.log);
+
 const shutdown = async () => {
+  stopMorningWelcome();
   await app.close();
   await pool.end();
   process.exit(0);

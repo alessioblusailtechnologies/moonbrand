@@ -10,6 +10,7 @@ import type {
   ConversationResponse,
   ConversationSummary,
   TranscriptionResponse,
+  WelcomeResponse,
 } from '@moonbrand/shared/api/contract';
 
 import { AuthService } from '../auth/auth.service';
@@ -42,6 +43,11 @@ export class ChatService {
     } catch {
       // L'elenco resta quello di prima: si riprova al prossimo aggiornamento.
     }
+  }
+
+  // Il saluto e gli spunti di oggi per il brand; se li sta ancora scrivendo, jobId è il lavoro da seguire.
+  welcome(brandId: string): Promise<WelcomeResponse> {
+    return firstValueFrom(this.http.get<WelcomeResponse>(`/v1/brands/${brandId}/welcome`));
   }
 
   start(brandId: string, request: ChatMessageRequest): Promise<ChatTurnCreated> {

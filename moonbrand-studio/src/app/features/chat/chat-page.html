@@ -6,7 +6,16 @@
       } @else if (!current()) {
         <div class="welcome">
           <div class="intro">
-            <h1 class="hero">Di cosa parliamo?</h1>
+            <!-- Il saluto compare quando si sa quale: cambiando, entra di nuovo con la sua animazione. -->
+            <h1 class="hero">
+              @for (text of [greeting()]; track text) {
+                @if (text) {
+                  <span class="greeting">{{ text }}</span>
+                } @else {
+                  <span class="greeting pending" aria-hidden="true">&nbsp;</span>
+                }
+              }
+            </h1>
             <p class="lead">
               Chiedimi idee, domande sul brand o un contenuto per {{ brand.name }}, anche dalle tue foto.
               Quello che salvo finisce in Idee e Contenuti.
@@ -14,7 +23,7 @@
           </div>
           <ng-container [ngTemplateOutlet]="composerBox" />
           <div class="suggestions">
-            @for (suggestion of suggestions; track suggestion.label) {
+            @for (suggestion of suggestions(); track suggestion.label) {
               <button class="suggestion" type="button" (click)="suggest(suggestion.draft)">
                 <span class="suggestion-icon"><mb-icon [name]="suggestion.icon" [size]="16" [stroke]="1.9" /></span>
                 <span class="suggestion-text">{{ suggestion.label }}</span>

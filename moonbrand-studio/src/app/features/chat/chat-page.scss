@@ -47,6 +47,16 @@
   letter-spacing: -0.035em;
 }
 
+.greeting {
+  display: block;
+  text-wrap: balance;
+  animation: fade-up 320ms var(--ease);
+
+  &.pending {
+    animation: none;
+  }
+}
+
 .lead {
   max-width: 600px;
   color: var(--text-body);
@@ -75,6 +85,8 @@
   line-height: 1.35;
   text-align: left;
   cursor: pointer;
+  // Quando arrivano quelli di oggi, entrano come il saluto.
+  animation: fade-up 320ms var(--ease);
   transition:
     border-color 120ms var(--ease),
     background-color 120ms var(--ease);

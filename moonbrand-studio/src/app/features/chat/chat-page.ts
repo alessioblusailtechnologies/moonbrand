@@ -20,9 +20,10 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
-import type { ConversationSummary, ConversationTurn } from '@moonbrand/shared/api/contract';
+import type { ConversationSummary, ConversationTurn, WelcomeResponse } from '@moonbrand/shared/api/contract';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
@@ -37,12 +38,14 @@ import { ToastService } from '../../ui/toast';
 import { ContentPreview } from '../contents/content-preview';
 import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
 import { Composer, type ComposerMessage } from './composer';
+import { fallbackGreeting, pickGreeting } from './greeting';
 
 // Nella risposta di un turno i testi di Claude si leggono, i tool di fila si raccolgono in un blocco solo.
 // streaming: il testo sta ancora arrivando.
 type Block = { kind: 'text'; id: string; text: string; streaming: boolean } | { kind: 'tools'; id: string; steps: AiStep[] };
 
-// Spunti per la prima domanda: riempiono la casella, non partono da soli.
+// Spunti per la prima domanda: riempiono la casella, non partono da soli. Questi valgono finché non ci sono quelli di
+// oggi, scritti per il brand.
 const SUGGESTIONS: { icon: IconName; label: string; draft: string }[] = [
   { icon: 'sparkle', label: 'Proponimi 5 idee per i prossimi post', draft: 'Proponimi 5 idee per i prossimi post' },
   { icon: 'layers', label: 'Prepara un carosello su…', draft: 'Prepara un carosello su ' },
@@ -52,6 +55,8 @@ const SUGGESTIONS: { icon: IconName; label: string; draft: string }[] = [
 
 // Mentre risponde si legge più spesso: il testo arriva a pezzi e si svela con un ritmo costante.
 const LIVE_POLL_MS = 400;
+// Il saluto e gli spunti di oggi si scrivono in pochi secondi: basta guardare ogni tanto.
+const WELCOME_POLL_MS = 2000;
 // Il filo segue la risposta finché chi legge sta in fondo (entro questa distanza).
 const STICK_PX = 80;
 
@@ -69,6 +74,7 @@ export class ChatPage {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly lightbox = inject(LightboxService);
+  private readonly auth = inject(AuthService);
   protected readonly brands = inject(BrandsService);
 
   // Dal percorso /assistente/:conversationId; senza, è una conversazione nuova.
@@ -80,7 +86,17 @@ export class ChatPage {
   protected readonly loading = signal(false);
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
-  protected readonly suggestions = SUGGESTIONS;
+  // Il saluto in cima: null finché non si sa se quelli di oggi ci sono, così non ne compare uno per poi cambiare subito.
+  protected readonly greeting = signal<string | null>(null);
+  private readonly welcome = signal<WelcomeResponse | null>(null);
+  protected readonly suggestions = computed(() => {
+    const today = this.welcome()?.suggestions ?? [];
+    return today.length > 0 ? today : SUGGESTIONS;
+  });
+  // Solo l'id: il brand attivo si ricarica anche quando cambia altro, e il saluto non deve cambiare con lui.
+  private readonly activeBrandId = computed(() => this.brands.activeBrand()?.id ?? null);
+  // Ogni caricamento del benvenuto ha il suo numero: quello di un brand lasciato nel frattempo non arriva a schermo.
+  private welcomeLoad = 0;
 
   private readonly thread = viewChild<ElementRef<HTMLElement>>('thread');
   private readonly composer = viewChild(Composer);
@@ -121,6 +137,11 @@ export class ChatPage {
       const id = this.conversationId();
       untracked(() => (id ? void this.open(id) : this.reset()));
     });
+    // Senza conversazione aperta si vede il benvenuto del brand attivo: si rilegge ogni volta che si torna qui.
+    effect(() => {
+      const brandId = this.activeBrandId();
+      if (brandId && !this.conversationId()) untracked(() => void this.loadWelcome(brandId));
+    });
     // Cambiando brand, la conversazione aperta non è più di quello attivo.
     effect(() => {
       const brand = this.brands.activeBrand();
@@ -159,6 +180,31 @@ export class ChatPage {
     this.turns.set([]);
     this.contents.set([]);
     queueMicrotask(() => this.composer()?.focus());
+  }
+
+  // Il benvenuto di oggi; se lo sta ancora scrivendo si vede quello di riserva e, appena pronto, il suo.
+  private async loadWelcome(brandId: string): Promise<void> {
+    const load = ++this.welcomeLoad;
+    const name = this.auth.account()?.name ?? '';
+    const show = (welcome: WelcomeResponse) => {
+      this.welcome.set(welcome);
+      this.greeting.set(pickGreeting(brandId, welcome.greetings, name));
+    };
+    this.welcome.set(null);
+    this.greeting.set(null);
+    try {
+      const welcome = await this.chat.welcome(brandId);
+      if (load !== this.welcomeLoad) return;
+      show(welcome);
+      if (!welcome.jobId) return;
+      await this.ai.follow(welcome.jobId, undefined, WELCOME_POLL_MS);
+      if (load !== this.welcomeLoad) return;
+      const ready = await this.chat.welcome(brandId);
+      if (load === this.welcomeLoad && ready.greetings.length > 0) show(ready);
+    } catch {
+      // Resta il benvenuto di riserva; se non si è saputo niente, il saluto semplice.
+      if (load === this.welcomeLoad && this.greeting() === null) this.greeting.set(fallbackGreeting(name));
+    }
   }
 
   private async open(conversationId: string): Promise<void> {
