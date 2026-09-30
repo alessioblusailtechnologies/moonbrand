@@ -15,8 +15,8 @@ Il progetto Remotion di questo brand: i video sono pagine React che cambiano fot
 
 Da questa cartella:
 
-- `npx remotion still <composizione> <file.png> --frame=<n> --scale=0.5`: un fotogramma a metà risoluzione, per controllare il video.
-- `npx remotion render <composizione> <cartella> --frames=0,30,90 --image-format=png --scale=0.5`: più fotogrammi in una volta sola, salvati nella cartella.
+- I fotogrammi di controllo si esportano con il tool fotogrammi di moonbrand, tutti in una volta: `remotion render --frames` con più fotogrammi sparsi si rompe nel mixaggio dell'audio.
+- `npx remotion still <composizione> <file.png> --frame=<n>`: un fotogramma a risoluzione piena, per la copertina.
 - `npx remotion render <composizione> <file.mp4>`: il video finale in MP4.
 - `pnpm check`: controlla i tipi.
 

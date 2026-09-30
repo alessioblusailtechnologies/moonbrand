@@ -4,6 +4,8 @@ import path from 'node:path';
 
 import { query } from '@anthropic-ai/claude-agent-sdk';
 
+import { claudeModel } from '../lib/model';
+
 const site = process.argv[2];
 if (!site) {
   console.error('Uso: npm run website -- <url>');
@@ -49,6 +51,7 @@ try {
   for await (const message of query({
     prompt,
     options: {
+      ...claudeModel(),
       cwd: workDir,
       allowedTools: ['WebFetch', 'WebSearch', 'Bash', 'Read'],
       permissionMode: 'bypassPermissions',

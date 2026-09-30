@@ -26,6 +26,9 @@ import { saveIdeas } from './results/ideas';
 import { withLogo } from './results/website';
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
+// Con il login di un abbonamento Claude Code carica anche i connettori dell'account claude.ai (Gmail, Drive, Canva…):
+// i job non li devono vedere, e le loro definizioni appesantiscono il contesto. Vale per gli script dei job e per Haiku.
+process.env.ENABLE_CLAUDEAI_MCP_SERVERS = 'false';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const BRANDS_DIR = path.resolve(process.env.BRANDS_DIR || path.join(ROOT, '../../moonbrand-brands'));
@@ -157,6 +160,14 @@ async function claim(): Promise<Job | null> {
   return rows[0] ?? null;
 }
 
+// Il modello di Claude: quello del job se lo indica, altrimenti CLAUDE_MODEL_<TIPO> del .env (es. CLAUDE_MODEL_CONTENT_EDIT),
+// altrimenti il predefinito di Claude Code.
+function modelOf(job: Job): string | undefined {
+  const own = (job.input as { model?: unknown } | null)?.model;
+  if (typeof own === 'string' && own) return own;
+  return process.env[`CLAUDE_MODEL_${job.kind.toUpperCase().replaceAll('-', '_')}`] || undefined;
+}
+
 // I job di cui è stato chiesto lo stop: lo script riceve «stop» sullo stdin e ferma Claude;
 // se non si chiude da solo entro STOP_GRACE_MS, si termina il processo.
 const cancelled = new Set<string>();
@@ -182,7 +193,7 @@ async function run(job: Job): Promise<void> {
     return;
   }
   const { script, args, env } = kind.launch(job.input, job);
-  console.log(`[${job.id}] ${job.kind} avviato`);
+  console.log(`[${job.id}] ${job.kind} avviato${modelOf(job) ? ` con ${modelOf(job)}` : ''}`);
 
   // hidden: gli step che non si mostrano, perché non dicono niente a chi aspetta o perché Haiku non li ha ancora letti.
   // Restano nella mappa per tenere il loro posto nell'ordine.
@@ -225,7 +236,12 @@ async function run(job: Job): Promise<void> {
     void pool.query(`update presenza.ai_jobs set locked_until = now() + $2::interval where id = $1`, [job.id, LEASE]).catch(() => undefined);
   }, HEARTBEAT_MS);
 
-  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], { cwd: ROOT, env: { ...jobEnv, ...env }, stdio: ['pipe', 'pipe', 'pipe'] });
+  const model = modelOf(job);
+  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], {
+    cwd: ROOT,
+    env: { ...jobEnv, ...env, ...(model && { MOONBRAND_MODEL: model }) },
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
   child.stdin.on('error', () => undefined);
   running.set(job.id, child);
 

@@ -6,6 +6,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import { imageTools } from '../tools/immagini';
+import { claudeModel } from './model';
 
 export const PER_CHANNEL = 3;
 
@@ -64,6 +65,7 @@ export async function runExamples(options: { brandDir: string; dir: string; chan
   for await (const message of query({
     prompt,
     options: {
+      ...claudeModel(),
       cwd: brandDir,
       env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers: { immagini: imageTools(brandDir, GEMINI_API_KEY) },

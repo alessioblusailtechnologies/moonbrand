@@ -7,10 +7,12 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { VIDEO_ASPECT, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
+import { frameTools } from '../tools/fotogrammi';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
 import { visionTools } from '../tools/vista';
+import { claudeModel } from './model';
 import { MOONBRAND_PLUGINS } from './plugin';
 import { prepareVideoProject } from './video';
 
@@ -182,6 +184,7 @@ export async function runContentAgent(options: {
       process.exit(1);
     }
     mcpServers.audio = audioTools(options.brandDir, ELEVENLABS_API_KEY);
+    mcpServers.video = frameTools(options.brandDir);
     if (MUREKA_API_KEY) mcpServers.musica = musicTools(options.brandDir, MUREKA_API_KEY);
     else console.error('Manca MUREKA_API_KEY nel .env di moonbrand-ai: il video si fa senza musica generata.');
     videoEnv = await prepareVideoProject(options.brandDir);
@@ -197,6 +200,7 @@ export async function runContentAgent(options: {
   for await (const message of query({
     prompt: options.prompt,
     options: {
+      ...claudeModel(),
       cwd: options.brandDir,
       env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,

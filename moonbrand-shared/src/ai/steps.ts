@@ -163,6 +163,7 @@ const TOOL_STEPS: Record<string, string | null> = {
   mcp__higgsfield__generate_image: 'Creo un’immagine',
   mcp__higgsfield__generate_image_batch: 'Creo le immagini',
   mcp__higgsfield__jobs_wait: 'Aspetto che clip e immagini siano pronte',
+  mcp__video__fotogrammi: 'Preparo i fotogrammi da controllare',
 };
 
 // Come si mostra la chiamata a un tool: null se non si mostra, undefined se la tabella non la conosce
