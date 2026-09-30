@@ -14,7 +14,7 @@ import {
 import { Router, RouterOutlet } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { CreateContentRequest, IdeasResponse } from '@moonbrand/shared/api/contract';
+import type { IdeasResponse } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
@@ -31,7 +31,7 @@ import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { FORMAT_REQUEST } from '../contents/labels';
-import { CreateContentDialog } from './create-content-dialog';
+import { CreateContentDialog, type IdeaContentRequest } from './create-content-dialog';
 import { SIGNAL_LABELS } from './labels';
 
 type View = 'new' | 'saved';
@@ -192,8 +192,9 @@ export class IdeasPage {
     this.lastDecision.set(null);
   }
 
-  // Il contenuto nasce in una conversazione nuova con l'assistente: il messaggio chiede formato e canali e menziona l'idea.
-  protected async createContent(request: CreateContentRequest): Promise<void> {
+  // Il contenuto nasce in una conversazione nuova con l'assistente: il messaggio chiede formato e canali, menziona l'idea
+  // e porta quello che si è aggiunto nella finestra, testo e allegati.
+  protected async createContent(request: IdeaContentRequest): Promise<void> {
     const idea = this.creatingFrom();
     const brand = this.brands.activeBrand();
     if (!idea || !brand || this.creating()) return;
@@ -201,8 +202,11 @@ export class IdeasPage {
     try {
       const names = request.channels.map(channelName);
       const channels = names.length > 1 ? `${names.slice(0, -1).join(', ')} e ${names.at(-1)}` : names[0];
-      const message = `Crea ${FORMAT_REQUEST[request.format]} per ${channels} da questa idea.`;
-      const { conversationId } = await this.chat.start(brand.id, { message, ideaId: idea.id });
+      const ask = `Crea ${FORMAT_REQUEST[request.format]} per ${channels} da questa idea.`;
+      // Il testo aggiunto continua la richiesta, come una frase dopo l'altra.
+      const note = request.message.charAt(0).toUpperCase() + request.message.slice(1);
+      const message = note ? `${ask} ${note}` : ask;
+      const { conversationId } = await this.chat.start(brand.id, { message, attachments: request.attachments, ideaId: idea.id });
       this.creatingFrom.set(null);
       void this.chat.refresh();
       await this.router.navigate(['/assistente', conversationId]);

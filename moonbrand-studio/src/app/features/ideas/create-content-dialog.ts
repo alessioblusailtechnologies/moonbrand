@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild, type OnInit } from '@angular/core';
 
 import type { CreateContentRequest } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
@@ -7,11 +7,16 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
 import { lockPageScroll } from '../../ui/scroll-lock';
+import { Composer, type ComposerMessage } from '../chat/composer';
 import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
+
+// Il contenuto da creare in chat: formato e canali, e quello che si aggiunge all'idea (testo e allegati).
+export type IdeaContentRequest = CreateContentRequest & ComposerMessage;
 
 @Component({
   selector: 'mb-create-content-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Composer],
   host: { '(document:keydown.escape)': 'busy() || closed.emit()' },
   template: `
     <div class="backdrop" (click)="busy() || closed.emit()"></div>
@@ -53,9 +58,22 @@ import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
         }
       </div>
 
+      <div class="stack">
+        <p class="label">Aggiungi all’idea</p>
+        <mb-composer
+          label="Indicazioni per l’assistente"
+          placeholder="Indicazioni, dettagli, cosa evitare… e le tue foto o i tuoi video, se vuoi (facoltativo)"
+          [tall]="true"
+          [empty]="true"
+          [send]="false"
+          [busy]="busy()"
+          (submitted)="submit()"
+        />
+      </div>
+
       <div class="actions">
         <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="closed.emit()">Annulla</button>
-        <button class="btn btn-primary" type="button" [disabled]="busy() || selected().length === 0" (click)="submit()">
+        <button class="btn btn-primary" type="button" [disabled]="busy() || selected().length === 0 || composer()?.uploading()" (click)="submit()">
           {{ busy() ? 'Apro la chat…' : 'Crea in chat' }}
         </button>
       </div>
@@ -77,7 +95,7 @@ import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
       display: flex;
       flex-direction: column;
       gap: 18px;
-      width: min(480px, calc(100vw - 32px));
+      width: min(560px, calc(100vw - 32px));
       max-height: calc(100vh - 32px);
       overflow-y: auto;
       padding: 24px;
@@ -101,10 +119,16 @@ import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
     .body {
       margin: 0;
     }
+    // Due colonne: la finestra resta bassa e la casella si vede senza scorrere.
     .formats {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
+    }
+    @media (max-width: 520px) {
+      .formats {
+        grid-template-columns: 1fr;
+      }
     }
     .chip:disabled {
       border-color: var(--grey-100);
@@ -128,12 +152,13 @@ export class CreateContentDialog implements OnInit {
   readonly channels = input.required<ChannelId[]>();
   readonly busy = input(false);
   readonly closed = output();
-  readonly created = output<CreateContentRequest>();
+  readonly created = output<IdeaContentRequest>();
 
   constructor() {
     lockPageScroll();
   }
 
+  protected readonly composer = viewChild(Composer);
   protected readonly formats = FORMAT_OPTIONS;
   protected readonly format = signal<ContentFormat>('post');
   protected readonly selected = signal<ChannelId[]>([]);
@@ -165,7 +190,9 @@ export class CreateContentDialog implements OnInit {
     this.selected.update((list) => (list.includes(channel) ? list.filter((item) => item !== channel) : [...list, channel]));
   }
 
+  // Parte quando gli allegati sono tutti caricati.
   protected submit(): void {
-    if (this.selected().length > 0) this.created.emit({ format: this.format(), channels: this.selected() });
+    const note = this.composer()?.value();
+    if (this.selected().length > 0 && note) this.created.emit({ format: this.format(), channels: this.selected(), ...note });
   }
 }

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   type TemplateRef,
   afterRenderEffect,
@@ -21,17 +20,12 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
-import type {
-  ChatAttachment,
-  ConversationSummary,
-  ConversationTurn,
-} from '@moonbrand/shared/api/contract';
+import type { ConversationSummary, ConversationTurn } from '@moonbrand/shared/api/contract';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
-import { resizedDataUri } from '../../core/images';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
@@ -42,21 +36,11 @@ import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from '../contents/content-preview';
 import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
+import { Composer, type ComposerMessage } from './composer';
 
 // Nella risposta di un turno i testi di Claude si leggono, i tool di fila si raccolgono in un blocco solo.
 // streaming: il testo sta ancora arrivando.
 type Block = { kind: 'text'; id: string; text: string; streaming: boolean } | { kind: 'tools'; id: string; steps: AiStep[] };
-
-// Una foto scelta per il prossimo messaggio: si carica subito, il messaggio la cita quando è pronta.
-// progress: per un video, quanto è già partito (da 0 a 1); a 1 il server lo sta convertendo.
-interface PendingAttachment {
-  id: number;
-  preview: string;
-  file: string | null;
-  failed: boolean;
-  video: boolean;
-  progress: number;
-}
 
 // Spunti per la prima domanda: riempiono la casella, non partono da soli.
 const SUGGESTIONS = [
@@ -68,16 +52,13 @@ const SUGGESTIONS = [
 
 // Mentre risponde si legge più spesso: il testo arriva a pezzi e si svela con un ritmo costante.
 const LIVE_POLL_MS = 400;
-// Le foto si rimpiccioliscono prima di partire: bastano per i post e restano sotto il limite dell'API.
-const ATTACHMENT_SIDE = 2560;
-const MAX_ATTACHMENTS = 10;
 // Il filo segue la risposta finché chi legge sta in fondo (entro questa distanza).
 const STICK_PX = 80;
 
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview, Composer],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -99,31 +80,17 @@ export class ChatPage {
   protected readonly loading = signal(false);
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
-  protected readonly draft = signal('');
-  protected readonly attachments = signal<PendingAttachment[]>([]);
   protected readonly suggestions = SUGGESTIONS;
 
   private readonly thread = viewChild<ElementRef<HTMLElement>>('thread');
-  private readonly composer = viewChild<ElementRef<HTMLTextAreaElement>>('composer');
-  private readonly picker = viewChild<ElementRef<HTMLInputElement>>('picker');
+  private readonly composer = viewChild(Composer);
   private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   // Il lavoro che si sta seguendo e i blocchi che c'erano già quando si è cominciato: solo i nuovi si svelano piano.
   private readonly live = signal<{ jobId: string; known: Set<string> } | null>(null);
-  private nextAttachment = 0;
   private stick = true;
 
   protected readonly running = computed(() =>
     this.turns().some((turn) => turn.job.status === 'queued' || turn.job.status === 'running'),
-  );
-  protected readonly uploading = computed(() =>
-    this.attachments().some((item) => !item.file && !item.failed),
-  );
-  protected readonly canSend = computed(
-    () =>
-      !this.running() &&
-      !this.sending() &&
-      !this.uploading() &&
-      (this.draft().trim().length > 0 || this.attachments().some((item) => item.file)),
   );
   private readonly turnCount = computed(() => this.turns().length);
   // Ogni contenuto sta nella risposta del turno in cui è nato: l'ultimo turno partito prima che venisse creato.
@@ -174,7 +141,6 @@ export class ChatPage {
       observer.observe(element, { childList: true, subtree: true, characterData: true });
       onCleanup(() => observer.disconnect());
     });
-    inject(DestroyRef).onDestroy(() => this.clearAttachments());
   }
 
   protected scrolled(): void {
@@ -192,7 +158,7 @@ export class ChatPage {
     this.current.set(null);
     this.turns.set([]);
     this.contents.set([]);
-    queueMicrotask(() => this.composer()?.nativeElement.focus());
+    queueMicrotask(() => this.composer()?.focus());
   }
 
   private async open(conversationId: string): Promise<void> {
@@ -267,27 +233,21 @@ export class ChatPage {
     return live?.jobId === turn.job.id && !live.known.has(blockId);
   }
 
-  protected async send(): Promise<void> {
+  protected async send({ message, attachments }: ComposerMessage): Promise<void> {
     const brand = this.brands.activeBrand();
-    if (!brand || !this.canSend()) return;
-    const message = this.draft().trim();
-    const attachments = this.attachments()
-      .map((item) => item.file)
-      .filter((file): file is string => Boolean(file));
+    if (!brand || this.sending() || this.running()) return;
     this.sending.set(true);
     try {
       const open = this.current();
       if (open) {
         const created = await this.chat.send(open.id, { message, attachments });
-        this.draft.set('');
-        this.clearAttachments();
+        this.composer()?.clear();
         await this.refresh(open.id);
         void this.follow(open.id, created.jobId);
         void this.chat.refresh();
       } else {
         const created = await this.chat.start(brand.id, { message, attachments });
-        this.draft.set('');
-        this.clearAttachments();
+        this.composer()?.clear();
         void this.chat.refresh();
         await this.router.navigate(['/assistente', created.conversationId]);
       }
@@ -310,94 +270,8 @@ export class ChatPage {
     }
   }
 
-  protected keydown(event: KeyboardEvent): void {
-    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
-    event.preventDefault();
-    void this.send();
-  }
-
   protected suggest(text: string): void {
-    this.draft.set(text);
-    const element = this.composer()?.nativeElement;
-    element?.focus();
-    queueMicrotask(() => element?.setSelectionRange(text.length, text.length));
-  }
-
-  protected pick(): void {
-    this.picker()?.nativeElement.click();
-  }
-
-  protected picked(event: Event): void {
-    const element = event.target as HTMLInputElement;
-    this.attach([...(element.files ?? [])]);
-    element.value = '';
-  }
-
-  // Una foto o un video incollato nella casella vale come una scelta dal pulsante.
-  protected pasted(event: ClipboardEvent): void {
-    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/'));
-    if (media.length === 0) return;
-    event.preventDefault();
-    this.attach(media);
-  }
-
-  private attach(files: File[]): void {
-    const brand = this.brands.activeBrand();
-    if (!brand) return;
-    const room = MAX_ATTACHMENTS - this.attachments().length;
-    if (files.length > room) this.toast.show(`Al massimo ${MAX_ATTACHMENTS} allegati per messaggio.`);
-    for (const file of files.slice(0, Math.max(0, room))) {
-      const pending: PendingAttachment = {
-        id: ++this.nextAttachment,
-        preview: URL.createObjectURL(file),
-        file: null,
-        failed: false,
-        video: file.type.startsWith('video/'),
-        progress: 0,
-      };
-      this.attachments.update((list) => [...list, pending]);
-      void (pending.video ? this.uploadVideo(brand.id, file, pending.id) : this.upload(brand.id, file, pending.id));
-    }
-  }
-
-  private async uploadVideo(brandId: string, file: File, id: number): Promise<void> {
-    const set = (patch: Partial<PendingAttachment>) =>
-      this.attachments.update((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-    try {
-      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => set({ progress }));
-      set({ file: uploaded.file, progress: 1 });
-    } catch (error) {
-      set({ failed: true });
-      this.toast.show(errorMessage(error, 'Non riesco a caricare il video. Riprova.'));
-    }
-  }
-
-  private async upload(brandId: string, file: File, id: number): Promise<void> {
-    const set = (patch: Partial<PendingAttachment>) =>
-      this.attachments.update((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-    try {
-      const dataUri = await resizedDataUri(file, ATTACHMENT_SIDE, 'image/jpeg');
-      const uploaded: ChatAttachment = await this.chat.upload(brandId, dataUri);
-      set({ file: uploaded.file });
-    } catch (error) {
-      set({ failed: true });
-      this.toast.show(errorMessage(error, 'Non riesco a caricare la foto: usa un PNG, un JPEG o un WebP.'));
-    }
-  }
-
-  protected progressLabel(progress: number): string {
-    return `${Math.floor(progress * 100)}%`;
-  }
-
-  protected unattach(id: number): void {
-    const item = this.attachments().find((attachment) => attachment.id === id);
-    if (item) URL.revokeObjectURL(item.preview);
-    this.attachments.update((list) => list.filter((attachment) => attachment.id !== id));
-  }
-
-  private clearAttachments(): void {
-    for (const item of this.attachments()) URL.revokeObjectURL(item.preview);
-    this.attachments.set([]);
+    this.composer()?.setDraft(text);
   }
 
   // Nella lightbox solo le foto: i video si guardano nel messaggio.

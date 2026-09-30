@@ -126,69 +126,15 @@
 
   <!-- La casella: al centro del benvenuto per una conversazione nuova, in fondo per una aperta. -->
   <ng-template #composerBox>
-    <div class="composer">
-      @if (attachments().length > 0) {
-        <div class="pending">
-          @for (item of attachments(); track item.id) {
-            <div class="pending-photo" [class.failed]="item.failed">
-              @if (item.video) {
-                <video [src]="item.preview" muted playsinline preload="metadata"></video>
-              } @else {
-                <img [src]="item.preview" alt="" />
-              }
-              @if (!item.file && !item.failed) {
-                <span class="pending-state">
-                  @if (item.video && item.progress < 1) {
-                    <span class="pending-progress">{{ progressLabel(item.progress) }}</span>
-                  } @else {
-                    <span class="spinner"></span>
-                  }
-                </span>
-              } @else if (item.video) {
-                <span class="pending-video"><mb-icon name="play" [size]="14" /></span>
-              }
-              <button class="pending-remove" type="button" [attr.aria-label]="item.video ? 'Togli il video' : 'Togli la foto'" (click)="unattach(item.id)">
-                <mb-icon name="x" [size]="12" [stroke]="3" />
-              </button>
-            </div>
-          }
-        </div>
-      }
-      <textarea
-        #composer
-        class="composer-input"
-        rows="1"
-        aria-label="Messaggio per l’assistente"
-        [placeholder]="current() ? 'Rispondi all’assistente…' : 'Chiedi un’idea, un contenuto, un parere…'"
-        [value]="draft()"
-        (input)="draft.set($any($event.target).value)"
-        (keydown)="keydown($event)"
-        (paste)="pasted($event)"
-      ></textarea>
-      <div class="composer-bar">
-        <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
-        <button class="icon-btn" type="button" aria-label="Allega foto o video" title="Allega foto o video" (click)="pick()">
-          <mb-icon name="image-plus" />
-        </button>
-        <span class="grow"></span>
-        @if (running()) {
-          <button
-            class="icon-btn solid send"
-            type="button"
-            aria-label="Ferma la risposta"
-            title="Ferma la risposta"
-            [disabled]="stopping()"
-            (click)="stop()"
-          >
-            <mb-icon name="square" [size]="14" />
-          </button>
-        } @else {
-          <button class="icon-btn solid send" type="button" aria-label="Invia" [disabled]="!canSend()" (click)="send()">
-            <mb-icon name="arrow-up" />
-          </button>
-        }
-      </div>
-    </div>
+    <mb-composer
+      [placeholder]="current() ? 'Rispondi all’assistente…' : 'Chiedi un’idea, un contenuto, un parere…'"
+      [tall]="!current()"
+      [running]="running()"
+      [stopping]="stopping()"
+      [busy]="sending()"
+      (submitted)="send($event)"
+      (stopped)="stop()"
+    />
   </ng-template>
 }
 
