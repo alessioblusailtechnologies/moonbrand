@@ -19,6 +19,18 @@ export const CHANNELS: { id: ChannelId; name: string }[] = [
   { id: 'x', name: 'X' },
 ];
 
+// Gli esempi di post dell'onboarding: al massimo MAX_EXAMPLES, uno per canale sui primi canali scelti; con un canale
+// solo, tutti su quello.
+export const MAX_EXAMPLES = 2;
+
+export function exampleChannels(channels: readonly ChannelId[]): ChannelId[] {
+  return channels.slice(0, MAX_EXAMPLES);
+}
+
+export function examplesPerChannel(channels: readonly ChannelId[]): number {
+  return Math.max(1, Math.floor(MAX_EXAMPLES / Math.max(1, exampleChannels(channels).length)));
+}
+
 export function channelName(id: ChannelId): string {
   return CHANNELS.find((channel) => channel.id === id)?.name ?? id;
 }

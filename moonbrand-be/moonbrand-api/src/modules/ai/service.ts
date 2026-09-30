@@ -9,6 +9,7 @@ import type {
   VisualReading,
   WebsiteJobRequest,
 } from '@moonbrand/shared/api/contract';
+import { exampleChannels } from '@moonbrand/shared/domain/catalog';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
@@ -21,7 +22,9 @@ export function queueWebsiteJob(pool: pg.Pool, identity: Identity, request: Webs
 
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
   await files.claim(request.brandId, identity.accountId);
-  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual', request) }));
+  // Gli esempi sono solo per i primi canali scelti: il job ricorda quelli, e una modifica lavora sugli stessi.
+  const input: VisualJobRequest = { ...request, brand: { ...request.brand, channels: exampleChannels(request.brand.channels) } };
+  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual', input) }));
 }
 
 export async function queueVisualEditJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualEditJobRequest): Promise<AiJobCreated> {

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { currentVoiceCard, type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
-import { CHANNELS, channelName, PALETTE_SLOT_LABELS } from '@moonbrand/shared/domain/catalog';
+import { CHANNELS, channelName, exampleChannels, PALETTE_SLOT_LABELS } from '@moonbrand/shared/domain/catalog';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
@@ -241,7 +241,7 @@ export class VisualStep implements OnInit {
     const brand: VisualBrandContext = {
       identity: draft.identity,
       positioning: draft.positioning,
-      channels: this.selectedChannels(),
+      channels: exampleChannels(this.selectedChannels()),
       themes: draft.themes.map((theme) => theme.name).filter(Boolean),
       voice: currentVoiceCard(draft.voice),
       palette: [...this.current().palette.colors],

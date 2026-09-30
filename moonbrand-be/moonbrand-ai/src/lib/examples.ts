@@ -4,10 +4,9 @@ import path from 'node:path';
 import { query } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
+import { exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/catalog';
 
 import { imageTools } from '../tools/immagini';
-
-export const PER_CHANNEL = 3;
 
 // Ogni generazione di esempi ha la sua cartella, così due generazioni dello stesso brand non si sovrascrivono;
 // una modifica riprende la sessione e lavora nella cartella della generazione da cui parte.
@@ -21,7 +20,9 @@ export function workDir(dir: string): string {
   return `${dir}/lavoro`;
 }
 
-function examplesSchema(dir: string, channels: ChannelId[]) {
+function examplesSchema(dir: string, chosen: ChannelId[]) {
+  const channels = exampleChannels(chosen);
+  const count = examplesPerChannel(channels) * channels.length;
   return {
     type: 'object',
     additionalProperties: false,
@@ -29,8 +30,8 @@ function examplesSchema(dir: string, channels: ChannelId[]) {
     properties: {
       examples: {
         type: 'array',
-        minItems: PER_CHANNEL * channels.length,
-        maxItems: PER_CHANNEL * channels.length,
+        minItems: count,
+        maxItems: count,
         items: {
           type: 'object',
           additionalProperties: false,
