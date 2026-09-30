@@ -19,6 +19,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
   { path: '/assistente', label: 'Assistente', icon: 'message-circle', exact: false },
   { path: '/', label: 'Idee', icon: 'lightbulb', exact: true },
   { path: '/contenuti', label: 'Contenuti', icon: 'file-text', exact: false },
+  { path: '/piano', label: 'Piano', icon: 'calendar', exact: false },
   { path: '/impostazioni', label: 'Impostazioni brand', icon: 'settings', exact: true, bottom: true },
 ];
 

@@ -3,7 +3,17 @@ import type { Readable } from 'node:stream';
 
 import type pg from 'pg';
 
-import type { ChatAttachment, ChatIdea, ChatJobInput, ChatTurnCreated, ConversationResponse, ConversationSummary } from '@moonbrand/shared/api/contract';
+import type {
+  ChatAttachment,
+  ChatIdea,
+  ChatJobInput,
+  ChatSlot,
+  ChatTurnCreated,
+  ConversationResponse,
+  ConversationSummary,
+} from '@moonbrand/shared/api/contract';
+import { channelName } from '@moonbrand/shared/domain/catalog';
+import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
@@ -16,6 +26,7 @@ import { withUrls } from '../contents/service';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
 import { normalizeVideo } from '../media/video';
+import { findSlot } from '../plan/repository';
 import {
   activeJob,
   deleteConversation,
@@ -29,17 +40,24 @@ import {
 
 const TITLE_MAX = 80;
 
-// Un messaggio: il testo, le foto già caricate nella cartella del brand e l'idea menzionata.
-// Il testo può mancare se ci sono foto o l'idea.
+// Un messaggio: il testo, le foto già caricate nella cartella del brand, l'idea e l'uscita del piano menzionate.
+// Il testo può mancare se ci sono foto, l'idea o l'uscita.
 export interface ChatMessage {
   message: string;
   attachments: string[];
   ideaId?: string;
+  slotId?: string;
 }
 
-// Il titolo è l'idea da cui parte la conversazione, o il primo messaggio, accorciato.
-function titleOf({ message }: ChatMessage, idea: ChatIdea | null): string {
-  const line = (idea?.title ?? message).replace(/\s+/g, ' ').trim();
+interface Mentions {
+  idea: ChatIdea | null;
+  slot: ChatSlot | null;
+}
+
+// Il titolo è l'idea da cui parte la conversazione, o l'uscita, o il primo messaggio, accorciato.
+function titleOf({ message }: ChatMessage, { idea, slot }: Mentions): string {
+  const fromSlot = slot && `Uscita di ${formatWeekdayShort(slot.date)} alle ${slot.time} su ${slot.channels.map(channelName).join(', ')}`;
+  const line = (idea?.title ?? fromSlot ?? message).replace(/\s+/g, ' ').trim();
   if (!line) return 'Foto allegate';
   return line.length > TITLE_MAX ? `${line.slice(0, TITLE_MAX - 1).trimEnd()}…` : line;
 }
@@ -61,15 +79,31 @@ async function mentionedIdea(db: Queryable, brandId: string, ideaId: string | un
   };
 }
 
+// L'uscita menzionata, e la sua idea se il messaggio non ne menziona un'altra.
+async function mentionsOf(db: Queryable, brandId: string, message: ChatMessage): Promise<Mentions> {
+  if (!message.slotId) return { idea: await mentionedIdea(db, brandId, message.ideaId), slot: null };
+  const found = await findSlot(db, message.slotId);
+  if (!found || found.brandId !== brandId) throw ApiError.notFound('Uscita non trovata in questo brand.');
+  const brand = await findBrandForIdeas(db, brandId);
+  const slot: ChatSlot = {
+    id: found.id,
+    date: found.date,
+    time: found.time,
+    channels: found.channels,
+    theme: brand?.themes.find((theme) => theme.id === found.themeId)?.name ?? null,
+  };
+  return { idea: await mentionedIdea(db, brandId, message.ideaId ?? found.ideaId ?? undefined), slot };
+}
+
 // Un turno: il job chat riprende la sessione della conversazione, con il brand com'è adesso.
 // Il token è la chiave dei tool per l'API: vale solo per questo job e solo mentre gira.
-// L'idea menzionata sta nell'input del job: da lì la legge Claude e la mostra la conversazione.
+// L'idea e l'uscita menzionate stanno nell'input del job: da lì le legge Claude e le mostra la conversazione.
 async function queueTurn(
   db: Queryable,
   identity: Identity,
   conversation: Pick<ConversationSummary, 'id' | 'brandId'>,
   { message, attachments }: ChatMessage,
-  idea: ChatIdea | null,
+  { idea, slot }: Mentions,
 ): Promise<ChatTurnCreated> {
   const brand = await findBrandForIdeas(db, conversation.brandId);
   if (!brand) throw ApiError.notFound('Brand non trovato.');
@@ -82,6 +116,7 @@ async function queueTurn(
     message,
     attachments,
     idea,
+    slot,
   };
   const jobId = await insertJob(db, identity.accountId, 'chat', input, randomBytes(32).toString('base64url'));
   const turnId = await insertTurn(db, { conversationId: conversation.id, accountId: identity.accountId, message, attachments, jobId });
@@ -94,9 +129,9 @@ export function getConversations(pool: pg.Pool, identity: Identity, brandId: str
 
 export function startConversation(pool: pg.Pool, identity: Identity, brandId: string, message: ChatMessage): Promise<ChatTurnCreated> {
   return withIdentity(pool, identity, async (db) => {
-    const idea = await mentionedIdea(db, brandId, message.ideaId);
-    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, idea));
-    return queueTurn(db, identity, { id, brandId }, message, idea);
+    const mentions = await mentionsOf(db, brandId, message);
+    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, mentions));
+    return queueTurn(db, identity, { id, brandId }, message, mentions);
   });
 }
 
@@ -105,7 +140,7 @@ export function sendMessage(pool: pg.Pool, identity: Identity, conversationId: s
     const conversation = await findConversation(db, conversationId);
     if (!conversation) throw ApiError.notFound('Conversazione non trovata.');
     if (conversation.busy) throw ApiError.conflict('BUSY', 'Sto ancora rispondendo al messaggio di prima.');
-    return queueTurn(db, identity, conversation, message, await mentionedIdea(db, conversation.brandId, message.ideaId));
+    return queueTurn(db, identity, conversation, message, await mentionsOf(db, conversation.brandId, message));
   });
 }
 

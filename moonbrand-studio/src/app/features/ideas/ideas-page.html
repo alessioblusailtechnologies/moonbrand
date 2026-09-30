@@ -95,6 +95,9 @@
                     <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
                   } @else {
                     <button class="link-btn muted" type="button" (click)="decide(idea, 'new')">Rimetti tra le proposte</button>
+                    <button class="btn btn-secondary btn-sm" type="button" [disabled]="planning() === idea.id" (click)="addToPlan(idea)">
+                      {{ planning() === idea.id ? 'Aggiungo…' : 'Aggiungi al piano' }}
+                    </button>
                   }
                   <button class="btn btn-primary btn-sm" type="button" (click)="creatingFrom.set(idea)">Crea contenuto</button>
                 </div>

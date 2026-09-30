@@ -9,6 +9,8 @@ import {
   type Voice,
 } from '@moonbrand/shared/domain/brand';
 import type { Idea, IdeaDraft, IdeaStatus } from '@moonbrand/shared/domain/idea';
+import { slotStatus, type SlotStatus } from '@moonbrand/shared/domain/plan';
+import { addDays, planNow } from '@moonbrand/shared/lib/dates';
 
 import type { Queryable } from '../../db/pool';
 
@@ -62,6 +64,8 @@ export async function updateIdeaStatus(db: Queryable, ideaId: string, status: Id
 
 // Quante impaginazioni recenti vedono i job, per non ripeterle.
 const RECENT_LAYOUTS = 6;
+// Quanti giorni di piano vedono i job, da oggi.
+const PLAN_DAYS = 14;
 
 export interface BrandForIdeas {
   context: BrandContext;
@@ -82,6 +86,36 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
      order by updated_at desc limit $2`,
     [brandId, RECENT_LAYOUTS],
   );
+  const now = planNow();
+  const upcoming = await db.query<{
+    id: string;
+    date: string;
+    time: string;
+    channels: ChannelId[];
+    status: SlotStatus;
+    theme_id: string | null;
+    idea_id: string | null;
+    content_status: 'draft' | 'approved' | null;
+    title: string | null;
+  }>(
+    `select s.id, s.publish_date::text as date, s.publish_time as time, coalesce(c.channels, s.channels) as channels, s.status,
+       s.theme_id, s.idea_id, c.status as content_status, coalesce(c.title, i.title, s.content_title) as title
+     from presenza.slots s
+       left join presenza.contents c on c.slot_id = s.id
+       left join presenza.ideas i on i.id = s.idea_id
+     where s.brand_id = $1 and s.publish_date between $2::date and $3::date
+     order by s.publish_date, s.publish_time`,
+    [brandId, now.date, addDays(now.date, PLAN_DAYS - 1)],
+  );
+  const plan = upcoming.rows.map((slot) => ({
+    id: slot.id,
+    date: slot.date,
+    time: slot.time,
+    channels: slot.channels,
+    status: slotStatus({ status: slot.status, date: slot.date, time: slot.time, ideaId: slot.idea_id }, slot.content_status ? { status: slot.content_status } : null, now),
+    theme: row.themes.find((theme) => theme.id === slot.theme_id)?.name ?? null,
+    title: slot.title,
+  }));
   return {
     themes: row.themes,
     context: {
@@ -92,6 +126,7 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
       voice: currentVoiceCard(row.voice),
       style: row.style_guide,
       layouts: layouts.rows,
+      plan,
     },
   };
 }

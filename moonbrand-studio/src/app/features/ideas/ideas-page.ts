@@ -18,10 +18,12 @@ import type { CreateContentRequest, IdeasResponse } from '@moonbrand/shared/api/
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea, IdeaStatus } from '@moonbrand/shared/domain/idea';
+import { formatWeekdayLong } from '@moonbrand/shared/lib/dates';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { PlanService } from '../../core/plan/plan.service';
 import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
 import { pageHeader } from '../../core/layout/page-header';
@@ -51,6 +53,7 @@ export class IdeasPage {
   private readonly ai = inject(AiJobsService);
   private readonly toast = inject(ToastService);
   private readonly chat = inject(ChatService);
+  private readonly plan = inject(PlanService);
   private readonly router = inject(Router);
   protected readonly brands = inject(BrandsService);
 
@@ -62,6 +65,8 @@ export class IdeasPage {
   // L'idea da cui si sta creando un contenuto: apre la finestra del formato e dei canali.
   protected readonly creatingFrom = signal<Idea | null>(null);
   protected readonly creating = signal(false);
+  // L'idea che si sta mettendo nel piano.
+  protected readonly planning = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly preparing = signal(false);
   protected readonly steps = signal<AiStep[]>([]);
@@ -205,6 +210,21 @@ export class IdeasPage {
       this.toast.show(errorMessage(error, 'Non sono riuscito ad aprire la chat. Riprova.'));
     } finally {
       this.creating.set(false);
+    }
+  }
+
+  // Nel piano: la prima uscita vuota del suo tema, altrimenti il primo giorno buono libero.
+  protected async addToPlan(idea: Idea): Promise<void> {
+    const brand = this.brands.activeBrand();
+    if (!brand || this.planning()) return;
+    this.planning.set(idea.id);
+    try {
+      const slot = await this.plan.addIdea(brand.id, idea.id);
+      this.toast.show(`Nel piano: ${formatWeekdayLong(slot.date)} alle ${slot.time}.`);
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'Non sono riuscito ad aggiungerla al piano. Riprova.'));
+    } finally {
+      this.planning.set(null);
     }
   }
 

@@ -61,6 +61,8 @@ export interface Content {
   id: string;
   brandId: string;
   ideaId: string | null;
+  // L'uscita del piano in cui esce, se è programmato.
+  slotId: string | null;
   // La conversazione in cui è nato, se viene dalla chat.
   conversationId: string | null;
   title: string;

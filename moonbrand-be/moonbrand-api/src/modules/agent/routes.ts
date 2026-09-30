@@ -8,6 +8,8 @@ import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { channelId } from '../brands/schemas';
 import { sceneSchema } from '../contents/routes';
+import { channelsSchema, daySchema, slotCreateSchema, slotPatchSchema } from '../plan/routes';
+import { createAgentSlots, listAgentPlan, patchAgentSlot, proposeAgentPlan, removeAgentSlot } from './plan';
 import { findAgentJob, type AgentJob } from './repository';
 import { createAgentContent, createAgentIdea, getAgentContent, listAgentContents, listAgentIdeas, updateAgentContent } from './service';
 
@@ -18,8 +20,21 @@ declare module 'fastify' {
 }
 
 const contentParams = z.object({ contentId: z.uuid('Contenuto non trovato.') });
+const slotParams = z.object({ slotId: z.uuid('Uscita non trovata: usa l’id di piano_leggi.') });
+
+const planQuerySchema = z.object({ from: daySchema.optional(), to: daySchema.optional() });
+
+const proposalSchema = z.object({
+  startDate: daySchema.optional(),
+  weeks: z.number().int().min(1).max(12),
+  perWeek: z.number().int().min(1).max(7).optional(),
+  channels: channelsSchema.optional(),
+});
+
+const slotsSchema = z.object({ uscite: z.array(slotCreateSchema).min(1).max(60) });
 
 const contentSchema = z.object({
+  slotId: z.uuid('Uscita non valida: usa l’id di piano_leggi.').optional(),
   title: z.string().trim().min(1).max(300),
   format: z.enum(['post', 'carousel', 'article', 'video']),
   channels: z.array(channelId).min(1).max(5),
@@ -85,6 +100,21 @@ export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, f
   app.put('/v1/agent/contents/:contentId', (request) =>
     updateAgentContent(pool, files, request.agent, contentParams.parse(request.params).contentId, parse(contentSchema, request.body)),
   );
+
+  app.get('/v1/agent/plan', (request) => listAgentPlan(pool, files, request.agent, parse(planQuerySchema, request.query)));
+
+  app.post('/v1/agent/plan/proposal', (request) => proposeAgentPlan(pool, request.agent, parse(proposalSchema, request.body)));
+
+  app.post('/v1/agent/slots', async (request, reply) => {
+    const created = await createAgentSlots(pool, files, request.agent, parse(slotsSchema, request.body).uscite);
+    return reply.code(201).send(created);
+  });
+
+  app.patch('/v1/agent/slots/:slotId', (request) =>
+    patchAgentSlot(pool, files, request.agent, slotParams.parse(request.params).slotId, parse(slotPatchSchema, request.body)),
+  );
+
+  app.delete('/v1/agent/slots/:slotId', (request) => removeAgentSlot(pool, files, request.agent, slotParams.parse(request.params).slotId));
 
   app.get('/v1/agent/ideas', (request) => listAgentIdeas(pool, request.agent));
 

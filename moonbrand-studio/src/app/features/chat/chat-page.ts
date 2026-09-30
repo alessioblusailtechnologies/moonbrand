@@ -17,7 +17,10 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
+import type { ChannelId } from '@moonbrand/shared/domain/brand';
+import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
+import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import type {
   ChatAttachment,
   ConversationSummary,
@@ -436,6 +439,11 @@ export class ChatPage {
   // La copertina o la prima slide, per la chip in fondo.
   protected coverOf(content: Content): string | null {
     return content.visual.files?.find((file) => file.index === 0)?.url ?? null;
+  }
+
+  // L'uscita menzionata in un messaggio, in breve: «gio 2 ott · 18:30 · Instagram».
+  protected slotLabel(slot: { date: string; time: string; channels: ChannelId[] }): string {
+    return `${formatWeekdayShort(slot.date)} · ${slot.time} · ${slot.channels.map(channelName).join(', ')}`;
   }
 
   protected formatLabel(content: Content): string {

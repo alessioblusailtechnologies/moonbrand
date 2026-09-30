@@ -46,6 +46,8 @@ import {
   setContentStatus,
   setContentVariants,
 } from './repository';
+import { listSlots, findSlot } from '../plan/repository';
+import { slotViews, syncContentSlot } from '../plan/service';
 
 const FORMAT_NAME: Record<ContentFormat, string> = { post: 'il post', carousel: 'il carosello', article: 'l’articolo', video: 'il video' };
 
@@ -120,8 +122,13 @@ export function withUrls(content: Content, files: BrandFiles): Content {
   };
 }
 
-// Per le card: la prima copertina o la prima slide, e se un job ci sta lavorando.
-export function summarize(content: Content, files: BrandFiles, preparing: boolean): ContentSummary {
+// Per le card: la prima copertina o la prima slide, se un job ci sta lavorando e quando esce, se è nel piano.
+export function summarize(
+  content: Content,
+  files: BrandFiles,
+  preparing: boolean,
+  scheduledFor: ContentSummary['scheduledFor'] = null,
+): ContentSummary {
   const cover = withUrls(content, files).visual.files?.find((file) => file.index === 0 && (file.role === 'cover' || file.role === 'slide'));
   return {
     id: content.id,
@@ -133,13 +140,15 @@ export function summarize(content: Content, files: BrandFiles, preparing: boolea
     coverAspect: cover?.aspect ?? null,
     updatedAt: content.updatedAt,
     preparing,
+    scheduledFor,
   };
 }
 
 export function listBrandContents(pool: pg.Pool, files: BrandFiles, identity: Identity, brandId: string): Promise<ContentSummary[]> {
   return withIdentity(pool, identity, async (db) => {
-    const [contents, jobs] = await Promise.all([listContents(db, brandId), activeContentJobs(db, brandId)]);
-    return contents.map((content) => summarize(content, files, jobs.has(content.id)));
+    const [contents, jobs, slots] = await Promise.all([listContents(db, brandId), activeContentJobs(db, brandId), listSlots(db, brandId)]);
+    const when = new Map(slots.map((slot) => [slot.id, { date: slot.date, time: slot.time }]));
+    return contents.map((content) => summarize(content, files, jobs.has(content.id), (content.slotId && when.get(content.slotId)) || null));
   });
 }
 
@@ -147,8 +156,17 @@ export function getContent(pool: pg.Pool, files: BrandFiles, identity: Identity,
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    const [jobs, brand] = await Promise.all([activeContentJobs(db, content.brandId), findBrandForIdeas(db, content.brandId)]);
-    return { content: withUrls(content, files), jobId: jobs.get(content.id) ?? null, brandChannels: brand?.context.channels ?? [] };
+    const [jobs, brand, slot] = await Promise.all([
+      activeContentJobs(db, content.brandId),
+      findBrandForIdeas(db, content.brandId),
+      content.slotId ? findSlot(db, content.slotId) : null,
+    ]);
+    return {
+      content: withUrls(content, files),
+      jobId: jobs.get(content.id) ?? null,
+      brandChannels: brand?.context.channels ?? [],
+      slot: slot ? (await slotViews(db, files, content.brandId, [slot]))[0] : null,
+    };
   });
 }
 
@@ -194,6 +212,7 @@ export function regenerateContent(pool: pg.Pool, identity: Identity, contentId: 
     await requireIdle(db, content);
     const input = await contentJobInput(db, content);
     await bumpRevision(db, contentId);
+    await syncContentSlot(db, { slotId: content.slotId, status: 'draft' });
     return { jobId: await insertJob(db, identity.accountId, 'content', input) };
   });
 }
@@ -214,6 +233,7 @@ export function saveContentScript(
     await requireIdle(db, content);
     const saved = await setContentScript(db, contentId, request.script.trim(), request.scenes);
     if (!saved) throw ApiError.notFound('Contenuto non trovato.');
+    await syncContentSlot(db, saved);
     return withUrls(saved, files);
   });
 }
@@ -251,6 +271,7 @@ export function changeContentStatus(
   return withIdentity(pool, identity, async (db) => {
     const content = await setContentStatus(db, contentId, status);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
+    await syncContentSlot(db, content);
     return withUrls(content, files);
   });
 }
@@ -276,6 +297,7 @@ export function saveContentVariant(
     );
     const saved = await setContentVariants(db, contentId, variants);
     if (!saved) throw ApiError.notFound('Contenuto non trovato.');
+    await syncContentSlot(db, saved);
     return withUrls(saved, files);
   });
 }
@@ -329,7 +351,7 @@ export function addContentChannel(
     if (content.format === 'video' && hasScript(content) && !hasVideo(content)) {
       const saved = await setContentChannels(db, contentId, channels, content.variants, content.visual.files);
       if (!saved) throw ApiError.notFound('Contenuto non trovato.');
-      return { content: withUrls(saved, files), jobId: null, brandChannels };
+      return { content: withUrls(saved, files), jobId: null, brandChannels, slot: null };
     }
 
     if (content.conversationId) {
@@ -354,6 +376,6 @@ export function addContentChannel(
       scriptOnly: false,
     };
     const jobId = await insertJob(db, identity.accountId, 'content-edit', input);
-    return { content: withUrls(content, files), jobId, brandChannels };
+    return { content: withUrls(content, files), jobId, brandChannels, slot: null };
   });
 }

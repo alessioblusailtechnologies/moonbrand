@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, type TemplateRef, computed, effect,
 import { Router, RouterLink } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { ContentScriptRequest } from '@moonbrand/shared/api/contract';
+import type { ContentScriptRequest, SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import { hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
@@ -17,6 +17,7 @@ import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from './content-preview';
+import { ContentSchedule } from './content-schedule';
 import { FORMAT_LABELS, FORMAT_NAMES, STATUS_LABELS } from './labels';
 import { ScriptEditor } from './script-editor';
 
@@ -27,7 +28,7 @@ type Work = 'prepare' | 'edit' | 'video' | 'channel';
 @Component({
   selector: 'mb-content-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, StepList, ContentPreview, ScriptEditor],
+  imports: [RouterLink, Icon, StepList, ContentPreview, ContentSchedule, ScriptEditor],
   templateUrl: './content-page.html',
   styleUrl: './content-page.scss',
 })
@@ -50,6 +51,8 @@ export class ContentPage {
   protected readonly steps = signal<AiStep[]>([]);
   protected readonly instruction = signal('');
   protected readonly brandChannels = signal<ChannelId[]>([]);
+  // La sua uscita nel piano, se c'è.
+  protected readonly slot = signal<SlotView | null>(null);
   // Il canale che un lavoro sta aggiungendo.
   protected readonly adding = signal<ChannelId | null>(null);
   protected readonly changingChannels = signal(false);
@@ -111,8 +114,9 @@ export class ContentPage {
   private async load(contentId: string): Promise<void> {
     this.loading.set(true);
     try {
-      const { content, jobId, brandChannels } = await this.api.get(contentId);
+      const { content, jobId, brandChannels, slot } = await this.api.get(contentId);
       this.show(content);
+      this.slot.set(slot);
       this.brandChannels.set(brandChannels);
       // Un lavoro già in corso su un video con il copione è il video; altrimenti la preparazione.
       if (jobId) void this.follow(jobId, content.format === 'video' && hasScript(content) ? 'video' : 'prepare');
@@ -131,8 +135,9 @@ export class ContentPage {
     this.steps.set([]);
     try {
       await this.ai.follow(jobId, (steps) => this.steps.set(steps));
-      const { content } = await this.api.get(this.contentId());
+      const { content, slot } = await this.api.get(this.contentId());
       this.show(content);
+      this.slot.set(slot);
       if (work === 'edit') this.instruction.set('');
       if (work === 'channel' && this.adding()) this.toast.show(`${channelName(this.adding()!)} aggiunto.`);
     } catch (error) {
@@ -249,6 +254,8 @@ export class ContentPage {
     if (!content) return;
     try {
       this.show(await this.api.setApproved(content.id, content.status !== 'approved'));
+      // Approvato o riaperto, la sua uscita cambia stato.
+      if (this.slot()) this.slot.set((await this.api.get(content.id)).slot);
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non sono riuscito a cambiare lo stato. Riprova.'));
     }

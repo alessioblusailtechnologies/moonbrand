@@ -22,6 +22,7 @@ import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent } from '../contents/repository';
 import { findBrandForIdeas, insertIdea, listIdeas } from '../ideas/repository';
+import { attachContentIn, syncContentSlot } from '../plan/service';
 import type { AgentJob } from './repository';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
@@ -154,17 +155,23 @@ export function createAgentContent(pool: pg.Pool, files: BrandFiles, agent: Agen
     const id = randomUUID();
     const published = await publishFiles(files, agent.brandId, id, request.files);
     const title = request.title.trim();
+    const channels = variants.map((variant) => variant.channel);
     await insertChatContent(db, {
       id,
       brandId: agent.brandId,
       accountId: agent.accountId,
       conversationId: agent.conversationId,
+      slotId: null,
       title,
-      channels: variants.map((variant) => variant.channel),
+      channels,
       format: request.format,
       variants,
       visual: visualOf(request, published),
     });
+    // Fatto per un'uscita del piano: entra lì. Nella stessa transazione: se l'uscita non va, il contenuto non si salva.
+    if (request.slotId) {
+      await attachContentIn({ db, files, brandId: agent.brandId, accountId: agent.accountId }, request.slotId, { id, title, channels, status: 'draft' });
+    }
     return { id, title, files: published.map((file) => file.file) };
   });
 }
@@ -188,14 +195,21 @@ export function updateAgentContent(
     const variants = check(request, brand.context.channels);
     const published = await publishFiles(files, agent.brandId, contentId, request.files);
     const title = request.title.trim();
+    const channels = variants.map((variant) => variant.channel);
     await rewriteContent(db, {
       id: contentId,
       title,
-      channels: variants.map((variant) => variant.channel),
+      channels,
       format: request.format,
       variants,
       visual: visualOf(request, published),
     });
+    // Riscritto torna bozza: la sua uscita torna da approvare, o passa a quella chiesta.
+    if (request.slotId && request.slotId !== content.slotId) {
+      await attachContentIn({ db, files, brandId: agent.brandId, accountId: agent.accountId }, request.slotId, { id: contentId, title, channels, status: 'draft' });
+    } else {
+      await syncContentSlot(db, { slotId: content.slotId, status: 'draft' });
+    }
     const kept = new Set(published.map((file) => file.file));
     for (const old of content.visual.files ?? []) {
       if (!kept.has(old.file)) await files.remove(agent.brandId, old.file).catch(() => undefined);

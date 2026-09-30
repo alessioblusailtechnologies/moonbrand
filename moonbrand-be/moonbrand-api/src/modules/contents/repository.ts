@@ -7,6 +7,7 @@ interface ContentRow {
   id: string;
   brand_id: string;
   idea_id: string | null;
+  slot_id: string | null;
   conversation_id: string | null;
   title: string;
   theme_id: string | null;
@@ -22,12 +23,13 @@ interface ContentRow {
 }
 
 const COLUMNS =
-  'id, brand_id, idea_id, conversation_id, title, theme_id, channels, format, variants, visual, status, revision, created_at, updated_at, approved_at';
+  'id, brand_id, idea_id, slot_id, conversation_id, title, theme_id, channels, format, variants, visual, status, revision, created_at, updated_at, approved_at';
 
 const toContent = (row: ContentRow): Content => ({
   id: row.id,
   brandId: row.brand_id,
   ideaId: row.idea_id,
+  slotId: row.slot_id,
   conversationId: row.conversation_id,
   title: row.title,
   themeId: row.theme_id,
@@ -60,16 +62,17 @@ export async function insertContent(
 // Un contenuto scritto nella chat: nasce già completo, con l'id scelto prima per la sua cartella.
 export async function insertChatContent(
   db: Queryable,
-  content: Pick<Content, 'id' | 'brandId' | 'conversationId' | 'title' | 'channels' | 'format' | 'variants' | 'visual'> & { accountId: string },
+  content: Pick<Content, 'id' | 'brandId' | 'conversationId' | 'slotId' | 'title' | 'channels' | 'format' | 'variants' | 'visual'> & { accountId: string },
 ): Promise<void> {
   await db.query(
-    `insert into presenza.contents (id, brand_id, account_id, conversation_id, title, channels, format, variants, visual)
-     values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::jsonb)`,
+    `insert into presenza.contents (id, brand_id, account_id, conversation_id, slot_id, title, channels, format, variants, visual)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10::jsonb)`,
     [
       content.id,
       content.brandId,
       content.accountId,
       content.conversationId,
+      content.slotId,
       content.title,
       content.channels,
       content.format,

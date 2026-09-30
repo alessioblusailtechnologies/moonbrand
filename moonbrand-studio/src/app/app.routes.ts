@@ -47,6 +47,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/contents/content-page').then((m) => m.ContentPage),
       },
       {
+        path: 'piano',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/plan/plan-page').then((m) => m.PlanPage),
+      },
+      {
         path: 'impostazioni',
         canActivate: [hasBrandsGuard],
         loadComponent: () => import('./features/profile/profile-page').then((m) => m.ProfilePage),

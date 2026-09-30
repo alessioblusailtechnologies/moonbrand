@@ -34,6 +34,10 @@
       </div>
     }
 
+    @if ((ready() || scripted()) && !preparing()) {
+      <mb-content-schedule [content]="current" [slot]="slot()" (changed)="slot.set($event)" />
+    }
+
     @if (preparing()) {
       <div class="panel">
         <p class="strong-sm">{{ workLabel() }}</p>

@@ -2,6 +2,9 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { BrandContext } from '@moonbrand/shared/api/contract';
+import { channelName } from '@moonbrand/shared/domain/catalog';
+import { SLOT_STATUS_LABELS } from '@moonbrand/shared/domain/plan';
+import { formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 
 import { describeBrand } from './brand-brief';
 
@@ -29,12 +32,30 @@ Dal più recente: scegline una diversa. Guarda con guarda solo i contenuti recen
 ${layouts.map((item) => `- ${item.title} (${item.format}): ${item.layout}`).join('\n')}
 `
       : '';
+  // Il piano delle prossime due settimane: l'assistente sa cosa esce e quando senza chiederlo ai tool.
+  const planned = brand.plan ?? [];
+  const plan = `
+## Il piano
+Oggi è ${formatWeekdayShort(planNow().date)} (${planNow().date}), ora di Roma. ${
+    planned.length > 0
+      ? `Le uscite dei prossimi 14 giorni, con l'id che serve ai tool del piano:
+
+${planned
+  .map(
+    (slot) =>
+      `- ${formatWeekdayShort(slot.date)} ${slot.time} · ${slot.channels.map(channelName).join(', ')} · ${SLOT_STATUS_LABELS[slot.status]}` +
+      `${slot.title ? ` · «${slot.title}»` : ''}${slot.theme ? ` · tema ${slot.theme}` : ''} (id ${slot.id})`,
+  )
+  .join('\n')}`
+      : 'Nei prossimi 14 giorni non ci sono uscite.'
+  }
+`;
   return `# ${name}
 
 La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
 
 ${describeBrand(brand)}
-${style}${recent}
+${style}${recent}${plan}
 ## La cartella
 - file-riferimento/: i file caricati per il brand (logo, foto, materiali).
 - riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.
@@ -47,6 +68,7 @@ ${style}${recent}
 - Per scrivere o ritoccare un contenuto: la skill moonbrand:contenuti.
 - Per fare o ritoccare un video: la skill moonbrand:video.
 - Per proporre idee: la skill moonbrand:idee.
+- Per pianificare le uscite: la skill moonbrand:piano.
 `;
 }
 

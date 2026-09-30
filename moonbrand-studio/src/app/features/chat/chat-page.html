@@ -41,6 +41,15 @@
             @if (turn.message) {
               <p class="mine">{{ turn.message }}</p>
             }
+            @if (turn.slot; as slot) {
+              <a class="mention" routerLink="/piano" [queryParams]="{ giorno: slot.date }" [attr.aria-label]="'Uscita menzionata: ' + slotLabel(slot)">
+                <mb-icon name="calendar" [size]="15" />
+                <span class="mention-texts">
+                  <span class="mention-kind">Uscita del piano</span>
+                  <span class="mention-title">{{ slotLabel(slot) }}</span>
+                </span>
+              </a>
+            }
             @if (turn.idea; as idea) {
               <a class="mention" routerLink="/" [attr.aria-label]="'Idea menzionata: ' + idea.title">
                 <mb-icon name="lightbulb" [size]="15" />

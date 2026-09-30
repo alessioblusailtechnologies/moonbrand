@@ -35,8 +35,12 @@ const messageSchema = z
       .max(MAX_ATTACHMENTS, `Al massimo ${MAX_ATTACHMENTS} allegati per messaggio.`)
       .default([]),
     ideaId: z.uuid('Idea non trovata.').optional(),
+    slotId: z.uuid('Uscita non trovata.').optional(),
   })
-  .refine((body) => body.message.length > 0 || body.attachments.length > 0 || body.ideaId !== undefined, 'Scrivi un messaggio.') satisfies z.ZodType<
+  .refine(
+    (body) => body.message.length > 0 || body.attachments.length > 0 || body.ideaId !== undefined || body.slotId !== undefined,
+    'Scrivi un messaggio.',
+  ) satisfies z.ZodType<
   ChatMessage,
   ChatMessageRequest
 >;

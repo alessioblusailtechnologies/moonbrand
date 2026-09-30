@@ -17,6 +17,7 @@ import { Icon } from '../../ui/icon';
 
 import type { ContentSummary } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
+import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
@@ -248,7 +249,10 @@ export class ContentsPage {
     return STATUS_LABELS[content.status];
   }
 
+  // I canali e, se è nel piano, quando esce: sulla stessa riga, così la card resta alta uguale.
   protected channelsLabel(content: ContentSummary): string {
-    return content.channels.map(channelName).join(', ');
+    const channels = content.channels.map(channelName).join(', ');
+    const when = content.scheduledFor;
+    return when ? `${channels} · esce ${formatWeekdayShort(when.date)}, ${when.time}` : channels;
   }
 }

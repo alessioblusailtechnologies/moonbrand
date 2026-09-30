@@ -17,6 +17,7 @@ import { registerContentRoutes } from './modules/contents/routes';
 import { registerConversationRoutes } from './modules/conversations/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
+import { registerPlanRoutes } from './modules/plan/routes';
 import type { MediaStorage } from './modules/media/storage';
 import { registerAuth, type VerifyToken } from './plugins/auth';
 
@@ -54,6 +55,7 @@ export function buildApp(options: AppOptions) {
   registerIdeaRoutes(app, options.pool);
   registerContentRoutes(app, options.pool, options.files);
   registerConversationRoutes(app, options.pool, options.files);
+  registerPlanRoutes(app, options.pool, options.files);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;

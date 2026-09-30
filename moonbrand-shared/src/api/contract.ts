@@ -2,6 +2,7 @@ import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
+import type { PlanRequest, PlanSlot, SlotDraft, SlotStatus } from '../domain/plan';
 
 export interface Account {
   id: string;
@@ -149,6 +150,8 @@ export interface BrandContext {
   style: string | null;
   // Le impaginazioni degli ultimi contenuti, per farne una diversa.
   layouts: { title: string; format: ContentFormat; layout: string }[];
+  // Le uscite delle prossime due settimane, con quello che hanno: l'assistente sa cosa esce e quando.
+  plan: { id: string; date: string; time: string; channels: ChannelId[]; status: SlotStatus; theme: string | null; title: string | null }[];
 }
 
 // Il job style legge i riferimenti dalla cartella del brand: gli basta sapere quale.
@@ -207,10 +210,14 @@ export interface ContentSummary {
   coverAspect: string | null;
   updatedAt: string;
   preparing: boolean;
+  // Quando esce, se è nel piano.
+  scheduledFor: { date: string; time: string } | null;
 }
 
 export interface ContentResponse {
   content: Content;
+  // La sua uscita nel piano, se c'è.
+  slot: SlotView | null;
   // Il lavoro che sta preparando o ritoccando il contenuto, se c'è.
   jobId: string | null;
   // I canali del brand: tra questi si aggiungono canali al contenuto.
@@ -219,6 +226,12 @@ export interface ContentResponse {
 
 export interface ContentEditRequest {
   instruction: string;
+}
+
+// Programmare un contenuto: crea la sua uscita o sposta quella che ha.
+export interface ContentScheduleRequest {
+  date: string;
+  time: string;
 }
 
 // Il testo di un canale corretto a mano.
@@ -312,8 +325,9 @@ export interface ConversationTurn {
   id: string;
   message: string;
   attachments: ChatAttachment[];
-  // L'idea menzionata nel messaggio, se c'è.
+  // L'idea e l'uscita del piano menzionate nel messaggio, se ci sono.
   idea: { id: string; title: string } | null;
+  slot: Pick<ChatSlot, 'id' | 'date' | 'time' | 'channels'> | null;
   createdAt: string;
   job: AiJob<ChatReply>;
 }
@@ -325,11 +339,21 @@ export interface ConversationResponse {
   contents: Content[];
 }
 
-// attachments: i percorsi delle foto già caricate con /attachments; ideaId: l'idea menzionata nel messaggio.
+// attachments: i percorsi delle foto già caricate con /attachments; ideaId e slotId: l'idea o l'uscita del piano menzionate.
 export interface ChatMessageRequest {
   message: string;
   attachments?: string[];
   ideaId?: string;
+  slotId?: string;
+}
+
+// L'uscita menzionata in un messaggio, per Claude: quando, dove, con quale tema.
+export interface ChatSlot {
+  id: string;
+  date: string;
+  time: string;
+  channels: ChannelId[];
+  theme: string | null;
 }
 
 // L'idea menzionata in un messaggio, per Claude: tutta, con il nome del tema.
@@ -352,11 +376,14 @@ export interface ChatJobInput {
   message: string;
   attachments: string[];
   idea: ChatIdea | null;
+  slot: ChatSlot | null;
 }
 
 // L'API che i tool della chat chiamano con il token del job: agisce solo sul brand del job.
 
 export interface AgentContentRequest {
+  // L'uscita del piano in cui esce il contenuto, se l'utente l'ha chiesto per quella.
+  slotId?: string;
   title: string;
   format: ContentFormat;
   channels: ChannelId[];
@@ -394,3 +421,59 @@ export interface ApiErrorBody {
 
 export const PASSWORD_MIN = 8;
 export const REFRESH_COOKIE = 'mb_refresh';
+
+// Il piano: le uscite di un periodo, con quello che hanno, e quello che si può ancora mettere in calendario.
+
+// Un'uscita come la mostra il piano: con l'idea e il contenuto che ha, e lo stato che ne segue.
+export interface SlotView extends PlanSlot {
+  idea: { id: string; title: string } | null;
+  content: ContentSummary | null;
+}
+
+export interface PlanResponse {
+  // Le uscite tra from e to, in ordine di data e ora.
+  slots: SlotView[];
+  // I contenuti che non hanno un'uscita: si trascinano sul calendario.
+  unscheduled: ContentSummary[];
+  // Le idee tenute che non sono ancora nel piano.
+  ideas: Idea[];
+  themes: { id: string; name: string; color: string; weight: number }[];
+  channels: ChannelId[];
+  postsPerWeek: number;
+  // Oggi, a Roma.
+  today: string;
+}
+
+export type PlanProposalRequest = PlanRequest;
+
+export interface PlanProposal {
+  drafts: SlotDraft[];
+}
+
+export interface PlanConfirmRequest {
+  drafts: SlotDraft[];
+}
+
+// Un'uscita nuova: vuota (con il tema), con un'idea o con un contenuto già fatto. Senza canali, quelli dell'idea o del contenuto.
+export interface SlotCreateRequest {
+  date: string;
+  time: string;
+  channels?: ChannelId[];
+  themeId?: string | null;
+  ideaId?: string | null;
+  contentId?: string | null;
+}
+
+// Spostare un'uscita o cambiarne canali, tema e idea. I canali di un'uscita con il contenuto sono quelli del contenuto.
+export interface SlotPatchRequest {
+  date?: string;
+  time?: string;
+  channels?: ChannelId[];
+  themeId?: string | null;
+  ideaId?: string | null;
+}
+
+// Aggiungere un'idea al piano: la prima uscita vuota del suo tema, altrimenti il primo giorno buono libero.
+export interface PlanIdeaRequest {
+  ideaId: string;
+}

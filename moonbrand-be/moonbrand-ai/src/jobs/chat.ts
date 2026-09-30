@@ -29,7 +29,7 @@ if (!MOONBRAND_AGENT_TOKEN) {
   process.exit(1);
 }
 
-const { conversationId, sessionId, brand, message, attachments, idea = null } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
+const { conversationId, sessionId, brand, message, attachments, idea = null, slot = null } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
 const workDir = `chat/${conversationId}`;
 const temp = path.join(brandDir, workDir, 'tmp');
 await mkdir(temp, { recursive: true });
@@ -67,6 +67,8 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 - Per scrivere o ritoccare un contenuto segui la skill moonbrand:contenuti; per un video anche la skill moonbrand:video; per proporre idee la skill moonbrand:idee.
 - Un video costa tempo e generazioni: prima proponi in chat il copione, cioè l’idea in breve e le inquadrature con durata, cosa si vede, da dove viene, testo a schermo e voce, e aspetta l’ok. Vai dritto al video solo se l’utente lo chiede. Nel progetto video il suo id è un nome breve e unico finché non è salvato.
 - Se il messaggio menziona un’idea della sezione Idee, il contenuto nasce da quella, nel formato e sui canali chiesti nel messaggio.
+- Se il messaggio menziona un’uscita del piano, il contenuto è per quella: sui suoi canali, e lo salvi con contenuto_salva passando il suo slotId.
+- Il piano (sezione Piano) lo leggi e lo cambi con piano_leggi, piano_proponi, uscite_crea, uscita_cambia e uscita_togli, seguendo la skill moonbrand:piano. Le uscite dei prossimi 14 giorni sono già in CLAUDE.md.
 - Quando prepari un contenuto, salvalo con contenuto_salva appena testi e immagini o video finali sono pronti e controllati, anche se è una prova: finisce subito nella sezione Contenuti, come bozza, e l’utente lo vede in chat. Per cambiare un contenuto già salvato usa contenuto_aggiorna con il suo id.
 - Un video si salva come gli altri contenuti: format «video», l’MP4 con role «video» e la copertina con role «cover» nella stessa proporzione, più copione (script) e inquadrature (scenes).
 - Le idee proponile in chat; salva con idea_salva solo quelle che l’utente vuole tenere: finiscono nella sezione Idee.
@@ -85,8 +87,18 @@ const ideaBlock =
   ]
     .filter(Boolean)
     .join('\n');
+// L'uscita del piano menzionata: il contenuto che l'utente chiede esce lì, e si salva con il suo slotId.
+const slotBlock =
+  slot &&
+  [
+    `L’uscita del piano menzionata (slotId ${slot.id}): ${slot.date} alle ${slot.time} su ${slot.channels.join(', ')}`,
+    slot.theme && `Tema che il piano chiede: ${slot.theme}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 const prompt = [
   message,
+  slotBlock,
   ideaBlock,
   attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`,
 ]
