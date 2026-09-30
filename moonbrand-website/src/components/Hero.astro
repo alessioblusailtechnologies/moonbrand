@@ -1,7 +1,36 @@
+---
+// Lo sfogo che vorresti scrivere e non puoi: cancellato a pennello, a pezzi che non vanno a capo.
+const unsaid = ['mandare tutto', 'a quel paese'];
+---
+
 <section id="top" class="hero" data-screen-label="Hero">
+  <svg class="defs" aria-hidden="true">
+    <filter id="brush-edge" x="-5%" y="-40%" width="110%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02 0.9" numOctaves="2" seed="7" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="rough" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.002 0.22" numOctaves="1" seed="3" result="streaks" />
+      <feColorMatrix in="streaks" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.2 2.75" result="bristles" />
+      <feComposite in="rough" in2="bristles" operator="in" />
+    </filter>
+  </svg>
   <div class="inner">
     <h1 class="display">
-      Crea i tuoi post, senza perdere <span class="struck">ore<span class="strike" aria-hidden="true"></span></span> davanti alla pagina bianca
+      Crea i tuoi post senza{' '}
+      <del class="unsaid">
+        {unsaid.map((chunk, i) => (
+          <>
+            {i > 0 && ' '}
+            <span class="chunk" style={`--i:${i}`}>
+              {chunk}
+              <svg class="brush" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M4 8 C 50 2, 120 0, 197 2 C 199 6, 199 11, 196 15 C 140 13, 80 15, 40 18 C 25 19, 12 21, 3 20 C 1 16, 1 12, 4 8 Z" />
+                <path d="M3 24 C 60 25, 130 23, 198 27 C 200 31, 199 35, 196 39 C 130 36, 80 37, 45 38 C 28 38, 14 39, 5 40 C 2 36, 1 29, 3 24 Z" />
+              </svg>
+            </span>
+          </>
+        ))}
+      </del>{' '}
+      perdere ore davanti alla pagina bianca
     </h1>
     <p class="lead">
       Con Moonbrand crei, organizzi e pianifichi i contenuti social con un’AI che conosce il tuo tone of voice. Tu dai l’idea, lei scrive come scriveresti tu.
@@ -37,15 +66,28 @@
     gap: 22px;
   }
   h1 { font-size: clamp(52px, 8vw, 108px); line-height: 0.92; }
-  .struck { position: relative; color: #B8AFA3; }
-  .strike {
+  .defs { position: absolute; width: 0; height: 0; }
+  .unsaid { text-decoration: none; color: #B8AFA3; }
+  .chunk { position: relative; white-space: nowrap; }
+  .brush {
     position: absolute;
-    left: -4%;
-    right: -4%;
-    top: 52%;
-    height: 0.09em;
-    background: var(--accent);
-    transform: rotate(-4deg);
+    left: -5%;
+    width: 110%;
+    top: 16%;
+    height: 0.8em;
+    overflow: visible;
+    fill: var(--accent);
+    filter: url(#brush-edge);
+    transform: rotate(calc(-2deg + var(--i) * 1.5deg));
+    clip-path: inset(0 100% 0 0);
+    animation: brush 0.55s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+    animation-delay: calc(0.35s + var(--i) * 0.45s);
+  }
+  @keyframes brush {
+    to { clip-path: inset(0 0 0 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brush { animation: none; clip-path: none; }
   }
   .lead {
     margin: 0;

@@ -11,7 +11,7 @@ import { day, inside } from '../data/home';
 
     <div class="cards">
       <div class="photo">
-        <span class="mono">foto · social media manager al lavoro</span>
+        <img src="/images/social-manager.jpg" alt="Una social media manager al lavoro con il telefono e il portatile" loading="lazy" />
         <span class="photo-title">Un giorno tipo, con Moonbrand</span>
       </div>
 
@@ -59,18 +59,26 @@ import { day, inside } from '../data/home';
 
   .cards { width: 100%; display: flex; flex-wrap: wrap; gap: 12px; }
   .photo {
+    position: relative;
     flex: 1 1 280px;
     min-height: 380px;
     border-radius: 16px;
-    background: repeating-linear-gradient(135deg, #131D33 0 12px, #17223A 12px 24px);
+    overflow: hidden;
+    background: #131D33;
     border: 1px solid #1C2640;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 22px;
   }
-  .photo .mono { font-size: 11.5px; color: #5E6A82; }
-  .photo-title { font-size: 14px; font-weight: 600; }
+  .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(11, 19, 36, 0.85) 100%);
+  }
+  .photo-title { position: relative; z-index: 1; font-size: 14px; font-weight: 600; }
 
   .timeline { flex: 1 1 280px; display: flex; flex-direction: column; gap: 12px; }
   .moment { flex: 1; background: #131C30; border: 1px solid #1C2640; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }

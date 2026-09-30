@@ -1,5 +1,6 @@
 ---
-import { posts, postColumns } from '../data/home';
+import { posts, postColumns, channelLabel } from '../data/home';
+import PostPreview from './PostPreview.astro';
 
 const columns = postColumns(posts);
 ---
@@ -11,33 +12,17 @@ const columns = postColumns(posts);
       {columns.map((col) => (
         <div class="col">
           {col.map((p) => (
-            <article class="card">
-              <div class="top">
-                <div class="who">
-                  <span class="avatar mono" style={`background:${p.color}`}>{p.initials}</span>
-                  <div class="names">
-                    <span class="handle">{p.handle}</span>
-                    <span class="sector">{p.sector}</span>
-                  </div>
-                </div>
-                <span class="format mono">{p.format}</span>
-              </div>
-              <div
-                class="media"
-                style={`aspect-ratio:${p.ratio};background:repeating-linear-gradient(135deg,${p.s1} 0 10px,${p.s2} 10px 20px)`}
-              >
-                <span class="mono">{p.ph}</span>
-              </div>
-              <div class="body">
-                <span class="text"><strong>{p.handle}</strong> {p.text}</span>
+            <figure>
+              <PostPreview post={p} />
+              <figcaption>
+                <span class="channel mono">{channelLabel[p.channel]}</span>
                 <span class="tone">{p.tone}</span>
-              </div>
-            </article>
+              </figcaption>
+            </figure>
           ))}
         </div>
       ))}
     </div>
-    <span class="note">Post di esempio creati con Moonbrand, brand inventati.</span>
   </div>
 </section>
 
@@ -45,20 +30,10 @@ const columns = postColumns(posts);
   .examples { padding: 40px 24px 120px; }
   .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 36px; }
   .intro { margin: 0; font-size: 17px; font-weight: 500; text-align: center; max-width: 520px; text-wrap: balance; }
-  .grid { width: 100%; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
-  .col { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-  .card { background: #fff; border: 1px solid #E9E8E4; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
-  .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; }
-  .who { display: flex; align-items: center; gap: 9px; min-width: 0; }
-  .avatar { width: 30px; height: 30px; border-radius: 50%; color: #fff; font-size: 9px; display: grid; place-items: center; flex-shrink: 0; }
-  .names { display: flex; flex-direction: column; min-width: 0; }
-  .handle { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sector { font-size: 11.5px; color: var(--faint); }
-  .format { font-size: 10.5px; color: var(--muted); background: #F4F3EF; border-radius: 6px; padding: 3px 7px; white-space: nowrap; }
-  .media { display: grid; place-items: center; }
-  .media span { font-size: 11px; color: #8A8F99; }
-  .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
-  .text { font-size: 14px; line-height: 1.5; color: #1D2939; text-wrap: pretty; }
-  .tone { font-size: 12px; color: var(--faint); }
-  .note { font-size: 12.5px; color: var(--faint); }
+  .grid { width: 100%; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  .col { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  figcaption { display: flex; justify-content: space-between; gap: 10px; padding: 0 4px; font-size: 12px; }
+  .channel { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .tone { color: var(--faint); text-align: right; }
 </style>

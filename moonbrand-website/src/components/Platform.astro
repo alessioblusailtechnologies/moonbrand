@@ -27,8 +27,8 @@ const initial = views[0];
     <div class="app">
       <aside class="side">
         <div class="brand">
-          <span class="brand-mark mono">USM</span>
-          <span class="brand-name">US Marina</span>
+          <span class="brand-mark mono">SO</span>
+          <span class="brand-name">Solco</span>
         </div>
         {sideItems.map((s) => (
           <span class:list={['side-item', { active: s === initial.side }]} data-side-item={s}>{s}</span>
@@ -75,26 +75,26 @@ const initial = views[0];
                 <div class="kit-card">
                   <span class="kit-label">Tone of voice</span>
                   <div class="chips">
-                    <span class="chip filled">Diretto</span>
-                    <span class="chip filled">Orgoglioso</span>
+                    <span class="chip filled">Essenziale</span>
+                    <span class="chip filled">Preciso</span>
                     <span class="chip">Ironico</span>
                   </div>
                 </div>
                 <div class="kit-card">
                   <span class="kit-label">Non dire mai</span>
-                  <span class="never">“incredibile” · più di un hashtag</span>
+                  <span class="never">“rivoluzionario” · più di un’emoji</span>
                 </div>
                 <div class="kit-card">
                   <span class="kit-label">Colori</span>
                   <div class="swatches">
-                    <span style="background:#1F3A8A"></span>
-                    <span style="background:#B3202A"></span>
-                    <span style="background:#F4F1EA;border:1px solid #E4E2DC"></span>
+                    <span style="background:#111111"></span>
+                    <span style="background:#E5322D"></span>
+                    <span style="background:#F2F2F0;border:1px solid #E4E2DC"></span>
                   </div>
                 </div>
                 <div class="kit-card">
                   <span class="kit-label">Come chiudiamo i post</span>
-                  <span class="kit-value">Con la prossima partita e #ForzaMarina</span>
+                  <span class="kit-value">Con la data e un punto rosso ●</span>
                 </div>
               </div>
             )}
@@ -161,7 +161,7 @@ const initial = views[0];
     color: #475467;
   }
   .brand { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 10px; }
-  .brand-mark { width: 24px; height: 24px; border-radius: 6px; background: #1F3A8A; color: #fff; font-size: 8px; display: grid; place-items: center; }
+  .brand-mark { width: 24px; height: 24px; border-radius: 6px; background: #111; color: #fff; font-size: 8px; display: grid; place-items: center; }
   .brand-name { font-weight: 600; color: var(--ink); }
   .side-item { padding: 7px 10px; border-radius: 7px; }
   .side-item.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
