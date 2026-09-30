@@ -6,7 +6,7 @@ import { ONBOARDING_SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary } f
 import { Icon } from '../../../ui/icon';
 import { ONBOARDING_STEPS, OnboardingStore } from '../onboarding.store';
 
-const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--yellow-400)', missing: 'var(--grey-300)' };
+const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)', missing: 'var(--grey-300)' };
 
 @Component({
   selector: 'mb-summary-step',

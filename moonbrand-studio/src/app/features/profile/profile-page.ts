@@ -15,7 +15,7 @@ import { SectionEditor } from './section-editor';
 
 const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
   complete: { color: 'var(--mint-400)', label: null },
-  partial: { color: 'var(--yellow-400)', label: 'Da completare' },
+  partial: { color: 'var(--accent-soft)', label: 'Da completare' },
   missing: { color: 'var(--grey-300)', label: 'Da fare' },
 };
 

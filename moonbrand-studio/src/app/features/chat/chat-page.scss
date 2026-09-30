@@ -105,7 +105,7 @@
   max-width: 240px;
   max-height: 320px;
   border-radius: var(--radius-md);
-  background: var(--navy-700);
+  background: var(--primary);
 }
 
 .mine {
@@ -113,7 +113,7 @@
   max-width: 80%;
   padding: 10px 16px;
   border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
-  background: var(--navy-700);
+  background: var(--primary);
   color: var(--white);
   font-size: 14px;
   line-height: 1.55;
@@ -200,7 +200,7 @@
 }
 
 .failed {
-  color: var(--orange-600);
+  color: var(--danger);
 }
 
 .bottom {
@@ -355,7 +355,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(28, 33, 80, 0.75);
+  background: rgba(0, 0, 0, 0.75);
   color: var(--white);
 }
 
@@ -365,7 +365,7 @@
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.55);
-  color: var(--navy-700);
+  color: var(--primary);
 }
 
 .pending-remove {
@@ -379,7 +379,7 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(28, 33, 80, 0.75);
+  background: rgba(0, 0, 0, 0.75);
   color: var(--white);
   cursor: pointer;
 }

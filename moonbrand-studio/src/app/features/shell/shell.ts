@@ -264,7 +264,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       gap: 16px;
       height: var(--topbar-height);
       padding: 0 24px 0 32px;
-      border-bottom: 1px solid rgba(47, 52, 82, 0.08);
+      border-bottom: 1px solid rgba(20, 33, 61, 0.08);
       background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(12px);
     }
@@ -303,7 +303,7 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       align-items: center;
       gap: 8px;
       padding-right: 16px;
-      border-right: 1px solid rgba(47, 52, 82, 0.1);
+      border-right: 1px solid rgba(20, 33, 61, 0.1);
     }
     .content {
       flex: 1;

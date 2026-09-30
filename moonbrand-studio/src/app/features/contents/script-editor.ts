@@ -124,7 +124,7 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
       width: 26px;
       height: 26px;
       border-radius: 999px;
-      background: var(--navy-700);
+      background: var(--primary);
       color: var(--white);
       font-size: 12px;
       font-weight: 600;

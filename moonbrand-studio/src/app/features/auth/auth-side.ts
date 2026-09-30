@@ -3,15 +3,15 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Logo } from '../../ui/logo';
 
 const SHAPES = [
-  { color: 'var(--orange-500)', radius: '50%' },
-  { color: 'var(--lime-400)', radius: '0 100% 0 0' },
-  { color: 'var(--navy-500)', radius: '24px' },
+  { color: 'var(--accent)', radius: '50%' },
+  { color: 'var(--accent-soft)', radius: '0 100% 0 0' },
+  { color: 'var(--primary-soft)', radius: '24px' },
   { color: 'var(--mint-400)', radius: '100% 0 100% 0' },
-  { color: 'var(--yellow-400)', radius: '50%' },
-  { color: 'var(--orange-500)', radius: '0 0 100% 0' },
+  { color: 'var(--accent-soft)', radius: '50%' },
+  { color: 'var(--accent)', radius: '0 0 100% 0' },
   { color: 'var(--grey-100)', radius: '0 100% 0 100%' },
-  { color: 'var(--navy-700)', radius: '50% 50% 0 0' },
-  { color: 'var(--lime-400)', radius: '50%' },
+  { color: 'var(--primary)', radius: '50% 50% 0 0' },
+  { color: 'var(--accent-soft)', radius: '50%' },
 ];
 
 @Component({
@@ -19,7 +19,7 @@ const SHAPES = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Logo],
   template: `
-    <mb-logo [light]="true" />
+    <mb-logo />
     <div class="claim-block">
       <p class="claim">La tua presenza sui social, scritta come la scriveresti tu.</p>
       <p class="note">Brand, idee, piano e contenuti in un solo studio.</p>
@@ -38,7 +38,7 @@ const SHAPES = [
       gap: 48px;
       padding: 40px;
       overflow: hidden;
-      background: var(--indigo-900);
+      background: var(--ink);
       color: var(--white);
     }
     .claim-block {

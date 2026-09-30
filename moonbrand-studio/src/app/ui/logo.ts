@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'mb-logo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span class="moon" [class.light]="light()"></span>
+    <span class="moon"></span>
     <span class="word">Moonbrand <span class="studio">Studio</span></span>
   `,
   styles: `
@@ -20,11 +20,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      background: var(--orange-500);
-      box-shadow: inset 7px -3px 0 0 var(--navy-700);
-    }
-    .moon.light {
-      box-shadow: inset 7px -3px 0 0 var(--indigo-900);
+      background: var(--accent);
+      // L'ombra è grigio chiaro: si vede sia sui fondi scuri sia sul bianco.
+      box-shadow: inset 7px -3px 0 0 var(--grey-100);
     }
     .studio {
       font-weight: 500;
@@ -32,6 +30,4 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     }
   `,
 })
-export class Logo {
-  readonly light = input(false);
-}
+export class Logo {}

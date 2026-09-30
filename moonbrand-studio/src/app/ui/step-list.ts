@@ -57,14 +57,14 @@ import { Icon } from './icon';
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      color: var(--navy-700);
+      color: var(--primary);
     }
     .done .mark {
       background: var(--mint-400);
       color: var(--white);
     }
     .failed .mark {
-      background: var(--orange-500);
+      background: var(--danger);
       color: var(--white);
     }
     .running .spinner {

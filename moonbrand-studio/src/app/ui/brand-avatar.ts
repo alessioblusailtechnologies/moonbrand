@@ -34,7 +34,7 @@ import { LogoBackdrop } from './logo-backdrop';
 export class BrandAvatar {
   readonly name = input.required<string>();
   readonly logo = input<string | null>(null);
-  readonly color = input('#2F3452');
+  readonly color = input('#14213D');
   readonly size = input(32);
 
   protected readonly initials = computed(

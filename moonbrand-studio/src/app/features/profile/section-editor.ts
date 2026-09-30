@@ -135,7 +135,7 @@ import { ReferencesEditor } from './references-editor';
       align-items: center;
       gap: 12px;
       padding: 16px 24px 20px;
-      border-top: 1px solid rgba(47, 52, 82, 0.08);
+      border-top: 1px solid rgba(20, 33, 61, 0.08);
     }
     .footer .btn[aria-disabled='true'] {
       opacity: 0.45;

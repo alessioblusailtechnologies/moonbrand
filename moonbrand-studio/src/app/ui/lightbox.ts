@@ -75,7 +75,7 @@ export class LightboxService {
       position: fixed;
       inset: 0;
       z-index: 80;
-      background: rgba(15, 18, 38, 0.86);
+      background: rgba(0, 0, 0, 0.86);
       animation: fade-in 160ms var(--ease);
     }
     .viewer {
@@ -130,7 +130,7 @@ export class LightboxService {
       position: absolute;
       pointer-events: auto;
       background: rgba(255, 255, 255, 0.92);
-      color: var(--navy-700);
+      color: var(--primary);
     }
     .icon-btn:hover {
       background: var(--white);

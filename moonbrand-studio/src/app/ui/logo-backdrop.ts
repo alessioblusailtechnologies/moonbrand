@@ -5,7 +5,7 @@ import { isLightLogo } from '../core/images';
 // Sull'elemento che mostra un logo: se il logo è chiaro su trasparente, gli dà un fondo scuro perché si veda sul bianco.
 @Directive({
   selector: '[mbLogoBackdrop]',
-  host: { '[style.background]': 'light() ? "var(--navy-700)" : null' },
+  host: { '[style.background]': 'light() ? "var(--primary)" : null' },
 })
 export class LogoBackdrop {
   readonly mbLogoBackdrop = input<string | null>(null);

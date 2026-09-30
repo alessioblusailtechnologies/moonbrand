@@ -66,7 +66,7 @@
     transition: background-color 200ms var(--ease);
 
     &.on {
-      background: var(--navy-700);
+      background: var(--primary);
     }
   }
 }
@@ -99,7 +99,7 @@
 .footer {
   flex: none;
   padding: 16px 24px 24px;
-  border-top: 1px solid rgba(47, 52, 82, 0.08);
+  border-top: 1px solid rgba(20, 33, 61, 0.08);
 }
 
 .footer-inner {

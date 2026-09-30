@@ -99,10 +99,10 @@
 .current {
   gap: 12px;
   padding: 10px 12px 10px 10px;
-  background: var(--navy-700);
+  background: var(--primary);
 
   &:hover {
-    background: var(--navy-500);
+    background: var(--primary-soft);
   }
 
   .strong-sm {
@@ -122,8 +122,8 @@
   min-height: 22px;
   padding: 0 9px 0 7px;
   border-radius: 999px;
-  background: var(--lime-400);
-  color: var(--navy-700);
+  background: var(--accent-soft);
+  color: var(--primary);
   font-size: 11px;
   font-weight: 600;
 }

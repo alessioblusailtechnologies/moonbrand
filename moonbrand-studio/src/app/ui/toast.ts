@@ -45,7 +45,7 @@ export class ToastService {
     .toast {
       padding: 12px 18px;
       border-radius: 14px;
-      background: var(--navy-700);
+      background: var(--primary);
       color: var(--white);
       font-size: 13px;
       box-shadow: var(--shadow-toast);

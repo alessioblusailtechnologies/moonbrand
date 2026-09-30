@@ -159,7 +159,7 @@ function aspectRatio(aspect: string | null): number {
       height: 44px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.92);
-      color: var(--navy-700);
+      color: var(--primary);
     }
     .meta {
       display: flex;

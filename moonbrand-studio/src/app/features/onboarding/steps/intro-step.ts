@@ -5,15 +5,15 @@ import { KIND_OPTIONS } from '@moonbrand/shared/domain/catalog';
 import { OnboardingStore } from '../onboarding.store';
 
 const LIST = [
-  { label: 'Per chi scrivo e cosa fai', color: 'var(--orange-500)', square: true },
-  { label: 'I canali su cui pubblicare', color: 'var(--navy-700)', square: false },
-  { label: 'I temi, ognuno con il suo peso', color: 'var(--lime-400)', square: true },
+  { label: 'Per chi scrivo e cosa fai', color: 'var(--accent)', square: true },
+  { label: 'I canali su cui pubblicare', color: 'var(--primary)', square: false },
+  { label: 'I temi, ognuno con il suo peso', color: 'var(--primary-soft)', square: true },
   { label: 'Come scrivi e come vuoi apparire', color: 'var(--mint-400)', square: false },
 ];
 
 const SHAPES = [
-  { color: 'var(--orange-500)', radius: '50%' },
-  { color: 'var(--navy-700)', radius: '0 100% 0 0' },
+  { color: 'var(--accent)', radius: '50%' },
+  { color: 'var(--primary)', radius: '0 100% 0 0' },
   { color: 'var(--mint-400)', radius: '100% 0 100% 0' },
 ];
 
