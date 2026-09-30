@@ -1,0 +1,86 @@
+<section id="top" class="hero" data-screen-label="Hero">
+  <div class="inner">
+    <h1 class="display">
+      Crea i tuoi post, senza perdere <span class="struck">ore<span class="strike" aria-hidden="true"></span></span> davanti alla pagina bianca
+    </h1>
+    <p class="lead">
+      Con Moonbrand crei, organizzi e pianifichi i contenuti social con un’AI che conosce il tuo tone of voice. Tu dai l’idea, lei scrive come scriveresti tu.
+    </p>
+    <div class="box">
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#98A2B3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <input data-brand-input placeholder="Come si chiama il tuo brand?" aria-label="Nome del brand" />
+      </label>
+      <div class="ctas">
+        <a href="#prova" class="btn btn-dark">Inizia la prova gratuita</a>
+        <a href="#piattaforma" class="btn btn-outline">Guarda come funziona</a>
+      </div>
+    </div>
+    <div class="checks">
+      <span>✓ Brand kit salvato</span><span>✓ Più brand in un account</span><span>✓ Nessuna pubblicazione automatica</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: linear-gradient(180deg, #EEF0F4 0%, #F6F7F9 60%, #fff 100%);
+    padding: clamp(64px, 8vw, 112px) 24px 72px;
+  }
+  .inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
+  }
+  h1 { font-size: clamp(52px, 8vw, 108px); line-height: 0.92; }
+  .struck { position: relative; color: #B8AFA3; }
+  .strike {
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    top: 52%;
+    height: 0.09em;
+    background: var(--accent);
+    transform: rotate(-4deg);
+  }
+  .lead {
+    margin: 0;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.5;
+    color: var(--text);
+    max-width: 620px;
+    text-wrap: pretty;
+  }
+  .box {
+    width: 100%;
+    max-width: 580px;
+    background: #fff;
+    border: 1px solid #E6E2D8;
+    border-radius: 16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 16px 40px -20px rgba(122, 74, 14, 0.3);
+    margin-top: 8px;
+  }
+  .search { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    background: transparent;
+    color: var(--ink);
+  }
+  .ctas { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ctas .btn { flex: 1 1 200px; font-size: 15px; padding: 12px; }
+  .ctas .btn-outline { font-weight: 500; border: 1px solid var(--ink); padding: 11px; }
+  .checks { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; font-size: 13px; color: var(--muted); }
+</style>

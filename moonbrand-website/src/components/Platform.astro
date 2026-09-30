@@ -1,0 +1,205 @@
+---
+import { views, sideItems, days, calendar, ideas } from '../data/home';
+
+const initial = views[0];
+---
+
+<section id="piattaforma" class="platform" data-screen-label="Piattaforma">
+  <div class="inner">
+    <h2 class="display h2">Semplifica la gestione dei tuoi social</h2>
+    <p class="sub">Idee, post, caroselli e brand kit in un unico posto. Per un brand o per dieci.</p>
+
+    <div class="tabs" role="tablist">
+      {views.map((v) => (
+        <button
+          type="button"
+          role="tab"
+          class="tab"
+          data-view={v.id}
+          data-side={v.side}
+          aria-selected={v.id === initial.id ? 'true' : 'false'}
+        >
+          {v.label}
+        </button>
+      ))}
+    </div>
+
+    <div class="app">
+      <aside class="side">
+        <div class="brand">
+          <span class="brand-mark mono">USM</span>
+          <span class="brand-name">US Marina</span>
+        </div>
+        {sideItems.map((s) => (
+          <span class:list={['side-item', { active: s === initial.side }]} data-side-item={s}>{s}</span>
+        ))}
+      </aside>
+
+      <div class="main">
+        {views.map((v) => (
+          <div class="view" data-panel={v.id} hidden={v.id !== initial.id}>
+            <div class="view-head">
+              <span class="view-title">{v.title}</span>
+              <span class="view-action">{v.action}</span>
+            </div>
+
+            {v.id === 'cal' && (
+              <div class="cal">
+                <span></span>
+                {days.map((d) => <span class="day">{d}</span>)}
+                {calendar.map(([label, cells]) => (
+                  <>
+                    <span class="row-label">{label}</span>
+                    {cells.map(([kind, t]) => <span class:list={['cell', kind]}>{t}</span>)}
+                  </>
+                ))}
+              </div>
+            )}
+
+            {v.id === 'idee' && (
+              <div class="ideas">
+                {ideas.map((i) => (
+                  <div class="idea">
+                    <div class="idea-text">
+                      <span class="idea-title">{i.t}</span>
+                      <span class="idea-meta">{i.m}</span>
+                    </div>
+                    <span class="idea-cta">Fanne un post</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {v.id === 'kit' && (
+              <div class="kit">
+                <div class="kit-card">
+                  <span class="kit-label">Tone of voice</span>
+                  <div class="chips">
+                    <span class="chip filled">Diretto</span>
+                    <span class="chip filled">Orgoglioso</span>
+                    <span class="chip">Ironico</span>
+                  </div>
+                </div>
+                <div class="kit-card">
+                  <span class="kit-label">Non dire mai</span>
+                  <span class="never">“incredibile” · più di un hashtag</span>
+                </div>
+                <div class="kit-card">
+                  <span class="kit-label">Colori</span>
+                  <div class="swatches">
+                    <span style="background:#1F3A8A"></span>
+                    <span style="background:#B3202A"></span>
+                    <span style="background:#F4F1EA;border:1px solid #E4E2DC"></span>
+                  </div>
+                </div>
+                <div class="kit-card">
+                  <span class="kit-label">Come chiudiamo i post</span>
+                  <span class="kit-value">Con la prossima partita e #ForzaMarina</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.platform [data-view]');
+  const panels = document.querySelectorAll<HTMLElement>('.platform [data-panel]');
+  const sideItems = document.querySelectorAll<HTMLElement>('.platform [data-side-item]');
+
+  tabs.forEach((tab) =>
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.view;
+      tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== view));
+      sideItems.forEach((s) => s.classList.toggle('active', s.dataset.sideItem === tab.dataset.side));
+    }),
+  );
+</script>
+
+<style>
+  .platform { padding: 0 24px 140px; }
+  .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+  h2 { max-width: 780px; }
+  .sub { margin: 0; font-size: 16.5px; line-height: 1.5; color: var(--muted); text-align: center; max-width: 560px; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+  .tab {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #E4E4E0;
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+    background: #fff;
+    color: var(--text);
+  }
+  .tab[aria-selected='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  .app {
+    width: 100%;
+    border: 1px solid #E6E4DF;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px -30px rgba(11, 19, 36, 0.25);
+    display: flex;
+    min-height: 480px;
+    background: #fff;
+  }
+  .side {
+    flex: 0 0 200px;
+    border-right: 1px solid var(--line);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 13px;
+    color: #475467;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 10px; }
+  .brand-mark { width: 24px; height: 24px; border-radius: 6px; background: #1F3A8A; color: #fff; font-size: 8px; display: grid; place-items: center; }
+  .brand-name { font-weight: 600; color: var(--ink); }
+  .side-item { padding: 7px 10px; border-radius: 7px; }
+  .side-item.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+
+  .main { flex: 1; min-width: 0; padding: 20px; overflow-x: auto; }
+  .view { display: flex; flex-direction: column; gap: 16px; }
+  .view-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .view-title { font-size: 17px; font-weight: 600; }
+  .view-action { font-size: 12.5px; border: 1px solid #E4E4E0; border-radius: 8px; padding: 6px 10px; color: #475467; }
+
+  .cal { display: grid; grid-template-columns: 110px repeat(5, minmax(96px, 1fr)); gap: 6px; font-size: 12px; min-width: 620px; }
+  .day { color: var(--faint); padding: 4px 2px; }
+  .row-label, .cell { padding: 8px; border-radius: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .row-label { color: #475467; }
+  .cell.post { background: var(--accent-soft); color: var(--accent-ink); }
+  .cell.car { background: #E3E8F3; color: #1B2A4A; }
+  .cell.story { background: #E3F1E8; color: #1E5A40; }
+  .cell.empty { background: #F7F6F3; color: #C0C4CC; font-weight: 400; }
+
+  .ideas { display: flex; flex-direction: column; gap: 16px; }
+  .idea { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .idea-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .idea-title { font-size: 14px; }
+  .idea-meta { font-size: 12px; color: var(--faint); }
+  .idea-cta { font-size: 12px; font-weight: 600; background: var(--accent-soft); color: var(--accent-ink); border-radius: 7px; padding: 5px 10px; white-space: nowrap; }
+
+  .kit { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .kit-card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .kit-label { font-size: 12px; color: var(--faint); }
+  .kit-value { font-size: 14px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 13px; border: 1px solid #E4E4E0; border-radius: 999px; padding: 5px 11px; }
+  .chip.filled { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .never { font-size: 14px; color: var(--faint); text-decoration: line-through; }
+  .swatches { display: flex; gap: 6px; }
+  .swatches span { width: 32px; height: 32px; border-radius: 8px; }
+
+  @media (max-width: 640px) {
+    .side { display: none; }
+  }
+</style>
