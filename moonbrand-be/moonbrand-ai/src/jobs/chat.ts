@@ -6,11 +6,9 @@ import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-
 import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
-import { claudeModel } from '../lib/model';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
 import { audioTools } from '../tools/audio';
-import { frameTools } from '../tools/fotogrammi';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
@@ -38,10 +36,7 @@ await writeBrandGuide(brandDir, brand);
 // Il progetto video del brand è pronto a ogni turno: un video si può chiedere in qualsiasi momento.
 const videoEnv = await prepareVideoProject(brandDir);
 
-const mcpServers: Record<string, McpServerConfig> = {
-  moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN),
-  video: frameTools(brandDir),
-};
+const mcpServers: Record<string, McpServerConfig> = { moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN) };
 if (GEMINI_API_KEY) {
   mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
   mcpServers.vista = visionTools(brandDir, GEMINI_API_KEY);
@@ -83,7 +78,6 @@ try {
   for await (const item of query({
     prompt,
     options: {
-      ...claudeModel(),
       cwd: brandDir,
       env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,

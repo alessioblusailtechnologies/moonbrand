@@ -62,7 +62,6 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
   - per partire da un'immagine della cartella (per esempio una foto fatta con genera_immagine o una dell'utente): media_upload con il nome del file, carica il file con curl sull'upload_url che ti restituisce, media_confirm, poi passa il media_id a generate_video.
 - I file che Higgsfield genera arrivano già scaricati nella cartella di lavoro, e il risultato del tool ti dice dove: copiali in video/public/contenuti/<id>/. Gli indirizzi di Higgsfield scadono, usa sempre i file.
 - Con Higgsfield fai le clip; le immagini restano con genera_immagine, la musica con Mureka, voce ed effetti con ElevenLabs.
-- Le generazioni che non dipendono l'una dall'altra (musica, voce, effetti, immagini, clip) chiedile tutte nello stesso messaggio: partono insieme invece che una dopo l'altra, e la musica da sola ci mette un paio di minuti. Quando ritocchi un video tieni musica, voce e immagini già fatte, a meno che il ritocco non chieda di cambiarle.
 - Le clip hanno un audio loro: toglilo o abbassalo se c'è già musica o voce.
 - Per controllare una clip, o per capire una clip o un video dell’utente, passali interi al tool guarda: li guarda con l’audio e ti dice cosa succede e quando. Un fotogramma estrailo solo quando ti serve come immagine (per esempio una copertina): ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
 
@@ -81,7 +80,7 @@ Non puoi ascoltare niente di quello che generi: descrivi tutto con precisione e 
 
 Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool guarda, e ti risponde a parole. Fagli sempre una lista precisa di cosa controllare.
 
-- Mentre lavori, esporta con il tool fotogrammi il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile (tutti in una chiamata, a metà risoluzione), e passali a guarda in una sola chiamata: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Quando ritocchi una scena, riesporta e ricontrolla solo quella.
+- Mentre lavori, esporta in PNG il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile, a metà risoluzione (`--scale=0.5`), e passali a guarda: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Quando ritocchi una scena, riesporta e ricontrolla solo quella.
 - Apri tu un fotogramma solo quando devi correggere un'impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - Correggi e riesporta finché è tutto a posto; lancia anche `pnpm check` per i tipi.
 - Poi esporta il video finale in MP4 e passalo intero a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.

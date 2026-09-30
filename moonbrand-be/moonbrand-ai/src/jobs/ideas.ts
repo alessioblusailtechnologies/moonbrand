@@ -6,7 +6,6 @@ import type { IdeasJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
 import { HORIZON_DAYS, MAX_PER_THEME, MAX_TRENDS } from '../lib/ideas-rules';
-import { claudeModel } from '../lib/model';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 
 const [brandDir, inputJson] = process.argv.slice(2);
@@ -112,7 +111,6 @@ ${describeHistory()}`;
 for await (const message of query({
   prompt,
   options: {
-    ...claudeModel(),
     cwd: brandDir,
     env,
     plugins: MOONBRAND_PLUGINS,
