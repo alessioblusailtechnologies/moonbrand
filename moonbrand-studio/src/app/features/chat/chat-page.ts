@@ -448,9 +448,9 @@ export class ChatPage {
   }
 }
 
-// I tool che salvano o aggiornano un contenuto, già conclusi.
+// I tool che salvano o aggiornano un contenuto, già conclusi. Negli step più vecchi il nome del tool era la label.
 function savesOf(steps: AiStep[]): number {
-  return steps.filter((step) => step.kind === 'tool' && /contenuto_(salva|aggiorna)$/.test(step.label) && step.status === 'done').length;
+  return steps.filter((step) => step.kind === 'tool' && /contenuto_(salva|aggiorna)$/.test(step.tool ?? step.label) && step.status === 'done').length;
 }
 
 function blocksOf(steps: AiStep[]): Block[] {

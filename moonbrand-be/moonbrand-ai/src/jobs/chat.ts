@@ -12,6 +12,7 @@ import { audioTools } from '../tools/audio';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
+import { visionTools } from '../tools/vista';
 import { moonbrandTools } from '../tools/moonbrand';
 
 const [brandDir, inputJson] = process.argv.slice(2);
@@ -36,7 +37,10 @@ await writeBrandGuide(brandDir, brand);
 const videoEnv = await prepareVideoProject(brandDir);
 
 const mcpServers: Record<string, McpServerConfig> = { moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN) };
-if (GEMINI_API_KEY) mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+if (GEMINI_API_KEY) {
+  mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
+  mcpServers.vista = visionTools(brandDir, GEMINI_API_KEY);
+}
 // Le clip dei video le gira Higgsfield; i suoi file arrivano nella cartella della conversazione.
 let clips: Pick<Options, 'disallowedTools' | 'hooks'> = {};
 const higgsfieldSession = await higgsfieldToken();
@@ -59,7 +63,7 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 - Quando prepari un contenuto, salvalo con contenuto_salva appena testi e immagini o video finali sono pronti e controllati, anche se è una prova: finisce subito nella sezione Contenuti, come bozza, e l’utente lo vede in chat. Per cambiare un contenuto già salvato usa contenuto_aggiorna con il suo id.
 - Un video si salva come gli altri contenuti: format «video», l’MP4 con role «video» e la copertina con role «cover» nella stessa proporzione, più copione (script) e inquadrature (scenes).
 - Le idee proponile in chat; salva con idea_salva solo quelle che l’utente vuole tenere: finiscono nella sezione Idee.
-- Le foto e i video che l’utente allega al messaggio sono in allegati/: guardali prima di rispondere. Un video è un MP4 con accanto la copertina in JPEG; per vederlo meglio estrai qualche fotogramma come dice la skill moonbrand:video.
+- Le foto e i video che l’utente allega al messaggio sono in allegati/: prima di rispondere falli guardare con il tool guarda, i video interi come MP4 (accanto c’è anche la copertina in JPEG). Chiedi subito tutto quello che ti può servire, cosa si vede e si sente e con quali tempi: la risposta resta nella conversazione e ti basta anche per i messaggi dopo.
 - Dopo un salvataggio di’ all’utente dove lo trova.`;
 
 const prompt = attachments.length > 0 ? `${message}\n\nAllegati:\n${attachments.map((file) => `- ${file}`).join('\n')}` : message;

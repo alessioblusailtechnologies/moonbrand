@@ -4,6 +4,8 @@ import path from 'node:path';
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
+import { measure, type Meter } from '../lib/usage';
+
 // Musica e canzoni con Mureka: si chiede il brano, si aspetta che il lavoro finisca, si scarica il file.
 const API = process.env.MUREKA_API_URL || 'https://api.mureka.ai';
 const MODEL = 'auto';
@@ -45,8 +47,20 @@ export function musicTools(folder: string, apiKey: string) {
     }
   };
 
+  // Quanto ha speso l'account in tutto, nell'unità di Mureka (sembrano centesimi di dollaro, non è documentato).
+  const spending: Meter = {
+    unit: 'spesa Mureka',
+    read: async () => {
+      const response = await fetch(`${API}/v1/account/billing`, { headers: { Authorization: `Bearer ${apiKey}` } });
+      if (!response.ok) throw new Error(`Mureka ha risposto ${response.status}`);
+      return ((await response.json()) as { total_spending: number }).total_spending;
+    },
+  };
+
   // Il lavoro gira da loro: si chiede lo stato finché ha finito, poi si scarica il primo brano.
-  const produce = async (kind: 'song' | 'instrumental', body: Record<string, unknown>, file: string) => {
+  const produce = (kind: 'song' | 'instrumental', body: Record<string, unknown>, file: string) =>
+    measure({ task: kind === 'song' ? 'song' : 'music', model: MODEL, meter: spending }, () => generate(kind, body, file));
+  const generate = async (kind: 'song' | 'instrumental', body: Record<string, unknown>, file: string) => {
     let task = await call('POST', `/v1/${kind}/generate`, { model: MODEL, ...body });
     const started = Date.now();
     while (task.status !== 'succeeded') {

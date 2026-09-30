@@ -8,6 +8,8 @@ import { promisify } from 'node:util';
 
 import type { HookCallback, HookCallbackMatcher, HookEvent, McpHttpServerConfig } from '@anthropic-ai/claude-agent-sdk';
 
+import { reportUsage } from '../lib/usage';
+
 // Higgsfield come server MCP remoto, come in social-app: le clip dei video (Kling, Veo, Seedance e gli altri modelli
 // che offre) e i suoi studi. È un MCP pensato per una chat, e qui gira senza nessuno che guardi: due cose vanno
 // sistemate. I tool che non generano ma agiscono sul mondo (pubblicare, pagare, eseguire codice) l'agente non li deve
@@ -155,6 +157,49 @@ function mirror(brandDir: string, dir: string): HookCallback {
   };
 }
 
+// I tool che fanno lavorare Higgsfield, e quindi spendono crediti.
+const GENERATES = /^(generate_|remove_background|upscale_|outpaint_image|reframe|motion_control|voice_change|dubbing|create_voice|execute_preset)/;
+
+interface Submitted {
+  index?: number;
+  model?: string;
+  status?: string;
+  error?: string;
+}
+
+// Il risultato di un tool MCP arriva come testo JSON, a volte dentro i blocchi content.
+function parsed(response: unknown): Record<string, unknown> | null {
+  if (response && typeof response === 'object' && 'content' in response) return parsed(response.content);
+  const raw = Array.isArray(response)
+    ? (response as { type?: string; text?: string }[]).find((block) => block?.type === 'text')?.text
+    : typeof response === 'string'
+      ? response
+      : JSON.stringify(response);
+  try {
+    return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Una riga di ai_usage per ogni lavoro mandato a Higgsfield, con il modello e com'è andato. Il risultato non dice i
+// crediti: quelli si leggono dai movimenti dell'account.
+const usage: HookCallback = async (input) => {
+  if (input.hook_event_name !== 'PostToolUse' || !input.tool_name.startsWith(PREFIX)) return {};
+  const name = input.tool_name.slice(PREFIX.length);
+  if (!GENERATES.test(name)) return {};
+  const response = parsed(input.tool_response);
+  const request = input.tool_input as { params?: { model?: string }; requests?: { index?: number; params?: { model?: string } }[] };
+  const modelOf = (job: Submitted) => job.model ?? request.requests?.find((item) => item.index === job.index)?.params?.model ?? request.params?.model ?? name;
+  const task = name.startsWith('generate_video') ? 'clip' : name.startsWith('generate_image') ? 'image' : name;
+  const jobs = ((response?.jobs ?? response?.results) as Submitted[] | undefined) ?? [{}];
+  for (const job of jobs) {
+    const error = job.error ?? (job.status === 'submission_failed' || job.status === 'failed' ? job.status : undefined);
+    reportUsage({ task, model: modelOf(job), outcome: error ? 'error' : 'ok', ...(error && { error }), durationMs: 0 });
+  }
+  return {};
+};
+
 // Server, tool esclusi e hook per un job: i file generati finiscono in dir, relativa alla cartella del brand.
 export function higgsfield(
   token: string,
@@ -170,6 +215,6 @@ export function higgsfield(
       timeout: 600_000,
     },
     disallowedTools: HIGGSFIELD_DENIED,
-    hooks: { PreToolUse: [{ hooks: [guard] }], PostToolUse: [{ hooks: [mirror(brandDir, dir)] }] },
+    hooks: { PreToolUse: [{ hooks: [guard] }], PostToolUse: [{ hooks: [mirror(brandDir, dir), usage] }] },
   };
 }

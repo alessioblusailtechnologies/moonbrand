@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
-import type { AiStep } from '@moonbrand/shared/ai/steps';
+import { toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
 import type {
   ChatJobInput,
   ContentEditJobInput,
@@ -19,6 +19,8 @@ import type {
 } from '@moonbrand/shared/api/contract';
 
 import { examplesDir } from './lib/examples';
+import { createStepReader } from './lib/step-reader';
+import { USAGE_MESSAGE, type ToolUsage } from './lib/usage';
 import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
 import { withLogo } from './results/website';
@@ -35,6 +37,9 @@ const MAX_ATTEMPTS = 3;
 const FLUSH_MS = 250;
 const CANCEL_POLL_MS = 1000;
 const STOP_GRACE_MS = 15_000;
+// Quanto si aspettano, a job finito, le letture degli step ancora in corso; e l'etichetta se una lettura non arriva.
+const READ_GRACE_MS = 3000;
+const FALLBACK_STEP = 'Preparo il materiale';
 
 interface Job {
   id: string;
@@ -152,11 +157,6 @@ async function claim(): Promise<Job | null> {
   return rows[0] ?? null;
 }
 
-function detailOf(input: Record<string, unknown>): string | undefined {
-  const value = input.url ?? input.query ?? input.description ?? input.command ?? input.pattern ?? input.file_path ?? input.title;
-  return typeof value === 'string' ? value : undefined;
-}
-
 // I job di cui è stato chiesto lo stop: lo script riceve «stop» sullo stdin e ferma Claude;
 // se non si chiude da solo entro STOP_GRACE_MS, si termina il processo.
 const cancelled = new Set<string>();
@@ -184,7 +184,12 @@ async function run(job: Job): Promise<void> {
   const { script, args, env } = kind.launch(job.input, job);
   console.log(`[${job.id}] ${job.kind} avviato`);
 
+  // hidden: gli step che non si mostrano, perché non dicono niente a chi aspetta o perché Haiku non li ha ancora letti.
+  // Restano nella mappa per tenere il loro posto nell'ordine.
   const steps = new Map<string, AiStep>();
+  const hidden = new Set<string>();
+  const visible = () => [...steps.values()].filter((step) => !hidden.has(step.id));
+  const reader = createStepReader(BRANDS_DIR);
   let outcome: { result?: unknown; error?: string; cost?: number } = {};
   // La sessione si sa dal primo messaggio: anche un job fermato a metà si può riprendere.
   let sessionId: string | undefined;
@@ -194,13 +199,27 @@ async function run(job: Job): Promise<void> {
   let saved = Promise.resolve();
   const flush = () => {
     flushTimer = undefined;
-    const snapshot = JSON.stringify([...steps.values()]);
+    const snapshot = JSON.stringify(visible());
     saved = saved
       .then(() => pool.query('update presenza.ai_jobs set steps = $2::jsonb where id = $1', [job.id, snapshot]))
       .then(() => undefined)
       .catch((error: unknown) => console.error(`[${job.id}] steps non salvati`, error));
   };
   const changed = () => (flushTimer ??= setTimeout(flush, FLUSH_MS));
+
+  // Quando arriva la lettura di Haiku lo step prende la sua etichetta, o resta nascosto; senza lettura prende quella di
+  // riserva, se ce l'ha.
+  const readStep = (id: string, tool: string, input: unknown, fallback?: string) => {
+    hidden.add(id);
+    reader.read({ tool, input }, (reading) => {
+      const step = steps.get(id);
+      const shown = reading === undefined ? fallback && { label: fallback } : reading;
+      if (!step || !shown) return;
+      steps.set(id, { ...step, label: shown.label, ...(shown.detail && { detail: shown.detail }) });
+      hidden.delete(id);
+      changed();
+    });
+  };
 
   const heartbeat = setInterval(() => {
     void pool.query(`update presenza.ai_jobs set locked_until = now() + $2::interval where id = $1`, [job.id, LEASE]).catch(() => undefined);
@@ -227,9 +246,15 @@ async function run(job: Job): Promise<void> {
     } catch {
       return;
     }
+    // Le generazioni dei tool arrivano sulla stessa uscita dei messaggi di Claude.
+    if ((message as { type: string }).type === USAGE_MESSAGE) {
+      void saveUsage(job, message as unknown as ToolUsage);
+      return;
+    }
     if ('session_id' in message && message.session_id) sessionId = message.session_id;
     if (message.type === 'stream_event') {
-      if (message.parent_tool_use_id) return;
+      // Il testo che arriva a pezzi si mostra solo nella chat, dove è la risposta.
+      if (message.parent_tool_use_id || !kind.reply) return;
       const { event } = message;
       if (event.type === 'message_start') {
         streaming = event.message.id;
@@ -249,11 +274,21 @@ async function run(job: Job): Promise<void> {
         blockCount.set(messageId, index + 1);
         if (block.type === 'text') {
           const id = `${messageId}-${index}`;
-          if (block.text.trim()) steps.set(id, { id, label: block.text.trim(), status: 'done', kind: 'text' });
-          else steps.delete(id);
+          const text = block.text.trim();
+          if (!text) {
+            steps.delete(id);
+            continue;
+          }
+          steps.set(id, { id, label: text, status: 'done', kind: 'text' });
+          // Fuori dalla chat il testo è Claude che si parla tra un passaggio e l'altro: si mostra come lo legge Haiku.
+          if (!kind.reply) readStep(id, 'testo', text);
         } else if (block.type === 'tool_use') {
-          const detail = detailOf(block.input as Record<string, unknown>);
-          steps.set(block.id, { id: block.id, label: block.name, ...(detail && { detail }), status: 'running', kind: 'tool' });
+          const input = block.input as Record<string, unknown>;
+          const known = toolStep(block.name, input);
+          const label = known?.label ?? FALLBACK_STEP;
+          steps.set(block.id, { id: block.id, label, ...(known?.detail && { detail: known.detail }), status: 'running', kind: 'tool', tool: block.name });
+          if (known === null) hidden.add(block.id);
+          else if (known === undefined) readStep(block.id, block.name, input, FALLBACK_STEP);
         }
       }
       changed();
@@ -276,6 +311,8 @@ async function run(job: Job): Promise<void> {
 
   const code = await new Promise<number | null>((resolve) => child.on('close', resolve));
   running.delete(job.id);
+  // Le ultime letture di Haiku finiscono negli step del job; se il job è stato fermato non si aspettano.
+  await reader.close(stopping || cancelled.has(job.id) ? 0 : READ_GRACE_MS);
   clearInterval(heartbeat);
   clearTimeout(flushTimer);
   await saved;
@@ -284,7 +321,7 @@ async function run(job: Job): Promise<void> {
 
   for (const step of steps.values()) if (step.status === 'running') steps.set(step.id, { ...step, status: 'done' });
   if (wasCancelled) {
-    await finish(job.id, { status: 'stopped', steps: [...steps.values()], cost: outcome.cost, sessionId });
+    await finish(job.id, { status: 'stopped', steps: visible(), cost: outcome.cost, sessionId });
     console.log(`[${job.id}] fermato`);
     return;
   }
@@ -300,20 +337,22 @@ async function run(job: Job): Promise<void> {
     status: error ? 'failed' : 'done',
     result: outcome.result,
     error,
-    steps: [...steps.values()],
+    steps: visible(),
     cost: outcome.cost,
     sessionId,
   });
   console.log(`[${job.id}] ${error ? `fallito: ${error}` : 'completato'}${outcome.cost ? ` ($${outcome.cost.toFixed(4)})` : ''}`);
 }
 
+// cost: il costo che riporta Claude Code, cioè il totale della sessione anche quando il job ne riprende una.
 async function finish(
   jobId: string,
   fields: { status: 'done' | 'failed' | 'stopped'; result?: unknown; error?: string; steps?: AiStep[]; cost?: number; sessionId?: string },
 ): Promise<void> {
+  const own = fields.cost !== undefined && fields.sessionId ? await ownCost(jobId, fields.sessionId, fields.cost) : fields.cost;
   await pool.query(
     `update presenza.ai_jobs set status = $2, result = $3::jsonb, error = $4, steps = coalesce($5::jsonb, steps),
-       cost_usd = $6, session_id = $7, finished_at = now(), locked_until = null
+       cost_usd = $6, session_cost_usd = $7, session_id = $8, finished_at = now(), locked_until = null
      where id = $1`,
     [
       jobId,
@@ -321,10 +360,51 @@ async function finish(
       fields.result === undefined ? null : JSON.stringify(fields.result),
       fields.error ?? null,
       fields.steps ? JSON.stringify(fields.steps) : null,
+      own ?? null,
       fields.cost ?? null,
       fields.sessionId ?? null,
     ],
   );
+}
+
+async function saveUsage(job: Job, usage: ToolUsage): Promise<void> {
+  const brandId = (job.input as { brandId?: string } | null)?.brandId ?? null;
+  await pool
+    .query(
+      `insert into presenza.ai_usage
+         (account_id, brand_id, job_id, task, model, outcome, error, duration_ms, cost_usd, input_tokens, output_tokens, units, unit)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      [
+        job.account_id,
+        brandId,
+        job.id,
+        usage.task,
+        usage.model,
+        usage.outcome,
+        usage.error ?? null,
+        Math.round(usage.durationMs),
+        usage.costUsd ?? null,
+        usage.inputTokens ?? 0,
+        usage.outputTokens ?? 0,
+        usage.units ?? null,
+        usage.unit ?? null,
+      ],
+    )
+    .catch((error: unknown) => console.error(`[${job.id}] generazione non registrata`, error));
+}
+
+// La parte del job: il totale della sessione meno quello del job prima nella stessa sessione. I job salvati prima di
+// session_cost_usd hanno quel totale in cost_usd.
+async function ownCost(jobId: string, sessionId: string, total: number): Promise<number> {
+  const { rows } = await pool.query<{ before: string }>(
+    `select coalesce(session_cost_usd, cost_usd) as before from presenza.ai_jobs
+     where session_id = $1 and id <> $2 and coalesce(session_cost_usd, cost_usd) is not null
+       and created_at < (select created_at from presenza.ai_jobs where id = $2)
+     order by created_at desc limit 1`,
+    [sessionId, jobId],
+  );
+  const before = Number(rows[0]?.before ?? 0);
+  return total >= before ? total - before : total;
 }
 
 async function tick(): Promise<void> {

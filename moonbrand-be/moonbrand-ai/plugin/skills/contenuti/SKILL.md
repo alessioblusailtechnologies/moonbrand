@@ -42,7 +42,8 @@ Le immagini finali sono PNG o JPEG, i video MP4.
 
 ## Immagini
 
-- I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.
+- Immagini e video li guarda Gemini con il tool guarda, che ti risponde a parole: usalo per riferimenti, allegati, contenuti già fatti e controlli. Apri tu un’immagine solo quando devi correggere un’impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
+- I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Chiedi a guarda proprio queste cose. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.
 - Lo stile si prende solo da lì: le cartelle esempi e lavoro alla radice del brand, se ci sono, sono bozze dell’onboarding che possono essere state scartate; non aprirle e non usarle.
-- Scegli la composizione che serve a questa idea e alternala: guarda le immagini finali degli ultimi contenuti in contenuti e usa un’impaginazione diversa. Ogni contenuto deve essere riconoscibile come del brand e diverso dagli altri.
-- Controlla ogni immagine finale prima di consegnarla: testo leggibile, niente tagli, colori del brand.
+- Scegli la composizione che serve a questa idea e alternala: fatti descrivere da guarda le immagini finali degli ultimi contenuti in contenuti e usa un’impaginazione diversa. Ogni contenuto deve essere riconoscibile come del brand e diverso dagli altri.
+- Controlla ogni immagine finale con guarda prima di consegnarla: testo leggibile, niente tagli, colori del brand.

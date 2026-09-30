@@ -1,12 +1,14 @@
 import type { BrandKind, Palette } from '../domain/brand';
 
 // kind: un blocco di testo di Claude o una chiamata a un tool; manca negli step scritti a mano.
+// tool: il nome del tool chiamato, per il codice; a chi aspetta si mostrano solo label e detail.
 export interface AiStep {
   id: string;
   label: string;
   detail?: string;
   status: 'running' | 'done' | 'failed';
   kind?: 'text' | 'tool';
+  tool?: string;
 }
 
 export type OnAiSteps = (steps: AiStep[]) => void;
@@ -128,4 +130,70 @@ export function pageStep(url: string): { label: string; detail: string } {
   const name = segments[segments.length - 1].replace(/[-_+\s]+/g, ' ').trim();
   if (!name) return { label: 'Apro una pagina', detail };
   return { label: `Apro la pagina «${shorten(name.charAt(0).toUpperCase() + name.slice(1), MAX_NAME)}»`, detail };
+}
+
+// Le skill di moonbrand, per nome senza il prefisso del plugin.
+const SKILL_STEPS: Record<string, string> = {
+  contenuti: 'Ripasso come si prepara un contenuto',
+  idee: 'Ripasso come si propone un’idea',
+  video: 'Ripasso come si fa un video',
+  'remotion-best-practices': 'Ripasso come si monta un video',
+};
+
+// I tool che si traducono sempre allo stesso modo; null: non si mostrano.
+const TOOL_STEPS: Record<string, string | null> = {
+  TodoWrite: null,
+  ToolSearch: null,
+  StructuredOutput: 'Metto tutto in ordine',
+  mcp__moonbrand__contenuti_elenca: 'Guardo i contenuti già fatti',
+  mcp__moonbrand__contenuto_leggi: 'Rileggo il contenuto',
+  mcp__moonbrand__contenuto_salva: 'Salvo la bozza in Contenuti',
+  mcp__moonbrand__contenuto_aggiorna: 'Aggiorno il contenuto in Contenuti',
+  mcp__moonbrand__idee_elenca: 'Guardo le idee salvate',
+  mcp__moonbrand__idea_salva: 'Salvo l’idea in Idee',
+  mcp__immagini__genera_immagine: 'Creo un’immagine',
+  mcp__audio__cerca_voci: 'Scelgo la voce',
+  mcp__audio__genera_voce: 'Registro la voce fuori campo',
+  mcp__audio__tempi_parole: 'Metto a tempo le parole',
+  mcp__audio__genera_effetto: 'Creo un effetto sonoro',
+  mcp__musica__genera_musica: 'Compongo la musica',
+  mcp__musica__genera_canzone: 'Compongo la canzone',
+  mcp__higgsfield__generate_video: 'Giro una clip',
+  mcp__higgsfield__generate_video_batch: 'Giro le clip',
+  mcp__higgsfield__generate_image: 'Creo un’immagine',
+  mcp__higgsfield__generate_image_batch: 'Creo le immagini',
+  mcp__higgsfield__jobs_wait: 'Aspetto che clip e immagini siano pronte',
+};
+
+// Come si mostra la chiamata a un tool: null se non si mostra, undefined se la tabella non la conosce
+// (allora la legge Haiku nel worker).
+export function toolStep(
+  name: string,
+  input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown },
+): { label: string; detail?: string } | null | undefined {
+  const text = (value: unknown) => (typeof value === 'string' && value.trim() ? shorten(value.replace(/\s+/g, ' ').trim(), 90) : undefined);
+  if (name === 'WebFetch' && typeof input.url === 'string') return pageStep(input.url);
+  if (name === 'WebSearch') {
+    const detail = text(input.query);
+    return { label: 'Cerco in rete', ...(detail && { detail }) };
+  }
+  if (name === 'mcp__vista__guarda') return { label: lookLabel(Array.isArray(input.file) ? input.file.filter((file) => typeof file === 'string') : []) };
+  if (name === 'Skill' && typeof input.skill === 'string') {
+    const label = SKILL_STEPS[input.skill.replace(/^moonbrand:/, '')];
+    return label ? { label } : undefined;
+  }
+  if (!(name in TOOL_STEPS)) return undefined;
+  const label = TOOL_STEPS[name];
+  if (label === null) return null;
+  // Di un contenuto o di un’idea salvati si mostra il titolo.
+  const detail = /contenuto_(salva|aggiorna)$|idea_salva$/.test(name) ? text(input.title) : undefined;
+  return { label, ...(detail && { detail }) };
+}
+
+// Cosa si guarda con il tool guarda, detto a chi aspetta.
+function lookLabel(files: string[]): string {
+  if (files.length > 0 && files.every((file) => /(^|\/)allegati\//.test(file))) return 'Guardo quello che mi hai mandato';
+  const videos = files.filter((file) => /\.(mp4|mov|webm)$/i.test(file)).length;
+  if (videos > 0) return videos === 1 ? 'Guardo il video' : 'Guardo i video';
+  return files.length === 1 ? 'Guardo l’immagine' : 'Guardo le immagini';
 }

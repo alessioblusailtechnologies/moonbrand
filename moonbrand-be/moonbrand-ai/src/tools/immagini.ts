@@ -5,6 +5,8 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 
+import { measure } from '../lib/usage';
+
 const MODEL = 'gemini-3.1-flash-image';
 
 const MIME_TYPES: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
@@ -49,11 +51,19 @@ export function imageTools(folder: string, apiKey: string) {
             return { type: 'image' as const, mime_type: mimeType, data: (await readFile(inside(reference))).toString('base64') };
           }),
         );
-        const interaction = await ai.interactions.create({
-          model: MODEL,
-          input: [{ type: 'text', text: descrizione }, ...images],
-          response_format: { type: 'image', aspect_ratio: formato, image_size: '2K', mime_type: 'image/jpeg' },
-        });
+        const interaction = await measure(
+          {
+            task: 'image',
+            model: MODEL,
+            extra: ({ usage }) => ({ units: 1, unit: 'immagini', inputTokens: usage?.total_input_tokens, outputTokens: usage?.total_output_tokens }),
+          },
+          () =>
+            ai.interactions.create({
+              model: MODEL,
+              input: [{ type: 'text', text: descrizione }, ...images],
+              response_format: { type: 'image', aspect_ratio: formato, image_size: '2K', mime_type: 'image/jpeg' },
+            }),
+        );
         const image = interaction.output_image;
         if (!image?.data) return failure('Gemini non ha restituito un’immagine: prova a riformulare la descrizione.');
         const extension = EXTENSIONS[image.mime_type ?? 'image/jpeg'] ?? '.jpg';

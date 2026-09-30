@@ -18,7 +18,7 @@ ${describeBrand(brand)}
 ## La cartella
 - file-riferimento/: i file caricati per il brand (logo, foto, materiali).
 - riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.
-- allegati/: le foto mandate nella chat.
+- allegati/: le foto e i video mandati nella chat.
 - contenuti/<id>/: i contenuti salvati, con le immagini finali e i file di lavoro in lavoro/.
 - chat/<id>/: la cartella di lavoro di ogni conversazione.
 - video/: il progetto Remotion dei video del brand (vedi video/README.md).

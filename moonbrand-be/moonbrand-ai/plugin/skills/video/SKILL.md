@@ -5,7 +5,7 @@ description: Come si fa un video per il brand della cartella (Reels, TikTok, Sho
 
 # Fare un video
 
-Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video si controlla dai fotogrammi e alla fine si esporta sempre.
+Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video lo guarda Gemini con il tool guarda, e alla fine si esporta sempre.
 
 ## Il copione
 
@@ -63,7 +63,7 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 - I file che Higgsfield genera arrivano già scaricati nella cartella di lavoro, e il risultato del tool ti dice dove: copiali in video/public/contenuti/<id>/. Gli indirizzi di Higgsfield scadono, usa sempre i file.
 - Con Higgsfield fai le clip; le immagini restano con genera_immagine, la musica con Mureka, voce ed effetti con ElevenLabs.
 - Le clip hanno un audio loro: toglilo o abbassalo se c'è già musica o voce.
-- Per controllare una clip, guardane qualche fotogramma: ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi estrai un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
+- Per controllare una clip, o per capire una clip o un video dell’utente, passali interi al tool guarda: li guarda con l’audio e ti dice cosa succede e quando. Un fotogramma estrailo solo quando ti serve come immagine (per esempio una copertina): ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
 
 ## Audio
 
@@ -78,11 +78,13 @@ Non puoi ascoltare niente di quello che generi: descrivi tutto con precisione e 
 
 ## Controllo
 
-Non puoi guardare il video mentre scorre: lo controlli dai fotogrammi.
+Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool guarda, e ti risponde a parole. Fagli sempre una lista precisa di cosa controllare.
 
-- Esporta in PNG il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile. Guardali uno per uno: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore.
+- Mentre lavori, esporta in PNG il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile, a metà risoluzione (`--scale=0.5`), e passali a guarda: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Quando ritocchi una scena, riesporta e ricontrolla solo quella.
+- Apri tu un fotogramma solo quando devi correggere un'impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - Correggi e riesporta finché è tutto a posto; lancia anche `pnpm check` per i tipi.
-- Poi esporta il video finale in MP4 e una copertina in JPEG o PNG, scegliendo il fotogramma che meglio lo rappresenta.
+- Poi esporta il video finale in MP4 e passalo intero a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.
+- Esporta anche una copertina in JPEG o PNG, scegliendo il fotogramma che meglio rappresenta il video. Video finale e copertina a risoluzione piena, senza `--scale`.
 
 ## Dove vanno i file
 

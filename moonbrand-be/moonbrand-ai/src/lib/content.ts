@@ -10,6 +10,7 @@ import { audioTools } from '../tools/audio';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
+import { visionTools } from '../tools/vista';
 import { MOONBRAND_PLUGINS } from './plugin';
 import { prepareVideoProject } from './video';
 
@@ -169,7 +170,10 @@ export async function runContentAgent(options: {
   const temp = path.join(options.brandDir, contentDir(options.contentId), 'lavoro', 'tmp');
   await mkdir(temp, { recursive: true });
 
-  const mcpServers: Record<string, McpServerConfig> = { immagini: imageTools(options.brandDir, GEMINI_API_KEY) };
+  const mcpServers: Record<string, McpServerConfig> = {
+    immagini: imageTools(options.brandDir, GEMINI_API_KEY),
+    vista: visionTools(options.brandDir, GEMINI_API_KEY),
+  };
   let videoEnv: Record<string, string> = {};
   let clips: Pick<Options, 'disallowedTools' | 'hooks'> = {};
   if (options.format === 'video') {
