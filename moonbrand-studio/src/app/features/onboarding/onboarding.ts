@@ -1,15 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
+import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandKind, SectionKey } from '@moonbrand/shared/domain/brand';
 import { isSkippable, sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 
+import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
 import { lockPageScroll } from '../../ui/scroll-lock';
+import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { DraftStore } from './draft-store';
 import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
@@ -42,7 +45,7 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string) {
 @Component({
   selector: 'mb-onboarding',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, Logo, IntroStep, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, SummaryStep],
+  imports: [Icon, Logo, StepList, IntroStep, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, SummaryStep],
   // I passi scrivono nella bozza del brand nuovo.
   providers: [{ provide: DraftStore, useExisting: OnboardingStore }],
   templateUrl: './onboarding.html',
@@ -52,10 +55,14 @@ export class Onboarding {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly ai = inject(AiJobsService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
 
   protected readonly creating = signal(false);
+  // Dopo la creazione: i passaggi di stile e prime idee, finché non sono finiti.
+  protected readonly preparing = signal(false);
+  protected readonly steps = signal<AiStep[]>([]);
   protected readonly total = ONBOARDING_STEPS.length - 1;
   protected readonly segments = ONBOARDING_STEPS.slice(1).map((_, i) => i + 1);
 
@@ -149,14 +156,37 @@ export class Onboarding {
     const brandId = this.store.brandId();
     if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
+    let jobs: string[];
     try {
-      await this.brands.create(brandId, draft, this.store.selectedExamples());
+      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples())).setupJobs;
       this.store.reset();
-      await this.router.navigateByUrl('/');
     } catch (error) {
       this.toast.show(errorMessage(error, 'Non sono riuscito a creare il profilo. Riprova.'));
-    } finally {
       this.creating.set(false);
+      return;
     }
+    await this.prepare(jobs);
+    await this.router.navigateByUrl('/assistente');
+  }
+
+  // Il brand esiste già: si resta qui finché stile e prime idee sono pronti, poi si apre la chat. Se un lavoro non riesce
+  // si va avanti lo stesso: lo stile si rilegge al primo contenuto, le idee si chiedono dalla sezione Idee.
+  private async prepare(jobs: string[]): Promise<void> {
+    this.preparing.set(true);
+    const steps = new Map<string, AiStep[]>(jobs.map((id) => [id, []]));
+    const failures = await Promise.all(
+      jobs.map((id) =>
+        this.ai
+          .follow(id, (current) => {
+            steps.set(id, current);
+            this.steps.set([...steps.values()].flat());
+          })
+          .then(
+            () => false,
+            () => true,
+          ),
+      ),
+    );
+    if (failures.some(Boolean)) this.toast.show('Il profilo è pronto, ma una parte della preparazione non è riuscita: la rifaccio quando serve.');
   }
 }

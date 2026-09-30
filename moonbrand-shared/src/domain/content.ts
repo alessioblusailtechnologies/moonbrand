@@ -52,6 +52,8 @@ export interface ContentVisual {
   script: string;
   scenes: VideoScene[];
   design: unknown;
+  // L'impaginazione in una frase, scritta da chi l'ha fatta: i contenuti dopo la leggono per variare, senza riguardare le immagini.
+  layout?: string;
   files?: ContentFile[];
 }
 

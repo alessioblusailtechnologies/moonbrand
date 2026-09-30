@@ -2,7 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { BrandProfile, BrandSummary, CreateBrandRequest, ReferenceUploadResponse, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
+import type {
+  BrandProfile,
+  BrandSummary,
+  CreateBrandRequest,
+  CreateBrandResponse,
+  ReferenceUploadResponse,
+  UpdateBrandRequest,
+} from '@moonbrand/shared/api/contract';
 import type { BrandDraft } from '@moonbrand/shared/domain/brand';
 
 import { AuthService } from '../auth/auth.service';
@@ -52,12 +59,14 @@ export class BrandsService {
     }
   }
 
-  async create(id: string, draft: BrandDraft, referenceExamples: string[]): Promise<BrandSummary> {
+  // setupJobs: i lavori che preparano il brand nuovo (lo stile, le prime idee), da seguire fino alla fine.
+  async create(id: string, draft: BrandDraft, referenceExamples: string[]): Promise<CreateBrandResponse> {
     const body: CreateBrandRequest = { ...draft, id, referenceExamples };
-    const brand = await firstValueFrom(this.http.post<BrandSummary>('/v1/brands', body));
+    const created = await firstValueFrom(this.http.post<CreateBrandResponse>('/v1/brands', body));
+    const { setupJobs: _jobs, ...brand } = created;
     this.brands.update((list) => [...list, brand]);
     this.auth.activeBrandId.set(brand.id);
-    return brand;
+    return created;
   }
 
   profile(brandId: string): Promise<BrandProfile> {

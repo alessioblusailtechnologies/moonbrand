@@ -9,12 +9,32 @@ import { describeBrand } from './brand-brief';
 // Le regole per scrivere e proporre idee stanno nelle skill di moonbrand. Si riscrive prima di ogni job dal brand com'è sul DB.
 export function brandGuide(brand: BrandContext): string {
   const name = brand.identity.name || 'Brand';
+  // Lo stile l'ha già letto Gemini dai riferimenti (job style): chi prepara un contenuto parte da qui.
+  const style = brand.style?.trim()
+    ? `
+## Lo stile
+Letto dai file in riferimenti-da-seguire e file-riferimento: vale come se li avessi guardati. Riguardali con guarda solo per un dettaglio che qui manca.
+
+${brand.style.trim()}
+`
+    : '';
+  // Le impaginazioni le scrive chi fa il contenuto quando lo salva: bastano per sceglierne una diversa.
+  const layouts = brand.layouts ?? [];
+  const recent =
+    layouts.length > 0
+      ? `
+## Le impaginazioni degli ultimi contenuti
+Dal più recente: scegline una diversa. Guarda con guarda solo i contenuti recenti che non sono in questa lista.
+
+${layouts.map((item) => `- ${item.title} (${item.format}): ${item.layout}`).join('\n')}
+`
+      : '';
   return `# ${name}
 
 La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
 
 ${describeBrand(brand)}
-
+${style}${recent}
 ## La cartella
 - file-riferimento/: i file caricati per il brand (logo, foto, materiali).
 - riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.

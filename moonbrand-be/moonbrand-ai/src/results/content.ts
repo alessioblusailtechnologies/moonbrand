@@ -11,7 +11,7 @@ import { contentDir } from '../lib/content';
 interface ContentResult {
   title: string;
   variants: ChannelVariant[];
-  visual: { headline: string; slides: { title: string; body: string }[]; script?: string; scenes?: VideoScene[]; files: ContentFile[] };
+  visual: { headline: string; slides: { title: string; body: string }[]; script?: string; scenes?: VideoScene[]; layout?: string; files: ContentFile[] };
 }
 
 // Il copione di un video, prima del video: solo titolo, idea e inquadrature.
@@ -89,6 +89,7 @@ export async function saveContent(
     script: format === 'video' ? (written.visual.script ?? '').trim() : '',
     scenes: format === 'video' ? cleanScenes(written.visual.scenes ?? []) : [],
     design: null,
+    ...(written.visual.layout?.trim() && { layout: written.visual.layout.trim() }),
     files,
   };
 

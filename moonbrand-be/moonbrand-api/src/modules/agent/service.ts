@@ -38,6 +38,7 @@ function describe(content: Content, agent: AgentJob) {
     slides: content.visual.slides,
     script: content.visual.script,
     scenes: content.visual.scenes,
+    layout: content.visual.layout ?? null,
     files: filesOf(content),
   };
 }
@@ -118,6 +119,7 @@ function visualOf(request: AgentContentRequest, files: ContentFile[]): ContentVi
     script: request.format === 'video' ? (request.script ?? '').trim() : '',
     scenes: request.format === 'video' ? (request.scenes ?? []) : [],
     design: null,
+    ...(request.layout?.trim() && { layout: request.layout.trim() }),
     files,
   };
 }

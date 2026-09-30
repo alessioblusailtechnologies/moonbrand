@@ -10,6 +10,7 @@ import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
+import { ensureStyleJob } from '../brands/style';
 import { listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
 import { findBrandForIdeas } from '../ideas/repository';
@@ -51,6 +52,7 @@ async function queueTurn(
 ): Promise<ChatTurnCreated> {
   const brand = await findBrandForIdeas(db, conversation.brandId);
   if (!brand) throw ApiError.notFound('Brand non trovato.');
+  await ensureStyleJob(db, identity.accountId, conversation.brandId, brand.context.style);
   const input: ChatJobInput = {
     brandId: conversation.brandId,
     conversationId: conversation.id,

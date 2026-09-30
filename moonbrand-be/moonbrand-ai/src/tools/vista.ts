@@ -9,12 +9,12 @@ import { measure } from '../lib/usage';
 
 // Gemini guarda immagini e video al posto di Claude e risponde a parole: i pixel non entrano nella conversazione di
 // Claude, che altrimenti li rilegge a ogni passaggio. I video li guarda interi, con l'audio.
-const MODEL = process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash';
-const MAX_FILES = 10;
+export const VISION_MODEL = process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash';
+export const MAX_FILES = 10;
 const PROCESSING_POLL_MS = 2000;
 const PROCESSING_MAX_MS = 5 * 60_000;
 
-const MIME_TYPES: Record<string, string> = {
+export const MIME_TYPES: Record<string, string> = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -24,7 +24,7 @@ const MIME_TYPES: Record<string, string> = {
   '.webm': 'video/webm',
 };
 
-const INSTRUCTION = `Guardi immagini e video per un agente che prepara i social di un brand e che non può vederli: la tua risposta è tutto quello che saprà di questi file.
+export const VISION_INSTRUCTION = `Guardi immagini e video per un agente che prepara i social di un brand e che non può vederli: la tua risposta è tutto quello che saprà di questi file.
 
 - Rispondi in italiano, alla domanda che ti fa, con precisione e senza giri di parole.
 - Descrivi quello che si vede e si sente davvero: soggetti, luoghi, prodotti e marchi leggibili, colori, luce, inquadrature, movimenti di camera, testi a schermo, parlato e musica. Non inventare e non abbellire: se una cosa non si capisce, dillo.
@@ -32,8 +32,9 @@ const INSTRUCTION = `Guardi immagini e video per un agente che prepara i social 
 - Quando ti chiede un controllo, elenca ogni problema con il file, il punto (in alto a destra, al centro…) e nei video il tempo; se è tutto a posto, dillo in una riga.
 - Con più file, tienili distinti e chiamali con il loro nome.`;
 
-// La chiave resta in questo processo: Claude vede solo il tool, non la chiamata a Gemini.
-export function visionTools(folder: string, apiKey: string) {
+// Gemini che guarda file della cartella del brand e risponde a parole: lo usano guarda e renderizza.
+// La risposta, o perché non è arrivata, è già scritta per Claude.
+export function createLooker(folder: string, apiKey: string): (file: string[], domanda: string) => Promise<{ text: string; isError?: true }> {
   const ai = new GoogleGenAI({ apiKey });
   const root = path.resolve(folder);
   const inside = (relative: string) => {
@@ -41,7 +42,6 @@ export function visionTools(folder: string, apiKey: string) {
     if (!full.startsWith(root + path.sep)) throw new Error(`Il percorso ${relative} esce dalla cartella del brand.`);
     return full;
   };
-  const failure = (text: string) => ({ content: [{ type: 'text' as const, text }], isError: true });
 
   // I video si caricano con la Files API di Gemini, che li tiene 48 ore: nello stesso job lo stesso file non si
   // ricarica, finché non cambia.
@@ -69,6 +69,34 @@ export function visionTools(folder: string, apiKey: string) {
     inlineData: { data: (await readFile(inside(file))).toString('base64'), mimeType },
   });
 
+  return async (file, domanda) => {
+    try {
+      const parts: Part[] = [];
+      for (const item of file) {
+        const mimeType = MIME_TYPES[path.extname(item).toLowerCase()];
+        if (!mimeType) return { text: `Formato non supportato per ${item}: usa PNG, JPEG, WebP, MP4, MOV o WebM.`, isError: true };
+        parts.push({ text: `File: ${item}` }, await (mimeType.startsWith('video/') ? video(item, mimeType) : image(item, mimeType)));
+      }
+      parts.push({ text: domanda });
+      const response = await measure(
+        {
+          task: 'vision',
+          model: VISION_MODEL,
+          extra: ({ usageMetadata }) => ({ inputTokens: usageMetadata?.promptTokenCount, outputTokens: usageMetadata?.candidatesTokenCount }),
+        },
+        () => ai.models.generateContent({ model: VISION_MODEL, contents: [{ role: 'user', parts }], config: { systemInstruction: VISION_INSTRUCTION } }),
+      );
+      const answer = response.text?.trim();
+      return answer ? { text: answer } : { text: 'Gemini non ha risposto: riprova, magari con una domanda diversa.', isError: true };
+    } catch (error) {
+      return { text: `Non riuscito: ${error instanceof Error ? error.message : String(error)}`, isError: true };
+    }
+  };
+}
+
+// La chiave resta in questo processo: Claude vede solo il tool, non la chiamata a Gemini.
+export function visionTools(folder: string, apiKey: string) {
+  const lookAt = createLooker(folder, apiKey);
   const look = tool(
     'guarda',
     'Fa guardare a Gemini immagini e video della cartella del brand e ti risponde a parole: usalo ogni volta che devi vedere una foto, ' +
@@ -84,28 +112,8 @@ export function visionTools(folder: string, apiKey: string) {
       domanda: z.string().min(10).describe('Cosa vuoi sapere, o cosa controllare, di questi file'),
     },
     async ({ file, domanda }) => {
-      try {
-        const parts: Part[] = [];
-        for (const item of file) {
-          const mimeType = MIME_TYPES[path.extname(item).toLowerCase()];
-          if (!mimeType) return failure(`Formato non supportato per ${item}: usa PNG, JPEG, WebP, MP4, MOV o WebM.`);
-          parts.push({ text: `File: ${item}` }, await (mimeType.startsWith('video/') ? video(item, mimeType) : image(item, mimeType)));
-        }
-        parts.push({ text: domanda });
-        const response = await measure(
-          {
-            task: 'vision',
-            model: MODEL,
-            extra: ({ usageMetadata }) => ({ inputTokens: usageMetadata?.promptTokenCount, outputTokens: usageMetadata?.candidatesTokenCount }),
-          },
-          () => ai.models.generateContent({ model: MODEL, contents: [{ role: 'user', parts }], config: { systemInstruction: INSTRUCTION } }),
-        );
-        const answer = response.text?.trim();
-        if (!answer) return failure('Gemini non ha risposto: riprova, magari con una domanda diversa.');
-        return { content: [{ type: 'text' as const, text: answer }] };
-      } catch (error) {
-        return failure(`Non riuscito: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      const { text, isError } = await lookAt(file, domanda);
+      return { content: [{ type: 'text' as const, text }], ...(isError && { isError }) };
     },
     { alwaysLoad: true },
   );

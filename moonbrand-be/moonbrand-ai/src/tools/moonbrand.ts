@@ -33,6 +33,13 @@ const content = {
     )
     .optional()
     .describe('Solo nei video: le inquadrature del copione, nell’ordine'),
+  layout: z
+    .string()
+    .min(1)
+    .describe(
+      'L’impaginazione in una o due frasi, al massimo 500 caratteri: dove stanno foto, titolo, testo e logo, con quali colori (es. «foto a tutta ' +
+        'pagina, titolo grande in basso su fascia rossa, logo in alto a destra»). La leggono i contenuti dopo per variare.',
+    ),
   files: z
     .array(
       z.object({
@@ -69,7 +76,7 @@ export function moonbrandTools(apiUrl: string, token: string) {
   const tools = [
     tool(
       'contenuti_elenca',
-      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved) e file.',
+      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved), impaginazione (layout) e file.',
       {},
       () => call('GET', '/contents'),
       { alwaysLoad: true },

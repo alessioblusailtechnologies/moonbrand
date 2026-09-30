@@ -7,6 +7,7 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { VIDEO_ASPECT, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
+import { graphicsTools } from '../tools/grafica';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
@@ -110,9 +111,14 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
       visual: {
         type: 'object',
         additionalProperties: false,
-        required: ['headline', 'slides', 'files', ...(video ? ['script', 'scenes'] : [])],
+        required: ['headline', 'slides', 'layout', 'files', ...(video ? ['script', 'scenes'] : [])],
         properties: {
           headline: { type: 'string', description: 'Il titolo dell’immagine, della prima slide o del video; vuoto se non ha testo' },
+          layout: {
+            type: 'string',
+            description:
+              'L’impaginazione in una o due frasi, al massimo 500 caratteri: dove stanno foto, titolo, testo e logo, con quali colori. La leggono i contenuti dopo per variare.',
+          },
           slides: {
             type: 'array',
             minItems: carousel ? SLIDES.min : 0,
@@ -170,7 +176,9 @@ export async function runContentAgent(options: {
   const temp = path.join(options.brandDir, contentDir(options.contentId), 'lavoro', 'tmp');
   await mkdir(temp, { recursive: true });
 
+  const graphics = graphicsTools(options.brandDir, GEMINI_API_KEY);
   const mcpServers: Record<string, McpServerConfig> = {
+    grafica: graphics.server,
     immagini: imageTools(options.brandDir, GEMINI_API_KEY),
     vista: visionTools(options.brandDir, GEMINI_API_KEY),
   };
@@ -194,23 +202,28 @@ export async function runContentAgent(options: {
     }
   }
 
-  for await (const message of query({
-    prompt: options.prompt,
-    options: {
-      cwd: options.brandDir,
-      env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
-      mcpServers,
-      ...clips,
-      plugins: MOONBRAND_PLUGINS,
-      permissionMode: 'bypassPermissions',
-      allowDangerouslySkipPermissions: true,
-      outputFormat: {
-        type: 'json_schema',
-        schema: options.scriptOnly ? scriptOnlySchema() : contentSchema(options.contentId, options.format, options.channels),
+  // Il browser del render resta aperto per tutto il job: si chiude alla fine.
+  try {
+    for await (const message of query({
+      prompt: options.prompt,
+      options: {
+        cwd: options.brandDir,
+        env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
+        mcpServers,
+        ...clips,
+        plugins: MOONBRAND_PLUGINS,
+        permissionMode: 'bypassPermissions',
+        allowDangerouslySkipPermissions: true,
+        outputFormat: {
+          type: 'json_schema',
+          schema: options.scriptOnly ? scriptOnlySchema() : contentSchema(options.contentId, options.format, options.channels),
+        },
+        ...(options.resume && { resume: options.resume }),
       },
-      ...(options.resume && { resume: options.resume }),
-    },
-  })) {
-    console.log(JSON.stringify(message));
+    })) {
+      console.log(JSON.stringify(message));
+    }
+  } finally {
+    await graphics.close();
   }
 }

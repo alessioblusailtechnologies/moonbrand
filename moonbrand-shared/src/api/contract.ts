@@ -42,6 +42,9 @@ export interface BrandSummary {
 // referenceExamples: gli esempi scelti nell'onboarding, che diventano i riferimenti da seguire del brand.
 export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[] };
 
+// Il brand nuovo e i lavori che lo preparano (lo stile dai riferimenti, le prime idee): l'onboarding li segue fino alla fine.
+export type CreateBrandResponse = BrandSummary & { setupJobs: string[] };
+
 // Il profilo di un brand com'è salvato, con i link ai file già firmati.
 export interface BrandProfile {
   id: string;
@@ -142,6 +145,15 @@ export interface BrandContext {
   channels: ChannelId[];
   themes: { id: string; name: string; weight: number }[];
   voice: VoiceCard | null;
+  // Lo stile letto dai riferimenti dal job style: null se non è ancora stato letto, vuoto se non ci sono riferimenti.
+  style: string | null;
+  // Le impaginazioni degli ultimi contenuti, per farne una diversa.
+  layouts: { title: string; format: ContentFormat; layout: string }[];
+}
+
+// Il job style legge i riferimenti dalla cartella del brand: gli basta sapere quale.
+export interface StyleJobInput {
+  brandId: string;
 }
 
 // I gusti su tutta la storia del brand: ogni idea tenuta vale +1 per il suo tema e il suo segnale, ogni scartata -0,5.
@@ -332,6 +344,8 @@ export interface AgentContentRequest {
   // Solo nei video: l'idea in breve e le inquadrature del copione.
   script?: string;
   scenes?: VideoScene[];
+  // L'impaginazione in una frase (vedi ContentVisual.layout).
+  layout?: string;
   // Le immagini e i video finali, ovunque siano nella cartella del brand: l'API li copia in quella del contenuto.
   files: { file: string; role: ContentFile['role']; index: number; aspect: string }[];
 }

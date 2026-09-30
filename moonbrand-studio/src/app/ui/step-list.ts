@@ -37,9 +37,9 @@ import { Icon } from './icon';
               }
             </span>
             <span class="texts">
-              <span class="strong-sm">{{ step.label }}</span>
+              <span class="strong-sm" [attr.title]="step.label">{{ step.label }}</span>
               @if (step.detail) {
-                <span class="caption">{{ step.detail }}</span>
+                <span class="caption" [attr.title]="step.detail">{{ step.detail }}</span>
               }
             </span>
             @if (stepTime(step); as time) {
@@ -139,6 +139,12 @@ import { Icon } from './icon';
       flex-direction: column;
       gap: 1px;
       min-width: 0;
+    }
+    // Una riga per etichetta e dettaglio: quello che non ci sta finisce con i puntini e si legge intero passandoci sopra.
+    .texts > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .done .strong-sm,
     .failed .strong-sm {

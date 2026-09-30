@@ -1,11 +1,13 @@
 import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
+import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
+
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
 import { activeBrandSchema, brandParams, createBrandSchema, updateBrandSchema } from './schemas';
-import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, saveBrand } from './service';
+import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, restyleBrand, saveBrand } from './service';
 
 // Gli esempi scelti diventano i riferimenti da seguire, al posto di quelli di prima. Poi le generazioni
 // dell'onboarding e i loro file di lavoro non servono più: lasciati lì, chi scrive i contenuti li troverebbe
@@ -35,11 +37,23 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
     await files.claim(body.id, request.identity.accountId);
     const brand = await createBrand(pool, request.identity, body);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
-    // Le prime idee partono subito, lato server: si preparano anche se chi ha creato il brand chiude la pagina.
-    await queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).catch((error: unknown) => {
-      request.log.warn({ err: error }, 'prime idee non messe in coda');
-    });
-    return reply.code(201).send(brand);
+    // Lo stile dai riferimenti e le prime idee partono subito, lato server, e insieme: si preparano anche se chi ha
+    // creato il brand chiude la pagina. L'onboarding li segue fino alla fine.
+    const queued = await Promise.all([
+      restyleBrand(pool, request.identity, body.id).catch((error: unknown) => {
+        request.log.warn({ err: error }, 'stile non messo in coda');
+        return null;
+      }),
+      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).then(
+        (job) => job.id,
+        (error: unknown) => {
+          request.log.warn({ err: error }, 'prime idee non messe in coda');
+          return null;
+        },
+      ),
+    ]);
+    const response: CreateBrandResponse = { ...brand, setupJobs: queued.filter((id) => id !== null) };
+    return reply.code(201).send(response);
   });
 
   app.get('/v1/brands/:brandId', (request) => {
@@ -51,8 +65,9 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
   app.put('/v1/brands/:brandId', async (request) => {
     const { brandId } = brandParams.parse(request.params);
     const body = updateBrandSchema.parse(request.body);
-    const brand = await saveBrand(pool, request.identity, brandId, body);
+    const { brand, referencesChanged } = await saveBrand(pool, request.identity, brandId, body);
     if (body.referenceExamples?.length) await adoptExamples(files, brandId, body.referenceExamples, request.log);
+    if (referencesChanged || body.referenceExamples?.length) await restyleBrand(pool, request.identity, brandId);
     return brand;
   });
 

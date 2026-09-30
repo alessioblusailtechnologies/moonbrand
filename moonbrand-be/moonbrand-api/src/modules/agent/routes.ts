@@ -30,6 +30,8 @@ const contentSchema = z.object({
   slides: z.array(z.object({ title: z.string().max(200), body: z.string().max(1000) })).max(10),
   script: z.string().max(4000).optional(),
   scenes: z.array(sceneSchema).max(100).optional(),
+  // Il tool chiede al massimo 500 caratteri; qui c'è margine, perché un salvataggio non fallisca per una frase lunga.
+  layout: z.string().max(1000).optional(),
   files: z
     .array(
       z.object({

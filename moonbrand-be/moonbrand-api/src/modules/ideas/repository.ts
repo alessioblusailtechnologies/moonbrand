@@ -60,19 +60,28 @@ export async function updateIdeaStatus(db: Queryable, ideaId: string, status: Id
   return rows[0] ? toIdea(rows[0]) : null;
 }
 
+// Quante impaginazioni recenti vedono i job, per non ripeterle.
+const RECENT_LAYOUTS = 6;
+
 export interface BrandForIdeas {
   context: BrandContext;
   themes: Theme[];
 }
 
 export async function findBrandForIdeas(db: Queryable, brandId: string): Promise<BrandForIdeas | null> {
-  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; voice: Voice }>(
-    'select identity, positioning, channels, themes, voice from presenza.brands where id = $1',
+  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; voice: Voice; style_guide: string | null }>(
+    'select identity, positioning, channels, themes, voice, style_guide from presenza.brands where id = $1',
     [brandId],
   );
   const row = rows[0];
   if (!row) return null;
   const channels = (Object.keys(row.channels) as ChannelId[]).filter((id) => row.channels[id]?.selected);
+  const layouts = await db.query<BrandContext['layouts'][number]>(
+    `select title, format, visual->>'layout' as layout from presenza.contents
+     where brand_id = $1 and coalesce(visual->>'layout', '') <> ''
+     order by updated_at desc limit $2`,
+    [brandId, RECENT_LAYOUTS],
+  );
   return {
     themes: row.themes,
     context: {
@@ -81,6 +90,8 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
       channels: channels.length > 0 ? channels : ['instagram'],
       themes: row.themes.map(({ id, name, weight }) => ({ id, name, weight })),
       voice: currentVoiceCard(row.voice),
+      style: row.style_guide,
+      layouts: layouts.rows,
     },
   };
 }

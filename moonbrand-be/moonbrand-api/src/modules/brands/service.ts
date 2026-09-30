@@ -9,6 +9,7 @@ import { REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
 import { setActiveBrand } from '../auth/accounts';
 import type { MediaStorage } from '../media/storage';
 import { brandExists, findBrandDraft, insertBrand, listBrandSummaries, updateBrand } from './repository';
+import { queueStyleJob } from './style';
 
 export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSummary[]> {
   return withIdentity(pool, identity, (db) => listBrandSummaries(db, identity.accountId));
@@ -42,11 +43,20 @@ export async function saveBrand(
   identity: Identity,
   brandId: string,
   { referenceExamples: _examples, ...draft }: UpdateBrandRequest,
-): Promise<BrandSummary> {
+): Promise<{ brand: BrandSummary; referencesChanged: boolean }> {
   const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
-  const brand = await withIdentity(pool, identity, (db) => updateBrand(db, brandId, stored));
-  if (!brand) throw ApiError.notFound('Brand non trovato.');
-  return brand;
+  return withIdentity(pool, identity, async (db) => {
+    const before = await findBrandDraft(db, brandId);
+    const brand = await updateBrand(db, brandId, stored);
+    if (!before || !brand) throw ApiError.notFound('Brand non trovato.');
+    const paths = (visual: Visual) => (visual.references ?? []).map((file) => file.path).sort().join('\n');
+    return { brand, referencesChanged: paths(before.visual) !== paths(stored.visual) };
+  });
+}
+
+// Lo stile si rilegge dopo che i riferimenti sono al loro posto (vedi queueStyleJob).
+export function restyleBrand(pool: pg.Pool, identity: Identity, brandId: string): Promise<string> {
+  return withIdentity(pool, identity, (db) => queueStyleJob(db, identity.accountId, brandId));
 }
 
 export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: string): Promise<void> {

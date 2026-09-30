@@ -18,6 +18,7 @@ import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import type { BrandFiles } from '../brand-files/files';
+import { ensureStyleJob } from '../brands/style';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import {
   activeContentJobs,
@@ -61,6 +62,7 @@ export function createContent(pool: pg.Pool, identity: Identity, ideaId: string,
     if (channels.some((channel) => !brand.context.channels.includes(channel))) {
       throw ApiError.invalid('Scegli tra i canali del brand.');
     }
+    await ensureStyleJob(db, identity.accountId, idea.brandId, brand.context.style);
     if (idea.status !== 'saved') await updateIdeaStatus(db, idea.id, 'saved');
     const id = await insertContent(db, {
       brandId: idea.brandId,

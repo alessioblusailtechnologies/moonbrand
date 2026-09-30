@@ -13,6 +13,7 @@ import type {
   ContentJobInput,
   ContentVideoJobInput,
   IdeasJobInput,
+  StyleJobInput,
   VisualEditJobInput,
   VisualJobRequest,
   WebsiteJobRequest,
@@ -111,6 +112,21 @@ const JOBS: Record<string, JobKind> = {
       return { script: 'src/jobs/content-video.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
     },
     save: (job, result) => saveContent(pool, BRANDS_DIR, job.input as ContentVideoJobInput, result),
+  },
+  // Lo stile dai riferimenti va nel brand; se nel frattempo è finito un job style chiesto dopo, vale quello.
+  style: {
+    launch: (input) => ({ script: 'src/jobs/style.ts', args: [path.join(BRANDS_DIR, (input as StyleJobInput).brandId)] }),
+    save: async (job, result) => {
+      await pool.query(
+        `update presenza.brands set style_guide = $2 where id = $1
+           and not exists (
+             select 1 from presenza.ai_jobs newer
+             where newer.kind = 'style' and newer.input->>'brandId' = $1::text and newer.status = 'done'
+               and newer.created_at > (select created_at from presenza.ai_jobs where id = $3)
+           )`,
+        [(job.input as StyleJobInput).brandId, (result as { style: string }).style, job.id],
+      );
+    },
   },
   // Il token arriva allo script per variabile d'ambiente: i tool della chat lo usano per chiamare l'API.
   chat: {

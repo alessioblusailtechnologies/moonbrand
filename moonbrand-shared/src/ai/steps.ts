@@ -155,6 +155,7 @@ const TOOL_STEPS: Record<string, string | null> = {
   mcp__moonbrand__idee_elenca: 'Guardo le idee salvate',
   mcp__moonbrand__idea_salva: 'Salvo l’idea in Idee',
   mcp__immagini__genera_immagine: 'Creo un’immagine',
+  mcp__grafica__renderizza: 'Impagino e controllo la grafica',
   mcp__audio__cerca_voci: 'Scelgo la voce',
   mcp__audio__genera_voce: 'Registro la voce fuori campo',
   mcp__audio__tempi_parole: 'Metto a tempo le parole',
@@ -196,6 +197,7 @@ export function toolStep(
 // Cosa si guarda con il tool guarda, detto a chi aspetta.
 function lookLabel(files: string[]): string {
   if (files.length > 0 && files.every((file) => /(^|\/)allegati\//.test(file))) return 'Guardo quello che mi hai mandato';
+  if (files.length > 0 && files.every((file) => /(^|\/)(riferimenti-da-seguire|file-riferimento)\//.test(file))) return 'Studio lo stile dei tuoi riferimenti';
   const videos = files.filter((file) => /\.(mp4|mov|webm)$/i.test(file)).length;
   if (videos > 0) return videos === 1 ? 'Guardo il video' : 'Guardo i video';
   return files.length === 1 ? 'Guardo l’immagine' : 'Guardo le immagini';

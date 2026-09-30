@@ -9,6 +9,7 @@ import { writeBrandGuide } from '../lib/brand-guide';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
 import { audioTools } from '../tools/audio';
+import { graphicsTools } from '../tools/grafica';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { musicTools } from '../tools/musica';
@@ -36,7 +37,12 @@ await writeBrandGuide(brandDir, brand);
 // Il progetto video del brand è pronto a ogni turno: un video si può chiedere in qualsiasi momento.
 const videoEnv = await prepareVideoProject(brandDir);
 
-const mcpServers: Record<string, McpServerConfig> = { moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN) };
+// Il browser del render resta aperto per tutto il turno: si chiude alla fine.
+const graphics = graphicsTools(brandDir, GEMINI_API_KEY);
+const mcpServers: Record<string, McpServerConfig> = {
+  moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN),
+  grafica: graphics.server,
+};
 if (GEMINI_API_KEY) {
   mcpServers.immagini = imageTools(brandDir, GEMINI_API_KEY);
   mcpServers.vista = visionTools(brandDir, GEMINI_API_KEY);
@@ -96,6 +102,7 @@ try {
 } catch (error) {
   if (!abort.signal.aborted) throw error;
 } finally {
+  await graphics.close();
   // Senza lo stdin aperto il processo si chiude da solo, dopo aver scritto tutto l'output.
   process.stdin.destroy();
 }
