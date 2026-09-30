@@ -129,63 +129,12 @@
   margin-top: 4px;
 }
 
+// I passaggi di un blocco: la stessa lista delle idee e dell'onboarding, in un riquadro.
 .tools {
-  align-self: flex-start;
-  max-width: 100%;
-
-  summary {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border: 1px solid var(--border-card);
-    border-radius: 999px;
-    cursor: pointer;
-    list-style: none;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-  }
-
-  .spinner {
-    width: 10px;
-    height: 10px;
-  }
-}
-
-.tool-now {
-  max-width: 420px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tool-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 8px 0 0;
-  padding: 0 0 0 12px;
-  list-style: none;
-
-  li {
-    display: flex;
-    gap: 8px;
-    min-width: 0;
-  }
-}
-
-.tool-name {
-  flex: none;
-  color: var(--text-title);
-  font-weight: 600;
-}
-
-.tool-detail {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  width: min(560px, 100%);
+  padding: 12px 14px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
 }
 
 .thinking {

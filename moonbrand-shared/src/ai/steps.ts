@@ -2,6 +2,7 @@ import type { BrandKind, Palette } from '../domain/brand';
 
 // kind: un blocco di testo di Claude o una chiamata a un tool; manca negli step scritti a mano.
 // tool: il nome del tool chiamato, per il codice; a chi aspetta si mostrano solo label e detail.
+// startedAt, endedAt: in millisecondi, per il tempo di ogni passaggio; mancano negli step salvati prima.
 export interface AiStep {
   id: string;
   label: string;
@@ -9,6 +10,8 @@ export interface AiStep {
   status: 'running' | 'done' | 'failed';
   kind?: 'text' | 'tool';
   tool?: string;
+  startedAt?: number;
+  endedAt?: number;
 }
 
 export type OnAiSteps = (steps: AiStep[]) => void;
@@ -27,10 +30,10 @@ export function createStepLog(onSteps?: OnAiSteps): StepLog {
   };
   return {
     start: (id, label, detail) =>
-      update([...steps.filter((step) => step.id !== id), { id, label, ...(detail ? { detail } : {}), status: 'running' }]),
+      update([...steps.filter((step) => step.id !== id), { id, label, ...(detail ? { detail } : {}), status: 'running', startedAt: Date.now() }]),
     finish: (id, { failed = false, detail } = {}) => {
       if (!steps.some((step) => step.id === id)) return;
-      update(steps.map((step) => (step.id === id ? { ...step, status: failed ? 'failed' : 'done', ...(detail !== undefined && { detail }) } : step)));
+      update(steps.map((step) => (step.id === id ? { ...step, status: failed ? 'failed' : 'done', endedAt: Date.now(), ...(detail !== undefined && { detail }) } : step)));
     },
     drop: (id) => {
       if (steps.some((step) => step.id === id)) update(steps.filter((step) => step.id !== id));

@@ -237,6 +237,8 @@ async function run(job: Job): Promise<void> {
   // uno alla volta, quindi la posizione si conta per id del messaggio.
   const blockCount = new Map<string, number>();
   let streaming: string | undefined;
+  // Quando è finito l'ultimo passaggio: il testo che Claude scrive dopo è durato da lì.
+  let lastEventAt = Date.now();
 
   const lines = createInterface({ input: child.stdout });
   lines.on('line', (line) => {
@@ -260,7 +262,7 @@ async function run(job: Job): Promise<void> {
         streaming = event.message.id;
       } else if (event.type === 'content_block_start' && event.content_block.type === 'text' && streaming) {
         const id = `${streaming}-${event.index}`;
-        steps.set(id, { id, label: event.content_block.text, status: 'running', kind: 'text' });
+        steps.set(id, { id, label: event.content_block.text, status: 'running', kind: 'text', startedAt: Date.now() });
         changed();
       } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta' && streaming) {
         const step = steps.get(`${streaming}-${event.index}`);
@@ -269,6 +271,7 @@ async function run(job: Job): Promise<void> {
       }
     } else if (message.type === 'assistant') {
       const messageId = message.message.id;
+      const now = Date.now();
       for (const block of message.message.content) {
         const index = blockCount.get(messageId) ?? 0;
         blockCount.set(messageId, index + 1);
@@ -279,24 +282,26 @@ async function run(job: Job): Promise<void> {
             steps.delete(id);
             continue;
           }
-          steps.set(id, { id, label: text, status: 'done', kind: 'text' });
+          steps.set(id, { id, label: text, status: 'done', kind: 'text', startedAt: steps.get(id)?.startedAt ?? lastEventAt, endedAt: now });
           // Fuori dalla chat il testo è Claude che si parla tra un passaggio e l'altro: si mostra come lo legge Haiku.
           if (!kind.reply) readStep(id, 'testo', text);
         } else if (block.type === 'tool_use') {
           const input = block.input as Record<string, unknown>;
           const known = toolStep(block.name, input);
           const label = known?.label ?? FALLBACK_STEP;
-          steps.set(block.id, { id: block.id, label, ...(known?.detail && { detail: known.detail }), status: 'running', kind: 'tool', tool: block.name });
+          steps.set(block.id, { id: block.id, label, ...(known?.detail && { detail: known.detail }), status: 'running', kind: 'tool', tool: block.name, startedAt: now });
           if (known === null) hidden.add(block.id);
           else if (known === undefined) readStep(block.id, block.name, input, FALLBACK_STEP);
         }
       }
+      lastEventAt = now;
       changed();
     } else if (message.type === 'user' && Array.isArray(message.message.content)) {
+      lastEventAt = Date.now();
       for (const block of message.message.content) {
         if (block.type !== 'tool_result') continue;
         const step = steps.get(block.tool_use_id);
-        if (step) steps.set(step.id, { ...step, status: block.is_error ? 'failed' : 'done' });
+        if (step) steps.set(step.id, { ...step, status: block.is_error ? 'failed' : 'done', endedAt: lastEventAt });
       }
       changed();
     } else if (message.type === 'result') {
@@ -319,7 +324,7 @@ async function run(job: Job): Promise<void> {
   const wasCancelled = cancelled.delete(job.id);
   if (stopping) return;
 
-  for (const step of steps.values()) if (step.status === 'running') steps.set(step.id, { ...step, status: 'done' });
+  for (const step of steps.values()) if (step.status === 'running') steps.set(step.id, { ...step, status: 'done', endedAt: Date.now() });
   if (wasCancelled) {
     await finish(job.id, { status: 'stopped', steps: visible(), cost: outcome.cost, sessionId });
     console.log(`[${job.id}] fermato`);

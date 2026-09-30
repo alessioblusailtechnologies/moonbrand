@@ -42,31 +42,11 @@
               <p class="mine">{{ turn.message }}</p>
             }
             <div class="reply">
-              @for (block of turn.blocks; track block.id) {
+              @for (block of turn.blocks; track block.id; let lastBlock = $last) {
                 @if (block.kind === 'text') {
                   <mb-markdown [text]="block.text" [animate]="animated(turn, block.id)" />
                 } @else {
-                  <details class="tools">
-                    <summary class="caption">
-                      @if (runningStep(block.steps); as step) {
-                        <span class="spinner"></span>
-                        <span class="tool-now">{{ step.label }}</span>
-                      } @else {
-                        <mb-icon name="check" [size]="14" />
-                        {{ block.steps.length === 1 ? '1 passaggio' : block.steps.length + ' passaggi' }}
-                      }
-                    </summary>
-                    <ol class="tool-list">
-                      @for (step of block.steps; track step.id) {
-                        <li class="caption" [class.failed]="step.status === 'failed'">
-                          <span class="tool-name">{{ step.label }}</span>
-                          @if (step.detail) {
-                            <span class="tool-detail">{{ step.detail }}</span>
-                          }
-                        </li>
-                      }
-                    </ol>
-                  </details>
+                  <mb-step-list class="tools" [steps]="block.steps" [live]="active(turn) && lastBlock" />
                 }
               }
               @for (content of turn.contents; track content.id) {

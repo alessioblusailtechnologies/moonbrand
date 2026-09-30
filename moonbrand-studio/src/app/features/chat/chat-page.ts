@@ -34,12 +34,14 @@ import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { Markdown } from '../../ui/markdown';
+import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from '../contents/content-preview';
 import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
 
 // Nella risposta di un turno i testi di Claude si leggono, i tool di fila si raccolgono in un blocco solo.
-type Block = { kind: 'text'; id: string; text: string } | { kind: 'tools'; id: string; steps: AiStep[] };
+// streaming: il testo sta ancora arrivando.
+type Block = { kind: 'text'; id: string; text: string; streaming: boolean } | { kind: 'tools'; id: string; steps: AiStep[] };
 
 // Una foto scelta per il prossimo messaggio: si carica subito, il messaggio la cita quando è pronta.
 // progress: per un video, quanto è già partito (da 0 a 1); a 1 il server lo sta convertendo.
@@ -71,7 +73,7 @@ const STICK_PX = 80;
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, ContentPreview],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, ContentPreview],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -423,15 +425,12 @@ export class ChatPage {
     return turn.job.status === 'queued' || turn.job.status === 'running';
   }
 
-  // Tra un passaggio finito e il testo che non è ancora partito non si muove niente: lì si dice che sta pensando.
+  // Finché il turno non è finito qualcosa si muove sempre: prima della risposta e dopo un testo concluso si dice che
+  // sta pensando; tra un passaggio e l'altro lo dice il blocco dei passaggi, che resta vivo finché è l'ultimo.
   protected waiting(blocks: Block[], turn: ConversationTurn): boolean {
     if (!this.active(turn)) return false;
     const last = blocks.at(-1);
-    return !last || (last.kind === 'tools' && !this.runningStep(last.steps));
-  }
-
-  protected runningStep(steps: AiStep[]): AiStep | undefined {
-    return steps.find((step) => step.status === 'running');
+    return !last || (last.kind === 'text' && !last.streaming);
   }
 
   // La copertina o la prima slide, per la chip in fondo.
@@ -453,16 +452,20 @@ function savesOf(steps: AiStep[]): number {
   return steps.filter((step) => step.kind === 'tool' && /contenuto_(salva|aggiorna)$/.test(step.tool ?? step.label) && step.status === 'done').length;
 }
 
+// Un blocco di passaggi prende il nome dal testo che lo precede: resta lo stesso anche quando un passaggio
+// nascosto si mostra dopo, così il blocco non si ricrea (e non perde tempi e accordion aperto).
 function blocksOf(steps: AiStep[]): Block[] {
   const blocks: Block[] = [];
+  let after = 'start';
   for (const step of steps) {
     if (step.kind === 'text') {
-      blocks.push({ kind: 'text', id: step.id, text: step.label });
+      blocks.push({ kind: 'text', id: step.id, text: step.label, streaming: step.status === 'running' });
+      after = step.id;
       continue;
     }
     const last = blocks.at(-1);
     if (last?.kind === 'tools') last.steps.push(step);
-    else blocks.push({ kind: 'tools', id: step.id, steps: [step] });
+    else blocks.push({ kind: 'tools', id: `tools-${after}`, steps: [step] });
   }
   return blocks;
 }
