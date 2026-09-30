@@ -4,7 +4,7 @@ import path from 'node:path';
 import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import { VIDEO_ASPECT, type ContentFormat } from '@moonbrand/shared/domain/content';
+import { formatAspects, hasDocument, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
 import { graphicsTools } from '../tools/grafica';
@@ -18,24 +18,24 @@ import { prepareVideoProject } from './video';
 // Le regole di scrittura e di stile stanno nelle skill moonbrand:contenuti e moonbrand:video (plugin/skills); qui i numeri
 // che servono allo schema e al prompt del job.
 
-// Le proporzioni della copertina di un post, per canale.
-export const POST_ASPECT: Record<ChannelId, string> = { instagram: '4:5', facebook: '4:5', linkedin: '1:1', tiktok: '9:16', x: '16:9' };
-export const CAROUSEL_ASPECT = '4:5';
-export const ARTICLE_ASPECT = '1.91:1';
 export const SLIDES = { min: 5, max: 7 };
 
-export const videoAspects = (channels: readonly ChannelId[]) => [...new Set(channels.map((channel) => VIDEO_ASPECT[channel]))];
+export const videoAspects = (channels: readonly ChannelId[]) => formatAspects('video', channels);
 
-// I file che servono: una copertina per proporzione nel post, le slide nel carosello, una copertina nell'articolo,
-// un video con la sua copertina per proporzione nel video.
+// I file che servono, nelle proporzioni dei canali (FORMAT_ASPECT): una copertina per proporzione nel post e nell'articolo,
+// un giro di slide per proporzione nel carosello, un video con la sua copertina per proporzione nel video.
 export function neededFiles(format: ContentFormat, channels: readonly ChannelId[]): string {
-  if (format === 'carousel') return `le slide del carosello, da ${SLIDES.min} a ${SLIDES.max}, tutte in ${CAROUSEL_ASPECT} (role «slide», index da 0)`;
-  if (format === 'article') return `una copertina in ${ARTICLE_ASPECT} (role «cover», index 0)`;
-  if (format === 'video') {
-    return `per ogni proporzione (${videoAspects(channels).join(', ')}) il video in MP4 (role «video») e la sua copertina in JPEG (role «cover»), con lo stesso index, da 0`;
+  const aspects = formatAspects(format, channels);
+  if (format === 'carousel') {
+    const rounds = aspects.length > 1 ? `, uno per proporzione (${aspects.join(', ')}) con lo stesso visivo adattato e gli stessi index` : ` in ${aspects[0]}`;
+    const pdf = hasDocument(format, channels) ? '. Per LinkedIn moonbrand riunisce da solo le slide 4:5 in un documento PDF: non farlo tu' : '';
+    return `le slide del carosello, da ${SLIDES.min} a ${SLIDES.max}${rounds} (role «slide», index da 0)${pdf}`;
   }
-  const aspects = [...new Set(channels.map((channel) => POST_ASPECT[channel]))];
-  return `la copertina del post in ${aspects.join(', ')}: una per proporzione, con lo stesso visivo adattato (role «cover», index da 0)`;
+  if (format === 'video') {
+    return `per ogni proporzione (${aspects.join(', ')}) il video in MP4 (role «video») e la sua copertina in JPEG (role «cover»), con lo stesso index, da 0`;
+  }
+  const what = format === 'article' ? 'la copertina dell’articolo' : 'la copertina del post';
+  return `${what} in ${aspects.join(', ')}: una per proporzione, con lo stesso visivo adattato (role «cover», index da 0)`;
 }
 
 export function contentDir(contentId: string): string {
@@ -146,7 +146,7 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
                 },
                 role: { type: 'string', enum: video ? ['cover', 'video'] : ['cover', 'slide'] },
                 index: { type: 'integer', minimum: 0, description: 'L’ordine: 0 per la prima copertina, slide o video' },
-                aspect: { type: 'string', enum: ['4:5', '1:1', '9:16', '16:9', '1.91:1'] },
+                aspect: { type: 'string', enum: formatAspects(format, channels), description: 'La proporzione: solo quelle dei canali del contenuto' },
               },
             },
           },

@@ -130,6 +130,34 @@ export async function setContentScript(db: Queryable, contentId: string, script:
   return rows[0] ? toContent(rows[0]) : null;
 }
 
+// Il testo di un canale corretto a mano: gli altri canali non cambiano, e il contenuto torna bozza.
+export async function setContentVariants(db: Queryable, contentId: string, variants: ChannelVariant[]): Promise<Content | null> {
+  const { rows } = await db.query<ContentRow>(
+    `update presenza.contents set variants = $2::jsonb, status = 'draft', approved_at = null, updated_at = now()
+     where id = $1 returning ${COLUMNS}`,
+    [contentId, JSON.stringify(variants)],
+  );
+  return rows[0] ? toContent(rows[0]) : null;
+}
+
+// I canali cambiati senza riscrivere niente: un canale tolto (con il suo testo e i file che servivano solo a lui),
+// o aggiunto al copione di un video, che non ha ancora testi né file. Lo stato non cambia: non c'è niente di nuovo da approvare.
+export async function setContentChannels(
+  db: Queryable,
+  contentId: string,
+  channels: ChannelId[],
+  variants: ChannelVariant[],
+  files: ContentVisual['files'],
+): Promise<Content | null> {
+  const { rows } = await db.query<ContentRow>(
+    `update presenza.contents
+       set channels = $2, variants = $3::jsonb, visual = visual || jsonb_build_object('files', $4::jsonb), updated_at = now()
+     where id = $1 returning ${COLUMNS}`,
+    [contentId, channels, JSON.stringify(variants), JSON.stringify(files ?? [])],
+  );
+  return rows[0] ? toContent(rows[0]) : null;
+}
+
 export async function bumpRevision(db: Queryable, contentId: string): Promise<void> {
   await db.query(`update presenza.contents set revision = revision + 1, status = 'draft', approved_at = null where id = $1`, [contentId]);
 }

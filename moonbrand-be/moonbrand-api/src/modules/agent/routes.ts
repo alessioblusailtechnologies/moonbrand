@@ -36,13 +36,13 @@ const contentSchema = z.object({
     .array(
       z.object({
         file: z.string().min(1).max(300),
-        role: z.enum(['cover', 'slide', 'video']),
+        role: z.enum(['cover', 'slide', 'video', 'document']),
         index: z.number().int().min(0).max(20),
         aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
       }),
     )
     .min(1)
-    .max(20),
+    .max(32),
 }) satisfies z.ZodType<AgentContentRequest>;
 
 const ideaSchema = z.object({

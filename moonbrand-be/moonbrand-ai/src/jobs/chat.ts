@@ -40,7 +40,7 @@ const videoEnv = await prepareVideoProject(brandDir);
 // Il browser del render resta aperto per tutto il turno: si chiude alla fine.
 const graphics = graphicsTools(brandDir, GEMINI_API_KEY);
 const mcpServers: Record<string, McpServerConfig> = {
-  moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN),
+  moonbrand: moonbrandTools(API_URL || 'http://localhost:3012', MOONBRAND_AGENT_TOKEN, brandDir, workDir),
   grafica: graphics.server,
 };
 if (GEMINI_API_KEY) {

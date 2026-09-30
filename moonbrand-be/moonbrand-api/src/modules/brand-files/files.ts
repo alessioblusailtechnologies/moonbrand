@@ -36,6 +36,7 @@ const CONTENT_TYPES: Record<string, string> = {
   '.gif': 'image/gif',
   '.mp4': 'video/mp4',
   '.mp3': 'audio/mpeg',
+  '.pdf': 'application/pdf',
 };
 
 // Un file da mandare a pezzi: i video si scorrono chiedendo solo la parte che serve (Range).

@@ -17,26 +17,37 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 
 ## Canali
 
-| Canale | Testo | Hashtag al massimo | Copertina del post |
+| Canale | Testo | Caratteri al massimo | Hashtag al massimo |
 | --- | --- | --- | --- |
-| LinkedIn (linkedin) | la prima riga deve fermare lo scorrimento; paragrafi brevi separati da una riga vuota; da 700 a 1.500 caratteri, fino a 2.900 per un articolo | 3 | 1:1 |
-| Instagram (instagram) | didascalia da 300 a 900 caratteri con l’aggancio nella prima riga; per un carosello invita a scorrere | 6 | 4:5 |
-| Facebook (facebook) | tono vicino e discorsivo, da 300 a 1.000 caratteri | 2 | 4:5 |
-| TikTok (tiktok) | didascalia cortissima, una o due righe sotto i 150 caratteri | 4 | 9:16 |
-| X (x) | al massimo 250 caratteri, una sola idea | 2 | 16:9 |
+| LinkedIn (linkedin) | la prima riga deve fermare lo scorrimento, le prime due righe (circa 210 caratteri) si vedono prima di «…altro»; paragrafi brevi separati da una riga vuota; da 700 a 1.500 caratteri, fino a 2.900 per un articolo | 3.000 | 3 |
+| Instagram (instagram) | didascalia da 300 a 900 caratteri: prima di «…altro» se ne vedono circa 125, lì va l’aggancio; per un carosello invita a scorrere | 2.200 | 6 |
+| Facebook (facebook) | tono vicino e discorsivo, da 300 a 1.000 caratteri | — | 2 |
+| TikTok (tiktok) | didascalia cortissima, una o due righe sotto i 150 caratteri: sta sopra l’immagine | 4.000 | 4 |
+| X (x) | una sola idea: testo e hashtag insieme al massimo 280 caratteri | 280 | 2 |
 
-Si scrive solo per i canali del brand, o per quelli richiesti.
+Si scrive solo per i canali del contenuto. L’utente può correggere a mano i testi: quando riprendi un contenuto, parti dai testi com’è salvato.
 
-## Formati
+## Formati e proporzioni
+
+Ogni canale ha le sue proporzioni, e non tutti reggono tutti i formati:
+
+| Formato | LinkedIn | Instagram | Facebook | TikTok | X |
+| --- | --- | --- | --- | --- | --- |
+| Post: la copertina | 1:1 | 4:5 | 4:5 | 9:16 | 16:9 |
+| Carosello: le slide | 4:5, e moonbrand ne fa il documento PDF | 4:5 | 4:5 | 9:16 (photo mode) | non c’è |
+| Articolo: la copertina | 16:9 | 4:5 | 4:5 | non c’è | 16:9 |
+| Video | 4:5 | 9:16 | 9:16 | 9:16 | 16:9 |
+
+Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, con lo stesso visivo adattato: non si ritaglia, si reimpagina.
 
 - **Post**: testo e un’immagine. headline è il titolo dell’immagine, fino a 60 caratteri, se l’immagine ne ha uno; slides resta vuoto.
-  Immagini: la copertina, una per proporzione dei canali scelti (vedi la tabella), con lo stesso visivo adattato: role «cover», index da 0.
+  Immagini: la copertina, una per proporzione: role «cover», index da 0.
 - **Carosello**: da 5 a 7 slide. La prima è l’aggancio, le centrali sviluppano un punto ciascuna, l’ultima chiude con un’azione; titoli fino a 40 caratteri, testi fino a 160. headline è il titolo della prima slide.
-  Immagini: una per slide, tutte in 4:5: role «slide», index da 0.
+  Immagini: un giro di slide per proporzione, con le stesse slide e gli stessi index: role «slide», index da 0. In 9:16 (TikTok) tieni i testi lontani dai bordi, che l’app copre in basso e a destra. Su LinkedIn il carosello si pubblica come documento: il PDF lo fa moonbrand dalle slide 4:5, tu non devi farlo.
 - **Articolo**: su LinkedIn il testo lungo, con un’apertura forte e tre o quattro paragrafi; sugli altri canali un testo breve che lo presenta. headline è il titolo dell’articolo; slides resta vuoto.
-  Immagini: una copertina in 1.91:1: role «cover», index 0.
+  Immagini: la copertina, una per proporzione (16:9 per LinkedIn e X, 4:5 per Instagram e Facebook): role «cover», index da 0.
 - **Video**: si fa con la skill moonbrand:video; i testi per canale seguono le regole di questa skill, come didascalie del video. headline è il titolo del video, se ne ha uno; slides resta vuoto; script e scenes sono il copione.
-  File: per ogni proporzione dei canali (9:16 per Instagram, Facebook e TikTok, 4:5 per LinkedIn, 16:9 per X) il video in MP4 con role «video» e la sua copertina con role «cover», stessa proporzione e stesso index, da 0.
+  File: per ogni proporzione il video in MP4 con role «video» e la sua copertina con role «cover», stessa proporzione e stesso index, da 0.
 
 Le immagini finali sono PNG o JPEG, i video MP4.
 

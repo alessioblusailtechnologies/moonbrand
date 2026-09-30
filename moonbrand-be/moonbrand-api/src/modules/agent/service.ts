@@ -5,7 +5,16 @@ import type pg from 'pg';
 
 import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import { cleanHashtags, type ChannelVariant, type Content, type ContentFile, type ContentVisual } from '@moonbrand/shared/domain/content';
+import {
+  cleanHashtags,
+  formatAspects,
+  sortFiles,
+  supportsFormat,
+  type ChannelVariant,
+  type Content,
+  type ContentFile,
+  type ContentVisual,
+} from '@moonbrand/shared/domain/content';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
 import { withIdentity } from '../../db/identity';
@@ -17,6 +26,7 @@ import type { AgentJob } from './repository';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
 const VIDEO_EXTENSIONS = new Set(['.mp4']);
+const DOCUMENT_EXTENSIONS = new Set(['.pdf']);
 
 const contentDir = (contentId: string) => `contenuti/${contentId}`;
 
@@ -60,19 +70,23 @@ export function getAgentContent(pool: pg.Pool, agent: AgentJob, contentId: strin
   });
 }
 
-// Immagini e video finali vanno nella cartella del contenuto con un nome nuovo a ogni salvataggio:
+// Immagini, video e documento finali vanno nella cartella del contenuto con un nome nuovo a ogni salvataggio:
 // così la sorgente può essere anche un'immagine già del contenuto, senza sovrascriverla mentre si copia.
+// Le slide di un carosello si ripetono per proporzione: role, index e proporzione insieme sono unici.
 async function publishFiles(files: BrandFiles, brandId: string, contentId: string, requested: AgentContentRequest['files']): Promise<ContentFile[]> {
   const stamp = Date.now().toString(36);
   const taken = new Set<string>();
   const published: ContentFile[] = [];
   for (const item of requested) {
-    const key = `${item.role}-${item.index}`;
-    if (taken.has(key)) throw ApiError.invalid(`Due immagini con role «${item.role}» e index ${item.index}: ogni immagine ha il suo index.`);
+    const key = `${item.role}-${item.index}-${item.aspect.replace(':', 'x')}`;
+    if (taken.has(key)) {
+      throw ApiError.invalid(`Due file con role «${item.role}», index ${item.index} e proporzione ${item.aspect}: ognuno ha il suo index.`);
+    }
     taken.add(key);
     const extension = path.extname(item.file).toLowerCase();
     if (item.role === 'video' && !VIDEO_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: il video va in MP4.`);
-    if (item.role !== 'video' && !IMAGE_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: servono immagini PNG o JPEG.`);
+    if (item.role === 'document' && !DOCUMENT_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: il documento va in PDF.`);
+    if ((item.role === 'cover' || item.role === 'slide') && !IMAGE_EXTENSIONS.has(extension)) throw ApiError.invalid(`${item.file}: servono immagini PNG o JPEG.`);
     const target = `${contentDir(contentId)}/${key}-${stamp}${extension === '.jpeg' ? '.jpg' : extension}`;
     await files.copy(brandId, item.file, target).catch((error: unknown) => {
       throw error instanceof ApiError
@@ -81,23 +95,30 @@ async function publishFiles(files: BrandFiles, brandId: string, contentId: strin
     });
     published.push({ file: target, role: item.role, index: item.index, aspect: item.aspect });
   }
-  const order = { cover: 0, slide: 1, video: 2 };
-  return published.sort((a, b) => (a.role === b.role ? a.index - b.index : order[a.role] - order[b.role]));
+  return sortFiles(published);
 }
 
 // Le regole che valgono anche per i job dei contenuti: solo i canali del brand, una variante per canale,
-// hashtag puliti e contati, le immagini giuste per il formato; un video ha la sua copertina in ogni proporzione.
+// hashtag puliti e contati, i formati che ogni canale regge, le immagini giuste per il formato;
+// un video ha la sua copertina in ogni proporzione.
 function check(request: AgentContentRequest, brandChannels: readonly string[]): ChannelVariant[] {
   const channels = [...new Set(request.channels)];
   const outside = channels.filter((channel) => !brandChannels.includes(channel));
   if (outside.length > 0) throw ApiError.invalid(`${outside.map(channelName).join(', ')}: non sono tra i canali del brand (${brandChannels.join(', ')}).`);
+  const unsupported = channels.filter((channel) => !supportsFormat(request.format, channel));
+  if (unsupported.length > 0) {
+    throw ApiError.invalid(`${unsupported.map(channelName).join(', ')}: il formato «${request.format}» qui non c’è (vedi la skill moonbrand:contenuti). Togli il canale o cambia formato.`);
+  }
   const variants = channels.map((channel) => {
     const variant = request.variants.find((item) => item.channel === channel);
     if (!variant) throw ApiError.invalid(`Manca il testo per ${channelName(channel)}.`);
     return { channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, channel) };
   });
-  const slides = request.files.filter((file) => file.role === 'slide').length;
-  if (request.format === 'carousel' && slides < 2) throw ApiError.invalid('Un carosello ha almeno 2 immagini con role «slide».');
+  const slides = request.files.filter((file) => file.role === 'slide');
+  if (request.format === 'carousel') {
+    const missing = formatAspects('carousel', channels).filter((aspect) => slides.filter((file) => file.aspect === aspect).length < 2);
+    if (missing.length > 0) throw ApiError.invalid(`Un carosello ha almeno 2 slide (role «slide») in ogni proporzione dei suoi canali: mancano in ${missing.join(', ')}.`);
+  }
   if (request.format !== 'carousel' && !request.files.some((file) => file.role === 'cover')) {
     throw ApiError.invalid('Serve almeno un’immagine con role «cover».');
   }

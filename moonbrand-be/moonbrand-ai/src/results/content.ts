@@ -4,9 +4,10 @@ import path from 'node:path';
 import type pg from 'pg';
 
 import type { ContentEditJobInput, ContentJobInput, ContentVideoJobInput } from '@moonbrand/shared/api/contract';
-import { cleanHashtags, type ChannelVariant, type ContentFile, type ContentVisual, type VideoScene } from '@moonbrand/shared/domain/content';
+import { cleanHashtags, hasDocument, sortFiles, type ChannelVariant, type ContentFile, type ContentVisual, type VideoScene } from '@moonbrand/shared/domain/content';
 
 import { contentDir } from '../lib/content';
+import { carouselDocument } from '../lib/document';
 
 interface ContentResult {
   title: string;
@@ -27,8 +28,6 @@ const exists = (file: string) =>
     () => false,
   );
 
-const ROLE_ORDER = { cover: 0, slide: 1, video: 2 };
-
 const cleanScenes = (scenes: VideoScene[]): VideoScene[] =>
   scenes.map((scene) => ({
     seconds: Math.max(0.5, Math.round(scene.seconds * 10) / 10),
@@ -39,7 +38,7 @@ const cleanScenes = (scenes: VideoScene[]): VideoScene[] =>
   }));
 
 // Il contenuto scritto dal job va nella sua riga di presenza.contents, nella forma che legge anche social-app.
-// Qui valgono le regole che il modello potrebbe non rispettare: solo i canali richiesti,
+// Qui valgono le regole che il modello potrebbe non rispettare: solo i canali richiesti (che un ritocco può aver cambiato),
 // hashtag puliti e contati, solo i file che esistono davvero nella cartella del contenuto.
 // scriptOnly: il job ha scritto solo il copione di un video (il job content di un video, un ritocco del copione).
 export async function saveContent(
@@ -58,11 +57,12 @@ export async function saveContent(
     const scenes = cleanScenes(written.visual.scenes);
     if (scenes.length === 0) throw new Error('il copione non ha inquadrature');
     const visual: ContentVisual = { headline: '', slides: [], script: written.visual.script.trim(), scenes, design: null, files: [] };
-    await pool.query('update presenza.contents set title = $2, variants = $3::jsonb, visual = $4::jsonb where id = $1', [
+    await pool.query('update presenza.contents set title = $2, variants = $3::jsonb, visual = $4::jsonb, channels = $5 where id = $1', [
       contentId,
       written.title.trim().slice(0, 300) || 'Video',
       '[]',
       JSON.stringify(visual),
+      channels,
     ]);
     return;
   }
@@ -81,7 +81,12 @@ export async function saveContent(
   }
   if (files.length === 0) throw new Error('nessun file trovato nella cartella del contenuto');
   if (format === 'video' && !files.some((file) => file.role === 'video')) throw new Error('nessun video trovato nella cartella del contenuto');
-  files.sort((a, b) => (a.role === b.role ? a.index - b.index : ROLE_ORDER[a.role] - ROLE_ORDER[b.role]));
+  // Il documento PDF per LinkedIn lo fa moonbrand dalle slide, dopo che Claude le ha controllate.
+  if (hasDocument(format, channels)) {
+    const document = await carouselDocument(brandDir, files, `${dir}documento-linkedin.pdf`);
+    if (document) files.push(document);
+  }
+  const sorted = sortFiles(files);
 
   const visual: ContentVisual = {
     headline: written.visual.headline.trim(),
@@ -90,13 +95,14 @@ export async function saveContent(
     scenes: format === 'video' ? cleanScenes(written.visual.scenes ?? []) : [],
     design: null,
     ...(written.visual.layout?.trim() && { layout: written.visual.layout.trim() }),
-    files,
+    files: sorted,
   };
 
-  await pool.query('update presenza.contents set title = $2, variants = $3::jsonb, visual = $4::jsonb where id = $1', [
+  await pool.query('update presenza.contents set title = $2, variants = $3::jsonb, visual = $4::jsonb, channels = $5 where id = $1', [
     contentId,
     written.title.trim().slice(0, 300) || 'Contenuto',
     JSON.stringify(variants),
     JSON.stringify(visual),
+    variants.map((variant) => variant.channel),
   ]);
 }

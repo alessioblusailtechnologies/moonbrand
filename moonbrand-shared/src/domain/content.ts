@@ -18,11 +18,11 @@ export interface CarouselSlide {
   body: string;
 }
 
-// Un file del contenuto nella cartella del brand: la copertina (una per proporzione), una slide
-// o il video (uno per proporzione, con la copertina della stessa proporzione).
+// Un file del contenuto nella cartella del brand: la copertina (una per proporzione), una slide (un giro per proporzione),
+// il video (uno per proporzione, con la copertina della stessa proporzione) o il documento PDF del carosello per LinkedIn.
 export interface ContentFile {
   file: string;
-  role: 'cover' | 'slide' | 'video';
+  role: 'cover' | 'slide' | 'video' | 'document';
   index: number;
   aspect: string;
   url?: string;
@@ -76,8 +76,39 @@ export interface Content {
   approvedAt: string | null;
 }
 
-// La proporzione del video per canale.
-export const VIDEO_ASPECT: Record<ChannelId, string> = { instagram: '9:16', facebook: '9:16', tiktok: '9:16', linkedin: '4:5', x: '16:9' };
+// Come esce ogni formato su ogni canale: la proporzione di copertina, slide o video, null se il canale non lo regge.
+// X non ha caroselli (al massimo 4 immagini, senza scorrimento); su TikTok il carosello è il photo mode in 9:16
+// e l'articolo non c'è, perché non si esce dall'app. L'articolo di LinkedIn ha la copertina in 16:9, altrove è un post che lo presenta.
+export const FORMAT_ASPECT: Record<ContentFormat, Record<ChannelId, string | null>> = {
+  post: { linkedin: '1:1', instagram: '4:5', facebook: '4:5', tiktok: '9:16', x: '16:9' },
+  carousel: { linkedin: '4:5', instagram: '4:5', facebook: '4:5', tiktok: '9:16', x: null },
+  article: { linkedin: '16:9', instagram: '4:5', facebook: '4:5', tiktok: null, x: '16:9' },
+  video: { linkedin: '4:5', instagram: '9:16', facebook: '9:16', tiktok: '9:16', x: '16:9' },
+};
+
+export const VIDEO_ASPECT = FORMAT_ASPECT.video as Record<ChannelId, string>;
+
+export const supportsFormat = (format: ContentFormat, channel: ChannelId): boolean => FORMAT_ASPECT[format][channel] !== null;
+
+// Le proporzioni che servono per questi canali, senza doppioni, nell'ordine dei canali.
+export const formatAspects = (format: ContentFormat, channels: readonly ChannelId[]): string[] => [
+  ...new Set(channels.flatMap((channel) => FORMAT_ASPECT[format][channel] ?? [])),
+];
+
+// Su LinkedIn un carosello si pubblica come documento: le slide in un PDF, che fa moonbrand.
+export const hasDocument = (format: ContentFormat, channels: readonly ChannelId[]): boolean => format === 'carousel' && channels.includes('linkedin');
+
+// I caratteri che ogni canale accetta in un post, hashtag compresi (su X senza abbonamento).
+export const TEXT_LIMIT: Record<ChannelId, number> = { linkedin: 3000, instagram: 2200, facebook: 63206, tiktok: 4000, x: 280 };
+
+// Il testo come si incolla sul canale: gli hashtag in fondo, dopo una riga vuota.
+const ROLE_ORDER: Record<ContentFile['role'], number> = { cover: 0, slide: 1, video: 2, document: 3 };
+
+// Nell'ordine in cui si mostrano: copertine, slide, video e documento, ognuno per index.
+export const sortFiles = <T extends Pick<ContentFile, 'role' | 'index'>>(files: readonly T[]): T[] =>
+  [...files].sort((a, b) => (a.role === b.role ? a.index - b.index : ROLE_ORDER[a.role] - ROLE_ORDER[b.role]));
+
+export const postText = (variant: Pick<ChannelVariant, 'text' | 'hashtags'>): string => [variant.text, variant.hashtags.join(' ')].filter(Boolean).join('\n\n');
 
 // Un video nasce in due tempi: prima il copione, da approvare, poi il video.
 export const hasScript = (content: Pick<Content, 'format' | 'visual'>): boolean => content.format === 'video' && content.visual.scenes.length > 0;

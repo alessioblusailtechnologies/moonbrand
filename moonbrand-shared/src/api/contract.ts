@@ -213,10 +213,23 @@ export interface ContentResponse {
   content: Content;
   // Il lavoro che sta preparando o ritoccando il contenuto, se c'è.
   jobId: string | null;
+  // I canali del brand: tra questi si aggiungono canali al contenuto.
+  brandChannels: ChannelId[];
 }
 
 export interface ContentEditRequest {
   instruction: string;
+}
+
+// Il testo di un canale corretto a mano.
+export interface ContentVariantRequest {
+  text: string;
+  hashtags: string[];
+}
+
+// Un canale in più: testo e immagini li prepara un job, tranne nel copione di un video, dove si aggiunge e basta.
+export interface ContentChannelRequest {
+  channel: ChannelId;
 }
 
 // Il copione di un video, come lo corregge l'utente prima di generare il video.

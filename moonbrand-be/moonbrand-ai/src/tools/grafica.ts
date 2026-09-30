@@ -32,6 +32,13 @@ const CHECKS = readFileSync(new URL('./grafica-controlli.js', import.meta.url), 
   .replace(/^(\s*\/\/.*\n)+/, '')
   .trim();
 
+// Il Chrome headless che Remotion ha già scaricato: serve al render e al documento PDF dei caroselli.
+export async function launchChrome(): Promise<Browser> {
+  const status = await ensureBrowser();
+  if (status.type !== 'local-puppeteer-browser' && status.type !== 'user-defined-path') throw new Error('Chrome headless non disponibile');
+  return puppeteer.launch({ executablePath: status.path, headless: true, args: ['--hide-scrollbars', '--font-render-hinting=none'] });
+}
+
 // Il render da solo, senza tool: lo usa renderizza (e chi lo vuole provare da fuori).
 export function createRenderer(folder: string) {
   const root = path.resolve(folder);
@@ -41,11 +48,7 @@ export function createRenderer(folder: string) {
     return full;
   };
   let browser: Promise<Browser> | null = null;
-  const openBrowser = () =>
-    (browser ??= ensureBrowser().then((status) => {
-      if (status.type !== 'local-puppeteer-browser' && status.type !== 'user-defined-path') throw new Error('Chrome headless non disponibile');
-      return puppeteer.launch({ executablePath: status.path, headless: true, args: ['--hide-scrollbars', '--font-render-hinting=none'] });
-    }));
+  const openBrowser = () => (browser ??= launchChrome());
 
   async function render(html: string, file: string, aspect: Aspect): Promise<string> {
     const source = inside(html);
@@ -106,7 +109,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
           }),
         )
         .min(1)
-        .max(10),
+        .max(16),
       domanda: z.string().min(10).optional().describe('Cosa far controllare a Gemini sulle immagini appena fatte'),
     },
     async ({ uscite, domanda }) => {

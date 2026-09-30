@@ -1,6 +1,10 @@
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
+import { hasDocument } from '@moonbrand/shared/domain/content';
+
+import { carouselDocument } from '../lib/document';
+
 const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
 
 const content = {
@@ -50,12 +54,18 @@ const content = {
       }),
     )
     .min(1)
-    .describe('Le immagini finali in PNG o JPEG e i video in MP4: moonbrand li copia nella cartella del contenuto'),
+    .describe(
+      'Le immagini finali in PNG o JPEG e i video in MP4, nelle proporzioni dei canali (skill moonbrand:contenuti): moonbrand li copia nella cartella del contenuto. ' +
+        'Un carosello ha un giro di slide per proporzione, con gli stessi index; il documento PDF per LinkedIn lo aggiunge moonbrand.',
+    ),
 };
+
+type ContentInput = z.infer<z.ZodObject<typeof content>>;
 
 // I tool della chat per i dati di moonbrand: contenuti e idee passano dall'API, con il token del job.
 // L'API decide cosa si può fare: solo il brand del job, solo mentre il job è in corso.
-export function moonbrandTools(apiUrl: string, token: string) {
+// workDir: la cartella di lavoro della conversazione, dentro quella del brand.
+export function moonbrandTools(apiUrl: string, token: string, brandDir: string, workDir: string) {
   const call = async (method: string, route: string, body?: unknown) => {
     try {
       const response = await fetch(`${apiUrl}/v1/agent${route}`, {
@@ -71,6 +81,14 @@ export function moonbrandTools(apiUrl: string, token: string) {
     } catch (error) {
       return { content: [{ type: 'text' as const, text: `moonbrand non risponde: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
     }
+  };
+
+  // Un carosello per LinkedIn esce anche come documento PDF: lo fa moonbrand dalle slide, prima di salvare.
+  // Se le slide non si leggono si salva senza: l'API dirà a Claude quale percorso è sbagliato.
+  const withDocument = async (input: ContentInput) => {
+    if (!hasDocument(input.format, input.channels)) return input;
+    const document = await carouselDocument(brandDir, input.files, `${workDir}/documento-linkedin-${Date.now().toString(36)}.pdf`).catch(() => null);
+    return document ? { ...input, files: [...input.files, document] } : input;
   };
 
   const tools = [
@@ -93,14 +111,14 @@ export function moonbrandTools(apiUrl: string, token: string) {
       'Salva un contenuto nuovo nella sezione Contenuti, come bozza: post, carosello, articolo o video. Da usare appena il contenuto è pronto: testi per ogni canale e immagini o video finali controllati. ' +
         'Un video si salva con format «video»: l’MP4 con role «video» e la copertina (PNG o JPEG) con role «cover», nella stessa proporzione; in chat compare con il suo lettore.',
       content,
-      (input) => call('POST', '/contents', input),
+      async (input) => call('POST', '/contents', await withDocument(input)),
       { alwaysLoad: true },
     ),
     tool(
       'contenuto_aggiorna',
       'Riscrive un contenuto già salvato, che torna bozza, anche cambiandone il formato (per esempio da post a video). Va passato il contenuto completo, anche le parti che non cambiano.',
       { id: z.string().describe('L’id del contenuto'), ...content },
-      ({ id, ...input }) => call('PUT', `/contents/${encodeURIComponent(id)}`, input),
+      async ({ id, ...input }) => call('PUT', `/contents/${encodeURIComponent(id)}`, await withDocument(input)),
       { alwaysLoad: true },
     ),
     tool(

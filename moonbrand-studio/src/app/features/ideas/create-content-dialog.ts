@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, input, output, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, type OnInit } from '@angular/core';
 
 import type { CreateContentRequest } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import type { ContentFormat } from '@moonbrand/shared/domain/content';
+import { supportsFormat, type ContentFormat } from '@moonbrand/shared/domain/content';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
 import { lockPageScroll } from '../../ui/scroll-lock';
-import { FORMAT_OPTIONS } from '../contents/labels';
+import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
 
 @Component({
   selector: 'mb-create-content-dialog',
@@ -26,7 +26,7 @@ import { FORMAT_OPTIONS } from '../contents/labels';
         <div class="formats" role="radiogroup" aria-label="Formato">
           @for (option of formats; track option.id) {
             <button class="option-card" type="button" role="radio" [attr.aria-checked]="format() === option.id"
-              [class.selected]="format() === option.id" (click)="format.set(option.id)">
+              [class.selected]="format() === option.id" (click)="choose(option.id)">
               <span class="grow">
                 <span class="strong-sm">{{ option.label }}</span>
                 <span class="caption">{{ option.hint }}</span>
@@ -42,11 +42,14 @@ import { FORMAT_OPTIONS } from '../contents/labels';
         <div class="chips" role="group" aria-label="Canali">
           @for (channel of channels(); track channel) {
             <button class="chip" type="button" [attr.aria-pressed]="selected().includes(channel)" [class.selected]="selected().includes(channel)"
-              (click)="toggle(channel)">
+              [disabled]="!supports(channel)" (click)="toggle(channel)">
               {{ name(channel) }}
             </button>
           }
         </div>
+        @if (unsupported()) {
+          <p class="caption">{{ unsupported() }}</p>
+        }
       </div>
 
       <div class="actions">
@@ -102,6 +105,11 @@ import { FORMAT_OPTIONS } from '../contents/labels';
       flex-direction: column;
       gap: 8px;
     }
+    .chip:disabled {
+      border-color: var(--grey-100);
+      color: var(--grey-300);
+      cursor: not-allowed;
+    }
     .option-card {
       padding: 12px 14px;
       border-color: var(--grey-100);
@@ -130,8 +138,26 @@ export class CreateContentDialog implements OnInit {
   protected readonly selected = signal<ChannelId[]>([]);
   protected readonly name = channelName;
 
+  // I canali del brand che non reggono il formato scelto, detti in una frase.
+  protected readonly unsupported = computed(() => {
+    const names = this.channels()
+      .filter((channel) => !supportsFormat(this.format(), channel))
+      .map(channelName);
+    return names.length > 0 ? `Su ${names.join(' e ')} ${FORMAT_NAMES[this.format()]} non c’è.` : '';
+  });
+
   ngOnInit(): void {
-    this.selected.set([...this.channels()]);
+    this.selected.set(this.channels().filter((channel) => supportsFormat(this.format(), channel)));
+  }
+
+  protected supports(channel: ChannelId): boolean {
+    return supportsFormat(this.format(), channel);
+  }
+
+  // Cambiando formato si riparte da tutti i canali che lo reggono.
+  protected choose(format: ContentFormat): void {
+    this.format.set(format);
+    this.selected.set(this.channels().filter((channel) => supportsFormat(format, channel)));
   }
 
   protected toggle(channel: ChannelId): void {
