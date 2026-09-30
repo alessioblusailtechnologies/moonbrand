@@ -39,8 +39,8 @@
   ></textarea>
   <div class="composer-bar">
     <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
-    <button class="icon-btn" type="button" aria-label="Allega foto o video" title="Allega foto o video" (click)="pick()">
-      <mb-icon name="image-plus" />
+    <button class="attach" type="button" title="Allega foto o video" (click)="pick()">
+      <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> Allega
     </button>
     <span class="grow"></span>
     @if (dictation() === 'recording') {

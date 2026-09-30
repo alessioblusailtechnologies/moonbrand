@@ -28,7 +28,7 @@ import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
-import { Icon } from '../../ui/icon';
+import { Icon, type IconName } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { PendingMedia, pendingFromSteps } from '../../ui/pending-media';
 import { Markdown } from '../../ui/markdown';
@@ -43,11 +43,11 @@ import { Composer, type ComposerMessage } from './composer';
 type Block = { kind: 'text'; id: string; text: string; streaming: boolean } | { kind: 'tools'; id: string; steps: AiStep[] };
 
 // Spunti per la prima domanda: riempiono la casella, non partono da soli.
-const SUGGESTIONS = [
-  'Proponimi 5 idee per i prossimi post',
-  'Prepara un carosello su ',
-  'Prendi un’idea che ho tenuto e fanne un post',
-  'Cosa ho pubblicato finora e cosa manca?',
+const SUGGESTIONS: { icon: IconName; label: string; draft: string }[] = [
+  { icon: 'sparkle', label: 'Proponimi 5 idee per i prossimi post', draft: 'Proponimi 5 idee per i prossimi post' },
+  { icon: 'layers', label: 'Prepara un carosello su…', draft: 'Prepara un carosello su ' },
+  { icon: 'pen', label: 'Prendi un’idea che ho tenuto e fanne un post', draft: 'Prendi un’idea che ho tenuto e fanne un post' },
+  { icon: 'bar-chart', label: 'Cosa ho pubblicato finora e cosa manca?', draft: 'Cosa ho pubblicato finora e cosa manca?' },
 ];
 
 // Mentre risponde si legge più spesso: il testo arriva a pezzi e si svela con un ritmo costante.
@@ -115,7 +115,7 @@ export class ChatPage {
         const open = this.current();
         return open ? [{ label: 'Assistente', link: '/assistente' }, { label: open.title }] : [{ label: 'Assistente' }];
       },
-      () => (this.current() ? this.headerActions() : undefined),
+      () => this.headerActions(),
     );
     effect(() => {
       const id = this.conversationId();

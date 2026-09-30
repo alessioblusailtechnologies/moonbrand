@@ -2,7 +2,7 @@
 .chat {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--topbar-height) - 2 * var(--content-padding, 32px));
+  height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 2 * var(--content-padding, 32px));
   min-height: 480px;
   margin: 0 auto;
   animation: fade-up 240ms var(--ease);
@@ -23,46 +23,116 @@
   place-items: center;
 }
 
-// Una conversazione nuova: titolo, testo, la casella e gli spunti in una colonna al centro,
-// con margini larghi ai lati come nel riferimento; la conversazione aperta usa invece tutta la pagina.
+// Una conversazione nuova: titolo, testo, la casella e gli spunti in una colonna al centro;
+// la conversazione aperta usa invece tutta la pagina.
 .welcome {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: min(880px, 100%);
+  gap: 28px;
+  width: min(760px, 100%);
   margin: auto;
-  padding-bottom: 8vh;
-
-  .display {
-    font-size: 36px;
-  }
-
-  .body {
-    max-width: 620px;
-    margin-bottom: 12px;
-  }
+  padding: 16px 0 6vh;
 }
 
-.suggestions {
+.intro {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  max-width: 600px;
+  color: var(--text-body);
+  font-size: 16px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+// Gli spunti: schede con l'icona arancio, due per riga quando c'è posto.
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 10px;
 }
 
 .suggestion {
-  padding: 9px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   background: var(--white);
-  color: var(--text-title);
-  font-size: 13px;
+  color: #1d2939;
+  font-size: 14px;
+  line-height: 1.35;
   text-align: left;
   cursor: pointer;
-  transition: border-color 120ms var(--ease);
+  transition:
+    border-color 120ms var(--ease),
+    background-color 120ms var(--ease);
 
   &:hover {
-    border-color: var(--grey-500);
+    border-color: var(--grey-300);
+    background: #fdfcfa;
+  }
+}
+
+.suggestion-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+// Nella topbar: il brand kit che l'assistente sta usando.
+.kit {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--grey-100);
+  color: #475467;
+  font-size: 12.5px;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text-title);
+  }
+}
+
+.kit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    font-size: 34px;
+  }
+
+  .kit {
+    display: none;
   }
 }
 

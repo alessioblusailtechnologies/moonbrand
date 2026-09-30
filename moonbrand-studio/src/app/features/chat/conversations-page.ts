@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, type TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, type ElementRef, type TemplateRef, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ChatService } from '../../core/chat/chat.service';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
 
-// Tutte le conversazioni del brand: la sidebar mostra solo le ultime.
+// Tutte le conversazioni del brand: la sidebar mostra solo le ultime. Ci porta anche ⌘K, quindi si comincia dalla ricerca.
 @Component({
   selector: 'mb-conversations-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,6 +13,7 @@ import { Icon } from '../../ui/icon';
   template: `
     <section class="conversations">
       <input
+        #searchField
         class="sunken"
         type="search"
         aria-label="Cerca tra le conversazioni"
@@ -101,6 +102,7 @@ export class ConversationsPage {
   private readonly chat = inject(ChatService);
 
   private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
+  private readonly searchField = viewChild.required<ElementRef<HTMLInputElement>>('searchField');
   protected readonly search = signal('');
   protected readonly visible = computed(() => {
     const words = this.search().trim().toLowerCase();
@@ -114,6 +116,7 @@ export class ConversationsPage {
       () => this.headerActions(),
     );
     void this.chat.refresh();
+    afterNextRender(() => this.searchField().nativeElement.focus());
   }
 
   protected when(date: string): string {

@@ -299,9 +299,9 @@
 // Il pannello: i contenuti senza data e le idee tenute, da trascinare.
 .side {
   position: sticky;
-  top: calc(var(--topbar-height) + 16px);
+  top: 16px;
   gap: 12px;
-  max-height: calc(100vh - var(--topbar-height) - 32px);
+  max-height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 32px);
   padding: 16px;
 
   .segmented {

@@ -1,57 +1,16 @@
 @let active = brands.activeBrand();
-<button class="trigger" type="button" aria-haspopup="menu" [attr.aria-expanded]="open()" (click)="open.set(!open())">
+<button class="trigger" type="button" aria-haspopup="dialog" [class.compact]="compact()" [attr.aria-expanded]="picker.isOpen()"
+  [attr.title]="compact() ? active?.name : 'Cambia brand'" (click)="picker.open()">
   @if (active) {
     <mb-brand-avatar [name]="active.name" [logo]="active.logoUri" [color]="active.color" [size]="32" />
-    <span class="trigger-text">
-      <span class="strong-sm">{{ active.name }}</span>
-      <span class="caption">{{ kindLabel(active.kind) }}</span>
-    </span>
-  }
-  <mb-icon name="chevron-down" [size]="16" class="chevron" [class.up]="open()" />
-</button>
-
-@if (open()) {
-  <div class="menu" role="menu">
-    @if (active) {
-      <p class="label menu-label">Brand attivo</p>
-      <button class="item current" type="button" role="menuitemradio" aria-checked="true" title="Apri le impostazioni del brand"
-        (click)="openSettings()">
-        <mb-brand-avatar [name]="active.name" [logo]="active.logoUri" [color]="active.color" [size]="36" />
-        <span class="grow">
-          <span class="strong-sm name">{{ active.name }}</span>
-          <span class="caption">{{ kindLabel(active.kind) }} · Impostazioni</span>
-        </span>
-        <span class="current-tag"><mb-icon name="check" [size]="12" [stroke]="3" />Attivo</span>
-      </button>
-    }
-    @if (others().length > 0) {
-      <p class="label menu-label">Passa a</p>
-      <div class="list">
-        @for (brand of others(); track brand.id) {
-          <button class="item" type="button" role="menuitemradio" aria-checked="false" (click)="choose(brand.id)">
-            <mb-brand-avatar [name]="brand.name" [logo]="brand.logoUri" [color]="brand.color" [size]="28" />
-            <span class="grow">
-              <span class="strong-sm name">{{ brand.name }}</span>
-              <span class="caption">{{ kindLabel(brand.kind) }}</span>
-            </span>
-          </button>
-        }
-      </div>
-    }
-    <div class="divider"></div>
-    <button class="item action" type="button" role="menuitem" (click)="createBrand()">
-      <span class="plus"><mb-icon name="plus" [size]="16" /></span>
-      <span class="strong-sm">Nuovo brand</span>
-    </button>
-    <div class="divider"></div>
-    <div class="account">
-      <span class="grow">
-        <span class="strong-sm name">{{ auth.account()?.name || 'Il tuo account' }}</span>
-        <span class="caption name">{{ auth.account()?.email }}</span>
+    @if (!compact()) {
+      <span class="trigger-text">
+        <span class="trigger-name">{{ active.name }}</span>
+        <span class="trigger-kind">{{ kindLabel(active.kind) }}</span>
       </span>
-      <button class="icon-btn" type="button" title="Esci" aria-label="Esci" (click)="signOut()">
-        <mb-icon name="log-out" [size]="16" />
-      </button>
-    </div>
-  </div>
-}
+    }
+  }
+  @if (!compact()) {
+    <mb-icon name="chevrons-up-down" [size]="16" class="chevron" />
+  }
+</button>

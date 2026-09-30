@@ -4,55 +4,90 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
+import type { ConversationSummary } from '@moonbrand/shared/api/contract';
+
+import { AuthService } from '../../core/auth/auth.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { PageHeader } from '../../core/layout/page-header';
 import { Icon, type IconName } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
+import { BrandPicker, BrandPickerService } from './brand-picker';
 import { BrandSwitcher } from './brand-switcher';
 
-// Le sezioni dell'app, nell'ordine della sidebar; quelle con bottom stanno in fondo.
-// Sotto l'Assistente, le ultime conversazioni; le altre in /conversazioni.
-const RECENT_CHATS = 4;
-const CHATS_OPEN_KEY = 'mb.chats-open';
+// Le sezioni dell'app, nell'ordine della sidebar; le impostazioni stanno in fondo, sopra l'account.
+// Sotto le sezioni, le ultime conversazioni divise per giorno; le altre in /conversazioni.
+const RECENT_CHATS = 40;
+const COLLAPSED_KEY = 'mb.sidebar-collapsed';
 
-const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; bottom?: boolean }[] = [
+const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[] = [
   { path: '/assistente', label: 'Assistente', icon: 'message-circle', exact: false },
   { path: '/', label: 'Idee', icon: 'lightbulb', exact: true },
   { path: '/contenuti', label: 'Contenuti', icon: 'file-text', exact: false },
   { path: '/piano', label: 'Piano', icon: 'calendar', exact: false },
-  { path: '/impostazioni', label: 'Impostazioni brand', icon: 'settings', exact: true, bottom: true },
 ];
 
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
-  host: { '[style.--topbar-height.px]': 'topbarHeight()', '(document:keydown.escape)': 'menuOpen.set(false)' },
+  host: {
+    '[style.--topbar-height.px]': 'topbarHeight()',
+    '(document:keydown.escape)': 'menuOpen.set(false)',
+    '(document:keydown)': 'shortcut($event)',
+  },
   template: `
     @if (menuOpen()) {
       <div class="scrim" (click)="menuOpen.set(false)"></div>
     }
-    <aside class="sidebar" [class.open]="menuOpen()">
-      <div class="brand-mark"><mb-logo /></div>
+    <aside class="sidebar" [class.open]="menuOpen()" [class.collapsed]="collapsed()">
+      <div class="head">
+        <a class="brand-mark" routerLink="/assistente" aria-label="Moonbrand Studio"><mb-logo [compact]="collapsed()" /></a>
+        @if (!collapsed()) {
+          <button class="side-btn toggle" type="button" title="Comprimi la barra" aria-label="Comprimi la barra" (click)="toggleCollapsed()">
+            <mb-icon name="panel-left" [stroke]="1.8" />
+          </button>
+        }
+      </div>
+      @if (collapsed()) {
+        <button class="side-btn toggle wide" type="button" title="Espandi la barra" aria-label="Espandi la barra" (click)="toggleCollapsed()">
+          <mb-icon name="panel-left" [stroke]="1.8" />
+        </button>
+      }
+
+      <mb-brand-switcher [compact]="collapsed()" />
+
+      <div class="quick">
+        <a class="new-chat" routerLink="/assistente" [attr.title]="collapsed() ? 'Nuova chat' : null">
+          <mb-icon name="plus" [size]="16" [stroke]="2.2" />
+          @if (!collapsed()) {
+            <span>Nuova chat</span>
+          }
+        </a>
+        @if (!collapsed()) {
+          <a class="side-btn search" routerLink="/conversazioni" [title]="'Cerca tra le conversazioni (' + shortcutLabel + ')'"
+            aria-label="Cerca tra le conversazioni">
+            <mb-icon name="search" [size]="16" />
+          </a>
+        }
+      </div>
+
       <nav class="nav" aria-label="Sezioni">
         @for (section of sections; track section.path) {
-          <div class="nav-row" [class.bottom]="section.bottom">
-            <a class="nav-item" [routerLink]="section.path" routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label">
-              <mb-icon [name]="section.icon" [size]="20" />
-              <span class="nav-label">{{ section.label }}</span>
-            </a>
-            @if (section.path === '/assistente') {
-              <button class="expand" type="button" [class.open]="chatsOpen()" [attr.aria-expanded]="chatsOpen()"
-                [attr.aria-label]="chatsOpen() ? 'Nascondi le conversazioni' : 'Mostra le conversazioni'" (click)="toggleChats()">
-                <mb-icon name="chevron-down" [size]="16" />
-              </button>
-            }
-          </div>
-          @if (section.path === '/assistente' && chatsOpen() && recentChats().length > 0) {
-            <div class="sessions" aria-label="Ultime conversazioni">
-              @for (item of recentChats(); track item.id) {
+          <a class="nav-item" [routerLink]="section.path" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label">
+            <mb-icon [name]="section.icon" [stroke]="1.8" />
+            <span class="nav-label">{{ section.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="history" aria-label="Conversazioni">
+        @if (!collapsed()) {
+          @for (group of chatGroups(); track group.label) {
+            <div class="group">
+              <p class="group-label">{{ group.label }}</p>
+              @for (item of group.items; track item.id) {
                 <a class="session" [routerLink]="['/assistente', item.id]" routerLinkActive="active" ariaCurrentWhenActive="page"
                   [attr.title]="item.title">
                   <span class="session-title">{{ item.title }}</span>
@@ -61,11 +96,34 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
                   }
                 </a>
               }
-              <a class="show-all" routerLink="/conversazioni">Mostra tutte <mb-icon name="chevron-right" [size]="14" /></a>
             </div>
           }
+          @if (chat.conversations().length > recentCount) {
+            <a class="show-all" routerLink="/conversazioni">Mostra tutte <mb-icon name="chevron-right" [size]="14" /></a>
+          }
         }
-      </nav>
+      </div>
+
+      <div class="foot">
+        <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" ariaCurrentWhenActive="page" title="Impostazioni brand">
+          <mb-icon name="settings" [stroke]="1.8" />
+          <span class="nav-label">Impostazioni brand</span>
+        </a>
+        @if (auth.account(); as account) {
+          <div class="account">
+            <span class="initials" [attr.title]="collapsed() ? account.name : null">{{ initials(account.name) }}</span>
+            @if (!collapsed()) {
+              <span class="account-texts">
+                <span class="account-name">{{ account.name || 'Il tuo account' }}</span>
+                <span class="account-email">{{ account.email }}</span>
+              </span>
+              <button class="side-btn" type="button" title="Esci" aria-label="Esci" (click)="signOut()">
+                <mb-icon name="log-out" [size]="16" />
+              </button>
+            }
+          </div>
+        }
+      </div>
     </aside>
     <div class="main">
       <header class="topbar" #topbar>
@@ -76,9 +134,11 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
           @for (crumb of header.crumbs(); track $index; let last = $last) {
             @if (crumb.link && !last) {
               <a class="crumb" [routerLink]="crumb.link">{{ crumb.label }}</a>
-              <mb-icon class="crumb-sep" name="chevron-right" [size]="14" />
             } @else {
               <span class="crumb" [class.current]="last" [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+            }
+            @if (!last) {
+              <span class="crumb-sep" aria-hidden="true">/</span>
             }
           }
         </nav>
@@ -87,115 +147,190 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
             <ng-container [ngTemplateOutlet]="actions" />
           </div>
         }
-        <mb-brand-switcher />
       </header>
-      <main class="content">
+      <main class="content" #scroller data-page-scroller>
         <router-outlet />
       </main>
     </div>
+    <mb-brand-picker />
   `,
   styles: `
+    // La sidebar fa da cornice blu notte: la pagina è un pannello chiaro staccato di --frame dai bordi,
+    // e scorre dentro il pannello, sotto la barra in alto.
     :host {
       --content-padding: 32px;
+      --frame: 8px;
       display: flex;
-      min-height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--surface-sidebar);
     }
     .sidebar {
-      position: sticky;
-      top: 0;
       z-index: 20;
       display: flex;
       flex: none;
       flex-direction: column;
-      gap: 24px;
-      width: 232px;
-      height: 100vh;
-      padding: 18px 14px;
-      background: var(--surface-sidebar);
-      color: var(--white);
+      gap: 6px;
+      width: 272px;
+      padding: 14px 12px;
+      overflow: hidden;
+      color: var(--sidebar-text);
+      transition: width 200ms var(--ease);
+    }
+    .sidebar.collapsed {
+      width: 72px;
+    }
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 40px;
+      padding: 4px 6px 10px;
     }
     .brand-mark {
       display: flex;
-      align-items: center;
-      height: 28px;
-      padding: 0 10px;
-      overflow: hidden;
+      min-width: 0;
+      color: var(--white);
+      text-decoration: none;
     }
-    .nav {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      gap: 4px;
-      min-height: 0;
-    }
-    .nav-row {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .nav-row.bottom {
-      margin-top: auto;
-    }
-    .expand {
-      position: absolute;
-      top: 50%;
-      right: 6px;
+    .side-btn {
       display: grid;
+      flex: none;
       place-items: center;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       padding: 0;
       border: 0;
       border-radius: var(--radius-sm);
       background: transparent;
-      color: var(--sidebar-text);
+      color: var(--sidebar-muted);
       cursor: pointer;
-      transform: translateY(-50%);
+      transition:
+        background-color 120ms var(--ease),
+        color 120ms var(--ease);
     }
-    .expand:hover {
+    .side-btn:hover {
       background: var(--sidebar-hover);
       color: var(--white);
     }
-    .expand mb-icon {
-      transform: rotate(-90deg);
-      transition: transform 160ms var(--ease);
+    .toggle.wide {
+      width: 48px;
+      height: 36px;
+      border-radius: 10px;
     }
-    .expand.open mb-icon {
-      transform: none;
-    }
-    .nav-row:has(.nav-item.active) .expand {
-      color: var(--white);
-    }
-    .sessions {
+    .quick {
       display: flex;
-      flex: 0 1 auto;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .new-chat {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #1a1204;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color 120ms var(--ease);
+    }
+    .new-chat:hover {
+      background: var(--accent-hover);
+    }
+    .search {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--sidebar-text);
+    }
+    .search:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .nav {
+      display: flex;
       flex-direction: column;
       gap: 2px;
+      margin-top: 14px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      color: var(--sidebar-text);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      transition:
+        background-color 120ms var(--ease),
+        color 120ms var(--ease);
+    }
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: var(--white);
+    }
+    .nav-item.active {
+      background: var(--surface-sidebar-active);
+      color: var(--white);
+    }
+    .collapsed .nav-label {
+      display: none;
+    }
+    .history {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 14px;
       min-height: 0;
-      margin: 4px 0 10px;
+      margin-top: 18px;
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    }
+    .group {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .group-label {
+      padding: 0 12px 6px;
+      color: #5e6a82;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
     .session {
       display: flex;
       flex: none;
       align-items: center;
       gap: 8px;
-      min-height: 34px;
+      height: 34px;
       padding: 0 12px;
       border-radius: var(--radius-sm);
-      color: var(--sidebar-text);
-      font-size: 13px;
+      color: #9aa5ba;
+      font-size: 13.5px;
       text-decoration: none;
       transition:
         background-color 120ms var(--ease),
         color 120ms var(--ease);
     }
     .session:hover {
-      background: var(--sidebar-hover);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--white);
     }
     .session.active {
-      background: var(--surface-sidebar-active);
+      background: rgba(255, 255, 255, 0.07);
       color: var(--white);
     }
     .session-title {
@@ -212,62 +347,98 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
     }
     .show-all {
       display: inline-flex;
-      align-self: center;
+      align-self: flex-start;
       align-items: center;
       gap: 4px;
-      margin-top: 8px;
-      padding: 5px 10px 5px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm);
-      color: var(--white);
-      font-size: 12px;
+      padding: 4px 12px 8px;
+      color: var(--sidebar-muted);
+      font-size: 12.5px;
       text-decoration: none;
     }
     .show-all:hover {
-      border-color: rgba(255, 255, 255, 0.6);
+      color: var(--white);
     }
-    .nav-item {
+    .foot {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .account {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-height: 42px;
-      padding: 0 12px;
-      border-radius: var(--radius-md);
-      color: var(--sidebar-text);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      transition:
-        background-color 120ms var(--ease),
-        color 120ms var(--ease);
+      gap: 10px;
+      padding: 8px 6px;
     }
-    .nav-item:hover {
-      background: var(--sidebar-hover);
+    .initials {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--primary-soft);
       color: var(--white);
-    }
-    .nav-item.active {
-      background: var(--surface-sidebar-active);
-      color: var(--white);
+      font-size: 12px;
       font-weight: 600;
+    }
+    .account-texts {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+      line-height: 1.35;
+    }
+    .account-name,
+    .account-email {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .account-name {
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .account-email {
+      color: var(--sidebar-muted);
+      font-size: 12px;
+    }
+    .collapsed {
+      .nav-item {
+        justify-content: center;
+        width: 48px;
+        padding: 0;
+      }
+      .quick {
+        width: 48px;
+      }
+      .account {
+        justify-content: center;
+        width: 48px;
+        padding: 8px 0;
+      }
     }
     .main {
       display: flex;
       flex: 1;
       flex-direction: column;
       min-width: 0;
+      margin: var(--frame) var(--frame) var(--frame) 0;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--surface-app);
     }
     .topbar {
-      position: sticky;
-      top: 0;
       z-index: 10;
       display: flex;
+      flex: none;
       align-items: center;
       gap: 16px;
       height: var(--topbar-height);
-      padding: 0 24px 0 32px;
-      border-bottom: 1px solid rgba(20, 33, 61, 0.08);
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(12px);
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .crumbs {
       display: flex;
@@ -292,87 +463,53 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
     .crumb.current {
       flex: 0 1 auto;
       color: var(--text-title);
-      font-weight: 600;
+      font-weight: 500;
     }
     .crumb-sep {
-      color: var(--grey-300);
+      color: #c8ccd4;
     }
-    // I pulsanti della pagina, separati dal brand da una linea come nel riferimento.
     .page-actions {
       display: flex;
       flex: none;
       align-items: center;
       gap: 8px;
-      padding-right: 16px;
-      border-right: 1px solid rgba(20, 33, 61, 0.1);
     }
     .content {
       flex: 1;
+      min-height: 0;
       padding: var(--content-padding);
+      overflow-y: auto;
     }
     .burger,
     .scrim {
       display: none;
     }
+    // Sul tablet la barra resta compressa: c'è posto solo per le icone.
     @media (max-width: 900px) {
-      .sidebar {
-        width: 68px;
-        padding: 18px 10px;
-        align-items: center;
-      }
-      .brand-mark {
-        width: 32px;
-        padding: 0;
-      }
-      .nav-item {
-        justify-content: center;
-        width: 44px;
-        padding: 0;
-      }
-      .nav-label,
-      .sessions,
-      .expand {
+      .toggle {
         display: none;
       }
     }
     // Sul telefono la barra laterale diventa un menu che entra da sinistra, aperto dal pulsante nella barra in alto;
-    // in alto restano il titolo della pagina e il brand, e i pulsanti della pagina vanno su una seconda riga.
+    // la pagina occupa tutto lo schermo e i pulsanti della pagina vanno su una seconda riga.
     @media (max-width: 760px) {
       :host {
         --content-padding: 16px;
+        --frame: 0px;
       }
       .sidebar {
         position: fixed;
         inset: 0 auto 0 0;
         z-index: 60;
-        align-items: stretch;
         width: min(300px, 86vw);
         height: 100dvh;
-        padding: 18px 14px;
+        background: var(--surface-sidebar);
         transform: translateX(-100%);
         transition: transform 220ms var(--ease);
       }
       .sidebar.open {
         transform: none;
         box-shadow: var(--shadow-menu);
-      }
-      .brand-mark {
-        width: auto;
-        padding: 0 10px;
-      }
-      .nav-item {
-        justify-content: flex-start;
-        width: auto;
-        padding: 0 12px;
-      }
-      .nav-label {
-        display: inline;
-      }
-      .sessions {
-        display: flex;
-      }
-      .expand {
-        display: grid;
       }
       .scrim {
         position: fixed;
@@ -381,6 +518,9 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
         display: block;
         background: var(--scrim);
         animation: fade-in 160ms var(--ease);
+      }
+      .main {
+        border-radius: 0;
       }
       .burger {
         display: inline-flex;
@@ -397,10 +537,9 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
       .crumbs {
         font-size: 15px;
       }
-      // mb-icon mette il suo display sull'elemento: senza !important la freccia resterebbe.
       .crumb:not(.current),
       .crumb-sep {
-        display: none !important;
+        display: none;
       }
       .crumb.current {
         max-width: none;
@@ -409,10 +548,9 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
         order: 3;
         width: 100%;
         padding: 0 0 2px;
-        border-right: 0;
         overflow-x: auto;
       }
-      // Solo icone (il cestino della chat): stanno sulla prima riga, accanto al brand.
+      // Solo icone (il cestino della chat): stanno sulla prima riga.
       .page-actions:not(:has(.btn)) {
         order: 0;
         width: auto;
@@ -423,17 +561,25 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean; b
 })
 export class Shell {
   private readonly router = inject(Router);
+  protected readonly auth = inject(AuthService);
   protected readonly chat = inject(ChatService);
   protected readonly header = inject(PageHeader);
+  private readonly picker = inject(BrandPickerService);
   protected readonly sections = SECTIONS;
+  protected readonly recentCount = RECENT_CHATS;
+  protected readonly shortcutLabel = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl+K';
 
   // Il menu sul telefono: si chiude cambiando pagina.
   protected readonly menuOpen = signal(false);
   protected readonly topbarHeight = signal<number | null>(null);
   private readonly topbar = viewChild.required<ElementRef<HTMLElement>>('topbar');
+  private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
 
-  // Aperta o chiusa con la freccia; la scelta resta tra una visita e l'altra.
-  protected readonly chatsOpen = signal(readChatsOpen());
+  // Compressa con il pulsante, e la scelta resta tra una visita e l'altra; sul tablet sempre, sul telefono mai (è un menu).
+  private readonly userCollapsed = signal(readCollapsed());
+  private readonly tablet = mediaQuery('(min-width: 761px) and (max-width: 900px)');
+  private readonly phone = mediaQuery('(max-width: 760px)');
+  protected readonly collapsed = computed(() => this.tablet() || (this.userCollapsed() && !this.phone()));
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -444,9 +590,17 @@ export class Shell {
   );
 
   constructor() {
+    // Cambiando pagina si chiude il menu e si riparte dall'alto; cambiando solo i parametri (il giorno del piano) no.
+    let path = this.router.url.split(/[?#]/)[0];
     effect(() => {
-      this.url();
+      const next = this.url().split(/[?#]/)[0];
       this.menuOpen.set(false);
+      if (next !== path) this.scroller().nativeElement.scrollTop = 0;
+      path = next;
+    });
+    // Sul telefono la finestra dei brand si apre dal menu: il menu si chiude, resta la finestra.
+    effect(() => {
+      if (this.picker.isOpen()) this.menuOpen.set(false);
     });
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
@@ -457,29 +611,85 @@ export class Shell {
     });
   }
 
-  // Le ultime conversazioni, più quella aperta se è più vecchia: si vede sempre dove si è.
-  protected readonly recentChats = computed(() => {
+  // Le ultime conversazioni, più quella aperta se è più vecchia (si vede sempre dove si è), divise per giorno.
+  protected readonly chatGroups = computed(() => {
     const all = this.chat.conversations();
     const recent = all.slice(0, RECENT_CHATS);
     const openId = /^\/assistente\/([^/?#]+)/.exec(this.url())?.[1];
     const open = all.find((item) => item.id === openId);
-    return open && !recent.includes(open) ? [...recent, open] : recent;
+    return groupByDay(open && !recent.includes(open) ? [...recent, open] : recent);
   });
 
-  protected toggleChats(): void {
-    this.chatsOpen.update((open) => !open);
+  protected toggleCollapsed(): void {
+    this.userCollapsed.update((collapsed) => !collapsed);
     try {
-      localStorage.setItem(CHATS_OPEN_KEY, this.chatsOpen() ? '1' : '0');
+      localStorage.setItem(COLLAPSED_KEY, this.userCollapsed() ? '1' : '0');
     } catch {
       // Senza storage la scelta vale finché la pagina resta aperta.
     }
   }
+
+  // ⌘K (Ctrl+K fuori dal Mac) apre la ricerca tra le conversazioni.
+  protected shortcut(event: KeyboardEvent): void {
+    if (event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
+    event.preventDefault();
+    void this.router.navigateByUrl('/conversazioni');
+  }
+
+  protected initials(name: string): string {
+    return (
+      name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((word) => word.charAt(0).toUpperCase())
+        .join('') || '?'
+    );
+  }
+
+  protected async signOut(): Promise<void> {
+    await this.auth.signOut();
+    await this.router.navigateByUrl('/login');
+  }
 }
 
-function readChatsOpen(): boolean {
+// Le conversazioni sono già dalla più recente: i gruppi seguono lo stesso ordine.
+function groupByDay(items: ConversationSummary[]): { label: string; items: ConversationSummary[] }[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = 24 * 60 * 60 * 1000;
+  const labelOf = (date: string): string => {
+    const age = today.getTime() - new Date(date).getTime();
+    if (age <= 0) return 'Oggi';
+    if (age <= day) return 'Ieri';
+    if (age <= 6 * day) return 'Questa settimana';
+    if (age <= 29 * day) return 'Questo mese';
+    return 'Più vecchie';
+  };
+  const groups: { label: string; items: ConversationSummary[] }[] = [];
+  for (const item of items) {
+    const label = labelOf(item.updatedAt);
+    const group = groups.find((entry) => entry.label === label);
+    if (group) group.items.push(item);
+    else groups.push({ label, items: [item] });
+  }
+  return groups;
+}
+
+// Una media query come segnale, aggiornato quando cambia la finestra.
+function mediaQuery(query: string) {
+  const list = matchMedia(query);
+  const matches = signal(list.matches);
+  const listener = (event: MediaQueryListEvent) => matches.set(event.matches);
+  list.addEventListener('change', listener);
+  inject(DestroyRef).onDestroy(() => list.removeEventListener('change', listener));
+  return matches.asReadonly();
+}
+
+function readCollapsed(): boolean {
   try {
-    return localStorage.getItem(CHATS_OPEN_KEY) !== '0';
+    return localStorage.getItem(COLLAPSED_KEY) === '1';
   } catch {
-    return true;
+    return false;
   }
 }
