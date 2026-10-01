@@ -160,6 +160,11 @@ export interface StyleJobInput {
   brandId: string;
 }
 
+// Il job video-setup prepara il progetto Remotion nella cartella del brand: gli basta sapere quale.
+export interface VideoSetupJobInput {
+  brandId: string;
+}
+
 // I gusti su tutta la storia del brand: ogni idea tenuta vale +1 per il suo tema e il suo segnale, ogni scartata -0,5.
 export interface IdeaPreferences {
   decided: number;

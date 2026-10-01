@@ -18,6 +18,7 @@
     "chat": "tsx src/jobs/chat.ts",
     "content-video": "tsx src/jobs/content-video.ts",
     "style": "tsx src/jobs/style.ts",
+    "video-setup": "tsx src/jobs/video-setup.ts",
     "welcome": "tsx src/jobs/welcome.ts"
   },
   "dependencies": {

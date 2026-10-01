@@ -7,7 +7,7 @@ import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../b
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
 import { activeBrandSchema, brandParams, createBrandSchema, updateBrandSchema } from './schemas';
-import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, restyleBrand, saveBrand } from './service';
+import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, queueVideoSetup, restyleBrand, saveBrand } from './service';
 
 // Gli esempi scelti diventano i riferimenti da seguire, al posto di quelli di prima. Poi le generazioni
 // dell'onboarding e i loro file di lavoro non servono più: lasciati lì, chi scrive i contenuti li troverebbe
@@ -37,8 +37,8 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
     await files.claim(body.id, request.identity.accountId);
     const brand = await createBrand(pool, request.identity, body);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
-    // Lo stile dai riferimenti e le prime idee partono subito, lato server, e insieme: si preparano anche se chi ha
-    // creato il brand chiude la pagina. L'onboarding li segue fino alla fine.
+    // Lo stile dai riferimenti, le prime idee e il progetto video partono subito, lato server, e insieme: si preparano
+    // anche se chi ha creato il brand chiude la pagina. L'onboarding li segue fino alla fine.
     const queued = await Promise.all([
       restyleBrand(pool, request.identity, body.id).catch((error: unknown) => {
         request.log.warn({ err: error }, 'stile non messo in coda');
@@ -51,6 +51,10 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
           return null;
         },
       ),
+      queueVideoSetup(pool, request.identity, body.id).catch((error: unknown) => {
+        request.log.warn({ err: error }, 'progetto video non messo in coda');
+        return null;
+      }),
     ]);
     const response: CreateBrandResponse = { ...brand, setupJobs: queued.filter((id) => id !== null) };
     return reply.code(201).send(response);

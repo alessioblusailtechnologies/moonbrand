@@ -14,6 +14,7 @@ import type {
   ContentVideoJobInput,
   IdeasJobInput,
   StyleJobInput,
+  VideoSetupJobInput,
   VisualEditJobInput,
   VisualJobRequest,
   WebsiteJobRequest,
@@ -129,6 +130,10 @@ const JOBS: Record<string, JobKind> = {
         [(job.input as StyleJobInput).brandId, (result as { style: string }).style, job.id],
       );
     },
+  },
+  // Il progetto video del brand nuovo, pronto prima del primo messaggio in chat: la chat lo prepara solo se manca.
+  'video-setup': {
+    launch: (input) => ({ script: 'src/jobs/video-setup.ts', args: [path.join(BRANDS_DIR, (input as VideoSetupJobInput).brandId)] }),
   },
   // I saluti e gli spunti della chat per un brand: nel prompt c'è già tutto, quindi niente cartella.
   welcome: {
