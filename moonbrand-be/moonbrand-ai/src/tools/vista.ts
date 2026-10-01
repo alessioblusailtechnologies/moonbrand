@@ -6,6 +6,7 @@ import { GoogleGenAI, type Part } from '@google/genai';
 import { z } from 'zod';
 
 import { measure } from '../lib/usage';
+import { PARALLEL } from './parallel';
 
 // Gemini guarda immagini e video al posto di Claude e risponde a parole: i pixel non entrano nella conversazione di
 // Claude, che altrimenti li rilegge a ogni passaggio. I video li guarda interi, con l'audio.
@@ -115,7 +116,7 @@ export function visionTools(folder: string, apiKey: string) {
       const { text, isError } = await lookAt(file, domanda);
       return { content: [{ type: 'text' as const, text }], ...(isError && { isError }) };
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   return createSdkMcpServer({ name: 'vista', tools: [look] });

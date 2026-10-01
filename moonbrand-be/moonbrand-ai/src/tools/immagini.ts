@@ -6,6 +6,7 @@ import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 
 import { measure } from '../lib/usage';
+import { PARALLEL } from './parallel';
 
 const MODEL = 'gemini-3.1-flash-image';
 
@@ -76,7 +77,7 @@ export function imageTools(folder: string, apiKey: string) {
         return failure(`Generazione non riuscita: ${error instanceof Error ? error.message : String(error)}`);
       }
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   return createSdkMcpServer({ name: 'immagini', tools: [generate] });

@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import { measure, type Meter } from '../lib/usage';
 import { ffmpeg } from '../lib/video';
+import { PARALLEL } from './parallel';
 
 const API = 'https://api.elevenlabs.io/v1';
 const VOICE_MODEL = 'eleven_v3';
@@ -151,7 +152,7 @@ export function audioTools(folder: string, apiKey: string) {
         return failure(error);
       }
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   const voiceOver = tool(
@@ -183,7 +184,7 @@ export function audioTools(folder: string, apiKey: string) {
         return failure(error);
       }
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   const words = tool(
@@ -267,7 +268,7 @@ export function audioTools(folder: string, apiKey: string) {
         await rm(work, { recursive: true, force: true });
       }
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   const effect = tool(
@@ -293,7 +294,7 @@ export function audioTools(folder: string, apiKey: string) {
         return failure(error);
       }
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   return createSdkMcpServer({ name: 'audio', tools: [voices, voiceOver, words, effect] });

@@ -69,6 +69,7 @@ L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. 
 
 ## Immagini
 
+- Le chiamate che non dipendono l’una dall’altra (più genera_immagine, più renderizza, i controlli con guarda) falle nello stesso messaggio: girano insieme e finiscono nel tempo della più lenta.
 - Immagini e video li guarda Gemini con il tool guarda, che ti risponde a parole: usalo per riferimenti, allegati, contenuti già fatti e controlli. Apri tu un’immagine solo quando devi correggere un’impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile»: parti da lì. Se quella parte manca, chiedi a guarda proprio queste cose. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.
 - Lo stile si prende solo da lì: le cartelle esempi e lavoro alla radice del brand, se ci sono, sono bozze dell’onboarding che possono essere state scartate; non aprirle e non usarle.

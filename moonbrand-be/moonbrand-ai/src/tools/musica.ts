@@ -5,6 +5,7 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 import { measure, type Meter } from '../lib/usage';
+import { PARALLEL } from './parallel';
 
 // Musica e canzoni con Mureka: si chiede il brano, si aspetta che il lavoro finisca, si scarica il file.
 // Il brano si fa in sottofondo: il tool risponde subito, così Claude intanto scrive la composizione, e attendi_musica
@@ -120,7 +121,7 @@ export function musicTools(folder: string, apiKey: string) {
       file: audioFile('musica.mp3'),
     },
     ({ descrizione, file }) => Promise.resolve(start('instrumental', { prompt: descrizione }, file)),
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   const song = tool(
@@ -133,7 +134,7 @@ export function musicTools(folder: string, apiKey: string) {
       file: audioFile('canzone.mp3'),
     },
     ({ testo, stile, file }) => Promise.resolve(start('song', { lyrics: testo, ...(stile && { prompt: stile }) }, file)),
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   const wait = tool(
@@ -158,7 +159,7 @@ export function musicTools(folder: string, apiKey: string) {
         ...(results.some((result) => result.error) && { isError: true }),
       };
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   return createSdkMcpServer({ name: 'musica', tools: [instrumental, song, wait] });

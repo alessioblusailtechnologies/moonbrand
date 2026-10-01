@@ -8,6 +8,7 @@ import puppeteer, { type Browser } from 'puppeteer-core';
 import { z } from 'zod';
 
 import { createLooker } from './vista';
+import { PARALLEL } from './parallel';
 
 // Le immagini dei contenuti sono HTML: renderizza le esporta in PNG o JPEG con il Chrome headless che Remotion ha già
 // scaricato, aperto al primo render e tenuto per tutto il job. Prima dello scatto aspetta font e immagini; dopo misura
@@ -125,7 +126,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
       }
       return { content: [{ type: 'text' as const, text }], ...(done.length < uscite.length && { isError: true as const }) };
     },
-    { alwaysLoad: true },
+    PARALLEL,
   );
 
   return {

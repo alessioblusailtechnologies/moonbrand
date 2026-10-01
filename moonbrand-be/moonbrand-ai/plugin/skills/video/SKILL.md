@@ -56,6 +56,7 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 ## Immagini e clip
 
+- Le chiamate che non dipendono l’una dall’altra (immagini, voci, effetti, controlli con guarda, la musica) falle nello stesso messaggio: girano insieme.
 - Foto e clip dell'utente sono in allegati/ o in file-riferimento/: copiale in video/public/contenuti/<id>/ e usale da lì. Quando ci sono, vengono prima di quelle generate.
 - Le immagini nuove le generi con genera_immagine, salvandole direttamente in video/public/contenuti/<id>/.
 - Le clip in movimento le generi con Higgsfield (i tool mcp__higgsfield__), e usale dove il movimento vero serve davvero:
