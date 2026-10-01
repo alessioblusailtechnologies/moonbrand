@@ -20,6 +20,13 @@ const stills: { id: string; out: string; scale: number }[] = [
   { id: 'riva-case', out: 'posts/riva-case.jpg', scale: 0.6 },
   { id: 'libreria-libri', out: 'posts/libreria-libri.jpg', scale: 2 / 3 },
   { id: 'social-manager', out: 'social-manager.jpg', scale: 1 },
+  // Le copertine dei contenuti di Solco nella griglia dello studio: card piccole, bastano 480px.
+  { id: 'solco-buds', out: 'studio/solco-buds.jpg', scale: 4 / 9 },
+  { id: 'solco-colori', out: 'studio/solco-colori.jpg', scale: 4 / 9 },
+  { id: 'solco-dentro', out: 'studio/solco-dentro.jpg', scale: 4 / 9 },
+  { id: 'solco-suono', out: 'studio/solco-suono.jpg', scale: 4 / 9 },
+  { id: 'solco-countdown', out: 'studio/solco-countdown.jpg', scale: 4 / 9 },
+  { id: 'solco-team', out: 'studio/solco-team.jpg', scale: 4 / 9 },
 ];
 
 const scelte = process.argv.slice(2);

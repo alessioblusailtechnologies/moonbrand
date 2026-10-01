@@ -1,6 +1,18 @@
 import { Still } from 'remotion';
 
-import { FormaSlide, FormaTikTok, LibreriaSlide, OsteriaReel, RivaCase, SoloFoto, SolcoPost, SolcoStory } from './sito/Post';
+import {
+  FormaSlide,
+  FormaTikTok,
+  LibreriaSlide,
+  OsteriaReel,
+  RivaCase,
+  SolcoCountdown,
+  SolcoDentro,
+  SolcoPost,
+  SolcoStory,
+  SolcoSuono,
+  SoloFoto,
+} from './sito/Post';
 
 // Le immagini dei post di esempio del sito: una Still per post, esportata da scripts/render.mts.
 export const RemotionRoot: React.FC = () => {
@@ -15,6 +27,10 @@ export const RemotionRoot: React.FC = () => {
       <Still id="osteria-pescato" component={OsteriaReel} width={1080} height={1920} />
       <Still id="riva-case" component={RivaCase} width={1200} height={628} />
       <Still id="libreria-libri" component={LibreriaSlide} width={1080} height={1350} />
+      <Still id="solco-dentro" component={SolcoDentro} width={1080} height={1350} />
+      <Still id="solco-suono" component={SolcoSuono} width={1080} height={1080} />
+      <Still id="solco-countdown" component={SolcoCountdown} width={1080} height={1350} />
+      <Still id="solco-team" component={SoloFoto} defaultProps={{ nome: 'solco-team' }} width={1080} height={1080} />
       <Still id="social-manager" component={SoloFoto} defaultProps={{ nome: 'social-manager' }} width={900} height={1200} />
     </>
   );

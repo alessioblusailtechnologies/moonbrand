@@ -71,30 +71,87 @@ export function postColumns(list: ExamplePost[], count = 3): ExamplePost[][] {
   return cols;
 }
 
-export const views = [
-  { id: 'cal', label: 'Piano contenuti', title: 'Piano della settimana', action: '+ Nuovo contenuto', side: 'Contenuti' },
-  { id: 'idee', label: 'Idee salvate', title: 'Idee', action: 'Chiedi 5 idee', side: 'Idee' },
-  { id: 'kit', label: 'Brand kit', title: 'Brand kit · Solco', action: 'Modifica', side: 'Brand kit' },
+// L'anteprima dello studio nella sezione Piattaforma: com'è Moonbrand Studio con dentro il brand Solco.
+export const studioViews = [
+  { id: 'chat', label: 'La chat', nav: 'Assistente', crumbs: ['Assistente', 'Post per il lancio delle Buds (2)'] },
+  { id: 'idee', label: 'Le idee', nav: 'Idee', crumbs: ['Idee'] },
+  { id: 'contenuti', label: 'I contenuti', nav: 'Contenuti', crumbs: ['Contenuti'] },
 ] as const;
 
-export const sideItems = ['Assistente', 'Idee', 'Contenuti', 'Brand kit'];
+export const studioNav = [
+  { label: 'Assistente', icon: 'message-circle' },
+  { label: 'Idee', icon: 'lightbulb' },
+  { label: 'Contenuti', icon: 'file-text' },
+  { label: 'Piano', icon: 'calendar' },
+] as const;
 
-export const days = ['Lun 6', 'Mar 7', 'Mer 8', 'Gio 9', 'Ven 10'];
-
-export type CellKind = 'post' | 'car' | 'story' | 'empty';
-
-export const calendar: [string, [CellKind, string][]][] = [
-  ['Instagram', [['post', 'Teaser Buds (2)'], ['empty', '—'], ['car', 'Dentro le Buds'], ['post', 'Due colori'], ['post', 'Lancio']]],
-  ['Stories', [['story', 'Sondaggio'], ['story', 'Dietro le quinte'], ['empty', '—'], ['story', 'Countdown'], ['story', 'Q&A']]],
-  ['LinkedIn', [['post', 'Il team design'], ['empty', '—'], ['car', 'Come nasce'], ['empty', '—'], ['post', 'Lancio']]],
+export const studioHistory = [
+  { label: 'Oggi', items: ['Post per il lancio delle Buds (2)', 'Idee per ottobre'] },
+  { label: 'Ieri', items: ['Sondaggio sui colori', 'Cosa ho pubblicato a settembre?'] },
+  { label: 'Settimana scorsa', items: ['Il team design su LinkedIn', 'Copione del video unboxing'] },
 ];
 
-export const ideas = [
-  { t: 'Unboxing in dieci secondi', m: 'salvata ieri dalla chat' },
-  { t: 'Countdown al lancio in 3 post', m: 'salvata 2 giorni fa' },
-  { t: 'Dentro le Buds: i componenti uno per uno', m: 'salvata la settimana scorsa' },
-  { t: 'Il suono spiegato senza tecnicismi', m: 'salvata la settimana scorsa' },
-  { t: 'Una giornata nel laboratorio di design', m: 'suggerita dall’assistente' },
+export const studioChat = {
+  photo: '/images/studio/solco-buds.jpg',
+  message: 'Ecco la foto delle Buds (2). Mi prepari il post per il lancio su Instagram?',
+  steps: { title: 'Ho preparato il post', time: '48 s' },
+  reply:
+    'Fatto. Ho tenuto il tono di Solco, essenziale e senza superlativi: niente “rivoluzionario”, una frase sola sul prodotto e la data. Sulla foto ho messo il titolo a puntini e il punto rosso, come negli ultimi post.',
+  content: {
+    format: 'Post',
+    status: 'Bozza',
+    title: 'Buds (2): trasparenti per scelta',
+    channels: 'Instagram, Facebook',
+    caption: 'Trasparenti per scelta. Dentro c’è tutto quello che serve, niente di più. Buds (2), dal 14 ottobre.',
+    cover: '/images/studio/solco-buds.jpg',
+  },
+};
+
+export const studioIdeasThemes = ['Tutti i temi', 'Lancio Buds (2)', 'Design', 'Dietro le quinte', 'Sostenibilità'];
+
+export const studioIdeas = [
+  {
+    signal: 'Ricorrenza',
+    theme: { name: 'Lancio Buds (2)', color: '#E5322D' },
+    angleLabel: 'Conto alla rovescia',
+    title: 'Tre giorni, tre dettagli',
+    angle: 'Un post al giorno fino al 14 ottobre: ogni giorno un dettaglio delle Buds (2) visto da vicino, con il numero dei giorni che mancano.',
+    why: 'Il lancio è tra una settimana: un countdown tiene alta l’attesa senza ripetere lo stesso annuncio.',
+  },
+  {
+    signal: 'Trend',
+    theme: { name: 'Design', color: '#111111' },
+    angleLabel: 'Smontato',
+    title: 'Dentro le Buds, pezzo per pezzo',
+    angle: 'Un carosello che smonta un auricolare: 23 pezzi in fila, ognuno con una riga su cosa fa.',
+    why: 'I contenuti “teardown” vanno forte tra chi ama la tecnologia, e la scocca trasparente li rende naturali.',
+  },
+  {
+    signal: 'Tema',
+    theme: { name: 'Dietro le quinte', color: '#98A2B3' },
+    angleLabel: 'Le persone',
+    title: 'Una giornata nel laboratorio di design',
+    angle: 'Chi ha disegnato la custodia, quanti prototipi sono serviti, il primo modello in schiuma.',
+    why: 'Del team non parli da tre settimane, e su LinkedIn i post sulle persone sono quelli che girano di più.',
+  },
+  {
+    signal: 'Stagione',
+    theme: { name: 'Sostenibilità', color: '#2F9E6A' },
+    angleLabel: 'Riparabile',
+    title: 'Una batteria che si cambia',
+    angle: 'Mostrare in 15 secondi come si sostituisce la batteria, con un cacciavite e niente colla.',
+    why: 'Con il ritorno in città si comprano accessori nuovi: è il momento di dire perché questi durano.',
+  },
+];
+
+export const studioContents = [
+  { cover: '/images/studio/solco-buds.jpg', aspect: '4 / 5', format: 'Post', status: 'Approvato', title: 'Buds (2): trasparenti per scelta', channels: 'Instagram, Facebook · esce gio 9, 10:00' },
+  { cover: '/images/studio/solco-suono.jpg', aspect: '1 / 1', format: 'Carosello', status: 'Bozza', title: 'Il suono, spiegato senza tecnicismi', channels: 'Instagram' },
+  { cover: '/images/studio/solco-colori.jpg', aspect: '9 / 16', format: 'Video', status: 'Approvato', title: 'Due colori, una scelta', channels: 'Instagram, TikTok · esce ven 10, 18:30', video: true },
+  { cover: '/images/studio/solco-dentro.jpg', aspect: '4 / 5', format: 'Carosello', status: 'Bozza', title: 'Dentro le Buds, pezzo per pezzo', channels: 'Instagram, LinkedIn' },
+  { cover: '/images/studio/solco-team.jpg', aspect: '1 / 1', format: 'Articolo', status: 'Approvato', title: 'Una giornata nel laboratorio di design', channels: 'LinkedIn' },
+  { cover: '/images/studio/solco-countdown.jpg', aspect: '4 / 5', format: 'Post', status: 'Bozza', title: 'Tre giorni al lancio', channels: 'Instagram, Facebook · esce sab 11, 09:00' },
+  { cover: null, aspect: '4 / 5', format: 'Video', status: 'In preparazione', title: 'Unboxing in dieci secondi', channels: 'TikTok, Instagram', preparing: true },
 ];
 
 export const day = [

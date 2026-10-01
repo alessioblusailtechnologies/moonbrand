@@ -6,7 +6,7 @@ import { loadFont as loadFraunces } from '@remotion/google-fonts/Fraunces';
 import { loadFont as loadInterTight } from '@remotion/google-fonts/InterTight';
 import { AbsoluteFill, Img, staticFile } from 'remotion';
 
-const doto = loadDoto('normal', { weights: ['700', '900'], subsets: ['latin'] }).fontFamily;
+const doto = loadDoto('normal', { weights: ['400', '700', '900'], subsets: ['latin'] }).fontFamily;
 const inter = loadInterTight('normal', { weights: ['400', '500', '700', '800', '900'], subsets: ['latin'] }).fontFamily;
 const fraunces = loadFraunces('normal', { weights: ['400', '600'], subsets: ['latin'] }).fontFamily;
 const caveat = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
@@ -52,6 +52,68 @@ export const SolcoStory: React.FC = () => (
         Buds 2 · dal 14 ottobre
       </span>
     </div>
+  </AbsoluteFill>
+);
+
+// I contenuti di Solco che si vedono nello studio, nella griglia dei Contenuti.
+export const SolcoDentro: React.FC = () => (
+  <AbsoluteFill style={{ fontFamily: inter, color: '#111' }}>
+    <Foto nome="solco-dentro" />
+    <div style={{ position: 'absolute', top: 76, left: 76, right: 76, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 132, lineHeight: 0.9 }}>DENTRO (2)</span>
+        <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>23 pezzi. Nessuno di troppo.</span>
+      </div>
+      <span style={{ width: 28, height: 28, borderRadius: '50%', background: SOLCO_RED, marginTop: 14 }} />
+    </div>
+  </AbsoluteFill>
+);
+
+/** L'onda sonora a puntini: colonne di punti, più alte al centro. */
+export const SolcoSuono: React.FC = () => {
+  const colonne = 23;
+  return (
+    <AbsoluteFill style={{ fontFamily: inter, background: '#0E0E0E', color: '#F2F2F0', padding: 84, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: doto, fontWeight: 700, fontSize: 34 }}>
+        <span>SUONO (2)</span>
+        <span style={{ color: SOLCO_RED }}>●</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 380 }}>
+        {Array.from({ length: colonne }, (_, i) => {
+          const centro = 1 - Math.abs(i - (colonne - 1) / 2) / ((colonne - 1) / 2);
+          const punti = Math.max(1, Math.round(2 + 13 * centro * (0.6 + 0.4 * Math.abs(Math.sin(i * 1.7)))));
+          return (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {Array.from({ length: punti }, (_, j) => (
+                <span key={j} style={{ width: 14, height: 14, borderRadius: '50%', background: i === 11 && j === 0 ? SOLCO_RED : '#F2F2F0' }} />
+              ))}
+            </div>
+          );
+        })}
+      </div>
+      <span style={{ fontSize: 64, fontWeight: 500, lineHeight: 1.05, letterSpacing: '-0.03em' }}>
+        Il suono, spiegato
+        <br />
+        senza tecnicismi.
+      </span>
+    </AbsoluteFill>
+  );
+};
+
+export const SolcoCountdown: React.FC = () => (
+  <AbsoluteFill style={{ fontFamily: inter, background: '#EDEDEB', color: '#111', padding: 84, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: doto, fontWeight: 700, fontSize: 36 }}>
+      <span>BUDS (2)</span>
+      <span>14.10</span>
+    </div>
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 36 }}>
+      <span style={{ fontFamily: doto, fontWeight: 400, fontSize: 560, lineHeight: 0.8 }}>3</span>
+      <span style={{ display: 'flex', alignItems: 'flex-end', gap: 14, fontFamily: doto, fontWeight: 900, fontSize: 96, lineHeight: 1, paddingBottom: 24 }}>
+        GIORNI
+        <span style={{ width: 22, height: 22, borderRadius: '50%', background: SOLCO_RED, marginBottom: 10 }} />
+      </span>
+    </div>
+    <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>Il conto alla rovescia è iniziato.</span>
   </AbsoluteFill>
 );
 

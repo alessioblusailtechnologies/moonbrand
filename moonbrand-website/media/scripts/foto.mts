@@ -29,6 +29,18 @@ const foto: { nome: string; formato: Formato; descrizione: string }[] = [
       'Top-down photo of two identical minimalist transparent earbud cases side by side, one white and one black, on a matte warm grey surface. Even soft light, crisp shadows. The cases sit slightly below the centre, with generous empty space above and below. Clean, precise, quiet tech aesthetic. ' + NO_TEXT,
   },
   {
+    nome: 'solco-dentro',
+    formato: '4:5',
+    descrizione:
+      'Knolling flat lay, shot straight from above: the parts of a disassembled minimalist wireless earbud laid out in a precise grid on a light grey surface — two transparent shells, a tiny circuit board, a small battery, two copper coils, silicone ear tips, tiny screws, a transparent charging case lid. Perfectly aligned, even soft light, crisp small shadows, clean industrial design aesthetic. The parts occupy the lower two thirds, the top third is empty grey. ' + NO_TEXT,
+  },
+  {
+    nome: 'solco-team',
+    formato: '1:1',
+    descrizione:
+      'A small industrial design studio: two designers seen from the side at a large white table covered with foam and 3D-printed prototypes of earbud cases, sketches and a few transparent parts, a big window with soft daylight, white walls, light wood, calm and focused atmosphere, candid editorial photo, faces not in sharp focus. ' + NO_TEXT,
+  },
+  {
     // Pasticceria Aurora: pasticceria storica milanese, stile Marchesi.
     nome: 'aurora-torta',
     formato: '4:5',
