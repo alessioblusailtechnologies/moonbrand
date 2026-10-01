@@ -74,7 +74,7 @@ interface TimedWord {
   type?: string;
 }
 
-// Voce fuori campo, effetti e tempi delle parole con ElevenLabs (la musica la fa Mureka, in musica.ts).
+// Voce fuori campo, effetti e tempi delle parole con ElevenLabs (la musica è in musica.ts).
 // La chiave resta in questo processo: Claude vede solo i tool, non le chiamate a ElevenLabs.
 export function audioTools(folder: string, apiKey: string) {
   const root = path.resolve(folder);
@@ -189,7 +189,7 @@ export function audioTools(folder: string, apiKey: string) {
 
   const words = tool(
     'tempi_parole',
-    'Trova quando viene detta o cantata ogni parola di un audio della cartella (una canzone di Mureka, una voce registrata) e salva i tempi ' +
+    'Trova quando viene detta o cantata ogni parola di un audio della cartella (una canzone di genera_canzone, una voce registrata) e salva i tempi ' +
       'nel formato Caption di @remotion/captions: per sottotitoli e parole che si accendono a tempo. Con il testo esatto lo allinea, ed è il modo più preciso; ' +
       'senza testo lo trascrive. Per una canzone prima separa la voce dalla musica. Con da e a lavora solo su quel pezzo, ma i tempi restano quelli del brano intero. ' +
       'Per la voce fatta con genera_voce non serve: i tempi li ha già salvati lei.',

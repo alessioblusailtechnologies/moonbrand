@@ -23,7 +23,7 @@ if (!brandDir || !inputJson) {
 }
 
 // Chiavi e token restano in questo processo: Claude vede solo i tool.
-const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MUREKA_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
+const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MOONBRAND_AGENT_TOKEN, API_URL, ...env } = process.env;
 if (!MOONBRAND_AGENT_TOKEN) {
   console.error('Manca il token del job: la chat parte solo dal worker.');
   process.exit(1);
@@ -55,8 +55,10 @@ if (higgsfieldSession) {
   mcpServers.higgsfield = server;
   clips = { disallowedTools, hooks };
 }
-if (ELEVENLABS_API_KEY) mcpServers.audio = audioTools(brandDir, ELEVENLABS_API_KEY);
-if (MUREKA_API_KEY) mcpServers.musica = musicTools(brandDir, MUREKA_API_KEY);
+if (ELEVENLABS_API_KEY) {
+  mcpServers.audio = audioTools(brandDir, ELEVENLABS_API_KEY);
+  mcpServers.musica = musicTools(brandDir, ELEVENLABS_API_KEY);
+}
 
 const guide = `# moonbrand
 

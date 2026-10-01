@@ -169,8 +169,8 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
   };
 }
 
-// Claude Code nella cartella del brand, con i tool per immagini (e per i video: Higgsfield per le clip, Mureka per la musica,
-// ElevenLabs per voce ed effetti);
+// Claude Code nella cartella del brand, con i tool per immagini (e per i video: Higgsfield per le clip, ElevenLabs per musica,
+// voce ed effetti);
 // con resume riprende la sessione di prima. scriptOnly: il copione di un video, senza testi per canale né file.
 export async function runContentAgent(options: {
   brandDir: string;
@@ -181,7 +181,7 @@ export async function runContentAgent(options: {
   scriptOnly?: boolean;
   resume?: string;
 }): Promise<void> {
-  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, MUREKA_API_KEY, ...env } = process.env;
+  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, ...env } = process.env;
   if (!GEMINI_API_KEY) {
     console.error('Manca GEMINI_API_KEY nel .env di moonbrand-ai.');
     process.exit(1);
@@ -203,8 +203,7 @@ export async function runContentAgent(options: {
       process.exit(1);
     }
     mcpServers.audio = audioTools(options.brandDir, ELEVENLABS_API_KEY);
-    if (MUREKA_API_KEY) mcpServers.musica = musicTools(options.brandDir, MUREKA_API_KEY);
-    else console.error('Manca MUREKA_API_KEY nel .env di moonbrand-ai: il video si fa senza musica generata.');
+    mcpServers.musica = musicTools(options.brandDir, ELEVENLABS_API_KEY);
     videoEnv = await prepareVideoProject(options.brandDir);
     // Le clip le gira Higgsfield; i suoi file arrivano nella cartella di lavoro del contenuto.
     const token = await higgsfieldToken();
