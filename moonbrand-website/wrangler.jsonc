@@ -1,0 +1,11 @@
+// Il sito su Cloudflare: un Worker che serve le pagine statiche della build di Astro.
+// Deploy: npm run deploy (serve una volta npx wrangler login).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "moonbrand-website",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
