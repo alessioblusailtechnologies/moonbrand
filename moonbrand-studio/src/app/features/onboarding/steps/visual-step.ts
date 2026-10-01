@@ -8,6 +8,7 @@ import { CHANNELS, channelName, exampleChannels, PALETTE_SLOT_LABELS } from '@mo
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
+import { ChannelMark } from '../../../ui/channel-mark';
 import { Icon } from '../../../ui/icon';
 import { PendingMedia, pendingFromSteps } from '../../../ui/pending-media';
 import { LogoBackdrop } from '../../../ui/logo-backdrop';
@@ -16,6 +17,7 @@ import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
 import { LOGO_SIDE, resizedDataUri } from '../../../core/images';
+import { ExamplePost, type ExampleAuthor } from './example-post';
 
 const MAX_REFERENCES = 6;
 
@@ -31,7 +33,7 @@ function normalizeHex(input: string): string | null {
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, LogoBackdrop, StepList, PendingMedia],
+  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
@@ -70,6 +72,24 @@ export class VisualStep implements OnInit {
         .filter((example) => example.channel === id)
         .map((example) => ({ ...example, name: channelName(id), selected: !unselected.includes(example.file) })),
     );
+  });
+  // Chi pubblica negli esempi: il nome, il logo o l'iniziale nel primo colore della palette, un nome utente ricavato dal nome.
+  protected readonly author = computed<ExampleAuthor>(() => {
+    const { identity, visual } = this.draft();
+    const name = identity.name.trim() || 'Il tuo brand';
+    const handle = name
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+    return {
+      name,
+      handle: handle || 'brand',
+      logo: visual.logoUri,
+      initial: name.charAt(0).toUpperCase(),
+      color: visual.palette.colors[0] ?? 'var(--primary)',
+      person: identity.kind === 'person',
+    };
   });
   protected readonly selectedCount = computed(() => this.examples().filter((example) => example.selected).length);
 

@@ -1,0 +1,133 @@
+@let who = author();
+
+<article class="post" [attr.data-channel]="channel()" [attr.aria-label]="label()">
+  @switch (channel()) {
+    @case ('tiktok') {
+      <div class="tiktok-stage">
+        <ng-container [ngTemplateOutlet]="media" />
+        <span class="play" aria-hidden="true"><mb-icon name="play" [size]="28" [stroke]="2.5" /></span>
+        <div class="tiktok-overlay">
+          <div class="tiktok-text">
+            <p class="who-name">{{ '@' + who.handle }}</p>
+            <ng-container [ngTemplateOutlet]="captionText" />
+            <p class="tiktok-sound"><mb-icon name="music" [size]="12" /> suono originale · {{ who.name }}</p>
+          </div>
+          <div class="tiktok-rail" aria-hidden="true">
+            <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 36 }" />
+            <mb-icon name="heart" [size]="24" />
+            <mb-icon name="message-circle" [size]="24" />
+            <mb-icon name="bookmark" [size]="24" />
+            <mb-icon name="share" [size]="24" />
+          </div>
+        </div>
+      </div>
+    }
+
+    @case ('instagram') {
+      <header class="post-head">
+        <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 32 }" />
+        <p class="who-name grow">{{ who.handle }}</p>
+        <span class="more-dots" aria-hidden="true">•••</span>
+      </header>
+      <ng-container [ngTemplateOutlet]="media" />
+      <div class="post-actions icons" aria-hidden="true">
+        <mb-icon name="heart" [size]="22" />
+        <mb-icon name="message-circle" [size]="22" />
+        <mb-icon name="send" [size]="22" />
+        <span class="grow"></span>
+        <mb-icon name="bookmark" [size]="22" />
+      </div>
+      <div class="post-text">
+        <ng-container [ngTemplateOutlet]="captionText" [ngTemplateOutletContext]="{ lead: who.handle }" />
+      </div>
+    }
+
+    @case ('x') {
+      <div class="x-row">
+        <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 40 }" />
+        <div class="x-body">
+          <p class="x-head"><span class="who-name">{{ who.name }}</span> <span class="who-meta">{{ '@' + who.handle }} · adesso</span></p>
+          <ng-container [ngTemplateOutlet]="captionText" />
+          <ng-container [ngTemplateOutlet]="media" />
+          <div class="post-actions icons spread" aria-hidden="true">
+            <mb-icon name="message-circle" [size]="17" />
+            <mb-icon name="repeat" [size]="17" />
+            <mb-icon name="heart" [size]="17" />
+            <mb-icon name="bookmark" [size]="17" />
+            <mb-icon name="share" [size]="17" />
+          </div>
+        </div>
+      </div>
+    }
+
+    @default {
+      <!-- LinkedIn e Facebook: chi pubblica, il testo sopra, l'immagine a tutta larghezza, le azioni con le parole. -->
+      <header class="post-head">
+        <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: channel() === 'linkedin' ? 44 : 40 }" />
+        <div class="grow">
+          <p class="who-name">{{ who.name }}</p>
+          <p class="who-meta">{{ channel() === 'linkedin' ? (who.person ? 'Adesso' : 'Pagina · adesso') : 'Adesso' }}</p>
+        </div>
+        @if (channel() === 'linkedin') {
+          <span class="follow">+ Segui</span>
+        } @else {
+          <span class="more-dots" aria-hidden="true">•••</span>
+        }
+      </header>
+      <div class="post-text">
+        <ng-container [ngTemplateOutlet]="captionText" />
+      </div>
+      <ng-container [ngTemplateOutlet]="media" />
+      <div class="post-actions words" aria-hidden="true">
+        @if (channel() === 'linkedin') {
+          <span><mb-icon name="thumbs-up" [size]="15" /> Consiglia</span>
+          <span><mb-icon name="message-circle" [size]="15" /> Commenta</span>
+          <span><mb-icon name="repeat" [size]="15" /> Diffondi</span>
+          <span><mb-icon name="send" [size]="15" /> Invia</span>
+        } @else {
+          <span><mb-icon name="thumbs-up" [size]="15" /> Mi piace</span>
+          <span><mb-icon name="message-circle" [size]="15" /> Commenta</span>
+          <span><mb-icon name="share" [size]="15" /> Condividi</span>
+        }
+      </div>
+    }
+  }
+</article>
+
+<ng-template #avatar let-size="size">
+  <span class="avatar" [class.square]="channel() === 'linkedin' && !who.person" [class.ring]="channel() === 'instagram'"
+    [style.width.px]="size" [style.height.px]="size" [style.background]="who.logo ? 'var(--white)' : who.color" aria-hidden="true">
+    @if (who.logo) {
+      <img [src]="who.logo" alt="" />
+    } @else {
+      {{ who.initial }}
+    }
+  </span>
+</ng-template>
+
+<ng-template #captionText let-lead="lead">
+  @let shown = caption();
+  <p class="caption-text">
+    @if (lead) {
+      <span class="who-name">{{ lead }}</span>
+    }
+    @for (part of shown.parts; track $index) {
+      @if (part.tag) {
+        <span class="tag">{{ part.text }}</span>
+      } @else {
+        {{ part.text }}
+      }
+    }
+    @if (shown.folded) {
+      <button class="fold" type="button" (click)="expanded.set(true)">{{ channel() === 'facebook' ? '… Altro' : '…altro' }}</button>
+    }
+  </p>
+</ng-template>
+
+<ng-template #media>
+  <div class="media">
+    <button class="shot" type="button" [attr.aria-label]="'Ingrandisci: ' + label()" (click)="zoom.emit()">
+      <img [src]="url()" [alt]="label()" loading="lazy" />
+    </button>
+  </div>
+</ng-template>

@@ -107,14 +107,12 @@
     <mb-pending-media [tiles]="pending(steps())" />
   } @else if (examples().length > 0) {
     <p class="caption">{{ selectedCount() }} di {{ examples().length }} scelti: tocca il segno di spunta per togliere o rimettere un esempio.</p>
-    <div class="masonry">
+    <div class="examples">
       @for (example of examples(); track example.file; let i = $index) {
         <figure class="example" [class.off]="!example.selected">
-          <div class="shot">
-            <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci l’esempio ' + (i + 1) + ' per ' + example.name" (click)="openExample(i)">
-              <img [src]="example.url" [alt]="'Esempio per ' + example.name" loading="lazy" />
-            </button>
-            <span class="channel-chip">{{ example.name }}</span>
+          <div class="example-head">
+            <mb-channel-mark [channel]="example.channel" [active]="true" [size]="16" />
+            <span class="strong-sm grow">{{ example.name }}</span>
             <button class="pick" type="button" role="checkbox" [attr.aria-checked]="example.selected"
               [attr.aria-label]="'Scegli l’esempio ' + (i + 1) + ' per ' + example.name" (click)="store.toggleExample(example.file)">
               @if (example.selected) {
@@ -122,7 +120,8 @@
               }
             </button>
           </div>
-          <figcaption class="body">{{ example.caption }}</figcaption>
+          <mb-example-post [channel]="example.channel" [url]="example.url" [text]="example.caption" [author]="author()"
+            [label]="'Esempio ' + (i + 1) + ' per ' + example.name" (zoom)="openExample(i)" />
         </figure>
       }
     </div>
