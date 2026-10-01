@@ -55,6 +55,8 @@ import { MockAi } from '../mock-ai';
         <p class="caption grow">Nel piano escono più spesso i temi «Spesso», meno quelli «Di rado».</p>
         @if (themes().length < maxThemes) {
           <button class="link-btn" type="button" (click)="save(addTheme(themes()))">Aggiungi un tema</button>
+        } @else {
+          <p class="caption">Al massimo {{ maxThemes }} temi: togline uno per aggiungerne un altro.</p>
         }
       </div>
     }

@@ -20,7 +20,7 @@ const schema = {
     sector: { type: 'string', description: 'Settore in poche parole, in italiano (es. "Parrucchiere", "Panificio artigianale")' },
     summary: { type: 'string', description: 'Cosa fa il brand, 2-3 frasi' },
     pitch: { type: 'string', description: 'Il pitch del brand in una frase, in prima persona' },
-    themes: { type: 'array', items: { type: 'string' }, description: 'Temi editoriali per i social, 4-8' },
+    themes: { type: 'array', items: { type: 'string' }, description: 'Temi editoriali per i social, 3-5, dal più importante' },
     goals: { type: 'array', items: { type: 'string' }, description: 'Perché il brand pubblica sui social: obiettivi brevi, 3-5, dal più importante' },
     audiences: { type: 'array', items: { type: 'string' }, description: 'Chi vuole raggiungere con i social: pubblici brevi, 2-5, dal più importante' },
     colors: {
