@@ -66,6 +66,7 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 - I file che Higgsfield genera arrivano già scaricati nella cartella di lavoro, e il risultato del tool ti dice dove: copiali in video/public/contenuti/<id>/. Gli indirizzi di Higgsfield scadono, usa sempre i file.
 - Con Higgsfield fai le clip; le immagini restano con genera_immagine, la musica con Mureka, voce ed effetti con ElevenLabs.
 - Le clip hanno un audio loro: toglilo o abbassalo se c'è già musica o voce.
+- Nella composizione clip e video si mettono con `Video` di `@remotion/media`, mai con `OffthreadVideo`: il render è più veloce di circa un terzo. Se un video del brand usa ancora `OffthreadVideo`, non copiarlo.
 - Per controllare una clip, o per capire una clip o un video dell’utente, passali interi al tool guarda: li guarda con l’audio e ti dice cosa succede e quando. Un fotogramma estrailo solo quando ti serve come immagine (per esempio una copertina): ffmpeg è in video/node_modules/@remotion/compositor-* ed è ridotto, senza filtri, quindi un fotogramma alla volta (`ffmpeg -ss <secondo> -i clip.mp4 -frames:v 1 f.jpg`).
 
 ## Audio
@@ -88,6 +89,7 @@ Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool g
 - Correggi e riesporta finché è tutto a posto; lancia anche `pnpm check` per i tipi.
 - Poi esporta il video finale in MP4 e passalo intero a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.
 - Esporta anche una copertina in JPEG o PNG, scegliendo il fotogramma che meglio rappresenta il video. Video finale e copertina a risoluzione piena, senza `--scale`.
+- Il render occupa la CPU e richiede tempo: lancia insieme, in un solo comando, gli export finali di tutte le composizioni e delle copertine (ognuno con `&` in fondo, poi `wait`), invece che uno dopo l'altro.
 
 ## Dove vanno i file
 
