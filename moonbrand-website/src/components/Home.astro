@@ -1,0 +1,32 @@
+---
+// La home in una lingua: le pagine /, /en/ e /fr/ la rendono ognuna con la sua.
+import type { Lang } from '../i18n';
+import Base from '../layouts/Base.astro';
+import Examples from './Examples.astro';
+import Features from './Features.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Platform from './Platform.astro';
+import Result from './Result.astro';
+import TrialForm from './TrialForm.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Base lang={lang}>
+  <Header lang={lang} />
+  <main>
+    <Hero lang={lang} />
+    <Examples lang={lang} />
+    <Platform lang={lang} />
+    <Result lang={lang} />
+    <Features lang={lang} />
+    <TrialForm lang={lang} />
+  </main>
+  <Footer lang={lang} />
+</Base>

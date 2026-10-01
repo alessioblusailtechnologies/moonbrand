@@ -1,36 +1,43 @@
 ---
-import { sectors, brandCounts } from '../data/home';
+import { getCopy, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { trial: t } = getCopy(lang);
 ---
 
 <section id="prova" class="trial" data-screen-label="Form prova">
   <div class="inner">
     <div class="head">
-      <h2 class="display">Inizia la prova gratuita</h2>
-      <p>Ci servono due informazioni per preparare il tuo spazio.</p>
+      <h2 class="display">{t.title}</h2>
+      <p>{t.sub}</p>
     </div>
 
     <form class="form" data-trial-form>
       <div class="pair">
-        <label>Nome<input name="nome" autocomplete="given-name" required /></label>
-        <label>Cognome<input name="cognome" autocomplete="family-name" required /></label>
+        <label>{t.name}<input name="nome" autocomplete="given-name" required /></label>
+        <label>{t.surname}<input name="cognome" autocomplete="family-name" required /></label>
       </div>
-      <label>Email di lavoro<input type="email" name="email" autocomplete="email" required /></label>
-      <label>Nome del brand o dell’attività<input name="brand" data-brand-input /></label>
+      <label>{t.email}<input type="email" name="email" autocomplete="email" required /></label>
+      <label>{t.brand}<input name="brand" data-brand-input /></label>
       <div class="pair">
-        <label>Settore
-          <select name="settore">{sectors.map((s) => <option>{s}</option>)}</select>
+        <label>{t.sector}
+          <select name="settore">{t.sectors.map((s) => <option>{s}</option>)}</select>
         </label>
-        <label>Quanti brand gestisci?
-          <select name="brand_count">{brandCounts.map((c) => <option>{c}</option>)}</select>
+        <label>{t.count}
+          <select name="brand_count">{t.counts.map((c) => <option>{c}</option>)}</select>
         </label>
       </div>
-      <label class="consent"><input type="checkbox" name="privacy" required />Accetto l’informativa privacy e di ricevere comunicazioni su Moonbrand.</label>
-      <button type="submit">Continua</button>
+      <label class="consent"><input type="checkbox" name="privacy" required />{t.consent}</label>
+      <button type="submit">{t.submit}</button>
     </form>
 
     <div class="done" data-trial-done hidden>
-      <span class="done-title">Fatto, ci siamo quasi.</span>
-      <span class="done-text">Ti abbiamo mandato un’email per attivare lo spazio<span data-brand-suffix></span>.</span>
+      <span class="done-title">{t.doneTitle}</span>
+      <span class="done-text">{t.doneText}<span data-brand-suffix={t.brandSuffix}></span>.</span>
     </div>
   </div>
 </section>
@@ -51,7 +58,8 @@ import { sectors, brandCounts } from '../data/home';
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const brand = brandInputs[0]?.value.trim() ?? '';
-    suffix.textContent = brand ? ` di ${brand}` : '';
+    // Il pezzo di frase con il brand arriva già tradotto, con {brand} al posto del nome.
+    suffix.textContent = brand ? (suffix.dataset.brandSuffix ?? '').replace('{brand}', brand) : '';
     form.hidden = true;
     done.hidden = false;
   });

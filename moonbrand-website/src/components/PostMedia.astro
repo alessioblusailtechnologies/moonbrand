@@ -14,8 +14,8 @@ const { post, immersive = false } = Astro.props;
   class:list={['media', { immersive }]}
   style={`aspect-ratio:${post.ratio};--s1:${post.s1};--s2:${post.s2}`}
 >
-  {post.image ? (
-    <img src={post.image} alt={post.ph} loading="lazy" />
+  {post.imageUrl ? (
+    <img src={post.imageUrl} alt={post.ph} loading="lazy" />
   ) : (
     <span class="ph mono">{post.ph}</span>
   )}

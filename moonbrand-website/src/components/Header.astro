@@ -1,19 +1,34 @@
 ---
+import { getCopy, homePath, LANGS, type Lang } from '../i18n';
 import Logo from './Logo.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { nav } = getCopy(lang);
 ---
 
 <header>
   <div class="bar">
     <Logo />
     <nav>
-      <a href="#piattaforma">Piattaforma</a>
-      <a href="#risultato">Perché Moonbrand</a>
-      <a href="#sistema">Funzionalità</a>
-      <a href="#prova">Prova gratis</a>
+      <a href="#piattaforma">{nav.platform}</a>
+      <a href="#risultato">{nav.why}</a>
+      <a href="#sistema">{nav.features}</a>
+      <a href="#prova">{nav.trial}</a>
     </nav>
     <div class="actions">
-      <a href="#" class="login">Accedi</a>
-      <a href="#prova" class="btn btn-dark cta">Inizia ora</a>
+      <nav class="langs" aria-label={nav.language}>
+        {LANGS.map((other) => (
+          <a href={homePath(other)} hreflang={other} lang={other} aria-current={other === lang ? 'page' : undefined}>
+            {other.toUpperCase()}
+          </a>
+        ))}
+      </nav>
+      <a href="#" class="login">{nav.login}</a>
+      <a href="#prova" class="btn btn-dark cta">{nav.start}</a>
     </div>
   </div>
 </header>
@@ -39,9 +54,15 @@ import Logo from './Logo.astro';
   }
   nav { display: flex; gap: 26px; font-size: 14.5px; color: var(--text); flex-wrap: wrap; }
   .actions { display: flex; gap: 8px; align-items: center; font-size: 14.5px; }
+  .langs { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: #F2F1EE; font-size: 12px; font-weight: 600; }
+  .langs a { padding: 4px 8px; border-radius: 999px; color: var(--muted); }
+  .langs a[aria-current='page'] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(11, 19, 36, 0.12); }
   .login { padding: 8px 12px; }
   .cta { padding: 9px 16px; border-radius: 8px; }
   @media (max-width: 760px) {
-    nav { display: none; }
+    .bar > nav { display: none; }
+  }
+  @media (max-width: 420px) {
+    .login { display: none; }
   }
 </style>

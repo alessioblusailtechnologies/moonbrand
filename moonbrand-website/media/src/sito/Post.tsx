@@ -6,6 +6,11 @@ import { loadFont as loadFraunces } from '@remotion/google-fonts/Fraunces';
 import { loadFont as loadInterTight } from '@remotion/google-fonts/InterTight';
 import { AbsoluteFill, Img, staticFile } from 'remotion';
 
+import { TESTI, type Lingua } from './testi';
+
+/** Le composizioni con del testo ricevono la lingua; senza, è l'italiano. */
+type ConLingua = { lingua?: Lingua };
+
 const doto = loadDoto('normal', { weights: ['400', '700', '900'], subsets: ['latin'] }).fontFamily;
 const inter = loadInterTight('normal', { weights: ['400', '500', '700', '800', '900'], subsets: ['latin'] }).fontFamily;
 const fraunces = loadFraunces('normal', { weights: ['400', '600'], subsets: ['latin'] }).fontFamily;
@@ -25,44 +30,44 @@ export const SoloFoto: React.FC<{ nome: string }> = ({ nome }) => (
 // Solco: elettronica minimal, stile Nothing. Tipografia a puntini, un solo rosso.
 const SOLCO_RED = '#E5322D';
 
-export const SolcoPost: React.FC = () => (
+export const SolcoPost: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: '#111' }}>
     <Foto nome="solco-buds" />
     <div style={{ position: 'absolute', top: 76, left: 76, right: 76, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 132, lineHeight: 0.9, letterSpacing: '-0.02em' }}>BUDS (2)</span>
-        <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>Trasparenti per scelta.</span>
+        <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>{TESTI[lingua].solcoClaim}</span>
       </div>
       <span style={{ width: 28, height: 28, borderRadius: '50%', background: SOLCO_RED, marginTop: 14 }} />
     </div>
     <div style={{ position: 'absolute', left: 76, right: 76, bottom: 64, display: 'flex', justifyContent: 'space-between', fontFamily: doto, fontWeight: 700, fontSize: 38 }}>
-      <span>DAL 14.10</span>
+      <span>{TESTI[lingua].solcoDal}</span>
       <span>SOLCO</span>
     </div>
   </AbsoluteFill>
 );
 
-export const SolcoStory: React.FC = () => (
+export const SolcoStory: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: '#111' }}>
     <Foto nome="solco-colori" />
     <div style={{ position: 'absolute', top: 250, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-      <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 124, lineHeight: 0.9 }}>(2) COLORI</span>
+      <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 124, lineHeight: 0.9 }}>{TESTI[lingua].solcoColori}</span>
       <span style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 36, fontWeight: 500, color: '#444' }}>
         <span style={{ width: 16, height: 16, borderRadius: '50%', background: SOLCO_RED }} />
-        Buds 2 · dal 14 ottobre
+        {TESTI[lingua].solcoColoriSub}
       </span>
     </div>
   </AbsoluteFill>
 );
 
 // I contenuti di Solco che si vedono nello studio, nella griglia dei Contenuti.
-export const SolcoDentro: React.FC = () => (
+export const SolcoDentro: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: '#111' }}>
     <Foto nome="solco-dentro" />
     <div style={{ position: 'absolute', top: 76, left: 76, right: 76, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 132, lineHeight: 0.9 }}>DENTRO (2)</span>
-        <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>23 pezzi. Nessuno di troppo.</span>
+        <span style={{ fontFamily: doto, fontWeight: 900, fontSize: 132, lineHeight: 0.9 }}>{TESTI[lingua].solcoDentro}</span>
+        <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>{TESTI[lingua].solcoDentroSub}</span>
       </div>
       <span style={{ width: 28, height: 28, borderRadius: '50%', background: SOLCO_RED, marginTop: 14 }} />
     </div>
@@ -70,12 +75,12 @@ export const SolcoDentro: React.FC = () => (
 );
 
 /** L'onda sonora a puntini: colonne di punti, più alte al centro. */
-export const SolcoSuono: React.FC = () => {
+export const SolcoSuono: React.FC<ConLingua> = ({ lingua = 'it' }) => {
   const colonne = 23;
   return (
     <AbsoluteFill style={{ fontFamily: inter, background: '#0E0E0E', color: '#F2F2F0', padding: 84, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: doto, fontWeight: 700, fontSize: 34 }}>
-        <span>SUONO (2)</span>
+        <span>{TESTI[lingua].solcoSuono}</span>
         <span style={{ color: SOLCO_RED }}>●</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 380 }}>
@@ -92,15 +97,15 @@ export const SolcoSuono: React.FC = () => {
         })}
       </div>
       <span style={{ fontSize: 64, fontWeight: 500, lineHeight: 1.05, letterSpacing: '-0.03em' }}>
-        Il suono, spiegato
+        {TESTI[lingua].solcoSuonoTitolo[0]}
         <br />
-        senza tecnicismi.
+        {TESTI[lingua].solcoSuonoTitolo[1]}
       </span>
     </AbsoluteFill>
   );
 };
 
-export const SolcoCountdown: React.FC = () => (
+export const SolcoCountdown: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, background: '#EDEDEB', color: '#111', padding: 84, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: doto, fontWeight: 700, fontSize: 36 }}>
       <span>BUDS (2)</span>
@@ -109,40 +114,40 @@ export const SolcoCountdown: React.FC = () => (
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 36 }}>
       <span style={{ fontFamily: doto, fontWeight: 400, fontSize: 560, lineHeight: 0.8 }}>3</span>
       <span style={{ display: 'flex', alignItems: 'flex-end', gap: 14, fontFamily: doto, fontWeight: 900, fontSize: 96, lineHeight: 1, paddingBottom: 24 }}>
-        GIORNI
+        {TESTI[lingua].solcoGiorni}
         <span style={{ width: 22, height: 22, borderRadius: '50%', background: SOLCO_RED, marginBottom: 10 }} />
       </span>
     </div>
-    <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>Il conto alla rovescia è iniziato.</span>
+    <span style={{ fontSize: 34, fontWeight: 500, color: '#555' }}>{TESTI[lingua].solcoCountdown}</span>
   </AbsoluteFill>
 );
 
 // Forma Gym: boutique fitness al buio, luci rosse, stile Barry's.
 const FORMA_RED = '#FF2D2D';
 
-export const FormaSlide: React.FC = () => (
+export const FormaSlide: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: '#fff', background: '#000' }}>
     <Foto nome="forma-alba" />
     <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.5) 100%)' }} />
     <div style={{ position: 'absolute', top: 84, left: 84, display: 'flex', flexDirection: 'column', fontWeight: 900, fontSize: 118, lineHeight: 0.9, letterSpacing: '-0.035em', textTransform: 'uppercase' }}>
-      <span>Alle 7</span>
-      <span>la città</span>
-      <span>dorme.</span>
-      <span style={{ color: FORMA_RED, marginTop: 18 }}>Tu no.</span>
+      {TESTI[lingua].formaTitolo.map((riga) => (
+        <span key={riga}>{riga}</span>
+      ))}
+      <span style={{ color: FORMA_RED, marginTop: 18 }}>{TESTI[lingua].formaTuNo}</span>
     </div>
     <div style={{ position: 'absolute', left: 84, right: 84, bottom: 72, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 28, fontWeight: 700 }}>
       <span style={{ letterSpacing: '0.35em' }}>FORMA</span>
-      <span style={{ fontWeight: 500 }}>Scorri →</span>
+      <span style={{ fontWeight: 500 }}>{TESTI[lingua].formaScorri}</span>
     </div>
   </AbsoluteFill>
 );
 
 /** Il testo sovrimpresso alla maniera di TikTok: righe su fondo bianco. */
-export const FormaTikTok: React.FC = () => (
+export const FormaTikTok: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter }}>
     <Foto nome="forma-stacco" />
     <div style={{ position: 'absolute', top: 560, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-      {['POV: sono le 7:00', 'e sei già qui'].map((riga) => (
+      {TESTI[lingua].formaPov.map((riga) => (
         <span key={riga} style={{ background: '#fff', color: '#111', fontWeight: 700, fontSize: 60, lineHeight: 1.25, padding: '4px 22px', borderRadius: 14 }}>
           {riga}
         </span>
@@ -152,38 +157,36 @@ export const FormaTikTok: React.FC = () => (
 );
 
 // Osteria del Porto: trattoria di mare, scritta a mano come la lavagna del giorno.
-export const OsteriaReel: React.FC = () => (
+export const OsteriaReel: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: '#fff' }}>
     <Foto nome="osteria-pescato" />
     <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 40%)' }} />
     <div style={{ position: 'absolute', top: 260, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textShadow: '0 4px 24px rgba(0,0,0,0.45)' }}>
       <span style={{ fontFamily: caveat, fontWeight: 700, fontSize: 168, lineHeight: 0.85, textAlign: 'center', transform: 'rotate(-3deg)' }}>
-        Il pescato
+        {TESTI[lingua].osteriaTitolo[0]}
         <br />
-        di oggi
+        {TESTI[lingua].osteriaTitolo[1]}
       </span>
-      <span style={{ fontSize: 38, fontWeight: 500 }}>scelto da Franco, alle 6:00</span>
+      <span style={{ fontSize: 38, fontWeight: 500 }}>{TESTI[lingua].osteriaSub}</span>
     </div>
   </AbsoluteFill>
 );
 
 // Studio Riva: studio di design, griglia svizzera e un solo colore pieno, stile Pentagram.
-const toni = ['Diretto', 'Caldo', 'Ironico', 'Tecnico', 'Gentile', 'Schietto', 'Energico', 'Curioso', 'Essenziale', 'Chiaro'];
-
-export const RivaCase: React.FC = () => (
+export const RivaCase: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, background: '#F2F1ED', color: '#111', padding: 56, display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: 48 }}>
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>Case study — 04</span>
+      <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{TESTI[lingua].rivaEtichetta}</span>
       <span style={{ fontSize: 118, fontWeight: 800, lineHeight: 0.88, letterSpacing: '-0.045em' }}>
-        10 clienti.
+        {TESTI[lingua].rivaTitolo[0]}
         <br />
-        10 voci.
+        {TESTI[lingua].rivaTitolo[1]}
       </span>
-      <span style={{ fontSize: 22, fontWeight: 500, color: '#555' }}>Come teniamo separato il tono di ognuno.</span>
+      <span style={{ fontSize: 22, fontWeight: 500, color: '#555' }}>{TESTI[lingua].rivaSub}</span>
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderLeft: '2px solid #111', paddingLeft: 40 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        {toni.map((tono, i) => (
+        {TESTI[lingua].rivaToni.map((tono, i) => (
           <span
             key={tono}
             style={{
@@ -212,17 +215,17 @@ const CARTA = '#F4ECDF';
 const INCHIOSTRO = '#2A1E14';
 const TERRACOTTA = '#B4553A';
 
-export const LibreriaSlide: React.FC = () => (
+export const LibreriaSlide: React.FC<ConLingua> = ({ lingua = 'it' }) => (
   <AbsoluteFill style={{ fontFamily: inter, color: INCHIOSTRO, background: CARTA }}>
     <div style={{ height: 520, padding: '76px 84px 0', display: 'flex', flexDirection: 'column', gap: 30 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 24, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase' }}>
         <span>Libreria Nove</span>
-        <span style={{ color: TERRACOTTA }}>Consigli di settembre</span>
+        <span style={{ color: TERRACOTTA }}>{TESTI[lingua].libreriaEtichetta}</span>
       </div>
       <div style={{ height: 2, background: INCHIOSTRO }} />
       <span style={{ fontFamily: fraunces, fontSize: 82, fontWeight: 600, lineHeight: 1.02, letterSpacing: '-0.02em' }}>
-        Tre libri per chi ha finito le vacanze,{' '}
-        <em style={{ fontWeight: 400, color: TERRACOTTA }}>ma non la voglia di partire.</em>
+        {TESTI[lingua].libreriaTitolo}{' '}
+        <em style={{ fontWeight: 400, color: TERRACOTTA }}>{TESTI[lingua].libreriaChiusa}</em>
       </span>
     </div>
     <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 520 }}>

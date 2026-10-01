@@ -1,13 +1,21 @@
 ---
 import type { ExamplePost } from '../data/home';
+import { getCopy, type Lang } from '../i18n';
 import Icon from './Icon.astro';
 import PostMedia from './PostMedia.astro';
 
 interface Props {
   post: ExamplePost;
+  lang: Lang;
 }
 
-const { post: p } = Astro.props;
+const { post: p, lang } = Astro.props;
+// Le scritte e i numeri delle app social come appaiono in questa lingua.
+const s = getCopy(lang).social;
+const n = (value?: number) => (value === undefined ? '' : s.num(value));
+const likes = n(p.likes);
+const comments = n(p.comments);
+const shares = n(p.shares);
 const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 'tiktok';
 ---
 
@@ -37,9 +45,9 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <Icon name="bookmark" size={23} class="push" />
       </div>
       <div class="ig-body">
-        <strong>Piace a {p.likes} persone</strong>
+        <strong>{s.igLikes(likes)}</strong>
         <span><strong>{p.handle}</strong> {p.text}</span>
-        <span class="muted">Mostra tutti e {p.comments} i commenti</span>
+        <span class="muted">{s.igComments(comments)}</span>
         <span class="time">{p.time}</span>
       </div>
     </>
@@ -52,9 +60,9 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <Icon name="camera" size={22} />
       </div>
       <div class="overlay side">
-        <span><Icon name="heart" size={26} />{p.likes}</span>
-        <span><Icon name="comment" size={25} />{p.comments}</span>
-        <span><Icon name="send" size={25} />{p.shares}</span>
+        <span><Icon name="heart" size={26} />{likes}</span>
+        <span><Icon name="comment" size={25} />{comments}</span>
+        <span><Icon name="send" size={25} />{shares}</span>
         <Icon name="more" size={22} />
         <span class="cover" style={`background:${p.color}`} />
       </div>
@@ -62,10 +70,10 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <div class="author">
           <span class="avatar small mono" style={`background:${p.color}`}>{p.initials}</span>
           <strong>{p.handle}</strong>
-          <span class="follow">Segui</span>
+          <span class="follow">{s.follow}</span>
         </div>
         <span class="caption">{p.text}</span>
-        <span class="audio"><Icon name="music" size={13} />{p.audio}</span>
+        <span class="audio"><Icon name="music" size={13} />{p.channel === 'reel' ? `${p.handle} · ${s.originalAudio}` : `${s.originalSound} · ${p.handle}`}</span>
       </div>
     </PostMedia>
   )}
@@ -90,7 +98,7 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         </div>
       )}
       <div class="overlay story-bottom">
-        <span class="reply">Invia messaggio</span>
+        <span class="reply">{s.sendMessage}</span>
         <Icon name="heart" size={24} />
         <Icon name="send" size={24} />
       </div>
@@ -100,8 +108,8 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
   {p.channel === 'tiktok' && (
     <PostMedia post={p} immersive>
       <div class="overlay tt-top">
-        <span class="faded">Seguiti</span>
-        <strong class="tt-tab">Per te</strong>
+        <span class="faded">{s.ttFollowing}</span>
+        <strong class="tt-tab">{s.ttForYou}</strong>
         <Icon name="search" size={20} class="tt-search" />
       </div>
       <div class="overlay side">
@@ -109,16 +117,16 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
           <span class="avatar mono" style={`background:${p.color}`}>{p.initials}</span>
           <span class="tt-plus"><Icon name="plus" size={10} /></span>
         </span>
-        <span><Icon name="heart" size={28} fill />{p.likes}</span>
-        <span><Icon name="comment" size={26} fill />{p.comments}</span>
-        <span><Icon name="bookmark" size={25} fill />{p.shares}</span>
-        <span><Icon name="share" size={26} />Condividi</span>
+        <span><Icon name="heart" size={28} fill />{p.likes ? s.compact(p.likes) : ''}</span>
+        <span><Icon name="comment" size={26} fill />{comments}</span>
+        <span><Icon name="bookmark" size={25} fill />{shares}</span>
+        <span><Icon name="share" size={26} />{s.share}</span>
         <span class="disc" style={`background:${p.color}`} />
       </div>
       <div class="overlay bottom">
         <strong>{p.name}</strong>
         <span class="caption">{p.text}</span>
-        <span class="audio"><Icon name="music" size={13} />{p.audio}</span>
+        <span class="audio"><Icon name="music" size={13} />{p.channel === 'reel' ? `${p.handle} · ${s.originalAudio}` : `${s.originalSound} · ${p.handle}`}</span>
       </div>
     </PostMedia>
   )}
@@ -140,14 +148,14 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <span class="reactions">
           <span class="react like"><Icon name="thumb" size={10} fill /></span>
           <span class="react love"><Icon name="heart" size={10} fill /></span>
-          {p.likes}
+          {likes}
         </span>
-        <span>{p.comments} commenti · {p.shares} condivisioni</span>
+        <span>{s.fbStats(comments, shares)}</span>
       </div>
       <div class="fb-actions">
-        <span><Icon name="thumb" size={18} />Mi piace</span>
-        <span><Icon name="comment" size={18} />Commenta</span>
-        <span><Icon name="share" size={18} />Condividi</span>
+        <span><Icon name="thumb" size={18} />{s.fbActions[0]}</span>
+        <span><Icon name="comment" size={18} />{s.fbActions[1]}</span>
+        <span><Icon name="share" size={18} />{s.fbActions[2]}</span>
       </div>
     </>
   )}
@@ -158,10 +166,10 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <span class="avatar square mono" style={`background:${p.color}`}>{p.initials}</span>
         <div class="who">
           <strong>{p.name}</strong>
-          <span class="sub">{p.sub}</span>
+          <span class="sub">{p.followers ? s.liFollowers(n(p.followers)) : p.sub}</span>
           <span class="sub">{p.time} · <Icon name="globe" size={11} /></span>
         </div>
-        <span class="li-follow"><Icon name="plus" size={16} />Segui</span>
+        <span class="li-follow"><Icon name="plus" size={16} />{s.follow}</span>
       </div>
       <p class="li-text">{p.text}</p>
       <PostMedia post={p} />
@@ -169,15 +177,15 @@ const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 
         <span class="reactions">
           <span class="react li-like"><Icon name="thumb" size={10} fill /></span>
           <span class="react love"><Icon name="heart" size={10} fill /></span>
-          {p.likes}
+          {likes}
         </span>
-        <span>{p.comments} commenti · {p.shares} diffusioni</span>
+        <span>{s.liStats(comments, shares)}</span>
       </div>
       <div class="li-actions">
-        <span><Icon name="thumb" size={18} />Consiglia</span>
-        <span><Icon name="comment" size={18} />Commenta</span>
-        <span><Icon name="repost" size={18} />Diffondi</span>
-        <span><Icon name="send" size={18} />Invia</span>
+        <span><Icon name="thumb" size={18} />{s.liActions[0]}</span>
+        <span><Icon name="comment" size={18} />{s.liActions[1]}</span>
+        <span><Icon name="repost" size={18} />{s.liActions[2]}</span>
+        <span><Icon name="send" size={18} />{s.liActions[3]}</span>
       </div>
     </>
   )}

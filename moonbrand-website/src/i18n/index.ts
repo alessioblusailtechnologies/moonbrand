@@ -1,0 +1,27 @@
+import { en } from './en';
+import { fr } from './fr';
+import { it, type Copy } from './it';
+
+export const LANGS = ['it', 'en', 'fr'] as const;
+export type Lang = (typeof LANGS)[number];
+
+const COPY: Record<Lang, Copy> = { it, en, fr };
+
+export function getCopy(lang: Lang): Copy {
+  return COPY[lang];
+}
+
+/** La lingua della pagina, da Astro.currentLocale (l'italiano è quella senza prefisso). */
+export function langOf(locale: string | undefined): Lang {
+  return LANGS.includes(locale as Lang) ? (locale as Lang) : 'it';
+}
+
+/** La home in una lingua: / per l'italiano, /en/ e /fr/ per le altre. */
+export function homePath(lang: Lang): string {
+  return lang === 'it' ? '/' : `/${lang}/`;
+}
+
+/** Le immagini con del testo dentro esistono una per lingua, in /images/<lingua>/; le foto sono uguali per tutte. */
+export function imagePath(lang: Lang, file: string, localized: boolean): string {
+  return localized ? `/images/${lang}/${file}` : `/images/${file}`;
+}

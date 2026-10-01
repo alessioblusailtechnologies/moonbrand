@@ -1,21 +1,28 @@
 ---
-import { posts, postColumns, channelLabel } from '../data/home';
+import { getPosts, postColumns } from '../data/home';
+import { getCopy, type Lang } from '../i18n';
 import PostPreview from './PostPreview.astro';
 
-const columns = postColumns(posts);
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { examples, channels } = getCopy(lang);
+const columns = postColumns(getPosts(lang));
 ---
 
 <section class="examples" data-screen-label="Esempi">
   <div class="inner">
-    <p class="intro">Pensato per chi pubblica ogni settimana e non vuole suonare come tutti gli altri</p>
+    <p class="intro">{examples.intro}</p>
     <div class="grid">
       {columns.map((col) => (
         <div class="col">
           {col.map((p) => (
             <figure>
-              <PostPreview post={p} />
+              <PostPreview post={p} lang={lang} />
               <figcaption>
-                <span class="channel mono">{channelLabel[p.channel]}</span>
+                <span class="channel mono">{channels[p.channel]}</span>
                 <span class="tone">{p.tone}</span>
               </figcaption>
             </figure>

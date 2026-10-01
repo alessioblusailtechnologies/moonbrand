@@ -1,22 +1,29 @@
 ---
-import { day, inside } from '../data/home';
+import { getCopy, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { result: r } = getCopy(lang);
 ---
 
 <section id="risultato" class="result" data-screen-label="Risultato">
   <div class="inner">
-    <span class="eyebrow mono">Il risultato</span>
-    <h2 class="display h2">Scrivi meno. Pubblichi meglio.</h2>
-    <p class="sub">Ogni volta che apri Moonbrand parti da un brand che conosce già: tono, colori, storico. E da una bozza, non da un foglio vuoto.</p>
-    <div class="big">0 pagine<br /><span>bianche</span></div>
+    <span class="eyebrow mono">{r.eyebrow}</span>
+    <h2 class="display h2">{r.title}</h2>
+    <p class="sub">{r.sub}</p>
+    <div class="big">{r.big[0]}<br /><span>{r.big[1]}</span></div>
 
     <div class="cards">
       <div class="photo">
-        <img src="/images/social-manager.jpg" alt="Una social media manager al lavoro con il telefono e il portatile" loading="lazy" />
-        <span class="photo-title">Un giorno tipo, con Moonbrand</span>
+        <img src="/images/social-manager.jpg" alt={r.photoAlt} loading="lazy" />
+        <span class="photo-title">{r.photoTitle}</span>
       </div>
 
       <div class="timeline">
-        {day.map((d) => (
+        {r.day.map((d) => (
           <div class="moment">
             <span class="mono">{d.h}</span>
             <span class="moment-text">{d.t}</span>
@@ -25,14 +32,14 @@ import { day, inside } from '../data/home';
       </div>
 
       <div class="inside">
-        <span class="inside-title">Cosa trovi dentro</span>
-        <span class="inside-sub">Per ogni brand che gestisci</span>
-        {inside.map((i) => (
+        <span class="inside-title">{r.insideTitle}</span>
+        <span class="inside-sub">{r.insideSub}</span>
+        {r.inside.map((i) => (
           <div class="row"><span>{i.k}</span><strong>{i.v}</strong></div>
         ))}
         <div class="inside-ctas">
-          <a href="#prova" class="btn btn-dark">Inizia la prova</a>
-          <a href="#sistema" class="btn btn-line">Scopri le funzionalità</a>
+          <a href="#prova" class="btn btn-dark">{r.ctaTrial}</a>
+          <a href="#sistema" class="btn btn-line">{r.ctaFeatures}</a>
         </div>
       </div>
     </div>

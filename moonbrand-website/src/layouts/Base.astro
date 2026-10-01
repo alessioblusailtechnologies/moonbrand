@@ -1,24 +1,35 @@
 ---
 import '../styles/global.css';
+import { getCopy, homePath, LANGS, type Lang } from '../i18n';
 
 interface Props {
-  title: string;
-  description: string;
+  lang: Lang;
 }
 
-const { title, description } = Astro.props;
+const { lang } = Astro.props;
+const { meta } = getCopy(lang);
+const site = Astro.site ?? new URL('https://moonbrand.app');
+const url = new URL(homePath(lang), site);
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={url} />
+    {LANGS.map((other) => <link rel="alternate" hreflang={other} href={new URL(homePath(other), site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(homePath('en'), site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:locale" content={meta.ogLocale} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <title>{title}</title>
   </head>
   <body>
     <slot />

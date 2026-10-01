@@ -1,6 +1,12 @@
 ---
-// Lo sfogo che vorresti scrivere e non puoi: cancellato a pennello, a pezzi che non vanno a capo.
-const unsaid = ['mandare tutto', 'a quel paese'];
+import { getCopy, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { hero } = getCopy(lang);
 ---
 
 <section id="top" class="hero" data-screen-label="Hero">
@@ -15,9 +21,9 @@ const unsaid = ['mandare tutto', 'a quel paese'];
   </svg>
   <div class="inner">
     <h1 class="display">
-      Crea i tuoi post senza{' '}
+      {hero.before}{' '}
       <del class="unsaid">
-        {unsaid.map((chunk, i) => (
+        {hero.unsaid.map((chunk, i) => (
           <>
             {i > 0 && ' '}
             <span class="chunk" style={`--i:${i}`}>
@@ -30,23 +36,23 @@ const unsaid = ['mandare tutto', 'a quel paese'];
           </>
         ))}
       </del>{' '}
-      perdere ore davanti alla pagina bianca
+      {hero.after}
     </h1>
     <p class="lead">
-      Con Moonbrand crei, organizzi e pianifichi i contenuti social con un’AI che conosce il tuo tone of voice. Tu dai l’idea, lei scrive come scriveresti tu.
+      {hero.lead}
     </p>
     <div class="box">
       <label class="search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#98A2B3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-        <input data-brand-input placeholder="Come si chiama il tuo brand?" aria-label="Nome del brand" />
+        <input data-brand-input placeholder={hero.brandPlaceholder} aria-label={hero.brandLabel} />
       </label>
       <div class="ctas">
-        <a href="#prova" class="btn btn-dark">Inizia la prova gratuita</a>
-        <a href="#piattaforma" class="btn btn-outline">Guarda come funziona</a>
+        <a href="#prova" class="btn btn-dark">{hero.ctaTrial}</a>
+        <a href="#piattaforma" class="btn btn-outline">{hero.ctaHow}</a>
       </div>
     </div>
     <div class="checks">
-      <span>✓ Brand kit salvato</span><span>✓ Più brand in un account</span><span>✓ Nessuna pubblicazione automatica</span>
+      {hero.checks.map((check) => <span>✓ {check}</span>)}
     </div>
   </div>
 </section>

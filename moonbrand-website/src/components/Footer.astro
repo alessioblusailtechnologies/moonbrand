@@ -1,15 +1,22 @@
 ---
-import { footerLinks } from '../data/home';
+import { getCopy, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { footer } = getCopy(lang);
 ---
 
 <footer>
   <div class="inner">
-    {footerLinks.map((f) => (
+    {footer.links.map((f) => (
       <a href="#" class="big-link">{f}<span aria-hidden="true">→</span></a>
     ))}
     <div class="bottom">
-      <span>© 2026 Moonbrand Studio</span>
-      <div class="legal"><a href="#">Privacy</a><a href="#">Termini</a><a href="#">Contatti</a></div>
+      <span>{footer.copyright}</span>
+      <div class="legal"><a href="#">{footer.privacy}</a><a href="#">{footer.terms}</a><a href="#">{footer.contact}</a></div>
     </div>
   </div>
 </footer>

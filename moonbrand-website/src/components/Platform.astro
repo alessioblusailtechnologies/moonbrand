@@ -1,40 +1,51 @@
 ---
 // Tre schermate di Moonbrand Studio (chat, idee, contenuti) dentro la sua cornice, con il brand Solco.
 // Struttura, misure e colori vengono da moonbrand-studio: shell.ts, chat-page, ideas-page, contents-page e styles.scss.
-import {
-  studioChat,
-  studioContents,
-  studioHistory,
-  studioIdeas,
-  studioIdeasThemes,
-  studioNav,
-  studioViews,
-} from '../data/home';
+import { studioChatImage, studioContents, studioIdeaColors, studioNav, studioViews } from '../data/home';
+import { getCopy, imagePath, type Lang } from '../i18n';
 import StudioIcon from './studio/StudioIcon.astro';
 
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { platform, studio } = getCopy(lang);
 const initial = studioViews[0];
+const chatImage = imagePath(lang, studioChatImage, true);
+const crumbs = {
+  chat: [studio.nav.assistant, studio.chat.title],
+  ideas: [studio.nav.ideas],
+  contents: [studio.nav.contents],
+};
 
 // La griglia dei contenuti è a colonne come nello studio: ogni card va nella colonna più bassa.
-const contentColumns: (typeof studioContents)[] = [[], [], []];
+const contents = studioContents.map((content, i) => ({
+  ...content,
+  ...studio.contents.items[i],
+  coverUrl: content.cover ? imagePath(lang, content.cover, content.localized) : null,
+}));
+const contentColumns: (typeof contents)[] = [[], [], []];
 const heights = [0, 0, 0];
-for (const content of studioContents) {
+for (const content of contents) {
   const [w, h] = content.aspect.split(' / ').map(Number);
   const i = heights.indexOf(Math.min(...heights));
   contentColumns[i].push(content);
   heights[i] += h / w + 0.45;
 }
-const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filter((_, i) => i % 2 === 1)];
+const ideas = studio.ideas.items.map((idea, i) => ({ ...idea, color: studioIdeaColors[i] }));
+const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) => i % 2 === 1)];
 ---
 
 <section id="piattaforma" class="platform" data-screen-label="Piattaforma">
   <div class="inner">
-    <h2 class="display h2">Semplifica la gestione dei tuoi social</h2>
-    <p class="sub">Idee, post, caroselli e brand kit in un unico posto. Per un brand o per dieci.</p>
+    <h2 class="display h2">{platform.title}</h2>
+    <p class="sub">{platform.sub}</p>
 
-    <div class="tabs" role="tablist" aria-label="Schermate di Moonbrand Studio">
+    <div class="tabs" role="tablist" aria-label={platform.tabsLabel}>
       {studioViews.map((v) => (
         <button type="button" role="tab" class="tab" data-view={v.id} data-nav={v.nav} aria-selected={v.id === initial.id ? 'true' : 'false'}>
-          {v.label}
+          {platform.tabs[v.id]}
         </button>
       ))}
     </div>
@@ -50,27 +61,27 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
           <span class="avatar">SO</span>
           <span class="switcher-text">
             <span class="switcher-name">Solco</span>
-            <span class="switcher-kind">Elettronica di consumo</span>
+            <span class="switcher-kind">{studio.brandKind}</span>
           </span>
           <StudioIcon name="chevrons-up-down" size={16} class="muted-icon" />
         </div>
 
         <div class="quick">
-          <span class="new-chat"><StudioIcon name="plus" size={16} stroke={2.2} /><span>Nuova chat</span></span>
+          <span class="new-chat"><StudioIcon name="plus" size={16} stroke={2.2} /><span>{studio.newChat}</span></span>
           <span class="side-btn search"><StudioIcon name="search" size={16} /></span>
         </div>
 
         <nav class="nav">
           {studioNav.map((item) => (
-            <span class:list={['nav-item', { active: item.label === initial.nav }]} data-nav-item={item.label}>
+            <span class:list={['nav-item', { active: item.id === initial.nav }]} data-nav-item={item.id}>
               <StudioIcon name={item.icon} stroke={1.8} />
-              <span class="nav-label">{item.label}</span>
+              <span class="nav-label">{studio.nav[item.id]}</span>
             </span>
           ))}
         </nav>
 
         <div class="history">
-          {studioHistory.map((group, g) => (
+          {studio.history.map((group, g) => (
             <div class="group">
               <p class="group-label">{group.label}</p>
               {group.items.map((item, i) => (
@@ -81,7 +92,7 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
         </div>
 
         <div class="foot">
-          <span class="nav-item"><StudioIcon name="settings" stroke={1.8} /><span class="nav-label">Impostazioni brand</span></span>
+          <span class="nav-item"><StudioIcon name="settings" stroke={1.8} /><span class="nav-label">{studio.settings}</span></span>
           <div class="account">
             <span class="initials">EC</span>
             <span class="account-texts">
@@ -97,22 +108,22 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
         {studioViews.map((v) => (
           <header class="topbar" data-panel={v.id} hidden={v.id !== initial.id}>
             <nav class="crumbs">
-              {v.crumbs.map((crumb, i) => (
+              {crumbs[v.id].map((crumb, i) => (
                 <>
                   {i > 0 && <span class="crumb-sep">/</span>}
-                  <span class:list={['crumb', { current: i === v.crumbs.length - 1 }]}>{crumb}</span>
+                  <span class:list={['crumb', { current: i === crumbs[v.id].length - 1 }]}>{crumb}</span>
                 </>
               ))}
             </nav>
             <div class="page-actions">
               {v.id === 'chat' && (
                 <>
-                  <span class="kit"><span class="kit-dot"></span> Brand kit attivo</span>
+                  <span class="kit"><span class="kit-dot"></span> {studio.kitActive}</span>
                   <span class="icon-btn"><StudioIcon name="trash" size={18} /></span>
                 </>
               )}
-              {v.id === 'idee' && <span class="btn btn-primary btn-sm">Proponi altre idee</span>}
-              {v.id === 'contenuti' && <span class="btn btn-secondary btn-sm">Crea da un’idea</span>}
+              {v.id === 'ideas' && <span class="btn btn-primary btn-sm">{studio.moreIdeas}</span>}
+              {v.id === 'contents' && <span class="btn btn-secondary btn-sm">{studio.fromIdea}</span>}
             </div>
           </header>
         ))}
@@ -121,32 +132,32 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
         <div class="content chat" data-panel="chat" hidden={initial.id !== 'chat'}>
           <div class="thread">
             <div class="turn">
-              <div class="photos"><img class="photo" src={studioChat.photo} alt="" loading="lazy" /></div>
-              <p class="mine">{studioChat.message}</p>
+              <div class="photos"><img class="photo" src={chatImage} alt="" loading="lazy" /></div>
+              <p class="mine">{studio.chat.message}</p>
               <div class="reply">
                 <div class="tools">
                   <span class="mark done"><StudioIcon name="check" size={12} stroke={3} /></span>
-                  <span class="strong-sm grow">{studioChat.steps.title}</span>
-                  <span class="caption">{studioChat.steps.time}</span>
+                  <span class="strong-sm grow">{studio.chat.steps}</span>
+                  <span class="caption">48 s</span>
                   <StudioIcon name="chevron-down" size={16} class="muted-icon" />
                 </div>
-                <p class="answer">{studioChat.reply}</p>
+                <p class="answer">{studio.chat.reply}</p>
                 <article class="content-card">
                   <header class="content-card-head">
                     <div class="content-card-titles">
                       <div class="badges">
-                        <span class="badge">{studioChat.content.format}</span>
-                        <span class="badge">{studioChat.content.status}</span>
+                        <span class="badge">{studio.chat.format}</span>
+                        <span class="badge">{studio.chat.status}</span>
                       </div>
-                      <h3 class="strong">{studioChat.content.title}</h3>
+                      <h3 class="strong">{studio.chat.contentTitle}</h3>
                     </div>
-                    <span class="btn btn-secondary btn-sm">Apri in Contenuti <StudioIcon name="chevron-right" size={14} /></span>
+                    <span class="btn btn-secondary btn-sm">{studio.chat.open} <StudioIcon name="chevron-right" size={14} /></span>
                   </header>
                   <div class="preview">
-                    <img src={studioChat.content.cover} alt="" loading="lazy" />
+                    <img src={chatImage} alt="" loading="lazy" />
                     <div class="preview-text">
-                      <span class="label">{studioChat.content.channels}</span>
-                      <p class="body ink"><strong>solco.tech</strong> {studioChat.content.caption}</p>
+                      <span class="label">{studio.chat.channels}</span>
+                      <p class="body ink"><strong>solco.tech</strong> {studio.chat.caption}</p>
                     </div>
                   </div>
                 </article>
@@ -154,9 +165,9 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
             </div>
           </div>
           <div class="composer">
-            <span class="composer-input">Rispondi all’assistente…</span>
+            <span class="composer-input">{studio.chat.composer}</span>
             <div class="composer-bar">
-              <span class="attach"><StudioIcon name="paperclip" size={16} stroke={1.8} /> Allega</span>
+              <span class="attach"><StudioIcon name="paperclip" size={16} stroke={1.8} /> {studio.chat.attach}</span>
               <span class="grow"></span>
               <span class="icon-btn"><StudioIcon name="mic" /></span>
               <span class="icon-btn send"><StudioIcon name="arrow-up" /></span>
@@ -165,14 +176,14 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
         </div>
 
         <!-- Le idee: proposte e salvate, i temi del brand, le card con il perché adesso. -->
-        <div class="content ideas" data-panel="idee" hidden={initial.id !== 'idee'}>
+        <div class="content ideas" data-panel="ideas" hidden={initial.id !== 'ideas'}>
           <div class="toolbar">
             <div class="segmented">
-              <span class="selected">Proposte · 8</span>
-              <span>Salvate · 3</span>
+              <span class="selected">{studio.ideas.proposals}</span>
+              <span>{studio.ideas.saved}</span>
             </div>
             <div class="filters">
-              {studioIdeasThemes.map((theme, i) => <span class:list={['chip', { selected: i === 0 }]}>{theme}</span>)}
+              {studio.ideas.themes.map((theme, i) => <span class:list={['chip', { selected: i === 0 }]}>{theme}</span>)}
             </div>
           </div>
           <div class="grid">
@@ -182,7 +193,7 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
                   <article class="panel idea">
                     <div class="meta">
                       <span class="badge">{idea.signal}</span>
-                      <span class="theme caption"><span class="dot" style={`background:${idea.theme.color}`}></span>{idea.theme.name}</span>
+                      <span class="theme caption"><span class="dot" style={`background:${idea.color}`}></span>{idea.theme}</span>
                     </div>
                     <div class="stack">
                       <p class="label">{idea.angleLabel}</p>
@@ -190,13 +201,13 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
                     </div>
                     <p class="body">{idea.angle}</p>
                     <div class="why">
-                      <p class="label">Perché adesso</p>
+                      <p class="label">{studio.ideas.why}</p>
                       <p class="body ink">{idea.why}</p>
                     </div>
                     <div class="actions">
-                      <span class="btn btn-secondary btn-sm">Scarta</span>
-                      <span class="btn btn-secondary btn-sm">Salva</span>
-                      <span class="btn btn-primary btn-sm">Crea contenuto</span>
+                      <span class="btn btn-secondary btn-sm">{studio.ideas.discard}</span>
+                      <span class="btn btn-secondary btn-sm">{studio.ideas.save}</span>
+                      <span class="btn btn-primary btn-sm">{studio.ideas.create}</span>
                     </div>
                   </article>
                 ))}
@@ -206,25 +217,25 @@ const ideaColumns = [studioIdeas.filter((_, i) => i % 2 === 0), studioIdeas.filt
         </div>
 
         <!-- I contenuti: la griglia a colonne con copertina, formato, stato e canali. -->
-        <div class="content contents" data-panel="contenuti" hidden={initial.id !== 'contenuti'}>
+        <div class="content contents" data-panel="contents" hidden={initial.id !== 'contents'}>
           <div class="grid">
             {contentColumns.map((column) => (
               <div class="column">
                 {column.map((content) => (
                   <article class="panel card">
                     <div class="cover" style={`aspect-ratio:${content.aspect}`}>
-                      {content.cover ? (
+                      {content.coverUrl ? (
                         <>
-                          <img src={content.cover} alt="" loading="lazy" />
-                          {content.video && <span class="play"><StudioIcon name="play" size={18} /></span>}
+                          <img src={content.coverUrl} alt="" loading="lazy" />
+                          {content.format === 'video' && <span class="play"><StudioIcon name="play" size={18} /></span>}
                         </>
                       ) : (
-                        <span class="caption preparing"><span class="spinner"></span> Preparo il video…</span>
+                        <span class="caption preparing"><span class="spinner"></span> {studio.contents.preparingVideo}</span>
                       )}
                     </div>
                     <div class="badges">
-                      <span class="badge">{content.format}</span>
-                      <span class:list={['badge', { mint: content.status === 'Approvato' }]}>{content.status}</span>
+                      <span class="badge">{studio.contents.formats[content.format]}</span>
+                      <span class:list={['badge', { mint: content.status === 'approved' }]}>{studio.contents[content.status]}</span>
                     </div>
                     <h3 class="strong">{content.title}</h3>
                     <p class="caption">{content.channels}</p>
