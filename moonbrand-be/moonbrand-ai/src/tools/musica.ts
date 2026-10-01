@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { measure, type Meter } from '../lib/usage';
 
 // Musica e canzoni con Mureka: si chiede il brano, si aspetta che il lavoro finisca, si scarica il file.
+// Il brano si fa in sottofondo: il tool risponde subito, così Claude intanto scrive la composizione, e attendi_musica
+// aspetta i brani in corso prima del render.
 const API = process.env.MUREKA_API_URL || 'https://api.mureka.ai';
 const MODEL = 'auto';
 const POLL_MS = 5000;
@@ -86,6 +88,23 @@ export function musicTools(folder: string, apiKey: string) {
     content: [{ type: 'text' as const, text: `Non riuscito: ${error instanceof Error ? error.message : String(error)}` }],
     isError: true,
   });
+
+  // I brani in corso, per file chiesto: ognuno finisce con il messaggio di produce o con l'errore.
+  type Result = Awaited<ReturnType<typeof generate>> | ReturnType<typeof failure>;
+  const pending = new Map<string, Promise<Result>>();
+  const start = (kind: 'song' | 'instrumental', body: Record<string, unknown>, file: string) => {
+    pending.set(file, produce(kind, body, file).catch(failure));
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text:
+            `Avviato: il brano arriva in ${file} tra uno o due minuti (Mureka ne fa uno alla volta, quindi più brani si mettono in fila). ` +
+            'Intanto continua: scrivi la composizione e i testi. Prima di usare il file o di renderizzare chiama attendi_musica.',
+        },
+      ],
+    };
+  };
   const audioFile = (example: string) =>
     z
       .string()
@@ -94,40 +113,53 @@ export function musicTools(folder: string, apiKey: string) {
 
   const instrumental = tool(
     'genera_musica',
-    'Compone una musica strumentale originale con Mureka e la salva nella cartella del brand. Ci vuole qualche minuto. ' +
+    'Avvia una musica strumentale originale con Mureka, che la salva nella cartella del brand: risponde subito e il brano arriva in uno o due minuti (poi attendi_musica). ' +
       'Descrivi in inglese genere, atmosfera, strumenti, tempo (BPM) e andamento. La durata la sceglie Mureka (di solito 2-4 minuti): nel video tagliala e chiudila con una dissolvenza.',
     {
       descrizione: z.string().min(10).describe('Com’è la musica, in inglese: genere, atmosfera, strumenti, tempo, andamento'),
       file: audioFile('musica.mp3'),
     },
-    async ({ descrizione, file }) => {
-      try {
-        return await produce('instrumental', { prompt: descrizione }, file);
-      } catch (error) {
-        return failure(error);
-      }
-    },
+    ({ descrizione, file }) => Promise.resolve(start('instrumental', { prompt: descrizione }, file)),
     { alwaysLoad: true },
   );
 
   const song = tool(
     'genera_canzone',
-    'Compone una canzone cantata con Mureka, sul testo che scrivi tu, e la salva nella cartella del brand. Ci vuole qualche minuto. ' +
+    'Avvia una canzone cantata con Mureka, sul testo che scrivi tu, che la salva nella cartella del brand: risponde subito e il brano arriva in qualche minuto (poi attendi_musica). ' +
       'Il testo va diviso in sezioni con i tag [Verse], [Chorus], [Bridge], [Outro]; lo stile si descrive in inglese (genere, atmosfera, voce maschile o femminile, tempo).',
     {
       testo: z.string().min(10).describe('Il testo della canzone, con le sezioni tra parentesi quadre'),
       stile: z.string().optional().describe('Lo stile in inglese, es. "warm acoustic pop, female vocal, 100 BPM, hopeful"'),
       file: audioFile('canzone.mp3'),
     },
-    async ({ testo, stile, file }) => {
-      try {
-        return await produce('song', { lyrics: testo, ...(stile && { prompt: stile }) }, file);
-      } catch (error) {
-        return failure(error);
-      }
+    ({ testo, stile, file }) => Promise.resolve(start('song', { lyrics: testo, ...(stile && { prompt: stile }) }, file)),
+    { alwaysLoad: true },
+  );
+
+  const wait = tool(
+    'attendi_musica',
+    'Aspetta che i brani avviati con genera_musica e genera_canzone siano pronti e dice dove sono salvati (l’estensione può cambiare) o perché non sono riusciti. ' +
+      'Senza file aspetta tutti quelli in corso. Da chiamare prima di usare un brano nel video o di renderizzare.',
+    { file: z.array(z.string()).optional().describe('I file chiesti a genera_musica o genera_canzone; vuoto per tutti') },
+    async ({ file }) => {
+      const files = file?.length ? file : [...pending.keys()];
+      if (files.length === 0) return { content: [{ type: 'text' as const, text: 'Nessun brano in corso.' }] };
+      const results = await Promise.all(
+        files.map(async (item) => {
+          const job = pending.get(item);
+          if (!job) return { text: `${item}: nessun brano avviato con questo nome.`, error: true };
+          const result = await job;
+          pending.delete(item);
+          return { text: result.content[0].text, error: 'isError' in result };
+        }),
+      );
+      return {
+        content: [{ type: 'text' as const, text: results.map((result) => result.text).join('\n') }],
+        ...(results.some((result) => result.error) && { isError: true }),
+      };
     },
     { alwaysLoad: true },
   );
 
-  return createSdkMcpServer({ name: 'musica', tools: [instrumental, song] });
+  return createSdkMcpServer({ name: 'musica', tools: [instrumental, song, wait] });
 }

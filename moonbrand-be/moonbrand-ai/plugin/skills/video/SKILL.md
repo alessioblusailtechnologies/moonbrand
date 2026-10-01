@@ -73,6 +73,8 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 Non puoi ascoltare niente di quello che generi: descrivi tutto con precisione e controlla i tempi sui file.
 
+Musica e canzoni si fanno in sottofondo: genera_musica e genera_canzone rispondono subito e il brano arriva in uno o due minuti. Avviale appena sai cosa serve, prima di scrivere la composizione, e intanto vai avanti; chiama attendi_musica prima di usare il brano o di renderizzare. Chiedi un brano alla volta e solo quello che userai: Mureka ne fa uno per volta, e un secondo brano allunga l'attesa.
+
 - **Musica**: genera_musica (Mureka) compone un brano strumentale. Descrivi in inglese genere, atmosfera, strumenti, tempo e andamento, in accordo con la voce del brand. La durata la sceglie Mureka: nel video prendi la parte che serve, chiudila con una dissolvenza negli ultimi secondi e abbassala sotto la voce.
 - **Canzone o jingle**: quando il video chiede una parte cantata, genera_canzone (Mureka) la compone sul testo che scrivi tu. Il testo segue la voce del brand, con le sezioni [Verse], [Chorus], [Bridge] e [Outro]; lo stile si descrive in inglese, con la voce che serve. Con una canzone, le parole cantate importanti vanno anche a schermo.
 - **Voce fuori campo**: scegli la voce con cerca_voci partendo dalla voce del brand, poi salvane l'id in video/src/brand.ts. Se c'è già, usa quella: il brand parla sempre con la stessa voce. Il testo lo leggi con genera_voce. Scrivilo come si pronuncia e segui la voce del brand come per i testi.
