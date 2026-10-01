@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import { cleanHashtags, FORMAT_ASPECT, HASHTAGS, postText, TEXT_LIMIT, type Content, type ContentFile } from '@moonbrand/shared/domain/content';
+import { channelFiles, cleanHashtags, HASHTAGS, postText, TEXT_LIMIT, type Content, type ContentFile } from '@moonbrand/shared/domain/content';
 
 import { errorMessage, fileUrl } from '../../lib/api';
 import { aspectRatio, FOLD } from '../../lib/labels';
@@ -40,26 +40,26 @@ export function ContentPreview({ content, editable = false, compact = false, onU
   useEffect(() => setExpanded(false), [channel]);
 
   const variant = content.variants.find((item) => item.channel === channel) ?? null;
-  const aspect = channel ? FORMAT_ASPECT[content.format][channel] : null;
   const files = content.visual.files ?? [];
+  // I file del canale scelto: i suoi, o quelli condivisi nella sua proporzione.
+  const mine = useMemo(() => (channel ? channelFiles(files, content.format, channel) : []), [files, content.format, channel]);
 
   const images = useMemo<ContentFile[]>(() => {
     const slides = files.filter((file) => file.role === 'slide');
     if (slides.length > 0) {
-      const fitting = slides.filter((file) => file.aspect === aspect);
-      return fitting.length > 0 ? fitting : slides.filter((file) => file.aspect === slides[0].aspect);
+      const fitting = mine.filter((file) => file.role === 'slide');
+      return fitting.length > 0 ? fitting : slides.filter((file) => file.aspect === slides[0].aspect && file.channel === slides[0].channel);
     }
     const covers = files.filter((file) => file.role === 'cover');
-    return [covers.find((file) => file.aspect === aspect) ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
-  }, [files, aspect]);
+    return [mine.find((file) => file.role === 'cover') ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
+  }, [files, mine]);
 
   const video = useMemo(() => {
-    const videos = files.filter((file) => file.role === 'video');
-    const found = videos.find((file) => file.aspect === aspect) ?? videos[0];
+    const found = mine.find((file) => file.role === 'video') ?? files.find((file) => file.role === 'video');
     if (!found) return null;
-    const poster = files.find((file) => file.role === 'cover' && file.aspect === found.aspect);
+    const poster = files.find((file) => file.role === 'cover' && file.aspect === found.aspect && file.channel === found.channel);
     return { file: found, poster: poster?.url ?? null };
-  }, [files, aspect]);
+  }, [files, mine]);
 
   const document = channel === 'linkedin' ? (files.find((file) => file.role === 'document') ?? null) : null;
 

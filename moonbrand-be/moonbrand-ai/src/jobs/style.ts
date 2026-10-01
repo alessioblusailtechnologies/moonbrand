@@ -25,13 +25,14 @@ if (!GEMINI_API_KEY) {
 const FOLDERS = ['riferimenti-da-seguire', 'file-riferimento'];
 
 const QUESTION = `Sono i riferimenti di stile del brand: i post scelti come esempio (riferimenti-da-seguire) e i file caricati (file-riferimento: logo, foto, materiali).
-Scrivi la guida di stile che userà chi prepara i prossimi contenuti senza vedere questi file. In italiano, al massimo 2.500 caratteri, una riga per voce che inizia con la voce in grassetto:
+Scrivi la guida di stile che userà chi prepara i prossimi contenuti senza vedere questi file. In italiano, al massimo 3.000 caratteri, una riga per voce che inizia con la voce in grassetto:
 - **Palette**: i colori con l'esadecimale stimato e il ruolo (sfondo, titoli, accenti).
 - **Caratteri**: titoli e testi (famiglia, peso, maiuscolo o no) e un font simile su Google Fonts.
 - **Foto**: soggetti, luce, tono e trattamento.
 - **Grafica ricorrente**: linee, riquadri, bordi, firme, hashtag e dove stanno.
 - **Logo**: forma, colori e scritte; «nessuno» se non c'è.
 - **Impaginazioni dei riferimenti**: per ogni post, con il nome del file, dove stanno titolo, foto, testo e logo.
+- **Per canale**: il canale di un post è all'inizio del nome del file (instagram-1.png, tiktok-2.png). Per ogni canale con i suoi post, cosa cambia rispetto agli altri: quanta grafica, logo sì o no, dove e come sta il testo, che foto; «nessuna differenza» se i post sono di un canale solo o si somigliano.
 - **In sintesi**: lo stile comune in due frasi.
 Scrivi solo quello che si vede.`;
 

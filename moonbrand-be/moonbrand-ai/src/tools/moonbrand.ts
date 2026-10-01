@@ -55,12 +55,19 @@ const content = {
         role: z.enum(['cover', 'slide', 'video']).describe('video: l’MP4 di un video, che vuole una copertina (cover) nella stessa proporzione'),
         index: z.number().int().min(0).describe('L’ordine: 0 per la prima copertina o la prima slide'),
         aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
+        channel: channel
+          .optional()
+          .describe(
+            'Solo per un file fatto apposta per un canale, nella confezione del canale: per esempio il video TikTok accanto al Reel di Instagram, ' +
+              'tutti e due in 9:16. Senza, il file vale per tutti i canali del contenuto con quella proporzione che non hanno il loro.',
+          ),
       }),
     )
     .min(1)
     .describe(
       'Le immagini finali in PNG o JPEG e i video in MP4, nelle proporzioni dei canali (skill moonbrand:contenuti): moonbrand li copia nella cartella del contenuto. ' +
-        'Un carosello ha un giro di slide per proporzione, con gli stessi index; il documento PDF per LinkedIn lo aggiunge moonbrand.',
+        'Un carosello ha un giro di slide per proporzione, con gli stessi index; il documento PDF per LinkedIn lo aggiunge moonbrand. ' +
+        'Un video ha la sua copertina con la stessa proporzione e lo stesso channel.',
     ),
 };
 

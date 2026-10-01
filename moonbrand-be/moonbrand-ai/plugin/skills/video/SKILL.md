@@ -24,9 +24,11 @@ Scegli la fonte pensando a cosa sembrerà vero: persone, luoghi e lavori del bra
 - Un'inquadratura porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
 - Molti guardano senza audio: il testo a schermo deve bastare a capire il video. Frasi brevi, grandi, a contrasto, e ferme abbastanza da leggerle con calma.
 - La durata è quella che serve all'idea, senza allungare.
-- La chiusura lascia il brand riconoscibile, di solito con il logo o un'azione.
+- La chiusura lascia il brand riconoscibile, di solito con il logo o un'azione; su TikTok senza schermata finale (vedi la confezione per canale nella skill moonbrand:contenuti).
 
 Testo a schermo e voce seguono le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
+
+Il copione è uno per tutti i canali: scene e clip sono le stesse, mentre testo a schermo, grafica, ritmo e chiusura seguono la confezione di ogni canale. Quando i canali del contenuto hanno confezioni diverse, nel copione scrivi il testo a schermo della confezione principale e di' all'utente in una frase come cambia sugli altri.
 
 Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare qualcosa (una durata, una fonte che manca), cambialo e dillo.
 
@@ -41,13 +43,14 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 - 30 fotogrammi al secondo.
 - In 9:16 i social coprono i bordi con i loro pulsanti e le didascalie: tieni testi e logo lontani da circa 250 px in alto, 400 px in basso e 150 px a destra.
-- Se servono più proporzioni, fai una composizione per ciascuna e ripensa l'impaginazione: non ritagliare quella di un'altra.
+- Fai una composizione per ogni proporzione e per ogni confezione (skill moonbrand:contenuti, «La confezione per canale»): per esempio una per il Reel di Instagram e una per TikTok, anche se sono tutte e due 9:16. Tieni le scene in componenti condivisi e cambia sopra testi, grafica e chiusura. Ripensa l'impaginazione, non ritagliare quella di un'altra.
+- Ogni composizione ha il suo MP4 e la sua copertina; quelli fatti apposta per un canale si salvano con channel.
 
 ## Stile
 
 - Lo stile del brand si prende come per le immagini: riferimenti-da-seguire e file-riferimento danno palette, font, tono delle foto e dettagli grafici, da seguire senza ricalcare l'impaginazione. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile».
 - video/src/brand.ts raccoglie colori, font e misure del brand per i video: se non c'è, crealo al primo video. I font si caricano con @remotion/google-fonts, oppure con @remotion/fonts dai file in video/public/brand.
-- video/src/kit contiene i pezzi riusabili del brand. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro.
+- video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro.
 - Guarda le composizioni degli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri.
 - Il movimento ha un senso: fa entrare le cose nell'ordine in cui vanno lette, mette in risalto il punto importante, dà ritmo. Niente animazioni messe tanto per muovere.
 

@@ -20,11 +20,14 @@ export interface CarouselSlide {
 
 // Un file del contenuto nella cartella del brand: la copertina (una per proporzione), una slide (un giro per proporzione),
 // il video (uno per proporzione, con la copertina della stessa proporzione) o il documento PDF del carosello per LinkedIn.
+// Con channel il file è fatto apposta per quel canale, nella confezione del canale: per esempio il video TikTok accanto
+// al Reel, nella stessa proporzione. Senza, vale per tutti i canali di quella proporzione che non hanno il loro.
 export interface ContentFile {
   file: string;
   role: 'cover' | 'slide' | 'video' | 'document';
   index: number;
   aspect: string;
+  channel?: ChannelId;
   url?: string;
 }
 
@@ -96,6 +99,15 @@ export const supportsFormat = (format: ContentFormat, channel: ChannelId): boole
 export const formatAspects = (format: ContentFormat, channels: readonly ChannelId[]): string[] => [
   ...new Set(channels.flatMap((channel) => FORMAT_ASPECT[format][channel] ?? [])),
 ];
+
+// I file che escono su un canale, nella sua proporzione: per ogni ruolo quelli fatti apposta per lui, se ci sono,
+// altrimenti quelli senza canale.
+export function channelFiles<T extends Pick<ContentFile, 'role' | 'aspect' | 'channel'>>(files: readonly T[], format: ContentFormat, channel: ChannelId): T[] {
+  const aspect = FORMAT_ASPECT[format][channel];
+  const fitting = files.filter((file) => file.aspect === aspect && (!file.channel || file.channel === channel));
+  const own = new Set(fitting.filter((file) => file.channel === channel).map((file) => file.role));
+  return fitting.filter((file) => file.channel === channel || !own.has(file.role));
+}
 
 // Su LinkedIn un carosello si pubblica come documento: le slide in un PDF, che fa moonbrand.
 export const hasDocument = (format: ContentFormat, channels: readonly ChannelId[]): boolean => format === 'carousel' && channels.includes('linkedin');

@@ -407,7 +407,8 @@ export interface AgentContentRequest {
   // L'impaginazione in una frase (vedi ContentVisual.layout).
   layout?: string;
   // Le immagini e i video finali, ovunque siano nella cartella del brand: l'API li copia in quella del contenuto.
-  files: { file: string; role: ContentFile['role']; index: number; aspect: string }[];
+  // channel solo per i file fatti apposta per un canale (vedi ContentFile.channel).
+  files: { file: string; role: ContentFile['role']; index: number; aspect: string; channel?: ChannelId }[];
 }
 
 export interface AgentContentSaved {

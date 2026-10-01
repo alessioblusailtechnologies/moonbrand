@@ -77,7 +77,8 @@ export async function saveContent(
   const files: ContentFile[] = [];
   for (const file of written.visual.files) {
     if (!file.file.startsWith(dir) || file.file.includes('..')) continue;
-    if (await exists(path.join(brandDir, file.file))) files.push({ file: file.file, role: file.role, index: file.index, aspect: file.aspect });
+    const channel = file.channel && channels.includes(file.channel) ? file.channel : undefined;
+    if (await exists(path.join(brandDir, file.file))) files.push({ file: file.file, role: file.role, index: file.index, aspect: file.aspect, ...(channel && { channel }) });
   }
   if (files.length === 0) throw new Error('nessun file trovato nella cartella del contenuto');
   if (format === 'video' && !files.some((file) => file.role === 'video')) throw new Error('nessun video trovato nella cartella del contenuto');

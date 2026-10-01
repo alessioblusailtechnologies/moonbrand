@@ -4,7 +4,8 @@ import path from 'node:path';
 import { query } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import { exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/catalog';
+import { channelName, exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/catalog';
+import { FORMAT_ASPECT } from '@moonbrand/shared/domain/content';
 
 import { imageTools } from '../tools/immagini';
 
@@ -18,6 +19,24 @@ export function examplesDir(jobId: string): string {
 // così una modifica successiva li ritrova.
 export function workDir(dir: string): string {
   return `${dir}/lavoro`;
+}
+
+// Come si presenta un post su ogni canale: la confezione della skill moonbrand:contenuti, in breve. Gli esempi la mostrano
+// già nell'onboarding, e quelli scelti diventano i riferimenti del brand per il loro canale.
+const LOOK: Record<ChannelId, string> = {
+  instagram: 'curato ed editoriale, con la grafica del brand: palette, font, logo',
+  facebook: 'come su Instagram, curato e con la grafica del brand',
+  tiktok:
+    'nativo, come lo fa chi usa l’app: una foto a tutto schermo, poche grafiche, niente logotipo in testa; il testo come lo scrive l’app, ' +
+    'in TikTok Sans, frasi brevi su riquadri bianchi arrotondati con testo nero (oppure bianco con il contorno nero), nel terzo centrale ' +
+    'e lontano dai bordi che l’app copre in basso e a destra; il brand si riconosce dai colori e dal tono',
+  linkedin: 'sobrio e leggibile: un titolo chiaro, un concetto o un dato in primo piano, poca decorazione, il logo discreto',
+  x: 'un messaggio solo, leggibile anche piccolo',
+};
+
+// Una riga per canale: proporzione del post e confezione.
+export function channelLooks(channels: readonly ChannelId[]): string {
+  return channels.map((channel) => `- ${channelName(channel)}, in ${FORMAT_ASPECT.post[channel]}: ${LOOK[channel]}.`).join('\n');
 }
 
 function examplesSchema(dir: string, chosen: ChannelId[]) {

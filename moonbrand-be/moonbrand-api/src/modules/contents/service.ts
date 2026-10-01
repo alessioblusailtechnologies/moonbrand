@@ -15,6 +15,7 @@ import type {
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName } from '@moonbrand/shared/domain/catalog';
 import {
+  channelFiles,
   cleanHashtags,
   FORMAT_ASPECT,
   formatAspects,
@@ -302,7 +303,8 @@ export function saveContentVariant(
   });
 }
 
-// Un canale tolto: via il suo testo e i file che servivano solo a lui (le immagini nella sua proporzione, il documento di LinkedIn).
+// Un canale tolto: via il suo testo e i file che servivano solo a lui (quelli fatti per lui, le immagini nella sua proporzione,
+// il documento di LinkedIn).
 export function removeContentChannel(pool: pg.Pool, files: BrandFiles, identity: Identity, contentId: string, channel: ChannelId): Promise<Content> {
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
@@ -311,11 +313,8 @@ export function removeContentChannel(pool: pg.Pool, files: BrandFiles, identity:
     if (!content.channels.includes(channel)) throw ApiError.notFound(`Questo contenuto non esce su ${channelName(channel)}.`);
     if (content.channels.length === 1) throw ApiError.invalid('Un contenuto esce almeno su un canale.');
     const channels = content.channels.filter((item) => item !== channel);
-    const needed = formatAspects(content.format, channels);
-    const onlyHis = FORMAT_ASPECT[content.format][channel];
-    const kept = (content.visual.files ?? []).filter((file) =>
-      file.role === 'document' ? hasDocument(content.format, channels) : file.aspect !== onlyHis || needed.includes(file.aspect),
-    );
+    const used = new Set(channels.flatMap((item) => channelFiles(content.visual.files ?? [], content.format, item)));
+    const kept = (content.visual.files ?? []).filter((file) => (file.role === 'document' ? hasDocument(content.format, channels) : used.has(file)));
     const variants = content.variants.filter((variant) => variant.channel !== channel);
     const saved = await setContentChannels(db, contentId, channels, variants, kept);
     if (!saved) throw ApiError.notFound('Contenuto non trovato.');
@@ -369,9 +368,10 @@ export function addContentChannel(
       channels,
       instruction:
         `Aggiungi il canale ${channelName(channel)}: scrivi il suo testo seguendo la skill moonbrand:contenuti` +
+        ` e prepara ${outputs} in ${aspect} nella confezione di ${channelName(channel)}` +
         (formatAspects(content.format, content.channels).includes(aspect)
-          ? `; ${outputs} in ${aspect} ci sono già.`
-          : ` e adatta anche al ${aspect} ${outputs}, con lo stesso visivo.`) +
+          ? `: quelli in ${aspect} che ci sono già valgono anche per ${channelName(channel)} se la confezione è la stessa, altrimenti fanne di suoi con channel «${channel}».`
+          : '.') +
         ' Non cambiare testi e file degli altri canali.',
       scriptOnly: false,
     };

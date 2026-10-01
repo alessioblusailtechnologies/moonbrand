@@ -6,8 +6,9 @@ import type pg from 'pg';
 import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import {
+  channelFiles,
   cleanHashtags,
-  formatAspects,
+  FORMAT_ASPECT,
   sortFiles,
   supportsFormat,
   type ChannelVariant,
@@ -32,7 +33,7 @@ const DOCUMENT_EXTENSIONS = new Set(['.pdf']);
 const contentDir = (contentId: string) => `contenuti/${contentId}`;
 
 const filesOf = (content: Content) =>
-  (content.visual.files ?? []).map(({ file, role, index, aspect }) => ({ file, role, index, aspect }));
+  (content.visual.files ?? []).map(({ file, role, index, aspect, channel }) => ({ file, role, index, aspect, ...(channel && { channel }) }));
 
 // Quello che Claude vede di un contenuto: testi e percorsi delle immagini nella cartella del brand.
 function describe(content: Content, agent: AgentJob) {
@@ -73,15 +74,17 @@ export function getAgentContent(pool: pg.Pool, agent: AgentJob, contentId: strin
 
 // Immagini, video e documento finali vanno nella cartella del contenuto con un nome nuovo a ogni salvataggio:
 // così la sorgente può essere anche un'immagine già del contenuto, senza sovrascriverla mentre si copia.
-// Le slide di un carosello si ripetono per proporzione: role, index e proporzione insieme sono unici.
+// Le slide di un carosello si ripetono per proporzione: role, index, proporzione e canale insieme sono unici.
 async function publishFiles(files: BrandFiles, brandId: string, contentId: string, requested: AgentContentRequest['files']): Promise<ContentFile[]> {
   const stamp = Date.now().toString(36);
   const taken = new Set<string>();
   const published: ContentFile[] = [];
   for (const item of requested) {
-    const key = `${item.role}-${item.index}-${item.aspect.replace(':', 'x')}`;
+    const key = `${item.role}-${item.index}-${item.aspect.replace(':', 'x')}${item.channel ? `-${item.channel}` : ''}`;
     if (taken.has(key)) {
-      throw ApiError.invalid(`Due file con role «${item.role}», index ${item.index} e proporzione ${item.aspect}: ognuno ha il suo index.`);
+      throw ApiError.invalid(
+        `Due file con role «${item.role}», index ${item.index}, proporzione ${item.aspect}${item.channel ? ` e canale ${item.channel}` : ''}: ognuno ha il suo index.`,
+      );
     }
     taken.add(key);
     const extension = path.extname(item.file).toLowerCase();
@@ -94,14 +97,14 @@ async function publishFiles(files: BrandFiles, brandId: string, contentId: strin
         ? ApiError.invalid(`${item.file}: percorso non valido, usa un percorso relativo alla cartella del brand.`)
         : ApiError.invalid(`Non trovo ${item.file} nella cartella del brand.`);
     });
-    published.push({ file: target, role: item.role, index: item.index, aspect: item.aspect });
+    published.push({ file: target, role: item.role, index: item.index, aspect: item.aspect, ...(item.channel && { channel: item.channel }) });
   }
   return sortFiles(published);
 }
 
 // Le regole che valgono anche per i job dei contenuti: solo i canali del brand, una variante per canale,
 // hashtag puliti e contati, i formati che ogni canale regge, le immagini giuste per il formato;
-// un video ha la sua copertina in ogni proporzione.
+// un file fatto per un canale è nella proporzione di quel canale; un video ha la sua copertina, nella stessa proporzione e per lo stesso canale.
 function check(request: AgentContentRequest, brandChannels: readonly string[]): ChannelVariant[] {
   const channels = [...new Set(request.channels)];
   const outside = channels.filter((channel) => !brandChannels.includes(channel));
@@ -115,10 +118,17 @@ function check(request: AgentContentRequest, brandChannels: readonly string[]): 
     if (!variant) throw ApiError.invalid(`Manca il testo per ${channelName(channel)}.`);
     return { channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, channel) };
   });
-  const slides = request.files.filter((file) => file.role === 'slide');
+  for (const file of request.files) {
+    if (!file.channel) continue;
+    if (!channels.includes(file.channel)) throw ApiError.invalid(`${file.file}: è per ${channelName(file.channel)}, che non è tra i canali del contenuto.`);
+    const aspect = FORMAT_ASPECT[request.format][file.channel];
+    if (file.aspect !== aspect) throw ApiError.invalid(`${file.file}: su ${channelName(file.channel)} il formato «${request.format}» è in ${aspect}, non in ${file.aspect}.`);
+  }
   if (request.format === 'carousel') {
-    const missing = formatAspects('carousel', channels).filter((aspect) => slides.filter((file) => file.aspect === aspect).length < 2);
-    if (missing.length > 0) throw ApiError.invalid(`Un carosello ha almeno 2 slide (role «slide») in ogni proporzione dei suoi canali: mancano in ${missing.join(', ')}.`);
+    const missing = channels.filter((channel) => channelFiles(request.files, 'carousel', channel).filter((file) => file.role === 'slide').length < 2);
+    if (missing.length > 0) {
+      throw ApiError.invalid(`Un carosello ha almeno 2 slide (role «slide») per ogni canale, nella sua proporzione: mancano per ${missing.map(channelName).join(', ')}.`);
+    }
   }
   if (request.format !== 'carousel' && !request.files.some((file) => file.role === 'cover')) {
     throw ApiError.invalid('Serve almeno un’immagine con role «cover».');
@@ -126,8 +136,13 @@ function check(request: AgentContentRequest, brandChannels: readonly string[]): 
   const videos = request.files.filter((file) => file.role === 'video');
   if (request.format === 'video') {
     if (videos.length === 0) throw ApiError.invalid('Un video ha almeno un file MP4 con role «video».');
-    const missing = videos.filter((video) => !request.files.some((file) => file.role === 'cover' && file.aspect === video.aspect));
-    if (missing.length > 0) throw ApiError.invalid(`Manca la copertina per il video in ${missing.map((video) => video.aspect).join(', ')}.`);
+    const missing = videos.filter(
+      (video) => !request.files.some((file) => file.role === 'cover' && file.aspect === video.aspect && file.channel === video.channel),
+    );
+    if (missing.length > 0) {
+      const names = missing.map((video) => `${video.aspect}${video.channel ? ` per ${channelName(video.channel)}` : ''}`);
+      throw ApiError.invalid(`Manca la copertina per il video in ${names.join(', ')}: stessa proporzione e stesso canale.`);
+    }
   } else if (videos.length > 0) {
     throw ApiError.invalid('I file con role «video» vanno solo nel formato video.');
   }

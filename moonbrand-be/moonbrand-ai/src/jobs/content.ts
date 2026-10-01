@@ -44,7 +44,7 @@ Non generare immagini, clip o audio e non scrivere la composizione: l’utente l
 ${ideaLines}
 
 ## Canali
-${channelList}. Il video uscirà in ${videoAspects(channels).join(', ')}: scrivi il copione per la proporzione principale, le altre si adattano.
+${channelList}. Il video uscirà in ${videoAspects(channels).join(', ')}: scrivi il copione per la proporzione e la confezione principali, le altre si adattano (skill moonbrand:contenuti, «La confezione per canale»).
 
 Rispondi in italiano.`
     : `Scrivi il contenuto che nasce dall’idea qui sotto, pronto da pubblicare, e prepara le sue immagini.

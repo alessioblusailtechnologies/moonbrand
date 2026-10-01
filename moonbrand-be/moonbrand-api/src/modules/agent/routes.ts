@@ -54,10 +54,11 @@ const contentSchema = z.object({
         role: z.enum(['cover', 'slide', 'video', 'document']),
         index: z.number().int().min(0).max(20),
         aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
+        channel: channelId.optional(),
       }),
     )
     .min(1)
-    .max(32),
+    .max(48),
 }) satisfies z.ZodType<AgentContentRequest>;
 
 const ideaSchema = z.object({

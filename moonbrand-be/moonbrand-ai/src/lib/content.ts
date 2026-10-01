@@ -4,7 +4,7 @@ import path from 'node:path';
 import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import { formatAspects, hasDocument, type ContentFormat } from '@moonbrand/shared/domain/content';
+import { FORMAT_ASPECT, formatAspects, hasDocument, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
 import { graphicsTools } from '../tools/grafica';
@@ -24,19 +24,27 @@ export const videoAspects = (channels: readonly ChannelId[]) => formatAspects('v
 
 // I file che servono, nelle proporzioni dei canali (FORMAT_ASPECT): una copertina per proporzione nel post e nell'articolo,
 // un giro di slide per proporzione nel carosello, un video con la sua copertina per proporzione nel video.
+// Ogni canale ha la sua confezione: chi la vuole diversa da un altro nella stessa proporzione ha i suoi file, con channel.
 export function neededFiles(format: ContentFormat, channels: readonly ChannelId[]): string {
   const aspects = formatAspects(format, channels);
+  const own = shareAspect(format, channels)
+    ? '. Se due canali nella stessa proporzione vogliono confezioni diverse (skill moonbrand:contenuti), i file di quello con la sua confezione hanno channel'
+    : '';
   if (format === 'carousel') {
-    const rounds = aspects.length > 1 ? `, uno per proporzione (${aspects.join(', ')}) con lo stesso visivo adattato e gli stessi index` : ` in ${aspects[0]}`;
+    const rounds = aspects.length > 1 ? `, uno per proporzione (${aspects.join(', ')}) nella confezione dei suoi canali e con gli stessi index` : ` in ${aspects[0]}`;
     const pdf = hasDocument(format, channels) ? '. Per LinkedIn moonbrand riunisce da solo le slide 4:5 in un documento PDF: non farlo tu' : '';
-    return `le slide del carosello, da ${SLIDES.min} a ${SLIDES.max}${rounds} (role «slide», index da 0)${pdf}`;
+    return `le slide del carosello, da ${SLIDES.min} a ${SLIDES.max}${rounds} (role «slide», index da 0)${pdf}${own}`;
   }
   if (format === 'video') {
-    return `per ogni proporzione (${aspects.join(', ')}) il video in MP4 (role «video») e la sua copertina in JPEG (role «cover»), con lo stesso index, da 0`;
+    return `per ogni proporzione (${aspects.join(', ')}) il video in MP4 (role «video») e la sua copertina in JPEG (role «cover»), con lo stesso index, da 0${own}`;
   }
   const what = format === 'article' ? 'la copertina dell’articolo' : 'la copertina del post';
-  return `${what} in ${aspects.join(', ')}: una per proporzione, con lo stesso visivo adattato (role «cover», index da 0)`;
+  return `${what} in ${aspects.join(', ')}: una per proporzione, nella confezione dei suoi canali (role «cover», index da 0)${own}`;
 }
+
+// Se almeno due canali escono nella stessa proporzione.
+const shareAspect = (format: ContentFormat, channels: readonly ChannelId[]) =>
+  formatAspects(format, channels).length < channels.filter((channel) => FORMAT_ASPECT[format][channel]).length;
 
 export function contentDir(contentId: string): string {
   return `contenuti/${contentId}`;
@@ -147,6 +155,11 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
                 role: { type: 'string', enum: video ? ['cover', 'video'] : ['cover', 'slide'] },
                 index: { type: 'integer', minimum: 0, description: 'L’ordine: 0 per la prima copertina, slide o video' },
                 aspect: { type: 'string', enum: formatAspects(format, channels), description: 'La proporzione: solo quelle dei canali del contenuto' },
+                channel: {
+                  type: 'string',
+                  enum: channels,
+                  description: 'Solo per un file fatto apposta per un canale, nella sua confezione; senza, vale per tutti i canali con quella proporzione',
+                },
               },
             },
           },

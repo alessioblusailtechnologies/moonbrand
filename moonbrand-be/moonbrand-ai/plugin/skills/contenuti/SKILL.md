@@ -38,7 +38,7 @@ Ogni canale ha le sue proporzioni, e non tutti reggono tutti i formati:
 | Articolo: la copertina | 16:9 | 4:5 | 4:5 | non c’è | 16:9 |
 | Video | 4:5 | 9:16 | 9:16 | 9:16 | 16:9 |
 
-Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, con lo stesso visivo adattato: non si ritaglia, si reimpagina.
+Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, nella confezione dei suoi canali (vedi sotto): non si ritaglia, si reimpagina. Due canali nella stessa proporzione ma con confezioni diverse hanno ciascuno i suoi file: quelli fatti apposta per un canale si salvano con channel, quelli senza channel valgono per gli altri canali di quella proporzione.
 
 - **Post**: testo e un’immagine. headline è il titolo dell’immagine, fino a 60 caratteri, se l’immagine ne ha uno; slides resta vuoto.
   Immagini: la copertina, una per proporzione: role «cover», index da 0.
@@ -50,6 +50,22 @@ Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, con l
   File: per ogni proporzione il video in MP4 con role «video» e la sua copertina con role «cover», stessa proporzione e stesso index, da 0.
 
 Le immagini finali sono PNG o JPEG, i video MP4.
+
+## La confezione per canale
+
+L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. Su ogni canale il contenuto deve sembrare nato lì, e restare riconoscibile come del brand.
+
+| Canale | La confezione |
+| --- | --- |
+| Instagram | curata ed editoriale, con la grafica del brand: palette, font, logo. La copertina di un Reel si vede anche ritagliata al centro in 4:5 nella griglia del profilo: titolo e soggetto stanno lì. Un carosello si salva se ogni slide porta un punto utile. |
+| Facebook | la stessa di Instagram: di solito i file sono gli stessi. |
+| TikTok | nativa, come la fa chi usa l’app: foto o clip a tutto schermo e poche grafiche, il brand si riconosce dai colori e dal tono più che dal logo. Il testo a schermo è quello dell’app, in TikTok Sans: frasi brevi, una riga per riquadro bianco arrotondato con testo nero, oppure testo bianco con il contorno nero, nel terzo centrale o basso e fuori dalle zone che l’app copre. L’aggancio sta nel primo secondo, spesso in prima persona o con «POV:». Niente schermata finale con il logo: l’invito sta nell’ultima frase a schermo o nella didascalia. La copertina è un fotogramma con l’aggancio scritto sopra nello stesso modo. |
+| LinkedIn | sobria e leggibile: titoli chiari, dati e concetti in primo piano, poca decorazione, il logo discreto. |
+| X | un’immagine sola con un messaggio solo, leggibile anche piccola. |
+
+- Sotto «Lo stile», in CLAUDE.md, la voce «Per canale» dice come si presenta il brand su ciascun canale nei suoi riferimenti: seguila per palette, font e quanta grafica usare. La confezione del canale (dove sta il testo, come si aggancia, come si chiude) resta quella di questa tabella.
+- Instagram e Facebook condividono i file. TikTok ha i suoi anche quando la proporzione è la stessa, come il video 9:16 accanto al Reel: salvali con channel «tiktok».
+- Se l’utente chiede la stessa confezione per tutti i canali, fai come chiede.
 
 ## Immagini
 

@@ -4,8 +4,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, li
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import {
+  channelFiles,
   cleanHashtags,
-  FORMAT_ASPECT,
   HASHTAGS,
   postText,
   TEXT_LIMIT,
@@ -65,10 +65,10 @@ export class ContentPreview {
   protected readonly saving = signal(false);
 
   protected readonly variant = computed(() => this.content().variants.find((item) => item.channel === this.channel()) ?? null);
-  // La proporzione del canale scelto per il formato del contenuto.
-  private readonly aspect = computed(() => {
+  // I file del canale scelto: i suoi, o quelli condivisi nella sua proporzione.
+  private readonly channelFiles = computed(() => {
     const channel = this.channel();
-    return channel ? FORMAT_ASPECT[this.content().format][channel] : null;
+    return channel ? channelFiles(this.content().visual.files ?? [], this.content().format, channel) : [];
   });
 
   // Chi pubblica: il brand attivo, con il suo logo o l'iniziale, e un nome utente ricavato dal nome.
@@ -90,27 +90,25 @@ export class ContentPreview {
     };
   });
 
-  // Le immagini del canale scelto: le slide nella sua proporzione (o le prime che ci sono, nei contenuti di prima),
-  // oppure la copertina nella sua proporzione.
+  // Le immagini del canale scelto: le sue slide (o le prime che ci sono, nei contenuti di prima), oppure la sua copertina.
   protected readonly images = computed<ContentFile[]>(() => {
     const files = this.content().visual.files ?? [];
-    const aspect = this.aspect();
+    const mine = this.channelFiles();
     const slides = files.filter((file) => file.role === 'slide');
     if (slides.length > 0) {
-      const fitting = slides.filter((file) => file.aspect === aspect);
-      return fitting.length > 0 ? fitting : slides.filter((file) => file.aspect === slides[0].aspect);
+      const fitting = mine.filter((file) => file.role === 'slide');
+      return fitting.length > 0 ? fitting : slides.filter((file) => file.aspect === slides[0].aspect && file.channel === slides[0].channel);
     }
     const covers = files.filter((file) => file.role === 'cover');
-    return [covers.find((file) => file.aspect === aspect) ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
+    return [mine.find((file) => file.role === 'cover') ?? covers[0]].filter((file): file is ContentFile => Boolean(file));
   });
 
-  // Il video nella proporzione del canale scelto, con la sua copertina come fermo immagine.
+  // Il video del canale scelto, con la sua copertina come fermo immagine.
   protected readonly video = computed(() => {
     const files = this.content().visual.files ?? [];
-    const videos = files.filter((file) => file.role === 'video');
-    const video = videos.find((file) => file.aspect === this.aspect()) ?? videos[0];
+    const video = this.channelFiles().find((file) => file.role === 'video') ?? files.find((file) => file.role === 'video');
     if (!video) return null;
-    const poster = files.find((file) => file.role === 'cover' && file.aspect === video.aspect);
+    const poster = files.find((file) => file.role === 'cover' && file.aspect === video.aspect && file.channel === video.channel);
     return { file: video, poster: poster?.url ?? null };
   });
 

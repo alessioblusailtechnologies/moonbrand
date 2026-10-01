@@ -1,18 +1,18 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { FORMAT_ASPECT, sortFiles, type ContentFile } from '@moonbrand/shared/domain/content';
+import { channelFiles, FORMAT_ASPECT, sortFiles, type ContentFile } from '@moonbrand/shared/domain/content';
 
 import { launchChrome, SIZES } from '../tools/grafica';
 
 const MIME: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
 
-// Su LinkedIn il carosello è un documento: le slide nella proporzione di LinkedIn riunite in un PDF, una per pagina,
+// Su LinkedIn il carosello è un documento: le slide di LinkedIn (le sue, o quelle condivise nella sua proporzione) riunite in un PDF, una per pagina,
 // della misura della slide. Lo fa moonbrand e non Claude, così c'è sempre ed è uguale alle slide.
 // Restituisce il file del documento, o null se non ci sono slide da riunire.
 export async function carouselDocument(brandDir: string, files: readonly ContentFile[], target: string): Promise<ContentFile | null> {
   const aspect = FORMAT_ASPECT.carousel.linkedin as keyof typeof SIZES;
-  const slides = sortFiles(files.filter((file) => file.role === 'slide' && file.aspect === aspect));
+  const slides = sortFiles(channelFiles(files, 'carousel', 'linkedin').filter((file) => file.role === 'slide'));
   if (slides.length === 0) return null;
   const { width, height } = SIZES[aspect];
   const images = await Promise.all(
