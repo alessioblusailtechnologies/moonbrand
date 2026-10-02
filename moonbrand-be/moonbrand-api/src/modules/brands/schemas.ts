@@ -37,7 +37,8 @@ export const positioning = z.object({
   postsPerWeek: z.number().int().min(0).max(21),
 }) satisfies z.ZodType<Positioning>;
 
-const channelState = z.object({ selected: z.boolean(), handle: text(200).nullable() });
+// handle e accountId li scrive solo il collegamento (modulo social): qui si accettano e poi il salvataggio li ignora.
+const channelState = z.object({ selected: z.boolean(), handle: text(200).nullable(), accountId: text(100).nullable().optional() });
 
 const channels = z.object({
   linkedin: channelState,

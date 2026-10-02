@@ -16,6 +16,7 @@ import {
   buildSkeleton,
   fillSkeleton,
   placeIdea,
+  publishedStatus,
   slotStatus,
   type PlanBrand,
   type PlanRequest,
@@ -28,6 +29,7 @@ import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
+import { listPublications } from '../social/publications';
 import { activeContentJobs, findContent, listContents } from '../contents/repository';
 import { summarize } from '../contents/service';
 import { findBrandForIdeas, findIdea, listIdeas, updateIdeaStatus } from '../ideas/repository';
@@ -64,15 +66,20 @@ export async function slotViews(db: Queryable, files: BrandFiles, brandId: strin
   const ideaIds = [...new Set(slots.map((slot) => slot.ideaId).filter((id): id is string => id !== null))];
   const [contents, jobs, titles] = await Promise.all([listContents(db, brandId), activeContentJobs(db, brandId), ideaTitles(db, ideaIds)]);
   const bySlot = new Map(contents.filter((content) => content.slotId).map((content) => [content.slotId!, content]));
+  const published = await listPublications(db, slots.flatMap((slot) => bySlot.get(slot.id)?.id ?? []));
   const now = planNow();
   return slots.map((slot) => {
     const content = bySlot.get(slot.id) ?? null;
     const ideaTitle = slot.ideaId ? titles.get(slot.ideaId) : undefined;
+    const channels = content?.channels ?? slot.channels;
+    const publications = content ? (published.get(content.id) ?? []) : [];
     return {
       ...slot,
-      channels: content?.channels ?? slot.channels,
+      channels,
       contentTitle: content?.title ?? slot.contentTitle,
-      status: slotStatus(slot, content, now),
+      // Pubblicata solo se è uscita davvero su tutti i canali; passata l'ora senza esserlo resta programmata.
+      status: publishedStatus(slotStatus(slot, content, now), channels, publications),
+      publications,
       idea: slot.ideaId && ideaTitle ? { id: slot.ideaId, title: ideaTitle } : null,
       content: content ? summarize(content, files, jobs.has(content.id), { date: slot.date, time: slot.time }) : null,
     };

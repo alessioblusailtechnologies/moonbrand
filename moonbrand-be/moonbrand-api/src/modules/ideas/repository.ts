@@ -9,7 +9,7 @@ import {
   type Voice,
 } from '@moonbrand/shared/domain/brand';
 import type { Idea, IdeaDraft, IdeaStatus } from '@moonbrand/shared/domain/idea';
-import { slotStatus, type SlotStatus } from '@moonbrand/shared/domain/plan';
+import { publishedStatus, slotStatus, type SlotStatus } from '@moonbrand/shared/domain/plan';
 import { addDays, planNow } from '@moonbrand/shared/lib/dates';
 
 import type { Queryable } from '../../db/pool';
@@ -97,9 +97,11 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
     idea_id: string | null;
     content_status: 'draft' | 'approved' | null;
     title: string | null;
+    published: ChannelId[] | null;
   }>(
     `select s.id, s.publish_date::text as date, s.publish_time as time, coalesce(c.channels, s.channels) as channels, s.status,
-       s.theme_id, s.idea_id, c.status as content_status, coalesce(c.title, i.title, s.content_title) as title
+       s.theme_id, s.idea_id, c.status as content_status, coalesce(c.title, i.title, s.content_title) as title,
+       (select array_agg(p.channel) from presenza.publications p where p.content_id = c.id and p.status = 'published') as published
      from presenza.slots s
        left join presenza.contents c on c.slot_id = s.id
        left join presenza.ideas i on i.id = s.idea_id
@@ -112,7 +114,12 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
     date: slot.date,
     time: slot.time,
     channels: slot.channels,
-    status: slotStatus({ status: slot.status, date: slot.date, time: slot.time, ideaId: slot.idea_id }, slot.content_status ? { status: slot.content_status } : null, now),
+    // Pubblicata solo se è uscita davvero su tutti i canali, come nel piano.
+    status: publishedStatus(
+      slotStatus({ status: slot.status, date: slot.date, time: slot.time, ideaId: slot.idea_id }, slot.content_status ? { status: slot.content_status } : null, now),
+      slot.channels,
+      (slot.published ?? []).map((channel) => ({ channel, status: 'published' as const, url: null, error: null, publishedAt: null })),
+    ),
     theme: row.themes.find((theme) => theme.id === slot.theme_id)?.name ?? null,
     title: slot.title,
   }));

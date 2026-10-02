@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import type { BrandDraft, MediaFile } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, ChannelId, ChannelState, MediaFile } from '@moonbrand/shared/domain/brand';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from '../onboarding/draft-store';
@@ -15,6 +15,24 @@ export class ProfileDraftStore extends DraftStore {
   private removed: MediaFile[] = [];
 
   readonly dirty = computed(() => this.state().draft !== this.saved());
+  // Il brand com'è salvato: cambia anche senza Salva quando si collega o scollega un canale.
+  readonly savedDraft = this.saved.asReadonly();
+  override readonly connectable = true;
+
+  override unsaved(): boolean {
+    return this.dirty();
+  }
+
+  // Un canale collegato o scollegato è già salvato dal server: cambia sia il brand salvato sia la bozza,
+  // e le altre modifiche ancora da salvare restano tali.
+  override applyChannel(id: ChannelId, channel: ChannelState): void {
+    const withChannel = (draft: BrandDraft): BrandDraft => ({ ...draft, channels: { ...draft.channels, [id]: channel } });
+    const dirty = this.dirty();
+    const saved = this.saved();
+    const next = saved && withChannel(saved);
+    this.saved.set(next);
+    this.state.update((state) => ({ ...state, draft: state.draft && (dirty ? withChannel(state.draft) : next) }));
+  }
 
   start(brandId: string, draft: BrandDraft): void {
     this.saved.set(draft);

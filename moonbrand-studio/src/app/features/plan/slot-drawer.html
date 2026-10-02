@@ -76,6 +76,20 @@
           }
         </p>
         <p class="caption">Sono quelli del contenuto: si cambiano dalla sua pagina.</p>
+        @for (item of publications(); track item.channel) {
+          <p class="caption publication" [class.warn]="item.status === 'failed'">
+            @switch (item.status) {
+              @case ('published') {
+                Uscito su {{ name(item.channel) }}.
+                @if (item.url) {
+                  <a [href]="item.url" target="_blank" rel="noopener">Apri il post</a>
+                }
+              }
+              @case ('publishing') { Sta uscendo su {{ name(item.channel) }}… }
+              @case ('failed') { Non uscito su {{ name(item.channel) }}: {{ item.error }} }
+            }
+          </p>
+        }
       } @else {
         <div class="chips">
           @for (channel of plan().channels; track channel) {

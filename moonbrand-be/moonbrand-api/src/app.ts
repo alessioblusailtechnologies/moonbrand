@@ -18,6 +18,7 @@ import { registerConversationRoutes } from './modules/conversations/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import { registerPlanRoutes } from './modules/plan/routes';
+import { registerSocialRoutes } from './modules/social/routes';
 import { registerTranscriptionRoutes } from './modules/transcription/routes';
 import { registerWelcomeRoutes } from './modules/welcome/routes';
 import type { MediaStorage } from './modules/media/storage';
@@ -30,7 +31,7 @@ export interface AppOptions {
   auth: AuthGateway;
   storage: MediaStorage;
   files: BrandFiles;
-  settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'MISTRAL_API_KEY' | 'TRANSCRIPTION_MODEL'>;
+  settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'MISTRAL_API_KEY' | 'TRANSCRIPTION_MODEL' | 'ZERNIO_API_KEY' | 'STUDIO_ORIGINS'>;
 }
 
 export function buildApp(options: AppOptions) {
@@ -59,6 +60,7 @@ export function buildApp(options: AppOptions) {
   registerConversationRoutes(app, options.pool, options.files);
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
+  registerSocialRoutes(app, options.pool, options.settings);
   registerWelcomeRoutes(app, options.pool);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 

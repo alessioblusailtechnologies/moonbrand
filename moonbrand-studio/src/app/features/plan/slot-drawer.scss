@@ -171,3 +171,8 @@ select.sunken {
 .danger {
   color: var(--danger);
 }
+
+.publication a {
+  color: inherit;
+  text-decoration: underline;
+}

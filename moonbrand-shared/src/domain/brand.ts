@@ -25,7 +25,10 @@ export interface Positioning {
 
 export interface ChannelState {
   selected: boolean;
+  // Il nome dell'account collegato, come lo mostra il social (es. @pasticceria.aurora).
   handle: string | null;
+  // L'account collegato su Zernio, che pubblica al posto del brand: lo scrive solo il server, quando il collegamento riesce.
+  accountId?: string | null;
 }
 
 export type Channels = Record<ChannelId, ChannelState>;
@@ -214,6 +217,7 @@ export function currentVoiceCard(voice: Voice): VoiceCard | null {
   return voice.cards.length > 0 ? voice.cards[voice.cards.length - 1] : null;
 }
 
+// Collegato vuol dire che Zernio può pubblicare: un handle senza account era il collegamento finto di prima.
 export function isConnected(channel: ChannelState): boolean {
-  return channel.handle !== null;
+  return Boolean(channel.accountId);
 }

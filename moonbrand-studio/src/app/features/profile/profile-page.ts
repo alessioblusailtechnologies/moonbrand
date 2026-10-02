@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import type { BrandProfile } from '@moonbrand/shared/api/contract';
-import type { SectionKey } from '@moonbrand/shared/domain/brand';
-import { kindLabel } from '@moonbrand/shared/domain/catalog';
+import type { BrandProfile, ChannelChoice, ChannelChoicesRequest } from '@moonbrand/shared/api/contract';
+import type { ChannelId, SectionKey } from '@moonbrand/shared/domain/brand';
+import { CHANNELS, channelName, kindLabel } from '@moonbrand/shared/domain/catalog';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
 
 import { BrandsService } from '../../core/brands/brands.service';
@@ -11,6 +12,7 @@ import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
+import { ChannelChoiceDialog } from './channel-choice';
 import { SectionEditor } from './section-editor';
 
 const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
@@ -22,7 +24,7 @@ const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
 @Component({
   selector: 'mb-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon, SectionEditor],
+  imports: [BrandAvatar, Icon, SectionEditor, ChannelChoiceDialog],
   template: `
     @if (brands.activeBrand(); as brand) {
       <section class="profile">
@@ -73,6 +75,10 @@ const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
             (saved)="profile.set({ id: current.id, draft: $event }); editing.set(null)" />
         }
       }
+    }
+    @if (choosing(); as pending) {
+      <mb-channel-choice [channel]="pending.channel" [choices]="pending.choices" [busy]="selecting()" (chosen)="select($event)"
+        (cancelled)="cancelChoice()" />
     }
   `,
   styles: `
@@ -160,12 +166,17 @@ const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
 })
 export class ProfilePage {
   private readonly toast = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   protected readonly brands = inject(BrandsService);
   protected readonly kindLabel = kindLabel;
 
   protected readonly profile = signal<BrandProfile | null>(null);
   protected readonly loading = signal(true);
   protected readonly editing = signal<SectionKey | null>(null);
+  // Facebook e LinkedIn al ritorno dal social: le scelte di dove pubblicare, con i dati per completare il collegamento.
+  protected readonly choosing = signal<{ brandId: string; channel: ChannelId; choices: ChannelChoice[]; request: ChannelChoicesRequest } | null>(null);
+  protected readonly selecting = signal(false);
   // Solo l'id: dopo un salvataggio nome e logo cambiano, ma il profilo non va riletto.
   private readonly activeId = computed(() => this.brands.activeBrand()?.id ?? null);
 
@@ -185,10 +196,73 @@ export class ProfilePage {
 
   constructor() {
     pageHeader(() => [{ label: 'Impostazioni brand' }]);
+    void this.finishConnection();
     effect(() => {
       const brandId = this.activeId();
       if (brandId) untracked(() => void this.load(brandId));
     });
+  }
+
+  // Il ritorno dalla pagina di accesso del social (Collega nei Canali): Zernio ha aggiunto all'indirizzo l'account
+  // collegato, l'errore o, per Facebook e LinkedIn, i dati per scegliere dove pubblicare. Ci sono token temporanei:
+  // l'indirizzo torna subito pulito e i dati restano solo in memoria, fino al server.
+  private async finishConnection(): Promise<void> {
+    const params = this.route.snapshot.queryParamMap;
+    const channel = params.get('canale') as ChannelId | null;
+    const brandId = params.get('brand');
+    if (!channel || !brandId || !CHANNELS.some(({ id }) => id === channel)) return;
+    const accountId = params.get('accountId');
+    const failed = params.get('error');
+    const step = params.get('step');
+    const request: ChannelChoicesRequest = {
+      tempToken: params.get('tempToken') ?? '',
+      connectToken: params.get('connect_token') ?? '',
+      userProfile: params.get('userProfile') ?? '',
+      ...(params.get('organizations') && { organizations: params.get('organizations')! }),
+    };
+    void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    if (!failed && (step === 'select_page' || step === 'select_organization') && request.tempToken) {
+      try {
+        const choices = await this.brands.channelChoices(brandId, channel, request);
+        this.choosing.set({ brandId, channel, choices, request });
+      } catch (error) {
+        this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`));
+      }
+      return;
+    }
+    if (failed || !accountId) {
+      this.toast.show(params.get('error_message') ?? `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`);
+      return;
+    }
+    try {
+      const { state } = await this.brands.confirmChannel(brandId, channel, accountId);
+      this.toast.show(`${channelName(channel)} collegato come ${state.handle}.`);
+      if (this.activeId() === brandId) await this.load(brandId);
+    } catch (error) {
+      this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`));
+    }
+  }
+
+  protected async select(choiceId: string): Promise<void> {
+    const pending = this.choosing();
+    if (!pending || this.selecting()) return;
+    this.selecting.set(true);
+    try {
+      const { state } = await this.brands.selectChannel(pending.brandId, pending.channel, { ...pending.request, choiceId });
+      this.choosing.set(null);
+      this.toast.show(`${channelName(pending.channel)} collegato come ${state.handle}.`);
+      if (this.activeId() === pending.brandId) await this.load(pending.brandId);
+    } catch (error) {
+      this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(pending.channel)}. Riprova.`));
+    } finally {
+      this.selecting.set(false);
+    }
+  }
+
+  protected cancelChoice(): void {
+    const pending = this.choosing();
+    this.choosing.set(null);
+    if (pending) this.toast.show(`Collegamento di ${channelName(pending.channel)} annullato.`);
   }
 
   protected async load(brandId: string): Promise<void> {

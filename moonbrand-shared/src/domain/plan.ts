@@ -39,8 +39,22 @@ export const SLOT_STATUS_LABELS: Record<SlotStatus, string> = {
   published: 'Pubblicata',
 };
 
-// Lo stato segue quello che l'uscita ha: niente, un'idea, una bozza, un contenuto approvato. La pubblicazione vera non c'è
-// ancora: come in social-app, un'uscita programmata il cui orario è passato risulta pubblicata.
+// Come è andata la pubblicazione di un contenuto su un canale (presenza.publications), con Zernio.
+export type PublicationStatus = 'publishing' | 'published' | 'failed';
+
+export interface Publication {
+  channel: ChannelId;
+  status: PublicationStatus;
+  // Il post sul social, quando è uscito.
+  url: string | null;
+  // Perché non è uscito.
+  error: string | null;
+  publishedAt: string | null;
+}
+
+// Lo stato segue quello che l'uscita ha: niente, un'idea, una bozza, un contenuto approvato. Questa regola, come in social-app,
+// dà pubblicata un'uscita programmata il cui orario è passato; con la pubblicazione vera conta cosa è uscito davvero
+// (publishedStatus).
 export function slotStatus(
   slot: Pick<PlanSlot, 'status' | 'date' | 'time' | 'ideaId'>,
   content: { status: ContentStatus } | null,
@@ -49,6 +63,14 @@ export function slotStatus(
   if (slot.status === 'published') return 'published';
   const status: SlotStatus = content ? (content.status === 'approved' ? 'scheduled' : 'toApprove') : slot.ideaId ? 'toPrepare' : 'empty';
   return status === 'scheduled' && isPast(slot.date, slot.time, now) ? 'published' : status;
+}
+
+// Con la pubblicazione vera un'uscita è pubblicata solo se è uscita su tutti i suoi canali; altrimenti resta
+// programmata, e le sue pubblicazioni dicono dove è uscita, dove sta uscendo e dove no.
+export function publishedStatus(status: SlotStatus, channels: readonly ChannelId[], publications: readonly Publication[]): SlotStatus {
+  if (status !== 'published') return status;
+  const done = new Set(publications.filter((item) => item.status === 'published').map((item) => item.channel));
+  return channels.length > 0 && channels.every((channel) => done.has(channel)) ? 'published' : 'scheduled';
 }
 
 // Giorni (1 = lunedì) e orario consigliati per canale. Arriveranno dalle statistiche dei canali, quando saranno collegati.

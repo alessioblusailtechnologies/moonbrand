@@ -11,7 +11,9 @@ Il piano è il calendario del brand nella sezione Piano. Ogni uscita è un conte
 
 - **niente** (empty, da riempire): c’è solo il tema che il piano chiede;
 - **un’idea** tenuta (toPrepare, da preparare): il contenuto si fa dopo;
-- **un contenuto**: in bozza (toApprove, da approvare) o approvato (scheduled, programmata). Passata l’ora, un’uscita programmata risulta pubblicata (published): la pubblicazione vera non c’è ancora, è l’utente a pubblicare.
+- **un contenuto**: in bozza (toApprove, da approvare) o approvato (scheduled, programmata). All’ora dell’uscita moonbrand pubblica da solo il contenuto approvato su ogni suo canale collegato (Impostazioni brand → Canali); quando è uscito su tutti, l’uscita è pubblicata (published).
+
+Le publications dell’uscita dicono canale per canale com’è andata: published con il link al post, publishing mentre esce, failed con il motivo (per esempio un canale non collegato). Un contenuto ancora in bozza all’ora dell’uscita non esce, e un’uscita già passata non esce più: va spostata più avanti e approvata. Prima di dire che qualcosa è uscito, o che uscirà, guarda stato e publications: non dirlo se non lo dicono loro, e se un canale non è collegato dillo all’utente.
 
 Un contenuto sta in una sola uscita; un’uscita ha al massimo un contenuto.
 

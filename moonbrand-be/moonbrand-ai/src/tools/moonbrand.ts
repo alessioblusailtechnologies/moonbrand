@@ -143,7 +143,9 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
     tool(
       'piano_leggi',
       'Legge il piano: le uscite di un periodo (di default le prossime 4 settimane), con giorno, ora, canali, stato, tema, idea e contenuto. ' +
-        'Stati: empty (da riempire), toPrepare (c’è l’idea), toApprove (c’è la bozza), scheduled (approvato), published (l’ora è passata).',
+        'Stati: empty (da riempire), toPrepare (c’è l’idea), toApprove (c’è la bozza), scheduled (approvato, esce all’ora), ' +
+        'published (uscito davvero su tutti i canali). publications dice canale per canale com’è andata: published con il link al post, ' +
+        'publishing mentre esce, failed con il motivo.',
       { from: day.optional(), to: day.optional() },
       ({ from, to }) => call('GET', `/plan?${new URLSearchParams({ ...(from && { from }), ...(to && { to }) })}`),
       { alwaysLoad: true },

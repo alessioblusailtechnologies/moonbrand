@@ -2,7 +2,7 @@ import { computed, type WritableSignal } from '@angular/core';
 
 import type { PositioningIdeas, WebsiteInsights } from '@moonbrand/shared/ai/steps';
 import type { VisualExampleFile } from '@moonbrand/shared/api/contract';
-import { applyPatch, type BrandDraft, type Identity, type MediaFile, type SectionPatch } from '@moonbrand/shared/domain/brand';
+import { applyPatch, type BrandDraft, type ChannelId, type ChannelState, type Identity, type MediaFile, type SectionPatch } from '@moonbrand/shared/domain/brand';
 import { createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { createThemes } from '@moonbrand/shared/domain/themes';
 
@@ -52,6 +52,17 @@ function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: W
 // sia per un brand nuovo (OnboardingStore) sia per modificarne uno dalle Impostazioni brand.
 export abstract class DraftStore<S extends DraftState = DraftState> {
   protected abstract readonly state: WritableSignal<S>;
+
+  // I canali si collegano solo a un brand che esiste già: dalle Impostazioni brand, non nell'onboarding.
+  readonly connectable: boolean = false;
+
+  // Se ci sono modifiche non salvate, che uscendo dalla pagina (per collegare un canale) andrebbero perse.
+  unsaved(): boolean {
+    return false;
+  }
+
+  // Un canale collegato o scollegato dal server: nell'onboarding non succede.
+  applyChannel(_id: ChannelId, _channel: ChannelState): void {}
 
   readonly draft = computed(() => this.state().draft);
   readonly insights = computed(() => this.state().insights);

@@ -200,7 +200,10 @@ export class SectionEditor implements OnInit {
       });
       if (!leave) return;
     }
-    this.closed.emit();
+    // Un canale collegato o scollegato qui è già salvato: il profilo dietro va aggiornato anche senza Salva.
+    const saved = this.store.savedDraft();
+    if (saved && saved !== this.draft()) this.saved.emit(saved);
+    else this.closed.emit();
   }
 
   protected async save(): Promise<void> {

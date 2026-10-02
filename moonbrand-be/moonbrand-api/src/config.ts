@@ -23,6 +23,10 @@ const schema = z.object({
   // La dettatura nella casella dell'assistente, con Voxtral di Mistral: senza chiave il microfono dice che non è configurato.
   MISTRAL_API_KEY: optional,
   TRANSCRIPTION_MODEL: z.string().min(1).default('voxtral-mini-latest'),
+  // Il collegamento dei social dei brand, con Zernio: senza chiave Collega dice che non è configurato.
+  ZERNIO_API_KEY: optional,
+  // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
+  STUDIO_ORIGINS: optional,
 });
 
 export type Config = z.infer<typeof schema>;

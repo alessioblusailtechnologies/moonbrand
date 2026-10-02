@@ -70,6 +70,8 @@ export class SlotDrawer implements OnInit {
   protected readonly today = planNow().date;
 
   protected readonly creating = computed(() => this.slot() === null);
+  // Com'è andata sui social, canale per canale, quando è passata l'ora.
+  protected readonly publications = computed(() => this.slot()?.publications ?? []);
   // Un'uscita passata (pubblicata) si guarda soltanto.
   protected readonly locked = computed(() => {
     const slot = this.slot();

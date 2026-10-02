@@ -1,8 +1,8 @@
 import type { AiStep } from '../ai/steps';
-import type { BrandDraft, BrandKind, ChannelId, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
+import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
-import type { PlanRequest, PlanSlot, SlotDraft, SlotStatus } from '../domain/plan';
+import type { PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 
 export interface Account {
@@ -350,6 +350,55 @@ export interface TranscriptionResponse {
   text: string;
 }
 
+// Il collegamento di un canale, con Zernio. redirectUrl: la pagina dove torna il browser dopo l'accesso al social;
+// Zernio ci aggiunge connected, accountId e username, o error ed error_message.
+export interface ConnectChannelRequest {
+  redirectUrl: string;
+}
+
+// La pagina di accesso del social, dove mandare il browser.
+export interface ConnectChannelResponse {
+  authUrl: string;
+}
+
+// Al ritorno: l'account che Zernio ha passato nella redirezione. Il server lo verifica prima di salvarlo.
+export interface ConfirmChannelRequest {
+  accountId: string;
+}
+
+// Facebook e LinkedIn chiedono dove pubblicare (una Pagina, il profilo o una pagina aziendale): la scelta la fa studio,
+// al posto della pagina di Zernio. Al ritorno dal social l'indirizzo porta step (select_page o select_organization)
+// e questi dati, che servono a elencare le scelte e a completare il collegamento. userProfile e organizations
+// arrivano come JSON codificato nell'indirizzo: si passano così come sono.
+export interface ChannelChoicesRequest {
+  tempToken: string;
+  connectToken: string;
+  userProfile: string;
+  organizations?: string;
+}
+
+export interface ChannelChoice {
+  id: string;
+  name: string;
+  // Cosa è: «Profilo personale», «Pagina aziendale», la categoria della Pagina…
+  detail: string;
+  picture: string | null;
+}
+
+export interface ChannelChoicesResponse {
+  choices: ChannelChoice[];
+}
+
+export interface SelectChannelRequest extends ChannelChoicesRequest {
+  choiceId: string;
+}
+
+// Il canale com'è dopo il collegamento o lo scollegamento.
+export interface ChannelConnectionResponse {
+  channel: ChannelId;
+  state: ChannelState;
+}
+
 // attachments: i percorsi delle foto già caricate con /attachments; ideaId e slotId: l'idea o l'uscita del piano menzionate.
 export interface ChatMessageRequest {
   message: string;
@@ -440,6 +489,8 @@ export const REFRESH_COOKIE = 'mb_refresh';
 export interface SlotView extends PlanSlot {
   idea: { id: string; title: string } | null;
   content: ContentSummary | null;
+  // Com'è andata l'uscita sui social, canale per canale: vuoto finché non è l'ora.
+  publications: Publication[];
 }
 
 export interface PlanResponse {

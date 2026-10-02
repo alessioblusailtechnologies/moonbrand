@@ -1,7 +1,7 @@
 import type pg from 'pg';
 
 import type { BrandProfile, BrandSummary, CreateBrandRequest, UpdateBrandRequest, VideoSetupJobInput } from '@moonbrand/shared/api/contract';
-import type { BrandDraft, MediaFile, Visual } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, Channels, MediaFile, Visual } from '@moonbrand/shared/domain/brand';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
@@ -17,7 +17,7 @@ export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSumm
 }
 
 export function createBrand(pool: pg.Pool, identity: Identity, { id, referenceExamples: _examples, ...draft }: CreateBrandRequest): Promise<BrandSummary> {
-  const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
+  const stored: BrandDraft = { ...draft, channels: connectionsFrom(draft.channels, null), visual: storableVisual(identity.accountId, draft.visual) };
   return withIdentity(pool, identity, async (db) => {
     const brand = await insertBrand(db, identity.accountId, id, stored);
     await setActiveBrand(db, identity.accountId, brand.id);
@@ -45,11 +45,12 @@ export async function saveBrand(
   brandId: string,
   { referenceExamples: _examples, ...draft }: UpdateBrandRequest,
 ): Promise<{ brand: BrandSummary; referencesChanged: boolean }> {
-  const stored: BrandDraft = { ...draft, visual: storableVisual(identity.accountId, draft.visual) };
   return withIdentity(pool, identity, async (db) => {
     const before = await findBrandDraft(db, brandId);
+    if (!before) throw ApiError.notFound('Brand non trovato.');
+    const stored: BrandDraft = { ...draft, channels: connectionsFrom(draft.channels, before.channels), visual: storableVisual(identity.accountId, draft.visual) };
     const brand = await updateBrand(db, brandId, stored);
-    if (!before || !brand) throw ApiError.notFound('Brand non trovato.');
+    if (!brand) throw ApiError.notFound('Brand non trovato.');
     const paths = (visual: Visual) => (visual.references ?? []).map((file) => file.path).sort().join('\n');
     return { brand, referencesChanged: paths(before.visual) !== paths(stored.visual) };
   });
@@ -70,6 +71,17 @@ export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: st
     if (!(await brandExists(db, brandId))) throw ApiError.notFound('Brand non trovato.');
     await setActiveBrand(db, identity.accountId, brandId);
   });
+}
+
+// Dei canali il client sceglie solo quali usare: account e handle sono quelli collegati davvero (modulo social),
+// quindi restano quelli salvati; un brand nuovo non ne ha ancora.
+function connectionsFrom(channels: Channels, saved: Channels | null): Channels {
+  const result = { ...channels };
+  for (const id of Object.keys(result) as (keyof Channels)[]) {
+    const connected = saved?.[id]?.accountId ? saved[id] : null;
+    result[id] = { selected: channels[id].selected, handle: connected?.handle ?? null, accountId: connected?.accountId ?? null };
+  }
+  return result;
 }
 
 function storableVisual(accountId: string, visual: Visual): Visual {

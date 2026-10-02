@@ -78,9 +78,11 @@ export async function updateSlot(
   return rows[0] ? toSlot(rows[0]) : null;
 }
 
-// Lo stato salvato segue quello del contenuto, perché anche social-app lo legga giusto. Una pubblicata resta tale.
+// Lo stato salvato segue quello del contenuto, perché anche social-app lo legga giusto. Una pubblicata resta tale, e
+// pubblicata la segna solo il pubblicatore, quando il contenuto è uscito su tutti i canali: l'ora passata non basta.
 export async function storeSlotStatus(db: Queryable, slotId: string, status: SlotStatus): Promise<void> {
-  await db.query(`update presenza.slots set status = $2 where id = $1 and status <> 'published'`, [slotId, status]);
+  const stored = status === 'published' ? 'scheduled' : status;
+  await db.query(`update presenza.slots set status = $2 where id = $1 and status <> 'published'`, [slotId, stored]);
 }
 
 // Togliere un'uscita stacca il suo contenuto (on delete set null), che resta tra i Contenuti.

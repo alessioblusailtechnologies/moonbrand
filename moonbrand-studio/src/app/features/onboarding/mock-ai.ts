@@ -86,14 +86,6 @@ const STOPWORDS = new Set([
 
 const NUMBER_WORDS = ['zero', 'un', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove', 'dieci'];
 
-const ACCENTS: [RegExp, string][] = [
-  [/[àá]/g, 'a'],
-  [/[èé]/g, 'e'],
-  [/[ìí]/g, 'i'],
-  [/[òó]/g, 'o'],
-  [/[ùú]/g, 'u'],
-];
-
 function countLabel(count: number, singular: string, plural: string): string {
   return `${count <= 10 ? NUMBER_WORDS[count] : count} ${count === 1 ? singular : plural}`;
 }
@@ -197,12 +189,5 @@ export class MockAi {
       lexicon: LEXICON[group],
       avoid: `${AVOID_BASE}, frasi fatte da comunicato stampa.`,
     };
-  }
-
-  async connectChannel(identity: Identity): Promise<{ handle: string }> {
-    let slug = identity.name.toLowerCase();
-    for (const [pattern, letter] of ACCENTS) slug = slug.replace(pattern, letter);
-    slug = slug.replace(/[^a-z0-9]/g, '');
-    return { handle: `@${slug || 'account'}` };
   }
 }
