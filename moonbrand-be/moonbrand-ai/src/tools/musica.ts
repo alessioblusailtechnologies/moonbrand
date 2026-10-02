@@ -146,7 +146,10 @@ export function musicTools(folder: string, apiKey: string) {
       'Il testo va diviso in sezioni con i tag [Verse], [Chorus], [Bridge], [Outro]; una sezione senza righe, come [Intro], resta strumentale. ' +
       'La durata si divide tra le sezioni in base alle righe. Lo stile si descrive in inglese (genere, atmosfera, voce maschile o femminile, tempo).',
     {
-      testo: z.string().min(10).describe('Il testo della canzone, con le sezioni tra parentesi quadre'),
+      testo: z
+        .string()
+        .min(10)
+        .describe('Il testo della canzone, con le sezioni tra parentesi quadre: parole da canzone vera nel tono del brand, non le frasi del copy'),
       stile: z.string().optional().describe('Lo stile in inglese, es. "warm acoustic pop, female vocal, 100 BPM, hopeful"'),
       durata: seconds,
       file: audioFile('canzone.mp3'),
