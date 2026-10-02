@@ -2,9 +2,16 @@
 // MediaRecorder sceglie il contenitore che il browser sa scrivere (WebM/Opus in Chrome, Edge e Firefox, MP4 in Safari):
 // l'API li accetta tutti. A fine registrazione il microfono si chiude sempre e la spia del browser si spegne.
 
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
+
 const CONTAINERS = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/ogg'];
 
-export class MicrophoneError extends Error {}
+// key: il testo da mostrare, nella lingua dell'interfaccia (chat.microphone).
+export class MicrophoneError extends Error {
+  constructor(readonly key: MessageKey) {
+    super(key);
+  }
+}
 
 export class Recorder {
   private recorder?: MediaRecorder;
@@ -21,8 +28,8 @@ export class Recorder {
 
   async start(): Promise<void> {
     // Fuori da HTTPS e localhost il browser non dà il microfono a nessuna pagina.
-    if (!window.isSecureContext) throw new MicrophoneError('Il browser dà il microfono solo alle pagine in HTTPS o su localhost: apri lo studio così.');
-    if (!Recorder.supported()) throw new MicrophoneError('Questo browser non sa registrare dal microfono.');
+    if (!window.isSecureContext) throw new MicrophoneError('chat.microphone.insecure');
+    if (!Recorder.supported()) throw new MicrophoneError('chat.microphone.unsupported');
     if (this.recording) return;
     let stream: MediaStream;
     try {
@@ -30,12 +37,12 @@ export class Recorder {
     } catch (error) {
       const name = (error as { name?: string }).name ?? '';
       if (name === 'NotAllowedError' || name === 'SecurityError') {
-        throw new MicrophoneError('Il browser non ha il permesso di usare il microfono: concedilo dalla barra degli indirizzi.');
+        throw new MicrophoneError('chat.microphone.denied');
       }
       if (name === 'NotFoundError' || name === 'OverconstrainedError') {
-        throw new MicrophoneError('Nessun microfono trovato. In Desktop remoto va abilitata la registrazione audio del client.');
+        throw new MicrophoneError('chat.microphone.notFound');
       }
-      throw new MicrophoneError('Il microfono non è disponibile: forse lo sta usando un altro programma.');
+      throw new MicrophoneError('chat.microphone.busy');
     }
     const type = CONTAINERS.find((container) => MediaRecorder.isTypeSupported(container));
     this.stream = stream;

@@ -1,4 +1,7 @@
 import type { BrandKind, Palette } from '../domain/brand';
+import { DEFAULT_LOCALE, INTL_LOCALES, type Locale } from '../i18n/locales';
+import { steps as stepMessages } from '../i18n/messages/steps';
+import { translate, type MessageKey } from '../i18n/translate';
 
 // kind: un blocco di testo di Claude o una chiamata a un tool; manca negli step scritti a mano.
 // tool: il nome del tool chiamato, per il codice; a chi aspetta si mostrano solo label e detail.
@@ -62,6 +65,8 @@ export interface WebsiteInsights {
   audiences: string[];
   palette: Palette;
   logoUri: string | null;
+  // La lingua dei post che il sito suggerisce (siteLanguage).
+  language: Locale;
 }
 
 export interface PositioningIdeas {
@@ -72,38 +77,32 @@ export interface PositioningIdeas {
 
 export const THINKING_STEP = 'thinking';
 
-export const WEBSITE_STEPS = {
-  address: 'Controllo l’indirizzo',
-  colors: 'Cerco i colori nel codice del sito',
-  plan: 'Scelgo le pagine da leggere',
-  reflect: 'Ragiono su quello che ho letto',
-} as const;
+// I passaggi dei lavori dell'onboarding, nella lingua di chi aspetta (i18n/messages/steps, onboarding).
+const onboarding = (locale: Locale) => stepMessages[locale].onboarding;
 
-export const POSITIONING_STEPS: Record<BrandKind, { goals: string; audiences: string }> = {
-  person: { goals: 'Penso a perché pubblichi', audiences: 'Cerco chi vuoi raggiungere' },
-  company: { goals: 'Penso a perché pubblicate', audiences: 'Cerco chi volete raggiungere' },
-  client: { goals: 'Penso a perché pubblica', audiences: 'Cerco chi vuole raggiungere' },
-};
+export const websiteSteps = (locale: Locale = DEFAULT_LOCALE) => onboarding(locale).website;
 
-export const THEMES_STEPS = {
-  read: 'Rileggo cosa fa il brand',
-  pick: 'Scelgo i temi che reggono un piano',
-} as const;
+export function positioningSteps(kind: BrandKind, locale: Locale = DEFAULT_LOCALE): { goals: string; audiences: string } {
+  const { goals, audiences } = onboarding(locale);
+  return { goals: goals[kind], audiences: audiences[kind] };
+}
 
-export const VOICE_STEPS = {
-  read: (source: 'pasted' | 'history' | 'recording') =>
-    source === 'recording' ? 'Trascrivo la registrazione' : source === 'history' ? 'Leggo gli ultimi post pubblicati' : 'Leggo i tuoi testi',
-  rhythm: 'Misuro ritmo e lunghezza delle frasi',
-  card: 'Scrivo la scheda voce',
-} as const;
+export const themesSteps = (locale: Locale = DEFAULT_LOCALE) => onboarding(locale).themes;
 
-export const VISUAL_STEPS = {
-  references: (count: number) =>
-    count === 0 ? 'Parto da palette, sito e indicazioni' : `Guardo ${count === 1 ? 'l’immagine' : `le ${count} immagini`} di riferimento`,
-  line: 'Disegno la linea: fondo, caratteri, firma e rubriche',
-  video: 'Penso a come si racconta il brand in video',
-  card: (channel: string) => `Compongo la card per ${channel}`,
-} as const;
+export function voiceSteps(locale: Locale = DEFAULT_LOCALE) {
+  const voice = onboarding(locale).voice;
+  return { read: (source: 'pasted' | 'history' | 'recording') => voice[source], rhythm: voice.rhythm, card: voice.card };
+}
+
+export function visualSteps(locale: Locale = DEFAULT_LOCALE) {
+  const visual = onboarding(locale).visual;
+  return {
+    references: (count: number) => (count === 0 ? visual.noReferences : translate(locale, 'steps.onboarding.visual.references', { n: count })),
+    line: visual.line,
+    video: visual.video,
+    card: (channel: string) => translate(locale, 'steps.onboarding.visual.card', { channel }),
+  };
+}
 
 const MAX_NAME = 48;
 
@@ -111,25 +110,25 @@ function shorten(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-export function contextStep(site: string | null, known: string): { label: string; detail: string } {
+export function contextStep(site: string | null, known: string, locale: Locale = DEFAULT_LOCALE): { label: string; detail: string } {
   return {
-    label: site ? `Rileggo quello che ho letto su ${site}` : 'Rileggo quello che mi hai scritto',
+    label: site ? translate(locale, 'steps.onboarding.contextSite', { site }) : translate(locale, 'steps.onboarding.contextWritten'),
     detail: shorten(known.replace(/\s+/g, ' ').trim(), 90),
   };
 }
 
-export function pickedDetail(count: number, picked: readonly string[]): string {
-  const marks = picked.map((item) => `«${item}»`);
-  const list = marks.length > 1 ? `${marks.slice(0, -1).join(', ')} e ${marks[marks.length - 1]}` : (marks[0] ?? '');
-  return `Ne propongo ${count}, scelgo ${list}`;
+// picked: le voci già come si leggono (non gli id del catalogo).
+export function pickedDetail(count: number, picked: readonly string[], locale: Locale = DEFAULT_LOCALE): string {
+  const quote = locale === 'en' ? (item: string) => `“${item}”` : (item: string) => (locale === 'fr' ? `« ${item} »` : `«${item}»`);
+  const list = new Intl.ListFormat(INTL_LOCALES[locale], { type: 'conjunction' }).format(picked.map(quote));
+  return translate(locale, 'steps.onboarding.picked', { count, list });
 }
 
-export function colorsFound(count: number): string {
-  if (count === 0) return 'Nessuno nel codice: la palette la propongo io';
-  return count === 1 ? 'Trovato un colore' : `Trovati ${count} colori`;
+export function colorsFound(count: number, locale: Locale = DEFAULT_LOCALE): string {
+  return count === 0 ? onboarding(locale).noColors : translate(locale, 'steps.onboarding.colors', { n: count });
 }
 
-export function pageStep(url: string): { label: string; detail: string } {
+export function pageStep(url: string, locale: Locale = DEFAULT_LOCALE): { label: string; detail: string } {
   const address = url
     .trim()
     .replace(/^https?:\/\//i, '')
@@ -139,80 +138,81 @@ export function pageStep(url: string): { label: string; detail: string } {
   const [host = '', ...path] = address.split('/');
   const segments = path.filter(Boolean);
   const detail = [host.toLowerCase(), ...segments].join('/');
-  if (segments.length === 0) return { label: 'Apro la home', detail };
+  if (segments.length === 0) return { label: translate(locale, 'steps.openHome'), detail };
   const name = segments[segments.length - 1].replace(/[-_+\s]+/g, ' ').trim();
-  if (!name) return { label: 'Apro una pagina', detail };
-  return { label: `Apro la pagina «${shorten(name.charAt(0).toUpperCase() + name.slice(1), MAX_NAME)}»`, detail };
+  if (!name) return { label: translate(locale, 'steps.openPage'), detail };
+  return { label: translate(locale, 'steps.openNamedPage', { name: shorten(name.charAt(0).toUpperCase() + name.slice(1), MAX_NAME) }), detail };
 }
 
 // Le skill di moonbrand, per nome senza il prefisso del plugin.
-const SKILL_STEPS: Record<string, string> = {
-  contenuti: 'Ripasso come si prepara un contenuto',
-  idee: 'Ripasso come si propone un’idea',
-  video: 'Ripasso come si fa un video',
-  'remotion-best-practices': 'Ripasso come si monta un video',
+const SKILL_STEPS: Record<string, MessageKey> = {
+  contenuti: 'steps.skills.contents',
+  idee: 'steps.skills.ideas',
+  video: 'steps.skills.video',
+  'remotion-best-practices': 'steps.skills.editing',
 };
 
 // I tool che si traducono sempre allo stesso modo; null: non si mostrano.
-const TOOL_STEPS: Record<string, string | null> = {
+const TOOL_STEPS: Record<string, MessageKey | null> = {
   TodoWrite: null,
   ToolSearch: null,
-  StructuredOutput: 'Metto tutto in ordine',
-  mcp__moonbrand__contenuti_elenca: 'Guardo i contenuti già fatti',
-  mcp__moonbrand__contenuto_leggi: 'Rileggo il contenuto',
-  mcp__moonbrand__contenuto_salva: 'Salvo la bozza in Contenuti',
-  mcp__moonbrand__contenuto_aggiorna: 'Aggiorno il contenuto in Contenuti',
-  mcp__moonbrand__idee_elenca: 'Guardo le idee salvate',
-  mcp__moonbrand__idea_salva: 'Salvo l’idea in Idee',
-  mcp__immagini__genera_immagine: 'Creo un’immagine',
-  mcp__grafica__renderizza: 'Impagino e controllo la grafica',
-  mcp__audio__cerca_voci: 'Scelgo la voce',
-  mcp__audio__genera_voce: 'Registro la voce fuori campo',
-  mcp__audio__tempi_parole: 'Metto a tempo le parole',
-  mcp__audio__genera_effetto: 'Creo un effetto sonoro',
-  mcp__musica__genera_musica: 'Compongo la musica',
-  mcp__musica__genera_canzone: 'Compongo la canzone',
-  mcp__musica__attendi_musica: 'Aspetto che la musica sia pronta',
-  mcp__lambda__esporta_video: 'Esporto i video finali',
-  mcp__higgsfield__generate_video: 'Giro una clip',
-  mcp__higgsfield__generate_video_batch: 'Giro le clip',
-  mcp__higgsfield__generate_image: 'Creo un’immagine',
-  mcp__higgsfield__generate_image_batch: 'Creo le immagini',
-  mcp__higgsfield__jobs_wait: 'Aspetto che clip e immagini siano pronte',
+  StructuredOutput: 'steps.tools.tidy',
+  mcp__moonbrand__contenuti_elenca: 'steps.tools.listContents',
+  mcp__moonbrand__contenuto_leggi: 'steps.tools.readContent',
+  mcp__moonbrand__contenuto_salva: 'steps.tools.saveContent',
+  mcp__moonbrand__contenuto_aggiorna: 'steps.tools.updateContent',
+  mcp__moonbrand__idee_elenca: 'steps.tools.listIdeas',
+  mcp__moonbrand__idea_salva: 'steps.tools.saveIdea',
+  mcp__immagini__genera_immagine: 'steps.tools.image',
+  mcp__grafica__renderizza: 'steps.tools.render',
+  mcp__audio__cerca_voci: 'steps.tools.chooseVoice',
+  mcp__audio__genera_voce: 'steps.tools.recordVoice',
+  mcp__audio__tempi_parole: 'steps.tools.timeWords',
+  mcp__audio__genera_effetto: 'steps.tools.soundEffect',
+  mcp__musica__genera_musica: 'steps.tools.music',
+  mcp__musica__genera_canzone: 'steps.tools.song',
+  mcp__musica__attendi_musica: 'steps.tools.waitMusic',
+  mcp__lambda__esporta_video: 'steps.tools.exportVideos',
+  mcp__clip__gira_clip: 'steps.tools.clip',
+  mcp__clip__attendi_clip: 'steps.tools.waitClips',
+  mcp__social__scarica_social: 'steps.tools.downloadSocial',
 };
 
 // Come si mostra la chiamata a un tool: null se non si mostra, undefined se la tabella non la conosce
-// (allora la legge Haiku nel worker).
+// (allora la legge Haiku nel worker). locale: la lingua dell'account che aspetta.
 export function toolStep(
   name: string,
   input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown },
+  locale: Locale = DEFAULT_LOCALE,
 ): { label: string; detail?: string } | null | undefined {
   const text = (value: unknown) => (typeof value === 'string' && value.trim() ? shorten(value.replace(/\s+/g, ' ').trim(), 90) : undefined);
-  if (name === 'WebFetch' && typeof input.url === 'string') return pageStep(input.url);
+  if (name === 'WebFetch' && typeof input.url === 'string') return pageStep(input.url, locale);
   if (name === 'WebSearch') {
     const detail = text(input.query);
-    return { label: 'Cerco in rete', ...(detail && { detail }) };
+    return { label: translate(locale, 'steps.searchWeb'), ...(detail && { detail }) };
   }
-  if (name === 'mcp__vista__guarda') return { label: lookLabel(Array.isArray(input.file) ? input.file.filter((file) => typeof file === 'string') : []) };
+  if (name === 'mcp__vista__guarda') {
+    return { label: translate(locale, lookLabel(Array.isArray(input.file) ? input.file.filter((file) => typeof file === 'string') : [])) };
+  }
   if (name === 'Skill' && typeof input.skill === 'string') {
-    const label = SKILL_STEPS[input.skill.replace(/^moonbrand:/, '')];
-    return label ? { label } : undefined;
+    const key = SKILL_STEPS[input.skill.replace(/^moonbrand:/, '')];
+    return key ? { label: translate(locale, key) } : undefined;
   }
   if (!(name in TOOL_STEPS)) return undefined;
-  const label = TOOL_STEPS[name];
-  if (label === null) return null;
+  const key = TOOL_STEPS[name];
+  if (key === null) return null;
   // Di un contenuto o di un’idea salvati si mostra il titolo.
   const detail = /contenuto_(salva|aggiorna)$|idea_salva$/.test(name) ? text(input.title) : undefined;
-  return { label, ...(detail && { detail }) };
+  return { label: translate(locale, key), ...(detail && { detail }) };
 }
 
 // Cosa si guarda con il tool guarda, detto a chi aspetta.
-function lookLabel(files: string[]): string {
-  if (files.length > 0 && files.every((file) => /(^|\/)allegati\//.test(file))) return 'Guardo quello che mi hai mandato';
-  if (files.length > 0 && files.every((file) => /(^|\/)(riferimenti-da-seguire|file-riferimento)\//.test(file))) return 'Studio lo stile dei tuoi riferimenti';
+function lookLabel(files: string[]): MessageKey {
+  if (files.length > 0 && files.every((file) => /(^|\/)allegati\//.test(file))) return 'steps.look.attachments';
+  if (files.length > 0 && files.every((file) => /(^|\/)(riferimenti-da-seguire|file-riferimento)\//.test(file))) return 'steps.look.references';
   const videos = files.filter((file) => /\.(mp4|mov|webm)$/i.test(file)).length;
-  if (videos > 0) return videos === 1 ? 'Guardo il video' : 'Guardo i video';
-  return files.length === 1 ? 'Guardo l’immagine' : 'Guardo le immagini';
+  if (videos > 0) return videos === 1 ? 'steps.look.video' : 'steps.look.videos';
+  return files.length === 1 ? 'steps.look.image' : 'steps.look.images';
 }
 
 // I file del brand si mostrano solo con un percorso pulito, relativo alla sua cartella.
@@ -238,7 +238,7 @@ function remotionRender(command: string): StepMedia | null {
 }
 
 // Le immagini e i video che una chiamata a un tool produce: le card di renderizza, le foto di genera_immagine,
-// le immagini e le clip di Higgsfield, il video esportato da Remotion. undefined se non produce media.
+// le clip di gira_clip, il video esportato da Remotion. undefined se non produce media.
 export function toolMedia(name: string, input: Record<string, unknown>): StepMedia[] | undefined {
   if (name === 'mcp__grafica__renderizza' && Array.isArray(input['uscite'])) {
     const outputs = (input['uscite'] as Record<string, unknown>[]).filter((output) => output && typeof output === 'object');
@@ -251,13 +251,9 @@ export function toolMedia(name: string, input: Record<string, unknown>): StepMed
     const file = brandFile(input['file']);
     return [{ kind: 'image', aspect: aspectOf(input['formato'], '1:1'), ...(file && { file }) }];
   }
-  const higgsfield = /^mcp__higgsfield__generate_(image|video)(_batch)?$/.exec(name);
-  if (higgsfield) {
-    const kind = higgsfield[1] === 'video' ? 'video' : 'image';
-    // Un lotto è una lista di richieste, ognuna con la sua proporzione.
-    const batch = Object.values(input).find((value): value is Record<string, unknown>[] => Array.isArray(value) && value.some((item) => item && typeof item === 'object'));
-    const requests = higgsfield[2] && batch ? batch : [input];
-    return requests.slice(0, MAX_MEDIA).map((request) => ({ kind, aspect: aspectOf(request['aspect_ratio'], kind === 'video' ? '9:16' : '1:1') }));
+  if (name === 'mcp__clip__gira_clip') {
+    const file = brandFile(input['file']);
+    return [{ kind: 'video', aspect: aspectOf(input['formato'], '9:16'), ...(file && { file }) }];
   }
   if (name === 'Bash' && typeof input['command'] === 'string') {
     const video = remotionRender(input['command']);

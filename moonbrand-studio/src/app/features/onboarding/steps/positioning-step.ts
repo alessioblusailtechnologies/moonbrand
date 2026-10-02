@@ -2,87 +2,99 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal, ty
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandDraft, BrandKind, Positioning } from '@moonbrand/shared/domain/brand';
-import { AUDIENCES, GOALS } from '@moonbrand/shared/domain/catalog';
+import { AUDIENCES, GOALS, positioningLabel } from '@moonbrand/shared/domain/catalog';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
 import { DraftStore } from '../draft-store';
 import { MockAi } from '../mock-ai';
 import { positioningSource } from '../positioning-source';
 
-const GOAL_LABEL: Record<BrandKind, string> = { person: 'Perché pubblichi', company: 'Perché pubblicate', client: 'Perché pubblica' };
-const AUDIENCE_LABEL: Record<BrandKind, string> = {
-  person: 'Chi vuoi raggiungere',
-  company: 'Chi volete raggiungere',
-  client: 'Chi vuole raggiungere',
+const GOAL_LABEL: Record<BrandKind, MessageKey> = {
+  person: 'onboarding.positioning.goals.person',
+  company: 'onboarding.positioning.goals.company',
+  client: 'onboarding.positioning.goals.client',
 };
-const WHAT_YOU_DO: Record<BrandKind, string> = { person: 'cosa fai', company: 'cosa fate', client: 'cosa fa' };
+const AUDIENCE_LABEL: Record<BrandKind, MessageKey> = {
+  person: 'onboarding.positioning.audiences.person',
+  company: 'onboarding.positioning.audiences.company',
+  client: 'onboarding.positioning.audiences.client',
+};
+const COMMON_NOTE: Record<BrandKind, MessageKey> = {
+  person: 'onboarding.positioning.noteCommon.person',
+  company: 'onboarding.positioning.noteCommon.company',
+  client: 'onboarding.positioning.noteCommon.client',
+};
 
 const toggle = (list: string[], item: string) => (list.includes(item) ? list.filter((entry) => entry !== item) : [...list, item]);
 
-function frequencyNote(perWeek: number): string {
-  if (perWeek <= 2) return 'Ritmo leggero: una sessione ogni tre settimane';
-  if (perWeek <= 4) return 'Ritmo consigliato: una sessione ogni due settimane';
-  return 'Ritmo alto: serve una sessione a settimana';
+function frequencyNote(perWeek: number): MessageKey {
+  if (perWeek <= 2) return 'onboarding.positioning.frequency.light';
+  if (perWeek <= 4) return 'onboarding.positioning.frequency.recommended';
+  return 'onboarding.positioning.frequency.high';
 }
 
 @Component({
   selector: 'mb-positioning-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, StepList],
+  imports: [Icon, StepList, TranslatePipe],
   template: `
     @let value = positioning();
     @if (loading()) {
       <div class="panel">
-        <p class="strong-sm">Preparo obiettivi e pubblico su misura</p>
-        <mb-step-list [steps]="steps()" waiting="Rileggo quello che so del brand" />
+        <p class="strong-sm">{{ 'onboarding.positioning.preparing' | t }}</p>
+        <mb-step-list [steps]="steps()" [waiting]="'onboarding.positioning.waiting' | t" />
       </div>
     } @else {
       <p class="caption">{{ note() }}</p>
       <section class="group">
-        <p class="label">{{ goalLabel() }}</p>
+        <p class="label">{{ goalLabel() | t }}</p>
         <div class="chips">
           @for (goal of goals(); track goal) {
             <button class="chip" type="button" [class.selected]="value.goals.includes(goal)" (click)="set({ goals: toggle(value.goals, goal) })">
-              {{ goal }}
+              {{ label(goal) }}
             </button>
           }
         </div>
       </section>
       <section class="group">
-        <p class="label">{{ audienceLabel() }}</p>
+        <p class="label">{{ audienceLabel() | t }}</p>
         <div class="chips">
           @for (audience of audiences(); track audience) {
             <button class="chip" type="button" [class.selected]="value.audiences.includes(audience)"
               (click)="set({ audiences: toggle(value.audiences, audience) })">
-              {{ audience }}
+              {{ label(audience) }}
             </button>
           }
         </div>
         @if (adding()) {
           <div class="row">
-            <input class="sunken grow" placeholder="Es. Responsabili acquisti" aria-label="Nuovo pubblico" [value]="custom()"
+            <input class="sunken grow" [placeholder]="'onboarding.positioning.audiencePlaceholder' | t"
+              [attr.aria-label]="'onboarding.positioning.newAudience' | t" [value]="custom()"
               (input)="custom.set($any($event.target).value)" (keydown.enter)="addAudience()" />
-            <button class="btn btn-primary btn-sm" type="button" [disabled]="!custom().trim()" (click)="addAudience()">Aggiungi</button>
+            <button class="btn btn-primary btn-sm" type="button" [disabled]="!custom().trim()" (click)="addAudience()">{{ 'common.add' | t }}</button>
           </div>
         } @else {
-          <button class="link-btn" type="button" (click)="adding.set(true)">Aggiungi un pubblico</button>
+          <button class="link-btn" type="button" (click)="adding.set(true)">{{ 'onboarding.positioning.addAudience' | t }}</button>
         }
       </section>
     }
 
     <section class="panel">
-      <p class="label">Quanto vuoi pubblicare</p>
+      <p class="label">{{ 'onboarding.positioning.howOften' | t }}</p>
       <div class="stepper">
-        <button class="icon-btn outline" type="button" aria-label="Meno uscite" [disabled]="value.postsPerWeek <= 1"
+        <button class="icon-btn outline" type="button" [attr.aria-label]="'onboarding.positioning.fewer' | t" [disabled]="value.postsPerWeek <= 1"
           (click)="set({ postsPerWeek: value.postsPerWeek - 1 })">
           <mb-icon name="minus" />
         </button>
         <div class="stepper-value">
-          <p class="heading">{{ value.postsPerWeek }} {{ value.postsPerWeek === 1 ? 'volta' : 'volte' }} a settimana</p>
-          <p class="caption">{{ frequencyNote(value.postsPerWeek) }}</p>
+          <p class="heading">{{ 'onboarding.positioning.perWeek' | t: { n: value.postsPerWeek } }}</p>
+          <p class="caption">{{ frequencyNote(value.postsPerWeek) | t }}</p>
         </div>
-        <button class="icon-btn outline" type="button" aria-label="Più uscite" [disabled]="value.postsPerWeek >= 7"
+        <button class="icon-btn outline" type="button" [attr.aria-label]="'onboarding.positioning.more' | t" [disabled]="value.postsPerWeek >= 7"
           (click)="set({ postsPerWeek: value.postsPerWeek + 1 })">
           <mb-icon name="plus" />
         </button>
@@ -118,6 +130,7 @@ function frequencyNote(perWeek: number): string {
 export class PositioningStep implements OnInit {
   private readonly ai = inject(MockAi);
   private readonly store = inject(DraftStore);
+  private readonly i18n = inject(I18nService);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly toggle = toggle;
@@ -150,10 +163,10 @@ export class PositioningStep implements OnInit {
   protected readonly note = computed(() => {
     if (this.ideas()) {
       const site = this.source()?.site;
-      return site ? `Proposti leggendo ${site.site}: tocca per scegliere o togliere.` : 'Proposti da quello che hai scritto: tocca per scegliere o togliere.';
+      return site ? this.i18n.t('onboarding.positioning.noteSite', { site: site.site }) : this.i18n.t('onboarding.positioning.noteWritten');
     }
-    if (this.failed()) return 'Non sono riuscito a preparare proposte su misura: ecco le più comuni.';
-    return `Proposte comuni: se nel passo prima scrivi ${WHAT_YOU_DO[this.kind()]} o mi fai leggere il sito, le preparo su misura.`;
+    if (this.failed()) return this.i18n.t('onboarding.positioning.noteFailed');
+    return this.i18n.t(COMMON_NOTE[this.kind()]);
   });
 
   ngOnInit(): void {
@@ -167,10 +180,15 @@ export class PositioningStep implements OnInit {
     }
     this.loading.set(true);
     this.ai
-      .suggestPositioning(this.draft().identity, source.site, (steps) => this.steps.set(steps))
+      .suggestPositioning(this.draft().identity, source.site, this.i18n.locale(), (steps) => this.steps.set(steps))
       .then((ideas) => this.store.applyPositioningIdeas(source.key, ideas))
       .catch(() => this.failed.set(true))
       .finally(() => this.loading.set(false));
+  }
+
+  // Obiettivi e pubblici del catalogo sono salvati come id: si mostrano con l'etichetta, il testo libero com'è.
+  protected label(value: string): string {
+    return positioningLabel(value, this.i18n.locale());
   }
 
   protected set(patch: Partial<Positioning>): void {

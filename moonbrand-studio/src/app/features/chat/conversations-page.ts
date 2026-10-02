@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, type ElementRef, type TemplateRef, 
 import { RouterLink } from '@angular/router';
 
 import { ChatService } from '../../core/chat/chat.service';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
 
@@ -9,15 +11,15 @@ import { Icon } from '../../ui/icon';
 @Component({
   selector: 'mb-conversations-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, TranslatePipe],
   template: `
     <section class="conversations">
       <input
         #searchField
         class="sunken"
         type="search"
-        aria-label="Cerca tra le conversazioni"
-        placeholder="Cerca per titolo…"
+        [attr.aria-label]="'shell.searchChats' | t"
+        [placeholder]="'chat.conversations.searchPlaceholder' | t"
         [value]="search()"
         (input)="search.set($any($event.target).value)"
       />
@@ -28,14 +30,14 @@ import { Icon } from '../../ui/icon';
             <mb-icon name="message-circle" [size]="16" />
             <span class="strong-sm row-title">{{ item.title }}</span>
             @if (item.busy) {
-              <span class="caption busy"><span class="spinner"></span> Sto rispondendo</span>
+              <span class="caption busy"><span class="spinner"></span> {{ 'chat.conversations.replying' | t }}</span>
             } @else {
               <span class="caption">{{ when(item.updatedAt) }}</span>
             }
           </a>
         } @empty {
           <p class="caption empty">
-            {{ search() ? 'Nessuna conversazione con questo titolo.' : 'Ancora nessuna conversazione con l’assistente.' }}
+            {{ (search() ? 'chat.conversations.noMatch' : 'chat.conversations.none') | t }}
           </p>
         }
       </div>
@@ -43,7 +45,7 @@ import { Icon } from '../../ui/icon';
 
     <ng-template #headerActions>
       <a class="btn btn-secondary btn-sm new" routerLink="/assistente">
-        <mb-icon name="plus" [size]="16" /> Nuova conversazione
+        <mb-icon name="plus" [size]="16" /> {{ 'chat.conversations.new' | t }}
       </a>
     </ng-template>
   `,
@@ -100,6 +102,7 @@ import { Icon } from '../../ui/icon';
 })
 export class ConversationsPage {
   private readonly chat = inject(ChatService);
+  private readonly i18n = inject(I18nService);
 
   private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   private readonly searchField = viewChild.required<ElementRef<HTMLInputElement>>('searchField');
@@ -112,7 +115,7 @@ export class ConversationsPage {
 
   constructor() {
     pageHeader(
-      () => [{ label: 'Assistente', link: '/assistente' }, { label: 'Tutte le conversazioni' }],
+      () => [{ label: this.i18n.t('shell.assistant'), link: '/assistente' }, { label: this.i18n.t('chat.conversations.all') }],
       () => this.headerActions(),
     );
     void this.chat.refresh();
@@ -122,7 +125,7 @@ export class ConversationsPage {
   protected when(date: string): string {
     const value = new Date(date);
     return value.toDateString() === new Date().toDateString()
-      ? value.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
-      : value.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+      ? value.toLocaleTimeString(this.i18n.intl(), { hour: '2-digit', minute: '2-digit' })
+      : value.toLocaleDateString(this.i18n.intl(), { day: 'numeric', month: 'short', year: 'numeric' });
   }
 }

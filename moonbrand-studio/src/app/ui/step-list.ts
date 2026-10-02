@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 
+import { I18nService } from '../core/i18n/i18n.service';
 import { Icon } from './icon';
 
 // I passaggi di un lavoro dell'AI, in un accordion: chiuso dice cosa sta facendo, aperto li mostra tutti.
@@ -50,7 +51,7 @@ import { Icon } from './icon';
         @if (active() && !current()) {
           <li class="step running">
             <span class="mark"><span class="spinner"></span></span>
-            <span class="texts"><span class="strong-sm">{{ steps().length === 0 ? waiting() : 'Ci penso' }}</span></span>
+            <span class="texts"><span class="strong-sm">{{ steps().length === 0 ? waitingLabel() : thinking() }}</span></span>
           </li>
         }
       </ol>
@@ -154,7 +155,9 @@ import { Icon } from './icon';
 })
 export class StepList {
   readonly steps = input.required<AiStep[]>();
-  readonly waiting = input('Ci penso');
+  private readonly i18n = inject(I18nService);
+  // Cosa dire prima del primo passaggio; senza, «Ci penso» nella lingua dell'interfaccia.
+  readonly waiting = input<string>();
   // Se il lavoro è ancora in corso; senza, lo è finché la lista si vede (come mentre si preparano le idee).
   readonly live = input<boolean>();
 
@@ -162,11 +165,12 @@ export class StepList {
   protected readonly now = signal(Date.now());
   protected readonly active = computed(() => this.live() ?? true);
   protected readonly current = computed(() => this.steps().find((step) => step.status === 'running'));
+  protected readonly thinking = computed(() => this.i18n.t('ui.steps.thinking'));
+  protected readonly waitingLabel = computed(() => this.waiting() ?? this.thinking());
   // Chiuso, dice cosa sta facendo; finito, quanti passaggi ha fatto.
   protected readonly title = computed(() => {
-    if (this.active()) return this.current()?.label ?? (this.steps().length === 0 ? this.waiting() : 'Ci penso');
-    const count = this.steps().length;
-    return count === 1 ? '1 passaggio' : `${count} passaggi`;
+    if (this.active()) return this.current()?.label ?? (this.steps().length === 0 ? this.waitingLabel() : this.thinking());
+    return this.i18n.t('ui.steps.count', { n: this.steps().length });
   });
 
   private readonly mountedAt = Date.now();

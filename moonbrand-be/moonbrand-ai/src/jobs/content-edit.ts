@@ -2,6 +2,7 @@ import type { ContentEditJobInput } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 
 import { contentDir, neededFiles, runContentAgent } from '../lib/content';
+import { languageRules } from '../lib/language';
 
 const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
@@ -22,4 +23,4 @@ const task = scriptOnly
     ? `Aggiorna il contenuto di conseguenza, seguendo le skill moonbrand:video e moonbrand:contenuti: riesporta video e copertine in ${contentDir(contentId)} e aggiorna testi e copione se cambiano. Restituisci il contenuto completo, anche le parti che non hai cambiato.\n${files}`
     : `Aggiorna il contenuto di conseguenza, sempre seguendo la skill moonbrand:contenuti: testi e immagini in ${contentDir(contentId)}. Restituisci il contenuto completo, anche le parti che non hai cambiato.\n${files}`;
 
-await runContentAgent({ brandDir, contentId, format, channels, prompt: `${instruction}\n\n${task}`, scriptOnly, resume: sessionId });
+await runContentAgent({ brandDir, contentId, format, channels, prompt: `${instruction}\n\n${task}\n\n${languageRules()}`, scriptOnly, resume: sessionId });

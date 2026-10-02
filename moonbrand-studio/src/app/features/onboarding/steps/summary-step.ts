@@ -3,6 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import type { BrandDraft, SectionKey } from '@moonbrand/shared/domain/brand';
 import { ONBOARDING_SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary } from '@moonbrand/shared/domain/sections';
 
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
 import { ONBOARDING_STEPS, OnboardingStore } from '../onboarding.store';
 
@@ -11,7 +13,7 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)
 @Component({
   selector: 'mb-summary-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   template: `
     <div class="panel rows">
       @for (row of rows(); track row.key) {
@@ -25,9 +27,7 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)
         </button>
       }
     </div>
-    <p class="caption">
-      Tutto resta modificabile dalle Impostazioni brand. Riferimenti e fonti li aggiungi da lì quando vuoi: danno un appiglio reale alle idee.
-    </p>
+    <p class="caption">{{ 'onboarding.summary.hint' | t }}</p>
   `,
   styles: `
     :host {
@@ -73,14 +73,16 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)
 })
 export class SummaryStep {
   private readonly store = inject(OnboardingStore);
+  private readonly i18n = inject(I18nService);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly rows = computed(() => {
     const draft = this.draft();
+    const locale = this.i18n.locale();
     return ONBOARDING_SECTION_KEYS.map((key) => ({
       key,
-      name: sectionCopy(key, draft.identity.kind).name,
-      summary: sectionSummary(key, draft),
+      name: sectionCopy(key, draft.identity.kind, locale).name,
+      summary: sectionSummary(key, draft, locale),
       color: STATUS_COLOR[sectionStatus(key, draft)],
     }));
   });

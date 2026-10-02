@@ -3,16 +3,20 @@ import type pg from 'pg';
 import { z } from 'zod';
 
 import { PASSWORD_MIN, REFRESH_COOKIE, type Session } from '@moonbrand/shared/api/contract';
+import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
 import type { Config } from '../../config';
 import { ApiError } from '../../errors';
 import type { AuthGateway } from './gateway';
-import { me, signIn, signUp, type AuthResult } from './service';
+import { me, signIn, signUp, updateMe, type AuthResult } from './service';
 
 const email = z.email('Scrivi un indirizzo email valido.').max(320);
 const password = z.string().min(PASSWORD_MIN, `La password deve avere almeno ${PASSWORD_MIN} caratteri.`).max(200);
 
-const signUpSchema = z.object({ name: z.string().trim().min(1, 'Scrivi il tuo nome.').max(200), email, password });
+const locale = z.enum(LOCALES);
+
+const signUpSchema = z.object({ name: z.string().trim().min(1, 'Scrivi il tuo nome.').max(200), email, password, locale: locale.optional() });
+const updateMeSchema = z.object({ locale });
 const signInSchema = z.object({ email, password: z.string().min(1).max(200) });
 
 const REFRESH_MAX_AGE = 30 * 24 * 60 * 60;
@@ -56,4 +60,6 @@ export function registerAuthRoutes(
   });
 
   app.get('/v1/me', (request) => me(pool, request.identity));
+
+  app.patch('/v1/me', (request) => updateMe(pool, request.identity, updateMeSchema.parse(request.body)));
 }

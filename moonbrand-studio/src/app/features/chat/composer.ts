@@ -6,6 +6,8 @@ import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { MicrophoneError, Recorder } from '../../core/chat/recorder';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { resizedDataUri } from '../../core/images';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
@@ -41,7 +43,7 @@ const MAX_DICTATION_S = 300;
 @Component({
   selector: 'mb-composer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './composer.html',
   styleUrl: './composer.scss',
   host: { '[class.tall]': 'tall()' },
@@ -50,9 +52,11 @@ export class Composer {
   private readonly chat = inject(ChatService);
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
 
   readonly placeholder = input('');
-  readonly label = input('Messaggio per l’assistente');
+  // Senza label, quella della chat.
+  readonly label = input('');
   readonly tall = input(false);
   readonly running = input(false);
   readonly stopping = input(false);
@@ -72,6 +76,7 @@ export class Composer {
   private readonly recorder = new Recorder();
   private timer?: ReturnType<typeof setInterval>;
 
+  protected readonly ariaLabel = computed(() => this.label() || this.i18n.t('chat.composer.label'));
   readonly uploading = computed(() => this.attachments().some((item) => !item.file && !item.failed));
   readonly canSend = computed(
     () =>
@@ -153,7 +158,7 @@ export class Composer {
     const brand = this.brands.activeBrand();
     if (!brand) return;
     const room = MAX_ATTACHMENTS - this.attachments().length;
-    if (files.length > room) this.toast.show(`Al massimo ${MAX_ATTACHMENTS} allegati per messaggio.`);
+    if (files.length > room) this.toast.show(this.i18n.t('chat.composer.tooMany', { n: MAX_ATTACHMENTS }));
     for (const file of files.slice(0, Math.max(0, room))) {
       const pending: PendingAttachment = {
         id: ++this.nextAttachment,
@@ -178,7 +183,7 @@ export class Composer {
       this.set(id, { file: uploaded.file, progress: 1 });
     } catch (error) {
       this.set(id, { failed: true });
-      this.toast.show(errorMessage(error, 'Non riesco a caricare il video. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.composer.videoFailed')));
     }
   }
 
@@ -189,7 +194,7 @@ export class Composer {
       this.set(id, { file: uploaded.file });
     } catch (error) {
       this.set(id, { failed: true });
-      this.toast.show(errorMessage(error, 'Non riesco a caricare la foto: usa un PNG, un JPEG o un WebP.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.composer.photoFailed')));
     }
   }
 
@@ -199,7 +204,7 @@ export class Composer {
     try {
       await this.recorder.start();
     } catch (error) {
-      this.toast.show(error instanceof MicrophoneError ? error.message : 'Non riesco ad aprire il microfono.');
+      this.toast.show(this.i18n.t(error instanceof MicrophoneError ? error.key : 'chat.composer.micFailed'));
       return;
     }
     this.elapsed.set(0);
@@ -226,10 +231,10 @@ export class Composer {
         const current = this.draft().trimEnd();
         this.setDraft(current ? `${current} ${text}` : text);
       } else {
-        this.toast.show('Non ho sentito niente: riprova più vicino al microfono.');
+        this.toast.show(this.i18n.t('chat.composer.heardNothing'));
       }
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a trascrivere. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.composer.transcribeFailed')));
     } finally {
       this.dictation.set('idle');
     }

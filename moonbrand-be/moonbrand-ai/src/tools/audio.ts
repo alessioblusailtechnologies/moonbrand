@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
+import { contentLanguage } from '../lib/language';
 import { measure, type Meter } from '../lib/usage';
 import { ffmpeg } from '../lib/video';
 import { PARALLEL } from './parallel';
@@ -124,7 +125,7 @@ export function audioTools(folder: string, apiKey: string) {
     'Cerca voci per la voce fuori campo nella libreria di ElevenLabs e restituisce id e descrizione di ciascuna. ' +
       'Non puoi ascoltarle: scegli dalla descrizione quella che somiglia di più alla voce del brand.',
     {
-      lingua: z.string().optional().describe('Codice della lingua, es. it (di base) o en'),
+      lingua: z.string().optional().describe(`Codice della lingua, es. en; di base ${contentLanguage}, la lingua dei post del brand`),
       genere: z.enum(['male', 'female', 'neutral']).optional(),
       eta: z.enum(['young', 'middle_aged', 'old']).optional(),
       uso: z
@@ -133,7 +134,7 @@ export function audioTools(folder: string, apiKey: string) {
         .describe('Per cosa è pensata la voce'),
       cerca: z.string().optional().describe('Parole da cercare nel nome o nella descrizione, in inglese, es. warm, calm, energetic'),
     },
-    async ({ lingua = 'it', genere, eta, uso, cerca }) => {
+    async ({ lingua = contentLanguage, genere, eta, uso, cerca }) => {
       try {
         const query = new URLSearchParams({ language: lingua, page_size: '20', sort: 'usage_character_count_1y' });
         if (genere) query.set('gender', genere);
@@ -163,10 +164,10 @@ export function audioTools(folder: string, apiKey: string) {
     {
       testo: z.string().min(1).describe('Il testo da leggere, scritto come si pronuncia: numeri e sigle come vanno detti'),
       voce: z.string().describe('L’id della voce, da cerca_voci o quella già scelta per il brand'),
-      lingua: z.string().optional().describe('Codice della lingua, es. it (di base)'),
+      lingua: z.string().optional().describe(`Codice della lingua; di base ${contentLanguage}, la lingua dei post del brand`),
       file: mp3('voce.mp3'),
     },
-    async ({ testo, voce, lingua = 'it', file }) => {
+    async ({ testo, voce, lingua = contentLanguage, file }) => {
       try {
         const { audio_base64, alignment } = await measure({ task: 'voice', model: VOICE_MODEL, meter: credits }, async () => {
           const response = await call(`/text-to-speech/${encodeURIComponent(voce)}/with-timestamps?output_format=mp3_44100_128`, {
@@ -204,13 +205,13 @@ export function audioTools(folder: string, apiKey: string) {
       canzone: z.boolean().optional().describe('true (di base) se sotto la voce c’è musica da separare; false per una voce sola'),
       da: z.number().min(0).optional().describe('Secondo del brano da cui partire'),
       a: z.number().positive().optional().describe('Secondo del brano a cui fermarsi'),
-      lingua: z.string().optional().describe('Codice della lingua per la trascrizione, es. it (di base) o en'),
+      lingua: z.string().optional().describe(`Codice della lingua per la trascrizione; di base ${contentLanguage}, la lingua dei post del brand`),
       file: z
         .string()
         .regex(/^[A-Za-z0-9._\/-]+\.json$/)
         .describe('Dove salvare i tempi, relativo alla cartella del brand, es. video/public/contenuti/<id>/canzone.parole.json'),
     },
-    async ({ audio, testo, canzone = true, da = 0, a, lingua = 'it', file }) => {
+    async ({ audio, testo, canzone = true, da = 0, a, lingua = contentLanguage, file }) => {
       const work = await mkdtemp(path.join(tmpdir(), 'moonbrand-parole-'));
       try {
         // Il pezzo che serve, in WAV mono: meno da mandare e da pagare, e ogni ffmpeg lo sa scrivere.

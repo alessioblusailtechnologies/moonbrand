@@ -10,7 +10,7 @@
           <div class="tiktok-text">
             <p class="who-name">{{ '@' + who.handle }}</p>
             <ng-container [ngTemplateOutlet]="captionText" />
-            <p class="tiktok-sound"><mb-icon name="music" [size]="12" /> suono originale · {{ who.name }}</p>
+            <p class="tiktok-sound"><mb-icon name="music" [size]="12" /> {{ 'onboarding.post.originalSound' | t }} · {{ who.name }}</p>
           </div>
           <div class="tiktok-rail" aria-hidden="true">
             <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 36 }" />
@@ -46,7 +46,7 @@
       <div class="x-row">
         <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 40 }" />
         <div class="x-body">
-          <p class="x-head"><span class="who-name">{{ who.name }}</span> <span class="who-meta">{{ '@' + who.handle }} · adesso</span></p>
+          <p class="x-head"><span class="who-name">{{ who.name }}</span> <span class="who-meta">{{ '@' + who.handle }} · {{ 'onboarding.post.now' | t }}</span></p>
           <ng-container [ngTemplateOutlet]="captionText" />
           <ng-container [ngTemplateOutlet]="media" />
           <div class="post-actions icons spread" aria-hidden="true">
@@ -66,10 +66,10 @@
         <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: channel() === 'linkedin' ? 44 : 40 }" />
         <div class="grow">
           <p class="who-name">{{ who.name }}</p>
-          <p class="who-meta">{{ channel() === 'linkedin' ? (who.person ? 'Adesso' : 'Pagina · adesso') : 'Adesso' }}</p>
+          <p class="who-meta">{{ (channel() === 'linkedin' && !who.person ? 'onboarding.post.pageNow' : 'onboarding.post.nowCapital') | t }}</p>
         </div>
         @if (channel() === 'linkedin') {
-          <span class="follow">+ Segui</span>
+          <span class="follow">{{ 'onboarding.post.follow' | t }}</span>
         } @else {
           <span class="more-dots" aria-hidden="true">•••</span>
         }
@@ -80,14 +80,14 @@
       <ng-container [ngTemplateOutlet]="media" />
       <div class="post-actions words" aria-hidden="true">
         @if (channel() === 'linkedin') {
-          <span><mb-icon name="thumbs-up" [size]="15" /> Consiglia</span>
-          <span><mb-icon name="message-circle" [size]="15" /> Commenta</span>
-          <span><mb-icon name="repeat" [size]="15" /> Diffondi</span>
-          <span><mb-icon name="send" [size]="15" /> Invia</span>
+          <span><mb-icon name="thumbs-up" [size]="15" /> {{ 'onboarding.post.linkedin.like' | t }}</span>
+          <span><mb-icon name="message-circle" [size]="15" /> {{ 'onboarding.post.linkedin.comment' | t }}</span>
+          <span><mb-icon name="repeat" [size]="15" /> {{ 'onboarding.post.linkedin.repost' | t }}</span>
+          <span><mb-icon name="send" [size]="15" /> {{ 'onboarding.post.linkedin.send' | t }}</span>
         } @else {
-          <span><mb-icon name="thumbs-up" [size]="15" /> Mi piace</span>
-          <span><mb-icon name="message-circle" [size]="15" /> Commenta</span>
-          <span><mb-icon name="share" [size]="15" /> Condividi</span>
+          <span><mb-icon name="thumbs-up" [size]="15" /> {{ 'onboarding.post.facebook.like' | t }}</span>
+          <span><mb-icon name="message-circle" [size]="15" /> {{ 'onboarding.post.facebook.comment' | t }}</span>
+          <span><mb-icon name="share" [size]="15" /> {{ 'onboarding.post.facebook.share' | t }}</span>
         }
       </div>
     }
@@ -119,14 +119,16 @@
       }
     }
     @if (shown.folded) {
-      <button class="fold" type="button" (click)="expanded.set(true)">{{ channel() === 'facebook' ? '… Altro' : '…altro' }}</button>
+      <button class="fold" type="button" (click)="expanded.set(true)">
+        {{ (channel() === 'facebook' ? 'onboarding.post.moreFacebook' : 'onboarding.post.more') | t }}
+      </button>
     }
   </p>
 </ng-template>
 
 <ng-template #media>
   <div class="media">
-    <button class="shot" type="button" [attr.aria-label]="'Ingrandisci: ' + label()" (click)="zoom.emit()">
+    <button class="shot" type="button" [attr.aria-label]="'onboarding.post.zoom' | t: { label: label() }" (click)="zoom.emit()">
       <img [src]="url()" [alt]="label()" loading="lazy" />
     </button>
   </div>

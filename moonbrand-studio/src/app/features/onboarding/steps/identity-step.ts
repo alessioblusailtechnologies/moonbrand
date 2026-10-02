@@ -2,44 +2,39 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandDraft, BrandKind, Identity } from '@moonbrand/shared/domain/brand';
+import { brandLanguage, LOCALE_NAMES, LOCALES } from '@moonbrand/shared/i18n/locales';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
 
 type TextField = 'name' | 'role' | 'company' | 'sector';
 
-const FIELDS: Record<BrandKind, { key: TextField; label: string; placeholder: string }[]> = {
+const FIELDS: Record<BrandKind, { key: TextField; label: MessageKey; placeholder: MessageKey }[]> = {
   person: [
-    { key: 'name', label: 'Nome e cognome', placeholder: 'Marco Sereni' },
-    { key: 'role', label: 'Ruolo', placeholder: 'Founder' },
-    { key: 'company', label: 'Azienda', placeholder: 'Nodo' },
+    { key: 'name', label: 'onboarding.identity.fields.personName', placeholder: 'onboarding.identity.fields.personNamePlaceholder' },
+    { key: 'role', label: 'onboarding.identity.fields.role', placeholder: 'onboarding.identity.fields.rolePlaceholder' },
+    { key: 'company', label: 'onboarding.identity.fields.company', placeholder: 'onboarding.identity.fields.companyPlaceholder' },
   ],
   company: [
-    { key: 'name', label: 'Nome dell’azienda', placeholder: 'Forno Rinaldi' },
-    { key: 'sector', label: 'Settore', placeholder: 'Panificio artigianale' },
+    { key: 'name', label: 'onboarding.identity.fields.companyName', placeholder: 'onboarding.identity.fields.companyNamePlaceholder' },
+    { key: 'sector', label: 'onboarding.identity.fields.sector', placeholder: 'onboarding.identity.fields.companySectorPlaceholder' },
   ],
   client: [
-    { key: 'name', label: 'Nome del cliente', placeholder: 'Studio Verdi' },
-    { key: 'sector', label: 'Settore', placeholder: 'Architettura d’interni' },
+    { key: 'name', label: 'onboarding.identity.fields.clientName', placeholder: 'onboarding.identity.fields.clientNamePlaceholder' },
+    { key: 'sector', label: 'onboarding.identity.fields.sector', placeholder: 'onboarding.identity.fields.clientSectorPlaceholder' },
   ],
 };
 
-const PITCH: Record<BrandKind, { label: string; placeholder: string }> = {
-  person: {
-    label: 'In una frase, cosa fai',
-    placeholder: 'Es. metto l’AI nei processi noiosi delle PMI italiane, partendo da dove il dolore è misurabile',
-  },
-  company: {
-    label: 'In una frase, cosa fate',
-    placeholder: 'Es. pane a lievitazione naturale con grani del territorio, consegnato ogni mattina a bar e ristoranti',
-  },
-  client: {
-    label: 'In una frase, cosa fa il cliente',
-    placeholder: 'Es. progetta case piccole che sembrano grandi, con budget chiari fin dal primo incontro',
-  },
+const PITCH: Record<BrandKind, { label: MessageKey; placeholder: MessageKey }> = {
+  person: { label: 'onboarding.identity.pitch.person', placeholder: 'onboarding.identity.pitchPlaceholder.person' },
+  company: { label: 'onboarding.identity.pitch.company', placeholder: 'onboarding.identity.pitchPlaceholder.company' },
+  client: { label: 'onboarding.identity.pitch.client', placeholder: 'onboarding.identity.pitchPlaceholder.client' },
 };
 
 const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company: 'fornorinaldi.it', client: 'studioverdi.it' };
@@ -47,17 +42,17 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 @Component({
   selector: 'mb-identity-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [StepList],
+  imports: [StepList, TranslatePipe],
   template: `
     @let value = identity();
     <div class="field">
-      <label for="site">Sito</label>
+      <label for="site">{{ 'onboarding.identity.site' | t }}</label>
       <div class="field-row">
         <input id="site" type="url" autocomplete="url" [placeholder]="sitePlaceholder()" [value]="value.site"
           (input)="update('site', $any($event.target).value)" (keydown.enter)="canRead() && read()" />
         @if (canRead()) {
           <button class="btn btn-secondary btn-sm" type="button" [disabled]="reading()" (click)="read()">
-            {{ reading() ? 'Leggo…' : 'Leggi' }}
+            {{ (reading() ? 'onboarding.identity.reading' : 'onboarding.identity.read') | t }}
           </button>
         }
       </div>
@@ -65,31 +60,44 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 
     @if (reading()) {
       <div class="panel">
-        <p class="strong-sm">Sto leggendo {{ site() }}</p>
-        <mb-step-list [steps]="steps()" waiting="Mi collego al sito" />
+        <p class="strong-sm">{{ 'onboarding.identity.readingSite' | t: { site: site() } }}</p>
+        <mb-step-list [steps]="steps()" [waiting]="'onboarding.identity.connecting' | t" />
       </div>
     } @else if (alreadyRead()) {
       <div class="panel read">
-        <span class="badge mint">Sito letto</span>
+        <span class="badge mint">{{ 'onboarding.identity.siteRead' | t }}</span>
         <p class="body ink">{{ store.insights()?.summary }}</p>
       </div>
     }
 
     @for (field of fields(); track field.key) {
       <div class="field">
-        <label [attr.for]="field.key">{{ field.label }}</label>
-        <input [id]="field.key" type="text" [placeholder]="field.placeholder" [value]="value[field.key]"
+        <label [attr.for]="field.key">{{ field.label | t }}</label>
+        <input [id]="field.key" type="text" [placeholder]="field.placeholder | t" [value]="value[field.key]"
           (input)="update(field.key, $any($event.target).value)" />
       </div>
     }
 
     <div class="field">
-      <label for="pitch">{{ pitch().label }}</label>
-      <textarea id="pitch" rows="3" [placeholder]="reading() ? 'La scrivo io appena finisco di leggere il sito…' : pitch().placeholder"
+      <label for="pitch">{{ pitch().label | t }}</label>
+      <textarea id="pitch" rows="3" [placeholder]="(reading() ? 'onboarding.identity.pitchWriting' : pitch().placeholder) | t"
         [value]="value.pitch" (input)="update('pitch', $any($event.target).value)"></textarea>
       @if (pitchFromSite()) {
-        <span class="hint">L’ho scritta leggendo il sito: cambiala come vuoi.</span>
+        <span class="hint">{{ 'onboarding.identity.pitchFromSite' | t }}</span>
       }
+    </div>
+
+    <div class="field">
+      <label id="language">{{ 'brand.language' | t }}</label>
+      <div class="segmented" role="radiogroup" aria-labelledby="language">
+        @for (option of locales; track option) {
+          @let current = option === language();
+          <button type="button" role="radio" [class.selected]="current" [attr.aria-checked]="current" (click)="update('language', option)">
+            {{ localeNames[option] }}
+          </button>
+        }
+      </div>
+      <span class="hint">{{ 'brand.languageHint' | t }}</span>
     </div>
   `,
   styles: `
@@ -106,13 +114,18 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 export class IdentityStep {
   private readonly ai = inject(AiJobsService);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly reading = signal(false);
   protected readonly steps = signal<AiStep[]>([]);
 
+  protected readonly locales = LOCALES;
+  protected readonly localeNames = LOCALE_NAMES;
+
   protected readonly identity = computed(() => this.draft().identity);
+  protected readonly language = computed(() => brandLanguage(this.identity()));
   protected readonly fields = computed(() => FIELDS[this.identity().kind]);
   protected readonly pitch = computed(() => PITCH[this.identity().kind]);
   protected readonly sitePlaceholder = computed(() => SITE_PLACEHOLDER[this.identity().kind]);
@@ -135,9 +148,9 @@ export class IdentityStep {
     try {
       const insights = await this.ai.readWebsite(this.identity().site, (steps) => this.steps.set(steps));
       this.store.applyInsights(insights);
-      this.toast.show('Ho letto il sito: temi, pubblico e palette sono già proposti nei prossimi passi.');
+      this.toast.show(this.i18n.t('onboarding.identity.readDone'));
     } catch {
-      this.toast.show('Non riesco a leggere il sito. Riprova tra poco.');
+      this.toast.show(this.i18n.t('onboarding.identity.readFailed'));
     } finally {
       this.reading.set(false);
     }

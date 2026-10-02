@@ -4,15 +4,17 @@ import {
   contextStep,
   createStepLog,
   pickedDetail,
-  POSITIONING_STEPS,
-  THEMES_STEPS,
-  VOICE_STEPS,
+  positioningSteps,
+  themesSteps,
+  voiceSteps,
   type OnAiSteps,
   type PositioningIdeas,
   type WebsiteInsights,
 } from '@moonbrand/shared/ai/steps';
 import type { BrandKind, ChannelId, Identity, VoiceCard, VoiceSource } from '@moonbrand/shared/domain/brand';
-import { AUDIENCES, channelName, GOALS } from '@moonbrand/shared/domain/catalog';
+import { AUDIENCES, channelName, GOALS, positioningLabel } from '@moonbrand/shared/domain/catalog';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate, type MessageKey } from '@moonbrand/shared/i18n/translate';
 import { createRng, pick, sample, seedFromString } from '@moonbrand/shared/lib/random';
 
 export interface VoiceSample {
@@ -28,32 +30,38 @@ type Group = 'person' | 'business';
 const groupOf = (kind: BrandKind): Group => (kind === 'person' ? 'person' : 'business');
 
 
-const THEMES: Record<Group, string[]> = {
+// Temi e pubblici in più proposti dall'onboarding: diventano testo del brand nella lingua di chi lo crea.
+const THEMES: Record<Group, MessageKey[]> = {
   person: [
-    'Casi reali con i numeri',
-    'Errori e cosa ho imparato',
-    'Il settore che cambia',
-    'Dietro le quinte',
-    'Assunzioni e cultura',
-    'Prezzi e margini spiegati',
-    'Strumenti che uso davvero',
-    'Clienti e progetti',
+    'onboarding.mock.themes.person.cases',
+    'onboarding.mock.themes.person.mistakes',
+    'onboarding.mock.themes.person.sector',
+    'onboarding.mock.themes.person.backstage',
+    'onboarding.mock.themes.person.hiring',
+    'onboarding.mock.themes.person.pricing',
+    'onboarding.mock.themes.person.tools',
+    'onboarding.mock.themes.person.clients',
   ],
   business: [
-    'Il prodotto da vicino',
-    'Clienti che raccontano',
-    'Dietro le quinte',
-    'Le persone del team',
-    'Consigli pratici',
-    'Novità e lanci',
-    'Filiera e territorio',
-    'Numeri e traguardi',
+    'onboarding.mock.themes.business.product',
+    'onboarding.mock.themes.business.clients',
+    'onboarding.mock.themes.business.backstage',
+    'onboarding.mock.themes.business.team',
+    'onboarding.mock.themes.business.tips',
+    'onboarding.mock.themes.business.news',
+    'onboarding.mock.themes.business.supply',
+    'onboarding.mock.themes.business.numbers',
   ],
 };
 
-const EXTRA_AUDIENCES: Record<Group, string[]> = {
-  person: ['Responsabili IT', 'Consulenti', 'Imprenditori del manifatturiero'],
-  business: ['Famiglie', 'Giovani professionisti', 'Architetti e designer', 'Ristoratori'],
+const EXTRA_AUDIENCES: Record<Group, MessageKey[]> = {
+  person: ['onboarding.mock.audiences.person.it', 'onboarding.mock.audiences.person.consultants', 'onboarding.mock.audiences.person.manufacturing'],
+  business: [
+    'onboarding.mock.audiences.business.families',
+    'onboarding.mock.audiences.business.young',
+    'onboarding.mock.audiences.business.architects',
+    'onboarding.mock.audiences.business.restaurants',
+  ],
 };
 
 const REGISTERS: Record<Group, string[]> = {
@@ -116,49 +124,52 @@ function analyzeTexts(text: string, group: Group): Pick<VoiceAnalysis, 'rhythm' 
 
 @Injectable({ providedIn: 'root' })
 export class MockAi {
-  async suggestThemes(identity: Identity, onSteps?: OnAiSteps): Promise<string[]> {
+  async suggestThemes(identity: Identity, locale: Locale, onSteps?: OnAiSteps): Promise<string[]> {
     const group = groupOf(identity.kind);
     const rng = createRng(seedFromString(`${identity.pitch}|${group}`));
     const log = createStepLog(onSteps);
-    log.start('read', THEMES_STEPS.read, identity.pitch.slice(0, 90));
+    const labels = themesSteps(locale);
+    log.start('read', labels.read, identity.pitch.slice(0, 90));
     log.finish('read');
-    log.start('pick', THEMES_STEPS.pick);
-    const themes = sample(rng, THEMES[group], 4);
-    log.finish('pick', { detail: pickedDetail(themes.length, themes.slice(0, 2)) });
+    log.start('pick', labels.pick);
+    const themes = sample(rng, THEMES[group], 4).map((key) => translate(locale, key));
+    log.finish('pick', { detail: pickedDetail(themes.length, themes.slice(0, 2), locale) });
     return themes;
   }
 
-  async suggestPositioning(identity: Identity, site: WebsiteInsights | null, onSteps?: OnAiSteps): Promise<PositioningIdeas> {
+  async suggestPositioning(identity: Identity, site: WebsiteInsights | null, locale: Locale, onSteps?: OnAiSteps): Promise<PositioningIdeas> {
     const group = groupOf(identity.kind);
     const rng = createRng(seedFromString(`${identity.pitch}|${site?.site ?? ''}|${identity.kind}`));
     const log = createStepLog(onSteps);
-    const labels = POSITIONING_STEPS[identity.kind];
-    const start = contextStep(site?.site ?? null, site?.pitch || identity.pitch);
+    const labels = positioningSteps(identity.kind, locale);
+    const start = contextStep(site?.site ?? null, site?.pitch || identity.pitch, locale);
+    // Obiettivi e pubblici del catalogo sono id: nei passaggi si leggono con l'etichetta.
+    const picked = (values: string[]) => pickedDetail(values.length, values.slice(0, 2).map((value) => positioningLabel(value, locale)), locale);
     log.start('context', start.label, start.detail);
     log.finish('context');
 
     log.start('goals', labels.goals);
     const goals = sample(rng, GOALS[identity.kind], 5);
-    log.finish('goals', { detail: pickedDetail(goals.length, goals.slice(0, 2)) });
+    log.finish('goals', { detail: picked(goals) });
 
     log.start('audiences', labels.audiences);
-    const audiences = [
-      ...new Set([...(site?.audiences ?? []), ...sample(rng, [...AUDIENCES[identity.kind], ...EXTRA_AUDIENCES[group]], 6)]),
-    ].slice(0, 6);
-    log.finish('audiences', { detail: pickedDetail(audiences.length, audiences.slice(0, 2)) });
+    const extra = EXTRA_AUDIENCES[group].map((key) => translate(locale, key));
+    const audiences = [...new Set([...(site?.audiences ?? []), ...sample(rng, [...AUDIENCES[identity.kind], ...extra], 6)])].slice(0, 6);
+    log.finish('audiences', { detail: picked(audiences) });
 
     return { goals, audiences, picked: { goals: goals.slice(0, 2), audiences: audiences.slice(0, 2) } };
   }
 
-  async analyzeVoice(voiceSample: VoiceSample, identity: Identity, onSteps?: OnAiSteps): Promise<VoiceAnalysis> {
+  async analyzeVoice(voiceSample: VoiceSample, identity: Identity, locale: Locale, onSteps?: OnAiSteps): Promise<VoiceAnalysis> {
     const group = groupOf(identity.kind);
     const rng = createRng(seedFromString(`${identity.name}|${voiceSample.source}|${voiceSample.texts ?? ''}`));
     const log = createStepLog(onSteps);
-    log.start('read', VOICE_STEPS.read(voiceSample.source));
+    const labels = voiceSteps(locale);
+    log.start('read', labels.read(voiceSample.source));
     log.finish('read');
-    log.start('rhythm', VOICE_STEPS.rhythm);
+    log.start('rhythm', labels.rhythm);
     log.finish('rhythm');
-    log.start('card', VOICE_STEPS.card);
+    log.start('card', labels.card);
     log.finish('card');
     const register = pick(rng, REGISTERS[group]);
 

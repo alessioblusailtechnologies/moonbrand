@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 
+import { I18nService } from '../core/i18n/i18n.service';
 import { Icon } from './icon';
 
 // Una card in arrivo: la proporzione, se è un video, e quante ne arrivano in quella proporzione (le slide di un carosello).
@@ -137,6 +138,7 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
   `,
 })
 export class PendingMedia {
+  private readonly i18n = inject(I18nService);
   readonly tiles = input.required<PendingTile[]>();
 
   protected ratio(aspect: string): string {
@@ -145,12 +147,12 @@ export class PendingMedia {
 
   protected tileLabel(tile: PendingTile): string {
     if (tile.label) return tile.label;
-    if (tile.kind === 'video') return 'Preparo il video';
-    return tile.count > 1 ? `Preparo ${tile.count} immagini` : 'Preparo la card';
+    if (tile.kind === 'video') return this.i18n.t('ui.pendingMedia.video');
+    return tile.count > 1 ? this.i18n.t('ui.pendingMedia.images', { n: tile.count }) : this.i18n.t('ui.pendingMedia.card');
   }
 
   protected label(): string {
     const count = this.tiles().reduce((sum, tile) => sum + tile.count, 0);
-    return count === 1 ? 'Sto preparando una card' : `Sto preparando ${count} card`;
+    return this.i18n.t('ui.pendingMedia.status', { n: count });
   }
 }

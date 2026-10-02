@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 
 import type { BrandDraft, Milestone, References } from '@moonbrand/shared/domain/brand';
+import { sourceLabel } from '@moonbrand/shared/domain/catalog';
 
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
 import { DraftStore } from '../onboarding/draft-store';
 
@@ -16,37 +19,38 @@ function milestoneId(): string {
 @Component({
   selector: 'mb-references-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   template: `
     <section class="panel">
       <div class="head">
-        <p class="label">Profili da cui imparare</p>
-        <p class="caption">Account o pagine che scrivono come vorresti scrivere tu: un nome, un @ o un link per riga.</p>
+        <p class="label">{{ 'profile.references.profilesTitle' | t }}</p>
+        <p class="caption">{{ 'profile.references.profilesHint' | t }}</p>
       </div>
       @for (profile of references().profiles; track $index; let i = $index) {
         <div class="row">
-          <input class="sunken grow" maxlength="300" placeholder="es. @nomeaccount o linkedin.com/in/…" [attr.aria-label]="'Profilo ' + (i + 1)"
+          <input class="sunken grow" maxlength="300" [placeholder]="'profile.references.profilePlaceholder' | t"
+            [attr.aria-label]="'profile.references.profileLabel' | t: { n: i + 1 }"
             [value]="profile" (input)="setProfile(i, $any($event.target).value)" />
-          <button class="icon-btn" type="button" [attr.aria-label]="'Togli il profilo ' + (i + 1)" (click)="removeProfile(i)">
+          <button class="icon-btn" type="button" [attr.aria-label]="'profile.references.removeProfile' | t: { n: i + 1 }" (click)="removeProfile(i)">
             <mb-icon name="x" [size]="16" />
           </button>
         </div>
       }
       @if (references().profiles.length < maxProfiles) {
-        <button class="link-btn align-start" type="button" (click)="addProfile()">Aggiungi un profilo</button>
+        <button class="link-btn align-start" type="button" (click)="addProfile()">{{ 'profile.references.addProfile' | t }}</button>
       }
     </section>
 
     <section class="panel">
       <div class="head">
-        <p class="label">Fonti dei segnali</p>
-        <p class="caption">Dove guardo per proporre idee legate a quello che succede.</p>
+        <p class="label">{{ 'profile.references.sourcesTitle' | t }}</p>
+        <p class="caption">{{ 'profile.references.sourcesHint' | t }}</p>
       </div>
       <div class="chips">
-        @for (source of references().sources; track source.label; let i = $index) {
+        @for (source of references().sources; track source.id ?? source.label; let i = $index) {
           <button class="chip" type="button" role="checkbox" [attr.aria-checked]="source.enabled" [class.selected]="source.enabled"
             (click)="toggleSource(i)">
-            {{ source.label }}
+            {{ sourceLabel(source, draft().identity.kind, i18n.locale()) }}
           </button>
         }
       </div>
@@ -54,22 +58,23 @@ function milestoneId(): string {
 
     <section class="panel">
       <div class="head">
-        <p class="label">Date che contano</p>
-        <p class="caption">Lanci, anniversari, eventi: le idee arrivano in tempo per parlarne.</p>
+        <p class="label">{{ 'profile.references.milestonesTitle' | t }}</p>
+        <p class="caption">{{ 'profile.references.milestonesHint' | t }}</p>
       </div>
       @for (milestone of references().milestones; track milestone.id; let i = $index) {
         <div class="row">
-          <input class="sunken grow" maxlength="200" placeholder="es. Apertura della nuova sede" [attr.aria-label]="'Cosa succede, data ' + (i + 1)"
+          <input class="sunken grow" maxlength="200" [placeholder]="'profile.references.milestonePlaceholder' | t"
+            [attr.aria-label]="'profile.references.milestoneWhat' | t: { n: i + 1 }"
             [value]="milestone.label" (input)="setMilestone(i, { label: $any($event.target).value })" />
-          <input class="sunken date" type="date" [attr.aria-label]="'Quando, data ' + (i + 1)" [value]="milestone.date"
+          <input class="sunken date" type="date" [attr.aria-label]="'profile.references.milestoneWhen' | t: { n: i + 1 }" [value]="milestone.date"
             (change)="setDate(i, $any($event.target).value)" />
-          <button class="icon-btn" type="button" [attr.aria-label]="'Togli la data ' + (i + 1)" (click)="removeMilestone(i)">
+          <button class="icon-btn" type="button" [attr.aria-label]="'profile.references.removeMilestone' | t: { n: i + 1 }" (click)="removeMilestone(i)">
             <mb-icon name="x" [size]="16" />
           </button>
         </div>
       }
       @if (references().milestones.length < maxMilestones) {
-        <button class="link-btn align-start" type="button" (click)="addMilestone()">Aggiungi una data</button>
+        <button class="link-btn align-start" type="button" (click)="addMilestone()">{{ 'profile.references.addMilestone' | t }}</button>
       }
     </section>
   `,
@@ -98,6 +103,8 @@ function milestoneId(): string {
 })
 export class ReferencesEditor {
   private readonly store = inject(DraftStore);
+  protected readonly i18n = inject(I18nService);
+  protected readonly sourceLabel = sourceLabel;
   readonly draft = input.required<BrandDraft>();
 
   protected readonly maxProfiles = MAX_PROFILES;

@@ -1,6 +1,9 @@
 import type { BrandContext } from '@moonbrand/shared/api/contract';
 import type { BrandKind } from '@moonbrand/shared/domain/brand';
-import { channelName, kindLabel } from '@moonbrand/shared/domain/catalog';
+import { channelName, kindLabel, positioningLabel } from '@moonbrand/shared/domain/catalog';
+import { brandLanguage } from '@moonbrand/shared/i18n/locales';
+
+import { languageName } from './language';
 
 // Il brand scritto a parole per i job: chi è, per chi scrive, temi e voce.
 
@@ -10,7 +13,8 @@ const PERSON: Record<BrandKind, string> = {
   client: 'prima persona plurale, a nome del cliente: chi usa l’app ne cura la presenza',
 };
 
-const list = (items: readonly string[]) => (items.length > 0 ? items.join(', ') : 'non indicati');
+// Obiettivi e pubblici del catalogo sono salvati con l'id: nel prompt vanno con l'etichetta italiana.
+const list = (items: readonly string[]) => (items.length > 0 ? items.map((item) => positioningLabel(item)).join(', ') : 'non indicati');
 
 export function describeBrand(brand: BrandContext): string {
   const { identity, positioning, voice } = brand;
@@ -23,6 +27,7 @@ export function describeBrand(brand: BrandContext): string {
     identity.site ? `Sito: ${identity.site}` : '',
     identity.pitch ? `Cosa fa, in una frase: ${identity.pitch}` : '',
     `Persona grammaticale dei post: ${PERSON[identity.kind]}`,
+    `Lingua dei post: ${languageName(brandLanguage(identity))}`,
   ];
   const themes = [...brand.themes]
     .sort((a, b) => b.weight - a.weight)

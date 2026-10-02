@@ -1,14 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
-import { KIND_OPTIONS } from '@moonbrand/shared/domain/catalog';
+import { kindOptions } from '@moonbrand/shared/domain/catalog';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { OnboardingStore } from '../onboarding.store';
 
-const LIST = [
-  { label: 'Per chi scrivo e cosa fai', color: 'var(--accent)', square: true },
-  { label: 'I canali su cui pubblicare', color: 'var(--primary)', square: false },
-  { label: 'I temi, ognuno con il suo peso', color: 'var(--primary-soft)', square: true },
-  { label: 'Come scrivi e come vuoi apparire', color: 'var(--mint-400)', square: false },
+const LIST: { label: MessageKey; color: string; square: boolean }[] = [
+  { label: 'onboarding.introStep.list.who', color: 'var(--accent)', square: true },
+  { label: 'onboarding.introStep.list.channels', color: 'var(--primary)', square: false },
+  { label: 'onboarding.introStep.list.themes', color: 'var(--primary-soft)', square: true },
+  { label: 'onboarding.introStep.list.voice', color: 'var(--mint-400)', square: false },
 ];
 
 const SHAPES = [
@@ -20,23 +23,21 @@ const SHAPES = [
 @Component({
   selector: 'mb-intro-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
   template: `
     <section class="panel intro">
-      <h2 class="heading">Cinque minuti, una volta sola</h2>
-      <p class="body">
-        Ti chiedo chi sei, cosa vuoi ottenere, i canali, i temi, come scrivi e come vuoi apparire. Da lì genero proposte che
-        sembrano scritte da te. Ogni cosa si cambia anche dopo, dalle Impostazioni brand.
-      </p>
+      <h2 class="heading">{{ 'onboarding.introStep.heading' | t }}</h2>
+      <p class="body">{{ 'onboarding.introStep.body' | t }}</p>
       <ul class="list">
         @for (item of list; track item.label) {
-          <li><span class="dot" [class.square]="item.square" [style.background]="item.color"></span>{{ item.label }}</li>
+          <li><span class="dot" [class.square]="item.square" [style.background]="item.color"></span>{{ item.label | t }}</li>
         }
       </ul>
     </section>
 
-    <p class="label">Per chi costruiamo la presenza</p>
+    <p class="label">{{ 'onboarding.introStep.forWho' | t }}</p>
     <div class="stack" role="radiogroup">
-      @for (option of options; track option.kind; let i = $index) {
+      @for (option of options(); track option.kind; let i = $index) {
         @let selected = store.draft()?.identity?.kind === option.kind;
         <button class="option-card" type="button" role="radio" [attr.aria-checked]="selected" [class.selected]="selected"
           (click)="store.chooseKind(option.kind)">
@@ -93,8 +94,9 @@ const SHAPES = [
   `,
 })
 export class IntroStep {
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(OnboardingStore);
-  protected readonly options = KIND_OPTIONS;
+  protected readonly options = computed(() => kindOptions(this.i18n.locale()));
   protected readonly list = LIST;
   protected readonly shapes = SHAPES;
 }

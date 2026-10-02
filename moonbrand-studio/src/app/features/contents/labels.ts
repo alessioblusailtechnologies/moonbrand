@@ -1,37 +1,27 @@
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import type { ContentFormat, ContentStatus, SceneSource } from '@moonbrand/shared/domain/content';
+import { INTL_LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
 
-export const FORMAT_LABELS: Record<ContentFormat, string> = {
-  post: 'Post',
-  carousel: 'Carosello',
-  article: 'Articolo',
-  video: 'Video',
-};
+// Formati, stati e fonti nella lingua dell'interfaccia (dizionario contents).
+export const formatLabel = (format: ContentFormat, locale: Locale): string => translate(locale, `contents.format.${format}`);
 
-export const FORMAT_OPTIONS: { id: ContentFormat; label: string; hint: string }[] = [
-  { id: 'post', label: 'Post', hint: 'Testo e un’immagine' },
-  { id: 'carousel', label: 'Carosello', hint: 'Da 5 a 7 slide da scorrere, su LinkedIn un documento PDF' },
-  { id: 'article', label: 'Articolo', hint: 'Testo lungo su LinkedIn, altrove un post che lo presenta' },
-  { id: 'video', label: 'Video', hint: 'Movimento, musica ed eventuale voce: prima il copione, poi il video' },
-];
+export const statusLabel = (status: ContentStatus, locale: Locale): string => translate(locale, `contents.status.${status}`);
 
-export const SOURCE_LABELS: Record<SceneSource, string> = {
-  clip: 'Clip generata',
-  photo: 'Foto generata',
-  user: 'Foto o clip tua',
-  graphics: 'Solo grafica',
-};
+export const sourceLabel = (source: SceneSource, locale: Locale): string => translate(locale, `contents.source.${source}`);
 
-export const STATUS_LABELS: Record<ContentStatus, string> = {
-  draft: 'Bozza',
-  approved: 'Approvato',
-};
+export const FORMATS: ContentFormat[] = ['post', 'carousel', 'article', 'video'];
 
-// Il formato in una richiesta: «crea un carosello per LinkedIn».
-export const FORMAT_REQUEST: Record<ContentFormat, string> = { post: 'un post', carousel: 'un carosello', article: 'un articolo', video: 'un video' };
+export function formatOptions(locale: Locale): { id: ContentFormat; label: string; hint: string }[] {
+  return FORMATS.map((id) => ({ id, label: formatLabel(id, locale), hint: translate(locale, `contents.formatHint.${id}`) }));
+}
 
-// Il formato dentro una frase: «su X il carosello non c'è».
-export const FORMAT_NAMES: Record<ContentFormat, string> = { post: 'il post', carousel: 'il carosello', article: 'l’articolo', video: 'il video' };
+// «Su LinkedIn e X il carosello non c'è.»; vuoto se tutti i canali reggono il formato.
+export function unsupportedLine(format: ContentFormat, channels: string[], locale: Locale): string {
+  if (channels.length === 0) return '';
+  const list = new Intl.ListFormat(INTL_LOCALES[locale], { type: 'conjunction' }).format(channels);
+  return translate(locale, `contents.unsupported.${format}`, { channels: list });
+}
 
 // Quanti caratteri del testo si vedono nel feed prima di «…altro»: l'anteprima taglia lì, come il canale. X mostra tutto.
 export const FOLD: Record<ChannelId, number | null> = { linkedin: 210, instagram: 125, facebook: 250, tiktok: 80, x: null };

@@ -17,6 +17,8 @@ import {
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
 import { LightboxService } from '../../ui/lightbox';
 import { ToastService } from '../../ui/toast';
@@ -30,7 +32,7 @@ const HASHTAG = /(#[\p{L}\p{N}_]+)/u;
 @Component({
   selector: 'mb-content-preview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, NgTemplateOutlet],
+  imports: [Icon, NgTemplateOutlet, TranslatePipe],
   host: { '[class.compact]': 'compact()' },
   templateUrl: './content-preview.html',
   styleUrl: './content-preview.scss',
@@ -40,6 +42,7 @@ export class ContentPreview {
   private readonly lightbox = inject(LightboxService);
   private readonly brands = inject(BrandsService);
   private readonly api = inject(ContentsService);
+  private readonly i18n = inject(I18nService);
 
   readonly content = input.required<Content>();
   readonly compact = input(false);
@@ -74,7 +77,7 @@ export class ContentPreview {
   // Chi pubblica: il brand attivo, con il suo logo o l'iniziale, e un nome utente ricavato dal nome.
   protected readonly author = computed(() => {
     const brand = this.brands.activeBrand();
-    const name = brand?.name || 'Il tuo brand';
+    const name = brand?.name || this.i18n.t('contents.preview.yourBrand');
     const slug = name
       .normalize('NFD')
       .replace(/\p{Diacritic}/gu, '')
@@ -151,8 +154,8 @@ export class ContentPreview {
 
   protected readonly name = channelName;
   protected readonly cssAspect = cssAspect;
-  private readonly numbers = new Intl.NumberFormat('it-IT');
-  protected readonly digits = (value: number) => this.numbers.format(value);
+  private readonly numbers = computed(() => new Intl.NumberFormat(this.i18n.intl()));
+  protected readonly digits = (value: number) => this.numbers().format(value);
 
   constructor() {
     // Cambiando canale o immagini lo slider riparte dalla prima slide e il testo torna piegato.
@@ -169,9 +172,9 @@ export class ContentPreview {
     if (!variant) return;
     try {
       await navigator.clipboard.writeText(postText(variant));
-      this.toast.show('Testo copiato.');
+      this.toast.show(this.i18n.t('contents.preview.copied'));
     } catch {
-      this.toast.show('Non riesco a copiare: seleziona il testo a mano.');
+      this.toast.show(this.i18n.t('contents.preview.copyError'));
     }
   }
 
@@ -192,9 +195,9 @@ export class ContentPreview {
       const saved = await this.api.saveVariant(this.content().id, channel, { text, hashtags: this.draftTags().split(/[\s,]+/).filter(Boolean) });
       this.editing.set(false);
       this.updated.emit(saved);
-      this.toast.show(`Testo per ${channelName(channel)} salvato.`);
+      this.toast.show(this.i18n.t('contents.preview.saved', { channel: channelName(channel) }));
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a salvare il testo. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('contents.preview.saveError')));
     } finally {
       this.saving.set(false);
     }
@@ -229,7 +232,12 @@ export class ContentPreview {
   protected open(index: number): void {
     const channel = this.channel();
     this.lightbox.open(
-      this.images().map((file, i) => ({ url: file.url ?? '', alt: `Immagine ${i + 1}${channel ? ` per ${channelName(channel)}` : ''}` })),
+      this.images().map((file, i) => ({
+        url: file.url ?? '',
+        alt: channel
+          ? this.i18n.t('contents.preview.lightboxAltChannel', { n: i + 1, channel: channelName(channel) })
+          : this.i18n.t('contents.preview.lightboxAlt', { n: i + 1 }),
+      })),
       index,
     );
   }

@@ -7,6 +7,8 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import { toolMedia, toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
 import type {
   ChatJobInput,
   ContentEditJobInput,
@@ -41,16 +43,20 @@ const MAX_ATTEMPTS = 3;
 const FLUSH_MS = 250;
 const CANCEL_POLL_MS = 1000;
 const STOP_GRACE_MS = 15_000;
-// Quanto si aspettano, a job finito, le letture degli step ancora in corso; e l'etichetta se una lettura non arriva.
+// Quanto si aspettano, a job finito, le letture degli step ancora in corso; l'etichetta se una lettura non arriva è
+// steps.fallback, nella lingua dell'account.
 const READ_GRACE_MS = 3000;
-const FALLBACK_STEP = 'Preparo il materiale';
 
+// locale: la lingua dell'account, per tutto quello che si dice a chi usa moonbrand.
+// content_language: la lingua del brand, per quello che si pubblica; null se il job non ha un brand o il brand non l'ha scelta.
 interface Job {
   id: string;
   kind: string;
   input: unknown;
   account_id: string;
   agent_token: string | null;
+  locale: Locale;
+  content_language: Locale | null;
 }
 
 // Ogni tipo di job è uno script autonomo in src/jobs: qui come lanciarlo (env: variabili in più per lo script) e,
@@ -182,7 +188,9 @@ async function claim(): Promise<Job | null> {
        for update skip locked
        limit 1
      )
-     returning id, kind, input, account_id, agent_token`,
+     returning id, kind, input, account_id, agent_token,
+       (select locale from presenza.accounts where id = ai_jobs.account_id) as locale,
+       (select identity->>'language' from presenza.brands where id::text = ai_jobs.input->>'brandId') as content_language`,
     [LEASE],
   );
   return rows[0] ?? null;
@@ -206,6 +214,23 @@ async function watchCancellations(): Promise<void> {
   }
 }
 
+// Il tetto delle clip vale per tutta la conversazione, o per il contenuto nei job lanciati dallo studio: lo script riceve
+// quanto si è già speso nei turni e nei job prima di questo (ai_usage), e il tool parte da lì.
+async function clipBudget(job: Job): Promise<Record<string, string>> {
+  const input = (job.input ?? {}) as { conversationId?: string; contentId?: string };
+  const scope = job.kind === 'chat' ? input.conversationId && 'conversazione' : input.contentId && 'contenuto';
+  if (!scope) return {};
+  const { rows } = await pool.query<{ spent: string | null }>(
+    scope === 'conversazione'
+      ? `select sum(u.cost_usd) as spent from presenza.ai_usage u join presenza.conversation_turns t on t.job_id = u.job_id
+         where t.conversation_id = $1 and u.task = 'clip' and u.outcome = 'ok'`
+      : `select sum(u.cost_usd) as spent from presenza.ai_usage u join presenza.ai_jobs j on j.id = u.job_id
+         where j.input->>'contentId' = $1 and u.task = 'clip' and u.outcome = 'ok'`,
+    [scope === 'conversazione' ? input.conversationId : input.contentId],
+  );
+  return { MOONBRAND_CLIP_SCOPE: scope, MOONBRAND_CLIP_SPENT_USD: String(Number(rows[0]?.spent ?? 0)) };
+}
+
 async function run(job: Job): Promise<void> {
   const kind = JOBS[job.kind];
   if (!kind) {
@@ -220,7 +245,8 @@ async function run(job: Job): Promise<void> {
   const steps = new Map<string, AiStep>();
   const hidden = new Set<string>();
   const visible = () => [...steps.values()].filter((step) => !hidden.has(step.id));
-  const reader = createStepReader(BRANDS_DIR);
+  const reader = createStepReader(BRANDS_DIR, job.locale);
+  const fallbackStep = translate(job.locale, 'steps.fallback');
   let outcome: { result?: unknown; error?: string; cost?: number } = {};
   // La sessione si sa dal primo messaggio: anche un job fermato a metà si può riprendere.
   let sessionId: string | undefined;
@@ -256,7 +282,17 @@ async function run(job: Job): Promise<void> {
     void pool.query(`update presenza.ai_jobs set locked_until = now() + $2::interval where id = $1`, [job.id, LEASE]).catch(() => undefined);
   }, HEARTBEAT_MS);
 
-  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], { cwd: ROOT, env: { ...jobEnv, ...env }, stdio: ['pipe', 'pipe', 'pipe'] });
+  // Le due lingue arrivano a ogni script: senza un brand (o se il brand non l'ha scelta) si scrive nella lingua dell'account.
+  const languages = { MOONBRAND_LOCALE: job.locale, MOONBRAND_CONTENT_LANGUAGE: job.content_language ?? job.locale };
+  const budget = await clipBudget(job).catch((error: unknown) => {
+    console.error(`[${job.id}] spesa delle clip non letta`, error);
+    return {};
+  });
+  const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], {
+    cwd: ROOT,
+    env: { ...jobEnv, ...languages, ...budget, ...env },
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
   child.stdin.on('error', () => undefined);
   running.set(job.id, child);
 
@@ -318,8 +354,8 @@ async function run(job: Job): Promise<void> {
           if (!kind.reply) readStep(id, 'testo', text);
         } else if (block.type === 'tool_use') {
           const input = block.input as Record<string, unknown>;
-          const known = toolStep(block.name, input);
-          const label = known?.label ?? FALLBACK_STEP;
+          const known = toolStep(block.name, input, job.locale);
+          const label = known?.label ?? fallbackStep;
           // Immagini e video in arrivo: lo studio mostra i segnaposto nella loro proporzione, e poi il file.
           const media = toolMedia(block.name, input);
           steps.set(block.id, {
@@ -333,7 +369,7 @@ async function run(job: Job): Promise<void> {
             ...(media && { media }),
           });
           if (known === null) hidden.add(block.id);
-          else if (known === undefined) readStep(block.id, block.name, input, FALLBACK_STEP);
+          else if (known === undefined) readStep(block.id, block.name, input, fallbackStep);
         }
       }
       lastEventAt = now;

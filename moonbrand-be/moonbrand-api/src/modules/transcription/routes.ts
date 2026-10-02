@@ -3,10 +3,12 @@ import type pg from 'pg';
 import { z } from 'zod';
 
 import type { TranscriptionResponse } from '@moonbrand/shared/api/contract';
+import { DEFAULT_LOCALE } from '@moonbrand/shared/i18n/locales';
 
 import type { Config } from '../../config';
 import { withIdentity } from '../../db/identity';
 import { ApiError } from '../../errors';
+import { findAccount } from '../auth/accounts';
 import { findBrandForIdeas } from '../ideas/repository';
 import { biasTerms, transcribe } from './voxtral';
 
@@ -27,7 +29,10 @@ export function registerTranscriptionRoutes(app: FastifyInstance, pool: pg.Pool,
       if (!apiKey) throw new ApiError(503, 'TRANSCRIPTION_NOT_CONFIGURED', 'La dettatura non è configurata: manca MISTRAL_API_KEY.');
       const bytes = request.body;
       if (!Buffer.isBuffer(bytes) || bytes.length === 0) throw ApiError.invalid('Non è arrivato nessun audio.');
-      const brand = await withIdentity(pool, request.identity, (db) => findBrandForIdeas(db, brandId));
+      // La dettatura è di chi scrive in chat: nella lingua del suo account.
+      const [brand, account] = await withIdentity(pool, request.identity, (db) =>
+        Promise.all([findBrandForIdeas(db, brandId), findAccount(db, request.identity.accountId)]),
+      );
       if (!brand) throw ApiError.notFound('Brand non trovato.');
       const { identity } = brand.context;
 
@@ -43,7 +48,13 @@ export function registerTranscriptionRoutes(app: FastifyInstance, pool: pg.Pool,
           .catch((failure: unknown) => request.log.warn({ failure }, 'trascrizione non registrata'));
       try {
         const audio = { bytes, type: (request.headers['content-type'] ?? 'audio/webm').split(';')[0] };
-        const transcript = await transcribe(apiKey, model, audio, biasTerms([identity.name, identity.company ?? ''].filter(Boolean)));
+        const transcript = await transcribe(
+          apiKey,
+          model,
+          audio,
+          biasTerms([identity.name, identity.company ?? ''].filter(Boolean)),
+          account?.locale ?? DEFAULT_LOCALE,
+        );
         await record('ok', transcript.seconds);
         return { text: transcript.text };
       } catch (error) {

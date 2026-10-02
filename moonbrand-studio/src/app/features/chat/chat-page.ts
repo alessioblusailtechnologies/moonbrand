@@ -19,6 +19,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import type { ConversationSummary, ConversationTurn, WelcomeResponse } from '@moonbrand/shared/api/contract';
 
@@ -27,6 +28,8 @@ import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon, type IconName } from '../../ui/icon';
@@ -36,21 +39,20 @@ import { Markdown } from '../../ui/markdown';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from '../contents/content-preview';
-import { FORMAT_LABELS, STATUS_LABELS } from '../contents/labels';
 import { Composer, type ComposerMessage } from './composer';
-import { fallbackGreeting, pickGreeting } from './greeting';
+import { type ShownGreeting, fallbackGreeting, greetingText, pickGreeting } from './greeting';
 
 // Nella risposta di un turno i testi di Claude si leggono, i tool di fila si raccolgono in un blocco solo.
 // streaming: il testo sta ancora arrivando.
 type Block = { kind: 'text'; id: string; text: string; streaming: boolean } | { kind: 'tools'; id: string; steps: AiStep[] };
 
 // Spunti per la prima domanda: riempiono la casella, non partono da soli. Questi valgono finché non ci sono quelli di
-// oggi, scritti per il brand.
-const SUGGESTIONS: { icon: IconName; label: string; draft: string }[] = [
-  { icon: 'sparkle', label: 'Proponimi 5 idee per i prossimi post', draft: 'Proponimi 5 idee per i prossimi post' },
-  { icon: 'layers', label: 'Prepara un carosello su…', draft: 'Prepara un carosello su ' },
-  { icon: 'pen', label: 'Prendi un’idea che ho tenuto e fanne un post', draft: 'Prendi un’idea che ho tenuto e fanne un post' },
-  { icon: 'bar-chart', label: 'Cosa ho pubblicato finora e cosa manca?', draft: 'Cosa ho pubblicato finora e cosa manca?' },
+// oggi, scritti per il brand. Il draft è il messaggio di chi scrive: nella lingua dell'interfaccia (chat.suggestions).
+const SUGGESTIONS: { icon: IconName; key: 'ideas' | 'carousel' | 'fromIdea' | 'review' }[] = [
+  { icon: 'sparkle', key: 'ideas' },
+  { icon: 'layers', key: 'carousel' },
+  { icon: 'pen', key: 'fromIdea' },
+  { icon: 'bar-chart', key: 'review' },
 ];
 
 // Mentre risponde si legge più spesso: il testo arriva a pezzi e si svela con un ritmo costante.
@@ -63,7 +65,7 @@ const STICK_PX = 80;
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview, Composer],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview, Composer, TranslatePipe],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -75,6 +77,7 @@ export class ChatPage {
   private readonly confirm = inject(ConfirmService);
   private readonly lightbox = inject(LightboxService);
   private readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
   protected readonly brands = inject(BrandsService);
 
   // Dal percorso /assistente/:conversationId; senza, è una conversazione nuova.
@@ -87,11 +90,21 @@ export class ChatPage {
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
   // Il saluto in cima: null finché non si sa se quelli di oggi ci sono, così non ne compare uno per poi cambiare subito.
-  protected readonly greeting = signal<string | null>(null);
+  // Quelli di oggi sono già nella lingua dell'account; quello di riserva si legge nella lingua dell'interfaccia.
+  private readonly shownGreeting = signal<ShownGreeting | null>(null);
+  protected readonly greeting = computed(() => {
+    const shown = this.shownGreeting();
+    return shown ? greetingText(shown, this.i18n.locale()) : null;
+  });
   private readonly welcome = signal<WelcomeResponse | null>(null);
   protected readonly suggestions = computed(() => {
     const today = this.welcome()?.suggestions ?? [];
-    return today.length > 0 ? today : SUGGESTIONS;
+    if (today.length > 0) return today;
+    return SUGGESTIONS.map(({ icon, key }) => ({
+      icon,
+      label: this.i18n.t(`chat.suggestions.${key}.label` as MessageKey),
+      draft: this.i18n.t(`chat.suggestions.${key}.draft` as MessageKey),
+    }));
   });
   // Solo l'id: il brand attivo si ricarica anche quando cambia altro, e il saluto non deve cambiare con lui.
   private readonly activeBrandId = computed(() => this.brands.activeBrand()?.id ?? null);
@@ -129,7 +142,8 @@ export class ChatPage {
     pageHeader(
       () => {
         const open = this.current();
-        return open ? [{ label: 'Assistente', link: '/assistente' }, { label: open.title }] : [{ label: 'Assistente' }];
+        const title = this.i18n.t('shell.assistant');
+        return open ? [{ label: title, link: '/assistente' }, { label: open.title }] : [{ label: title }];
       },
       () => this.headerActions(),
     );
@@ -188,10 +202,10 @@ export class ChatPage {
     const name = this.auth.account()?.name ?? '';
     const show = (welcome: WelcomeResponse) => {
       this.welcome.set(welcome);
-      this.greeting.set(pickGreeting(brandId, welcome.greetings, name));
+      this.shownGreeting.set(pickGreeting(brandId, welcome.greetings, name));
     };
     this.welcome.set(null);
-    this.greeting.set(null);
+    this.shownGreeting.set(null);
     try {
       const welcome = await this.chat.welcome(brandId);
       if (load !== this.welcomeLoad) return;
@@ -203,7 +217,7 @@ export class ChatPage {
       if (load === this.welcomeLoad && ready.greetings.length > 0) show(ready);
     } catch {
       // Resta il benvenuto di riserva; se non si è saputo niente, il saluto semplice.
-      if (load === this.welcomeLoad && this.greeting() === null) this.greeting.set(fallbackGreeting(name));
+      if (load === this.welcomeLoad && this.shownGreeting() === null) this.shownGreeting.set(fallbackGreeting(name));
     }
   }
 
@@ -221,7 +235,7 @@ export class ChatPage {
       );
       if (active) void this.follow(conversationId, active.job.id);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non trovo questa conversazione.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.page.notFound')));
       void this.router.navigateByUrl('/assistente');
     } finally {
       this.loading.set(false);
@@ -298,7 +312,7 @@ export class ChatPage {
         await this.router.navigate(['/assistente', created.conversationId]);
       }
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a mandare il messaggio. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.page.sendFailed')));
     } finally {
       this.sending.set(false);
     }
@@ -312,7 +326,7 @@ export class ChatPage {
       await this.chat.stop(open.id);
     } catch (error) {
       this.stopping.set(false);
-      this.toast.show(errorMessage(error, 'Non riesco a fermarlo. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.page.stopFailed')));
     }
   }
 
@@ -324,7 +338,7 @@ export class ChatPage {
   protected openPhoto(turn: ConversationTurn, file: string): void {
     const photos = turn.attachments.filter((item) => !item.poster);
     this.lightbox.open(
-      photos.map((item, i) => ({ url: item.url, alt: `Foto ${i + 1}` })),
+      photos.map((item, i) => ({ url: item.url, alt: this.i18n.t('chat.page.photoAlt', { n: i + 1 }) })),
       photos.findIndex((item) => item.file === file),
     );
   }
@@ -333,9 +347,9 @@ export class ChatPage {
     const open = this.current();
     if (!open) return;
     const confirmed = await this.confirm.ask({
-      title: 'Elimino la conversazione?',
-      message: 'I contenuti e le idee salvati restano nelle loro sezioni.',
-      confirmLabel: 'Elimina',
+      title: this.i18n.t('chat.page.deleteTitle'),
+      message: this.i18n.t('chat.page.deleteMessage'),
+      confirmLabel: this.i18n.t('common.delete'),
       tone: 'danger',
     });
     if (!confirmed) return;
@@ -343,7 +357,7 @@ export class ChatPage {
       await this.chat.remove(open.id);
       void this.router.navigateByUrl('/assistente');
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a eliminarla. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('chat.page.deleteFailed')));
     }
   }
 
@@ -366,15 +380,15 @@ export class ChatPage {
 
   // L'uscita menzionata in un messaggio, in breve: «gio 2 ott · 18:30 · Instagram».
   protected slotLabel(slot: { date: string; time: string; channels: ChannelId[] }): string {
-    return `${formatWeekdayShort(slot.date)} · ${slot.time} · ${slot.channels.map(channelName).join(', ')}`;
+    return `${formatWeekdayShort(slot.date, this.i18n.locale())} · ${slot.time} · ${slot.channels.map(channelName).join(', ')}`;
   }
 
   protected formatLabel(content: Content): string {
-    return FORMAT_LABELS[content.format];
+    return this.i18n.t(`chat.format.${content.format}`);
   }
 
   protected statusLabel(content: Content): string {
-    return STATUS_LABELS[content.status];
+    return this.i18n.t(`chat.status.${content.status}`);
   }
 }
 

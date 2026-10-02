@@ -3,19 +3,22 @@ import { Router, RouterLink } from '@angular/router';
 
 import type { ContentSummary, PlanResponse, SlotView } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
+import type { ContentFormat } from '@moonbrand/shared/domain/content';
 import type { Idea } from '@moonbrand/shared/domain/idea';
+import { slotStatusLabels } from '@moonbrand/shared/domain/plan';
 import { addDays, addMonths, formatMonth, formatRange, isDay, isPast, planNow, startOfMonth, startOfWeek } from '@moonbrand/shared/lib/dates';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { PlanService } from '../../core/plan/plan.service';
 import { ChannelMark } from '../../ui/channel-mark';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
-import { FORMAT_LABELS } from '../contents/labels';
-import { canMove, SLOT_STATUS_LABELS, SLOT_TONES, slotTitle, timeFor, WEEKDAYS } from './labels';
+import { canMove, SLOT_TONES, slotTitle, timeFor, weekdayNames } from './labels';
 import { PlanSession } from './plan-session';
 import { SlotDrawer, type SlotDraftInput } from './slot-drawer';
 
@@ -41,7 +44,7 @@ const MONTH_VISIBLE = 3;
 @Component({
   selector: 'mb-plan-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, ChannelMark, SlotDrawer, PlanSession],
+  imports: [RouterLink, Icon, ChannelMark, SlotDrawer, PlanSession, TranslatePipe],
   templateUrl: './plan-page.html',
   styleUrl: './plan-page.scss',
 })
@@ -50,6 +53,7 @@ export class PlanPage {
   private readonly chat = inject(ChatService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
   protected readonly brands = inject(BrandsService);
 
   // ?giorno=AAAA-MM-GG apre il calendario su quel giorno (dal contenuto, dalla chat).
@@ -69,13 +73,13 @@ export class PlanPage {
   protected readonly dropDate = signal<string | null>(null);
   protected readonly busy = signal(false);
 
-  protected readonly weekdays = WEEKDAYS;
+  protected readonly weekdays = computed(() => weekdayNames(this.i18n.intl()));
   protected readonly tones = SLOT_TONES;
-  protected readonly statusLabels = SLOT_STATUS_LABELS;
-  protected readonly formatLabels = FORMAT_LABELS;
+  protected readonly statusLabels = computed(() => slotStatusLabels(this.i18n.locale()));
   protected readonly visible = MONTH_VISIBLE;
   protected readonly name = channelName;
   protected readonly canMove = canMove;
+  protected readonly formatLabel = (format: ContentFormat): string => this.i18n.t(`plan.format.${format}`);
 
   // Il periodo mostrato: sei settimane intere intorno al mese, o una settimana da lunedì.
   private readonly range = computed(() => {
@@ -84,7 +88,10 @@ export class PlanPage {
     return { from, to: addDays(from, this.mode() === 'month' ? 41 : 6) };
   });
 
-  protected readonly title = computed(() => (this.mode() === 'month' ? formatMonth(this.anchor()) : formatRange(this.range().from, this.range().to)));
+  protected readonly title = computed(() => {
+    const locale = this.i18n.locale();
+    return this.mode() === 'month' ? formatMonth(this.anchor(), locale) : formatRange(this.range().from, this.range().to, locale);
+  });
 
   protected readonly days = computed<Day[]>(() => {
     const { from } = this.range();
@@ -111,12 +118,12 @@ export class PlanPage {
     const { from, to } = this.range();
     const inRange = plan.slots.filter((slot) => slot.date >= from && slot.date <= to);
     const ready = inRange.filter((slot) => slot.content).length;
-    return `${inRange.length} ${inRange.length === 1 ? 'uscita' : 'uscite'}, ${ready} con il contenuto · il ritmo è ${plan.postsPerWeek} a settimana`;
+    return this.i18n.t('plan.page.summary', { n: inRange.length, ready, perWeek: plan.postsPerWeek });
   });
 
   constructor() {
     pageHeader(
-      () => [{ label: 'Piano' }],
+      () => [{ label: this.i18n.t('shell.plan') }],
       () => this.headerActions(),
     );
     effect(() => {
@@ -137,7 +144,7 @@ export class PlanPage {
       const plan = await this.api.get(brandId, from, to);
       if (this.brands.activeBrand()?.id === brandId && this.range().from === from) this.plan.set(plan);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a leggere il piano.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.page.loadError')));
     } finally {
       this.loading.set(false);
     }
@@ -164,7 +171,7 @@ export class PlanPage {
 
   protected themeName = (themeId: string | null): string | null => this.plan()?.themes.find((theme) => theme.id === themeId)?.name ?? null;
   protected themeColor = (themeId: string | null): string | null => this.plan()?.themes.find((theme) => theme.id === themeId)?.color ?? null;
-  protected slotTitle = (slot: SlotView): string => slotTitle(slot, this.themeName);
+  protected slotTitle = (slot: SlotView): string => slotTitle(slot, this.themeName, this.i18n.locale());
 
   protected open(slot: SlotView): void {
     this.drafting.set(null);
@@ -197,7 +204,7 @@ export class PlanPage {
 
   protected afterPlan(count: number): void {
     this.planning.set(false);
-    this.toast.show(`${count} ${count === 1 ? 'uscita aggiunta' : 'uscite aggiunte'} al piano.`);
+    this.toast.show(this.i18n.t('plan.page.added', { n: count }));
     this.reload();
   }
 
@@ -207,11 +214,11 @@ export class PlanPage {
     if (!brand || this.busy()) return;
     this.busy.set(true);
     try {
-      const { conversationId } = await this.chat.start(brand.id, { message: 'Prepara il contenuto di questa uscita.', slotId: slot.id });
+      const { conversationId } = await this.chat.start(brand.id, { message: this.i18n.t('plan.chatPrepare'), slotId: slot.id });
       void this.chat.refresh();
       await this.router.navigate(['/assistente', conversationId]);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco ad aprire la chat. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.page.chatError')));
     } finally {
       this.busy.set(false);
     }
@@ -262,7 +269,7 @@ export class PlanPage {
       }
       this.reload();
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a spostarla lì. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.page.moveError')));
       this.reload();
     }
   }

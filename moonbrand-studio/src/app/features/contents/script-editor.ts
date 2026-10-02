@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, input, linkedSignal, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output } from '@angular/core';
 
 import type { ContentScriptRequest } from '@moonbrand/shared/api/contract';
 import type { Content, SceneSource, VideoScene } from '@moonbrand/shared/domain/content';
 
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
-import { SOURCE_LABELS } from './labels';
+import { sourceLabel } from './labels';
 
-const SOURCES = Object.keys(SOURCE_LABELS) as SceneSource[];
+const SOURCES: SceneSource[] = ['clip', 'photo', 'user', 'graphics'];
 
 const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onScreen: '', voice: '' };
 
@@ -15,24 +17,24 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
 @Component({
   selector: 'mb-script-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   template: `
     <div class="panel script">
       <div class="head">
         <div class="grow">
-          <p class="strong">Il copione</p>
+          <p class="strong">{{ 'contents.script.title' | t }}</p>
           <p class="caption">{{ summary() }}</p>
         </div>
         @if (dirty()) {
-          <button class="btn btn-secondary btn-sm" type="button" [disabled]="busy()" (click)="save()">Salva il copione</button>
+          <button class="btn btn-secondary btn-sm" type="button" [disabled]="busy()" (click)="save()">{{ 'contents.script.save' | t }}</button>
         }
         <button class="btn btn-primary btn-sm" type="button" [disabled]="busy() || !valid()" (click)="generate()">
-          {{ hasVideo() ? 'Rifai il video' : 'Genera il video' }}
+          {{ (hasVideo() ? 'contents.script.redoVideo' : 'contents.script.generateVideo') | t }}
         </button>
       </div>
 
       <label class="stack">
-        <span class="label">L’idea in breve</span>
+        <span class="label">{{ 'contents.script.idea' | t }}</span>
         <textarea class="sunken" rows="2" [value]="script()" [disabled]="busy()" (input)="script.set(value($event))"></textarea>
       </label>
 
@@ -42,35 +44,35 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
             <div class="scene-head">
               <span class="number">{{ i + 1 }}</span>
               <label class="seconds">
-                <input class="sunken" type="number" min="0.5" step="0.5" aria-label="Durata in secondi" [value]="scene.seconds"
+                <input class="sunken" type="number" min="0.5" step="0.5" [attr.aria-label]="'contents.script.seconds' | t" [value]="scene.seconds"
                   [disabled]="busy()" (input)="update(i, { seconds: number($event) })" />
-                <span class="caption">s</span>
+                <span class="caption">{{ 'contents.script.secondsUnit' | t }}</span>
               </label>
-              <select class="sunken source" aria-label="Da dove viene" [disabled]="busy()" (change)="update(i, { source: sourceOf($event) })">
+              <select class="sunken source" [attr.aria-label]="'contents.script.source' | t" [disabled]="busy()" (change)="update(i, { source: sourceOf($event) })">
                 @for (source of sources; track source) {
-                  <option [value]="source" [selected]="scene.source === source">{{ sourceLabel[source] }}</option>
+                  <option [value]="source" [selected]="scene.source === source">{{ sourceLabel(source) }}</option>
                 }
               </select>
-              <button class="icon-btn" type="button" aria-label="Togli l’inquadratura" [disabled]="busy() || scenes().length === 1"
+              <button class="icon-btn" type="button" [attr.aria-label]="'contents.script.removeScene' | t" [disabled]="busy() || scenes().length === 1"
                 (click)="remove(i)">
                 <mb-icon name="trash" [size]="16" />
               </button>
             </div>
             <label class="stack">
-              <span class="label">Cosa si vede</span>
+              <span class="label">{{ 'contents.script.shot' | t }}</span>
               <textarea class="sunken" rows="2" [value]="scene.shot" [disabled]="busy()" (input)="update(i, { shot: value($event) })"></textarea>
             </label>
             @if (scene.source === 'user') {
-              <p class="caption">Serve una tua foto o clip: mandala in chat o caricala tra i file del brand prima di generare il video.</p>
+              <p class="caption">{{ 'contents.script.userMedia' | t }}</p>
             }
             <div class="pair">
               <label class="stack">
-                <span class="label">A schermo</span>
+                <span class="label">{{ 'contents.script.onScreen' | t }}</span>
                 <textarea class="sunken" rows="2" [value]="scene.onScreen" [disabled]="busy()"
                   (input)="update(i, { onScreen: value($event) })"></textarea>
               </label>
               <label class="stack">
-                <span class="label">Voce</span>
+                <span class="label">{{ 'contents.script.voice' | t }}</span>
                 <textarea class="sunken" rows="2" [value]="scene.voice" [disabled]="busy()" (input)="update(i, { voice: value($event) })"></textarea>
               </label>
             </div>
@@ -79,7 +81,7 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
       </ol>
 
       <button class="btn btn-ghost btn-sm add" type="button" [disabled]="busy()" (click)="add()">
-        <mb-icon name="plus" [size]="16" /> Aggiungi un’inquadratura
+        <mb-icon name="plus" [size]="16" /> {{ 'contents.script.addScene' | t }}
       </button>
     </div>
   `,
@@ -162,6 +164,8 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
   `,
 })
 export class ScriptEditor {
+  private readonly i18n = inject(I18nService);
+
   readonly content = input.required<Content>();
   readonly busy = input(false);
   readonly saved = output<ContentScriptRequest>();
@@ -172,7 +176,7 @@ export class ScriptEditor {
   protected readonly scenes = linkedSignal(() => this.content().visual.scenes.map((scene) => ({ ...scene })));
 
   protected readonly sources = SOURCES;
-  protected readonly sourceLabel = SOURCE_LABELS;
+  protected readonly sourceLabel = (source: SceneSource) => sourceLabel(source, this.i18n.locale());
   protected readonly hasVideo = computed(() => (this.content().visual.files ?? []).some((file) => file.role === 'video'));
   protected readonly dirty = computed(
     () => this.script() !== this.content().visual.script || JSON.stringify(this.scenes()) !== JSON.stringify(this.content().visual.scenes),
@@ -181,7 +185,7 @@ export class ScriptEditor {
   protected readonly summary = computed(() => {
     const seconds = this.scenes().reduce((total, scene) => total + (scene.seconds || 0), 0);
     const count = this.scenes().length;
-    return `${Math.round(seconds)} secondi · ${count} ${count === 1 ? 'inquadratura' : 'inquadrature'}`;
+    return this.i18n.t('contents.script.summary', { seconds: Math.round(seconds), n: count });
   });
 
   protected value(event: Event): string {

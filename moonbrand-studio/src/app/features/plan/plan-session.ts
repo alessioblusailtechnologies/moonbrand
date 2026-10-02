@@ -8,6 +8,8 @@ import { addDays, formatWeekdayShort, planNow, startOfWeek } from '@moonbrand/sh
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { PlanService } from '../../core/plan/plan.service';
 import { ChannelMark } from '../../ui/channel-mark';
 import { Icon } from '../../ui/icon';
@@ -24,7 +26,7 @@ const WEEKS = [1, 2, 4];
 @Component({
   selector: 'mb-plan-session',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, ChannelMark],
+  imports: [Icon, ChannelMark, TranslatePipe],
   host: { '(document:keydown.escape)': 'saving() || closed.emit()' },
   templateUrl: './plan-session.html',
   styleUrl: './plan-session.scss',
@@ -33,6 +35,7 @@ export class PlanSession implements OnInit {
   private readonly api = inject(PlanService);
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
 
   readonly plan = input.required<PlanResponse>();
   readonly closed = output();
@@ -58,7 +61,7 @@ export class PlanSession implements OnInit {
 
   protected readonly weekOptions = WEEKS;
   protected readonly name = channelName;
-  protected readonly day = formatWeekdayShort;
+  protected readonly day = (date: string): string => formatWeekdayShort(date, this.i18n.locale());
 
   private readonly startDate = computed(() => {
     const today = planNow().date;
@@ -69,7 +72,7 @@ export class PlanSession implements OnInit {
     this.ready() ? { startDate: this.startDate(), weeks: this.weeks(), perWeek: this.perWeek(), channels: this.channels() } : null,
   );
 
-  protected readonly balance = computed(() => (this.drafts().length > 0 ? balanceHint(themeBalance(this.plan().themes, this.drafts())) : null));
+  protected readonly balance = computed(() => (this.drafts().length > 0 ? balanceHint(themeBalance(this.plan().themes, this.drafts()), this.i18n.locale()) : null));
 
   ngOnInit(): void {
     const plan = this.plan();
@@ -90,7 +93,7 @@ export class PlanSession implements OnInit {
       const { drafts } = await this.api.propose(brand.id, request);
       if (this.request() === request) this.drafts.set(drafts);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a preparare la proposta.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.session.proposeError')));
     } finally {
       this.loading.set(false);
     }
@@ -140,7 +143,7 @@ export class PlanSession implements OnInit {
       const created = await this.api.confirm(brand.id, { drafts });
       this.confirmed.emit(created.length);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito ad aggiungere le uscite. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.session.confirmError')));
     } finally {
       this.saving.set(false);
     }

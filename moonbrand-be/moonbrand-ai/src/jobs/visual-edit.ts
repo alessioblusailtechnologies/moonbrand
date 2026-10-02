@@ -1,6 +1,7 @@
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import { runExamples } from '../lib/examples';
+import { languageRules } from '../lib/language';
 
 const [brandDir, dir, sessionId, channelsJson, instruction] = process.argv.slice(2);
 if (!brandDir || !dir || !sessionId || !channelsJson || !instruction) {
@@ -10,6 +11,8 @@ if (!brandDir || !dir || !sessionId || !channelsJson || !instruction) {
 
 const prompt = `${instruction}
 
-Aggiorna gli esempi nella cartella ${dir} e restituisci l’elenco completo, anche quelli che non hai cambiato.`;
+Aggiorna gli esempi nella cartella ${dir} e restituisci l’elenco completo, anche quelli che non hai cambiato.
+
+${languageRules()}`;
 
 await runExamples({ brandDir, dir, channels: JSON.parse(channelsJson) as ChannelId[], prompt, resume: sessionId });

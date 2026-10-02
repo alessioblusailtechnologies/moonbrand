@@ -5,6 +5,7 @@ import type { VisualBrandContext } from '@moonbrand/shared/api/contract';
 import { channelName, exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/catalog';
 
 import { channelLooks, runExamples, workDir } from '../lib/examples';
+import { languageRules } from '../lib/language';
 
 const [brandDir, dir, brandJson] = process.argv.slice(2);
 if (!brandDir || !dir || !brandJson) {
@@ -26,7 +27,8 @@ Ispirati alle immagini di riferimento nella cartella file-riferimento e salva og
 Ogni esempio deve sembrare nato sul suo canale, restando riconoscibile come del brand: stesso brand, confezione del canale.
 ${channelLooks(chosen)}
 Tieni i file di lavoro (HTML, script, foto intermedie) nella cartella ${workDir(dir)}.
-Rispondi in italiano.
+
+${languageRules()}
 
 Il brand:
 ${JSON.stringify({ ...brand, channels: chosen }, null, 2)}`;

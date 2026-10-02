@@ -1,14 +1,16 @@
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
+import { catalog } from '../i18n/messages/catalog';
 import { createId } from '../lib/id';
 import type { Theme, ThemeLevel } from './brand';
 import { THEME_COLORS } from './catalog';
 
 export const MAX_THEMES = 6;
 
-export const THEME_LEVELS: { value: ThemeLevel; label: string }[] = [
-  { value: 'often', label: 'Spesso' },
-  { value: 'sometimes', label: 'Ogni tanto' },
-  { value: 'rarely', label: 'Di rado' },
-];
+const LEVELS: ThemeLevel[] = ['often', 'sometimes', 'rarely'];
+
+export function themeLevels(locale: Locale = DEFAULT_LOCALE): { value: ThemeLevel; label: string }[] {
+  return LEVELS.map((value) => ({ value, label: catalog[locale].themeLevels[value] }));
+}
 
 const LEVEL_SHARE: Record<ThemeLevel, number> = { often: 3, sometimes: 2, rarely: 1 };
 
@@ -21,9 +23,8 @@ export function themeLevel(theme: Theme): ThemeLevel {
   return theme.weight >= 30 ? 'often' : theme.weight >= 15 ? 'sometimes' : 'rarely';
 }
 
-export function themeLevelLabel(theme: Theme): string {
-  const level = themeLevel(theme);
-  return THEME_LEVELS.find((option) => option.value === level)?.label ?? '';
+export function themeLevelLabel(theme: Theme, locale: Locale = DEFAULT_LOCALE): string {
+  return catalog[locale].themeLevels[themeLevel(theme)];
 }
 
 export function withLevelWeights(themes: readonly Theme[]): Theme[] {

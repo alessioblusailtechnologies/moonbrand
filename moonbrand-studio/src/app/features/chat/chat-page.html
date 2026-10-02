@@ -16,10 +16,7 @@
                 }
               }
             </h1>
-            <p class="lead">
-              Chiedimi idee, domande sul brand o un contenuto per {{ brand.name }}, anche dalle tue foto.
-              Quello che salvo finisce in Idee e Contenuti.
-            </p>
+            <p class="lead">{{ 'chat.page.lead' | t: { brand: brand.name } }}</p>
           </div>
           <ng-container [ngTemplateOutlet]="composerBox" />
           <div class="suggestions">
@@ -43,7 +40,7 @@
                     <button
                       class="photo"
                       type="button"
-                      [attr.aria-label]="'Apri la foto ' + (i + 1)"
+                      [attr.aria-label]="'chat.page.openPhoto' | t: { n: i + 1 }"
                       (click)="openPhoto(turn, photo.file)"
                     >
                       <img [src]="photo.url" alt="" loading="lazy" />
@@ -56,19 +53,19 @@
               <p class="mine">{{ turn.message }}</p>
             }
             @if (turn.slot; as slot) {
-              <a class="mention" routerLink="/piano" [queryParams]="{ giorno: slot.date }" [attr.aria-label]="'Uscita menzionata: ' + slotLabel(slot)">
+              <a class="mention" routerLink="/piano" [queryParams]="{ giorno: slot.date }" [attr.aria-label]="'chat.page.slotMention' | t: { slot: slotLabel(slot) }">
                 <mb-icon name="calendar" [size]="15" />
                 <span class="mention-texts">
-                  <span class="mention-kind">Uscita del piano</span>
+                  <span class="mention-kind">{{ 'chat.page.slotKind' | t }}</span>
                   <span class="mention-title">{{ slotLabel(slot) }}</span>
                 </span>
               </a>
             }
             @if (turn.idea; as idea) {
-              <a class="mention" routerLink="/" [attr.aria-label]="'Idea menzionata: ' + idea.title">
+              <a class="mention" routerLink="/" [attr.aria-label]="'chat.page.ideaMention' | t: { title: idea.title }">
                 <mb-icon name="lightbulb" [size]="15" />
                 <span class="mention-texts">
-                  <span class="mention-kind">Idea</span>
+                  <span class="mention-kind">{{ 'chat.page.ideaKind' | t }}</span>
                   <span class="mention-title">{{ idea.title }}</span>
                 </span>
               </a>
@@ -92,7 +89,7 @@
                       <h3 class="strong">{{ content.title }}</h3>
                     </div>
                     <a class="btn btn-secondary btn-sm open-content" [routerLink]="['/contenuti', content.id]">
-                      Apri in Contenuti <mb-icon name="chevron-right" [size]="14" />
+                      {{ 'chat.page.openInContents' | t }} <mb-icon name="chevron-right" [size]="14" />
                     </a>
                   </header>
                   <mb-content-preview [content]="content" [compact]="true" />
@@ -100,12 +97,12 @@
               }
               <mb-pending-media [tiles]="turn.pending" />
               @if (waiting(turn.blocks, turn)) {
-                <p class="caption thinking"><span class="spinner"></span> Ci penso</p>
+                <p class="caption thinking"><span class="spinner"></span> {{ 'chat.page.thinking' | t }}</p>
               } @else if (turn.job.status === 'stopped') {
-                <p class="caption">Fermato.</p>
+                <p class="caption">{{ 'chat.page.stopped' | t }}</p>
               } @else if (turn.job.status === 'failed') {
                 <p class="caption failed">
-                  Non sono riuscito a finire: {{ turn.job.error || 'errore sconosciuto' }}
+                  {{ 'chat.page.failed' | t: { error: turn.job.error || ('chat.page.unknownError' | t) } }}
                 </p>
               }
             </div>
@@ -117,7 +114,7 @@
     @if (current()) {
       <div class="bottom">
         @if (contents().length > 0) {
-          <div class="saved" aria-label="Contenuti di questa conversazione">
+          <div class="saved" [attr.aria-label]="'chat.page.savedContents' | t">
             @for (content of contents(); track content.id) {
               <a class="saved-card" [routerLink]="['/contenuti', content.id]">
                 <span class="thumb">
@@ -141,7 +138,7 @@
   <!-- La casella: al centro del benvenuto per una conversazione nuova, in fondo per una aperta. -->
   <ng-template #composerBox>
     <mb-composer
-      [placeholder]="current() ? 'Rispondi all’assistente…' : 'Chiedi un’idea, un contenuto, un parere…'"
+      [placeholder]="(current() ? 'chat.page.replyPlaceholder' : 'chat.page.askPlaceholder') | t"
       [tall]="!current()"
       [running]="running()"
       [stopping]="stopping()"
@@ -154,15 +151,15 @@
 
 <!-- Nella topbar: il brand kit che l'assistente usa, e il cestino della conversazione aperta. -->
 <ng-template #headerActions>
-  <a class="kit" routerLink="/impostazioni" title="L’assistente risponde con il profilo del brand: aprilo nelle impostazioni">
-    <span class="kit-dot"></span> Brand kit attivo
+  <a class="kit" routerLink="/impostazioni" [title]="'chat.page.kitTitle' | t">
+    <span class="kit-dot"></span> {{ 'chat.page.kit' | t }}
   </a>
   @if (current()) {
     <button
       class="icon-btn"
       type="button"
-      aria-label="Elimina la conversazione"
-      title="Elimina la conversazione"
+      [attr.aria-label]="'chat.page.deleteConversation' | t"
+      [title]="'chat.page.deleteConversation' | t"
       [disabled]="running()"
       (click)="remove()"
     >

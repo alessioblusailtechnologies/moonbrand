@@ -4,17 +4,26 @@ import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
+import type { Locale } from '../i18n/locales';
 
+// locale: la lingua dell'interfaccia e di tutto quello che il motore dice a chi usa moonbrand.
 export interface Account {
   id: string;
   email: string;
   name: string;
+  locale: Locale;
 }
 
+// locale: la lingua del browser al momento della registrazione, se è tra le nostre.
 export interface SignUpRequest {
   name: string;
   email: string;
   password: string;
+  locale?: Locale;
+}
+
+export interface UpdateMeRequest {
+  locale: Locale;
 }
 
 export interface SignInRequest {
@@ -98,6 +107,9 @@ export interface WebsiteReading {
   colors: string[];
   // Il logo del sito come data URI, pronto per il brand; null se non c'è o non si è riusciti a scaricarlo.
   logo: string | null;
+  // La lingua principale dei testi del sito (ISO 639-1, es. it, de), anche se non è tra le nostre: vedi siteLanguage.
+  // Manca nelle letture fatte prima che ci fosse.
+  language?: string;
 }
 
 export interface VisualBrandContext {

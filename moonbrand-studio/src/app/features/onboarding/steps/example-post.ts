@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
 import { FOLD } from '../../contents/labels';
 
@@ -22,7 +23,7 @@ export interface ExampleAuthor {
 @Component({
   selector: 'mb-example-post',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, NgTemplateOutlet],
+  imports: [Icon, NgTemplateOutlet, TranslatePipe],
   templateUrl: './example-post.html',
   styleUrl: './example-post.scss',
 })

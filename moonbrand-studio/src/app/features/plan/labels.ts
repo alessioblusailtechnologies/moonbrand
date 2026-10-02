@@ -1,11 +1,15 @@
 import type { SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { BEST_TIMES, bestChannelFor, type SlotStatus } from '@moonbrand/shared/domain/plan';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
 import { isPast, planNow } from '@moonbrand/shared/lib/dates';
 
-export { SLOT_STATUS_LABELS } from '@moonbrand/shared/domain/plan';
-
-export const WEEKDAYS = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+// I giorni della settimana in breve, da lunedì, nella lingua di Intl ("it-IT" → lun, mar, …). Il 1° gennaio 2024 è un lunedì.
+export function weekdayNames(intl: string): string[] {
+  const format = new Intl.DateTimeFormat(intl, { weekday: 'short', timeZone: 'UTC' });
+  return Array.from({ length: 7 }, (_, i) => format.format(Date.UTC(2024, 0, 1 + i, 12)));
+}
 
 // Il colore di ogni stato, dai token dello studio: grigio da riempire, giallo da preparare, arancio da approvare,
 // blu programmata, verde pubblicata.
@@ -18,12 +22,12 @@ export const SLOT_TONES: Record<SlotStatus, string> = {
 };
 
 // Il titolo di un'uscita: il contenuto, l'idea, o il tema che il piano chiede.
-export function slotTitle(slot: SlotView, themeName: (id: string | null) => string | null): string {
+export function slotTitle(slot: SlotView, themeName: (id: string | null) => string | null, locale: Locale): string {
   if (slot.content) return slot.content.title;
   if (slot.idea) return slot.idea.title;
   if (slot.contentTitle) return slot.contentTitle;
   const theme = themeName(slot.themeId);
-  return theme ? `Serve un contenuto su «${theme}»` : 'Da riempire';
+  return theme ? translate(locale, 'plan.needsTheme', { theme }) : translate(locale, 'plan.status.empty');
 }
 
 // L'ora per un'uscita nuova in un giorno: quella migliore del canale, o l'ora piena dopo adesso se oggi è già passata.

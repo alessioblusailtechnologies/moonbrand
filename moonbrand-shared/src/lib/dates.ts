@@ -1,13 +1,25 @@
+import { DEFAULT_LOCALE, INTL_LOCALES, type Locale } from '../i18n/locales';
+
 // Le date del piano sono stringhe YYYY-MM-DD e gli orari HH:mm, nell'ora di Roma: come in social-app, con cui moonbrand
 // condivide le uscite. Il fuso per brand arriverà con la pubblicazione vera.
 export const PLAN_TIME_ZONE = 'Europe/Rome';
 
-const inRome = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('it-IT', { ...options, timeZone: PLAN_TIME_ZONE });
-const longDay = inRome({ day: 'numeric', month: 'long', year: 'numeric' });
-const weekdayShort = inRome({ weekday: 'short', day: 'numeric', month: 'short' });
-const weekdayLong = inRome({ weekday: 'long', day: 'numeric', month: 'long' });
-const monthName = inRome({ month: 'long' });
-const monthYear = inRome({ month: 'long', year: 'numeric' });
+// I formati si fanno una volta per lingua; di base l'italiano, che è quello dei prompt del motore.
+const FORMATS = {
+  longDay: { day: 'numeric', month: 'long', year: 'numeric' },
+  weekdayShort: { weekday: 'short', day: 'numeric', month: 'short' },
+  weekdayLong: { weekday: 'long', day: 'numeric', month: 'long' },
+  monthName: { month: 'long' },
+  monthYear: { month: 'long', year: 'numeric' },
+} satisfies Record<string, Intl.DateTimeFormatOptions>;
+const formatters = new Map<string, Intl.DateTimeFormat>();
+
+function inRome(format: keyof typeof FORMATS, locale: Locale): Intl.DateTimeFormat {
+  const key = `${locale} ${format}`;
+  let formatter = formatters.get(key);
+  if (!formatter) formatters.set(key, (formatter = new Intl.DateTimeFormat(INTL_LOCALES[locale], { ...FORMATS[format], timeZone: PLAN_TIME_ZONE })));
+  return formatter;
+}
 // sv-SE scrive le date come YYYY-MM-DD HH:mm:ss.
 const romeClock = new Intl.DateTimeFormat('sv-SE', {
   timeZone: PLAN_TIME_ZONE,
@@ -73,17 +85,17 @@ export function isPast(date: string, time: string, now = planNow()): boolean {
 
 // I formati leggono la data a mezzogiorno UTC nel fuso di Roma: il giorno resta quello.
 // "2026-10-03" → "3 ottobre 2026"
-export const formatDay = (day: string): string => longDay.format(fromDay(day));
+export const formatDay = (day: string, locale: Locale = DEFAULT_LOCALE): string => inRome('longDay', locale).format(fromDay(day));
 // "2026-10-01" → "gio 1 ott"
-export const formatWeekdayShort = (day: string): string => weekdayShort.format(fromDay(day));
+export const formatWeekdayShort = (day: string, locale: Locale = DEFAULT_LOCALE): string => inRome('weekdayShort', locale).format(fromDay(day));
 // "2026-10-01" → "giovedì 1 ottobre"
-export const formatWeekdayLong = (day: string): string => weekdayLong.format(fromDay(day));
+export const formatWeekdayLong = (day: string, locale: Locale = DEFAULT_LOCALE): string => inRome('weekdayLong', locale).format(fromDay(day));
 // "2026-10-01" → "ottobre 2026"
-export const formatMonth = (day: string): string => monthYear.format(fromDay(day));
+export const formatMonth = (day: string, locale: Locale = DEFAULT_LOCALE): string => inRome('monthYear', locale).format(fromDay(day));
 
 // "14 – 20 settembre" oppure "28 settembre – 4 ottobre"
-export function formatRange(from: string, to: string): string {
-  const [startMonth, endMonth] = [from, to].map((day) => monthName.format(fromDay(day)));
+export function formatRange(from: string, to: string, locale: Locale = DEFAULT_LOCALE): string {
+  const [startMonth, endMonth] = [from, to].map((day) => inRome('monthName', locale).format(fromDay(day)));
   const [start, end] = [from, to].map((day) => Number(day.slice(8, 10)));
   return startMonth === endMonth ? `${start} – ${end} ${endMonth}` : `${start} ${startMonth} – ${end} ${endMonth}`;
 }

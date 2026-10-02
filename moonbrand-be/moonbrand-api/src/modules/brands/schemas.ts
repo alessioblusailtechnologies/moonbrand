@@ -16,6 +16,7 @@ import type {
   VisualExample,
   Voice,
 } from '@moonbrand/shared/domain/brand';
+import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
 const text = (max: number) => z.string().max(max);
 
@@ -29,6 +30,7 @@ export const identity = z.object({
   sector: text(200),
   site: text(300),
   pitch: text(2000),
+  language: z.enum(LOCALES).optional(),
 }) satisfies z.ZodType<Identity>;
 
 export const positioning = z.object({
@@ -176,7 +178,7 @@ const visual = z.object({
 
 const references = z.object({
   profiles: z.array(text(300)).max(50),
-  sources: z.array(z.object({ label: text(200), enabled: z.boolean() })).max(30),
+  sources: z.array(z.object({ id: text(60).optional(), label: text(200), enabled: z.boolean() })).max(30),
   milestones: z
     .array(z.object({ id: z.string().min(1).max(100), label: text(200), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
     .max(50),

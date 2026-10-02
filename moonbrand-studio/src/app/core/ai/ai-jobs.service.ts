@@ -14,6 +14,7 @@ import type {
   WebsiteReading,
 } from '@moonbrand/shared/api/contract';
 import type { Palette } from '@moonbrand/shared/domain/brand';
+import { siteLanguage } from '@moonbrand/shared/i18n/locales';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
 import { LOGO_SIDE, resizedDataUri } from '../images';
@@ -47,6 +48,7 @@ export class AiJobsService {
       audiences: reading.audiences,
       palette: { id: `site-${host}`, name: 'Dal sito', colors: reading.colors as Palette['colors'], origin: 'site' },
       logoUri: reading.logo ? await siteLogo(reading.logo) : null,
+      language: siteLanguage(reading.language),
     };
   }
 

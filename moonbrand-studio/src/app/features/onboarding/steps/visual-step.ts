@@ -3,11 +3,13 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { currentVoiceCard, type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
-import { CHANNELS, channelName, exampleChannels, PALETTE_SLOT_LABELS } from '@moonbrand/shared/domain/catalog';
+import { CHANNELS, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { ChannelMark } from '../../../ui/channel-mark';
 import { Icon } from '../../../ui/icon';
 import { PendingMedia, pendingFromSteps } from '../../../ui/pending-media';
@@ -33,7 +35,7 @@ function normalizeHex(input: string): string | null {
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost],
+  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost, TranslatePipe],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
@@ -45,10 +47,11 @@ export class VisualStep implements OnInit {
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
   private readonly lightbox = inject(LightboxService);
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
-  protected readonly slotLabels = PALETTE_SLOT_LABELS;
+  protected readonly slotLabels = computed(() => paletteSlotLabels(this.i18n.locale()));
   protected readonly maxReferences = MAX_REFERENCES;
   protected readonly notes = signal('');
   protected readonly uploading = signal(0);
@@ -76,7 +79,7 @@ export class VisualStep implements OnInit {
   // Chi pubblica negli esempi: il nome, il logo o l'iniziale nel primo colore della palette, un nome utente ricavato dal nome.
   protected readonly author = computed<ExampleAuthor>(() => {
     const { identity, visual } = this.draft();
-    const name = identity.name.trim() || 'Il tuo brand';
+    const name = identity.name.trim() || this.i18n.t('onboarding.visual.yourBrand');
     const handle = name
       .normalize('NFD')
       .replace(/\p{Diacritic}/gu, '')
@@ -126,9 +129,9 @@ export class VisualStep implements OnInit {
     if (!file) return;
     try {
       this.set({ logoUri: await resizedDataUri(file, LOGO_SIDE, 'image/png') });
-      this.toast.show('Logo caricato.');
+      this.toast.show(this.i18n.t('onboarding.visual.logo.uploaded'));
     } catch {
-      this.toast.show('Questo file non è un’immagine che riesco a leggere: usa un PNG, un JPEG o un SVG.');
+      this.toast.show(this.i18n.t('onboarding.visual.logo.unreadable'));
     }
   }
 
@@ -140,7 +143,7 @@ export class VisualStep implements OnInit {
     inputEl.value = '';
     if (!brandId) return;
     if (files.length === 0) {
-      this.toast.show(`Al massimo ${MAX_REFERENCES} immagini: togline una per aggiungerne altre.`);
+      this.toast.show(this.i18n.t('onboarding.visual.references.max', { n: MAX_REFERENCES }));
       return;
     }
     this.uploading.update((count) => count + files.length);
@@ -149,7 +152,7 @@ export class VisualStep implements OnInit {
         const uploaded = await this.brands.uploadReference(brandId, await resizedDataUri(file, 1600, 'image/jpeg'));
         this.set({ references: [...(this.current().references ?? []), uploaded] });
       } catch (error) {
-        this.toast.show(errorMessage(error, 'Un’immagine è troppo pesante o non si legge: l’ho saltata.'));
+        this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.uploadFailed')));
       } finally {
         this.uploading.update((count) => Math.max(0, count - 1));
       }
@@ -160,20 +163,20 @@ export class VisualStep implements OnInit {
     try {
       await this.store.removeReference(file);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a togliere l’immagine. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.removeFailed')));
     }
   }
 
   protected openReference(index: number): void {
     this.lightbox.open(
-      this.references().map((file, i) => ({ url: file.url, alt: `Riferimento ${i + 1}` })),
+      this.references().map((file, i) => ({ url: file.url, alt: this.i18n.t('onboarding.visual.references.alt', { n: i + 1 }) })),
       index,
     );
   }
 
   protected openExample(index: number): void {
     this.lightbox.open(
-      this.examples().map((example) => ({ url: example.url, alt: `Esempio per ${example.name}`, caption: example.caption })),
+      this.examples().map((example) => ({ url: example.url, alt: this.i18n.t('onboarding.visual.examples.alt', { channel: example.name }), caption: example.caption })),
       index,
     );
   }
@@ -214,7 +217,7 @@ export class VisualStep implements OnInit {
       if (await this.track(editJobId, true)) this.notes.set('');
     } catch (error) {
       this.preparing.set(false);
-      this.toast.show(errorMessage(error, 'Non sono riuscito a modificare gli esempi. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.examples.editFailed')));
     }
   }
 
@@ -244,7 +247,7 @@ export class VisualStep implements OnInit {
       return true;
     } catch (error) {
       this.toast.show(
-        errorMessage(error, edit ? 'Non sono riuscito a modificare gli esempi. Riprova.' : 'Non sono riuscito a preparare gli esempi. Riprova.'),
+        errorMessage(error, this.i18n.t(edit ? 'onboarding.visual.examples.editFailed' : 'onboarding.visual.examples.prepareFailed')),
       );
       return false;
     } finally {
@@ -274,7 +277,7 @@ export class VisualStep implements OnInit {
       await this.track(jobId, false);
     } catch (error) {
       this.preparing.set(false);
-      this.toast.show(errorMessage(error, 'Non sono riuscito a preparare gli esempi. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.examples.prepareFailed')));
     }
   }
 }

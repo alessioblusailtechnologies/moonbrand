@@ -23,6 +23,8 @@ import { formatWeekdayLong } from '@moonbrand/shared/lib/dates';
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { PlanService } from '../../core/plan/plan.service';
 import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
@@ -30,7 +32,6 @@ import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
-import { FORMAT_REQUEST } from '../contents/labels';
 import { CreateContentDialog, type IdeaContentRequest } from './create-content-dialog';
 import { SIGNAL_LABELS } from './labels';
 
@@ -43,7 +44,7 @@ const COLUMN_GAP = 16;
 @Component({
   selector: 'mb-ideas-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, Icon, StepList, CreateContentDialog],
+  imports: [RouterOutlet, Icon, StepList, CreateContentDialog, TranslatePipe],
   host: { '(window:resize)': 'updateScroll()' },
   templateUrl: './ideas-page.html',
   styleUrl: './ideas-page.scss',
@@ -55,6 +56,7 @@ export class IdeasPage {
   private readonly chat = inject(ChatService);
   private readonly plan = inject(PlanService);
   private readonly router = inject(Router);
+  private readonly i18n = inject(I18nService);
   protected readonly brands = inject(BrandsService);
 
   protected readonly view = signal<View>('new');
@@ -95,7 +97,7 @@ export class IdeasPage {
 
   constructor() {
     pageHeader(
-      () => [{ label: 'Idee' }],
+      () => [{ label: this.i18n.t('shell.ideas') }],
       () => this.headerActions(),
     );
     effect(() => {
@@ -141,7 +143,7 @@ export class IdeasPage {
       this.channels.set(response.channels);
       if (response.jobId) void this.follow(brandId, response.jobId);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a caricare le idee. Riprova tra poco.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.loadError')));
     } finally {
       this.loading.set(false);
     }
@@ -157,7 +159,7 @@ export class IdeasPage {
       this.ideas.set((await this.api.list(brandId)).ideas);
       this.view.set('new');
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a preparare le idee. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.prepareError')));
     } finally {
       this.preparing.set(false);
     }
@@ -170,7 +172,7 @@ export class IdeasPage {
       const { id } = await this.api.generate(brand.id);
       void this.follow(brand.id, id);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a chiedere nuove idee. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.generateError')));
     }
   }
 
@@ -180,7 +182,7 @@ export class IdeasPage {
       this.ideas.update((list) => list.map((item) => (item.id === updated.id ? updated : item)));
       this.lastDecision.set({ idea: updated, previous: idea.status });
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a salvare la scelta. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.decideError')));
     }
   }
 
@@ -200,9 +202,8 @@ export class IdeasPage {
     if (!idea || !brand || this.creating()) return;
     this.creating.set(true);
     try {
-      const names = request.channels.map(channelName);
-      const channels = names.length > 1 ? `${names.slice(0, -1).join(', ')} e ${names.at(-1)}` : names[0];
-      const ask = `Crea ${FORMAT_REQUEST[request.format]} per ${channels} da questa idea.`;
+      const channels = new Intl.ListFormat(this.i18n.intl(), { type: 'conjunction' }).format(request.channels.map(channelName));
+      const ask = this.i18n.t(`ideas.ask.${request.format}`, { channels });
       // Il testo aggiunto continua la richiesta, come una frase dopo l'altra.
       const note = request.message.charAt(0).toUpperCase() + request.message.slice(1);
       const message = note ? `${ask} ${note}` : ask;
@@ -211,7 +212,7 @@ export class IdeasPage {
       void this.chat.refresh();
       await this.router.navigate(['/assistente', conversationId]);
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito ad aprire la chat. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.chatError')));
     } finally {
       this.creating.set(false);
     }
@@ -224,16 +225,17 @@ export class IdeasPage {
     this.planning.set(idea.id);
     try {
       const slot = await this.plan.addIdea(brand.id, idea.id);
-      this.toast.show(`Nel piano: ${formatWeekdayLong(slot.date)} alle ${slot.time}.`);
+      this.toast.show(this.i18n.t('ideas.page.planned', { day: formatWeekdayLong(slot.date, this.i18n.locale()), time: slot.time }));
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito ad aggiungerla al piano. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('ideas.page.planError')));
     } finally {
       this.planning.set(null);
     }
   }
 
   protected signalLabel(idea: Idea): string {
-    return [SIGNAL_LABELS[idea.signal.kind] ?? idea.signal.kind, idea.signal.label].filter(Boolean).join(' · ');
+    const kind = SIGNAL_LABELS[idea.signal.kind];
+    return [kind ? this.i18n.t(kind) : idea.signal.kind, idea.signal.label].filter(Boolean).join(' · ');
   }
 
   protected theme(idea: Idea) {

@@ -1,3 +1,5 @@
+import type { Locale } from '../i18n/locales';
+
 export type BrandKind = 'person' | 'company' | 'client';
 
 export type ChannelId = 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'x';
@@ -15,6 +17,8 @@ export interface Identity {
   sector: string;
   site: string;
   pitch: string;
+  // La lingua in cui il brand pubblica; i brand nati prima della scelta non ce l'hanno e scrivono in italiano.
+  language?: Locale;
 }
 
 export interface Positioning {
@@ -176,7 +180,9 @@ export interface Visual {
   music?: BrandTrack[];
 }
 
+// id: le fonti del catalogo (domain/catalog), che si leggono nella lingua dell'interfaccia; label: il testo, per le altre.
 export interface SignalSource {
+  id?: string;
   label: string;
   enabled: boolean;
 }

@@ -5,6 +5,8 @@ import { kindLabel } from '@moonbrand/shared/domain/catalog';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
 import { lockPageScroll } from '../../ui/scroll-lock';
@@ -33,7 +35,7 @@ export class BrandPickerService {
 @Component({
   selector: 'mb-brand-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon],
+  imports: [BrandAvatar, Icon, TranslatePipe],
   host: { '(document:keydown.escape)': 'close()' },
   template: `
     @if (picker.isOpen()) {
@@ -42,10 +44,10 @@ export class BrandPickerService {
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="brand-picker-title">
         <header class="head">
           <div class="titles">
-            <h2 id="brand-picker-title" class="heading">Scegli il brand</h2>
-            <p class="caption">Idee, contenuti, piano e chat cambiano con il brand che scegli.</p>
+            <h2 id="brand-picker-title" class="heading">{{ 'profile.picker.title' | t }}</h2>
+            <p class="caption">{{ 'profile.picker.hint' | t }}</p>
           </div>
-          <button class="icon-btn" type="button" aria-label="Chiudi" (click)="close()">
+          <button class="icon-btn" type="button" [attr.aria-label]="'common.close' | t" (click)="close()">
             <mb-icon name="x" />
           </button>
         </header>
@@ -56,8 +58,8 @@ export class BrandPickerService {
             <input
               #searchField
               type="search"
-              placeholder="Cerca un brand…"
-              aria-label="Cerca un brand"
+              [placeholder]="'profile.picker.searchPlaceholder' | t"
+              [attr.aria-label]="'profile.picker.searchLabel' | t"
               [value]="query()"
               (input)="query.set($any($event.target).value)"
               (keydown.enter)="chooseFirst()"
@@ -65,7 +67,7 @@ export class BrandPickerService {
           </label>
         }
 
-        <div class="grid" role="listbox" aria-label="Brand">
+        <div class="grid" role="listbox" [attr.aria-label]="'profile.picker.list' | t">
           @for (brand of visible(); track brand.id) {
             @let current = brand.id === active?.id;
             <button
@@ -80,27 +82,27 @@ export class BrandPickerService {
               <mb-brand-avatar [name]="brand.name" [logo]="brand.logoUri" [color]="brand.color" [size]="44" />
               <span class="card-texts">
                 <span class="card-name">{{ brand.name }}</span>
-                <span class="caption">{{ kindLabel(brand.kind) }}</span>
+                <span class="caption">{{ kindLabel(brand.kind, i18n.locale()) }}</span>
               </span>
               @if (switching() === brand.id) {
                 <span class="spinner"></span>
               } @else if (current) {
-                <span class="tag"><mb-icon name="check" [size]="12" [stroke]="3" />Attivo</span>
+                <span class="tag"><mb-icon name="check" [size]="12" [stroke]="3" />{{ 'profile.picker.active' | t }}</span>
               }
             </button>
           } @empty {
-            <p class="caption empty">Nessun brand con questo nome.</p>
+            <p class="caption empty">{{ 'profile.picker.empty' | t }}</p>
           }
         </div>
 
         <footer class="foot">
           @if (active) {
             <button class="btn btn-ghost" type="button" (click)="openSettings()">
-              <mb-icon name="settings" [size]="16" /> Impostazioni di {{ active.name }}
+              <mb-icon name="settings" [size]="16" /> {{ 'profile.picker.settingsOf' | t: { name: active.name } }}
             </button>
           }
           <button class="btn btn-primary" type="button" (click)="createBrand()">
-            <mb-icon name="plus" [size]="16" /> Nuovo brand
+            <mb-icon name="plus" [size]="16" /> {{ 'profile.picker.newBrand' | t }}
           </button>
         </footer>
       </div>
@@ -300,6 +302,7 @@ export class BrandPicker {
   private readonly toast = inject(ToastService);
   protected readonly picker = inject(BrandPickerService);
   protected readonly brands = inject(BrandsService);
+  protected readonly i18n = inject(I18nService);
   protected readonly kindLabel = kindLabel;
   protected readonly searchFrom = SEARCH_FROM;
 
@@ -342,7 +345,7 @@ export class BrandPicker {
       await this.brands.setActive(brandId);
       this.close();
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non riesco a cambiare brand. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('profile.picker.switchFailed')));
     } finally {
       this.switching.set(null);
     }

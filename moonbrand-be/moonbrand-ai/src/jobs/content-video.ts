@@ -3,6 +3,7 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 import { VIDEO_ASPECT, type SceneSource } from '@moonbrand/shared/domain/content';
 
 import { contentDir, neededFiles, runContentAgent } from '../lib/content';
+import { languageRules } from '../lib/language';
 
 const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
@@ -49,6 +50,6 @@ Servono ${neededFiles('video', channels)}.
 L’id del video è ${contentId}. Salva video e copertine finali in ${dir} (es. ${dir}/video-9x16.mp4 e ${dir}/cover-9x16.jpg) e i fotogrammi di controllo in ${dir}/lavoro.
 Nel risultato riporta anche il copione, con le correzioni che hai dovuto fare mentre facevi il video.
 
-Rispondi in italiano.`;
+${languageRules()}`;
 
 await runContentAgent({ brandDir, contentId, format: 'video', channels, prompt, resume: sessionId });

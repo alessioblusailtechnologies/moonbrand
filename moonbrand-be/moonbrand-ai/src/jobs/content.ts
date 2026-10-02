@@ -6,6 +6,7 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 
 import { writeBrandGuide } from '../lib/brand-guide';
 import { contentDir, neededFiles, runContentAgent, videoAspects } from '../lib/content';
+import { languageRules } from '../lib/language';
 
 const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
@@ -46,7 +47,7 @@ ${ideaLines}
 ## Canali
 ${channelList}. Il video uscirà in ${videoAspects(channels).join(', ')}: scrivi il copione per la proporzione e la confezione principali, le altre si adattano (skill moonbrand:contenuti, «La confezione per canale»).
 
-Rispondi in italiano.`
+${languageRules()}`
     : `Scrivi il contenuto che nasce dall’idea qui sotto, pronto da pubblicare, e prepara le sue immagini.
 Segui la skill moonbrand:contenuti; il brand è descritto in CLAUDE.md.
 
@@ -63,6 +64,6 @@ Una variante di testo per ciascuno: ${channelList}.
 Servono ${neededFiles(format, channels)}.
 Salva le immagini finali in ${dir} e tieni i file di lavoro (HTML, script, foto intermedie) in ${dir}/lavoro.
 
-Rispondi in italiano.`;
+${languageRules()}`;
 
 await runContentAgent({ brandDir, contentId, format, channels, prompt, scriptOnly: format === 'video' });

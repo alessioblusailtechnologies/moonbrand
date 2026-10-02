@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal, viewChild, type OnInit } from '@angular/core';
 
 import type { CreateContentRequest } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
@@ -6,31 +6,34 @@ import { supportsFormat, type ContentFormat } from '@moonbrand/shared/domain/con
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Idea } from '@moonbrand/shared/domain/idea';
 
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { Composer, type ComposerMessage } from '../chat/composer';
-import { FORMAT_NAMES, FORMAT_OPTIONS } from '../contents/labels';
 
 // Il contenuto da creare in chat: formato e canali, e quello che si aggiunge all'idea (testo e allegati).
 export type IdeaContentRequest = CreateContentRequest & ComposerMessage;
 
+const FORMATS: ContentFormat[] = ['post', 'carousel', 'article', 'video'];
+
 @Component({
   selector: 'mb-create-content-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Composer],
+  imports: [Composer, TranslatePipe],
   host: { '(document:keydown.escape)': 'busy() || closed.emit()' },
   template: `
     <div class="backdrop" (click)="busy() || closed.emit()"></div>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="create-content-title">
       <div class="stack">
-        <h2 id="create-content-title" class="dialog-title">Crea il contenuto</h2>
+        <h2 id="create-content-title" class="dialog-title">{{ 'ideas.create.title' | t }}</h2>
         <p class="body">{{ idea().title }}</p>
-        <p class="caption">Si apre una conversazione nuova con l’assistente, che parte da questa idea.</p>
+        <p class="caption">{{ 'ideas.create.hint' | t }}</p>
       </div>
 
       <div class="stack">
-        <p class="label">Formato</p>
-        <div class="formats" role="radiogroup" aria-label="Formato">
-          @for (option of formats; track option.id) {
+        <p class="label">{{ 'ideas.create.format' | t }}</p>
+        <div class="formats" role="radiogroup" [attr.aria-label]="'ideas.create.format' | t">
+          @for (option of formats(); track option.id) {
             <button class="option-card" type="button" role="radio" [attr.aria-checked]="format() === option.id"
               [class.selected]="format() === option.id" (click)="choose(option.id)">
               <span class="grow">
@@ -44,8 +47,8 @@ export type IdeaContentRequest = CreateContentRequest & ComposerMessage;
       </div>
 
       <div class="stack">
-        <p class="label">Canali</p>
-        <div class="chips" role="group" aria-label="Canali">
+        <p class="label">{{ 'ideas.create.channels' | t }}</p>
+        <div class="chips" role="group" [attr.aria-label]="'ideas.create.channels' | t">
           @for (channel of channels(); track channel) {
             <button class="chip" type="button" [attr.aria-pressed]="selected().includes(channel)" [class.selected]="selected().includes(channel)"
               [disabled]="!supports(channel)" (click)="toggle(channel)">
@@ -59,10 +62,10 @@ export type IdeaContentRequest = CreateContentRequest & ComposerMessage;
       </div>
 
       <div class="stack">
-        <p class="label">Aggiungi all’idea</p>
+        <p class="label">{{ 'ideas.create.addToIdea' | t }}</p>
         <mb-composer
-          label="Indicazioni per l’assistente"
-          placeholder="Indicazioni, dettagli, cosa evitare… e le tue foto o i tuoi video, se vuoi (facoltativo)"
+          [label]="'ideas.create.composerLabel' | t"
+          [placeholder]="'ideas.create.composerPlaceholder' | t"
           [tall]="true"
           [empty]="true"
           [send]="false"
@@ -72,9 +75,9 @@ export type IdeaContentRequest = CreateContentRequest & ComposerMessage;
       </div>
 
       <div class="actions">
-        <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="closed.emit()">Annulla</button>
+        <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
         <button class="btn btn-primary" type="button" [disabled]="busy() || selected().length === 0 || composer()?.uploading()" (click)="submit()">
-          {{ busy() ? 'Apro la chat…' : 'Crea in chat' }}
+          {{ (busy() ? 'ideas.create.opening' : 'ideas.create.submit') | t }}
         </button>
       </div>
     </div>
@@ -154,12 +157,20 @@ export class CreateContentDialog implements OnInit {
   readonly closed = output();
   readonly created = output<IdeaContentRequest>();
 
+  private readonly i18n = inject(I18nService);
+
   constructor() {
     lockPageScroll();
   }
 
   protected readonly composer = viewChild(Composer);
-  protected readonly formats = FORMAT_OPTIONS;
+  protected readonly formats = computed(() =>
+    FORMATS.map((id) => ({
+      id,
+      label: this.i18n.t(`ideas.create.formats.${id}.label`),
+      hint: this.i18n.t(`ideas.create.formats.${id}.hint`),
+    })),
+  );
   protected readonly format = signal<ContentFormat>('post');
   protected readonly selected = signal<ChannelId[]>([]);
   protected readonly name = channelName;
@@ -169,7 +180,9 @@ export class CreateContentDialog implements OnInit {
     const names = this.channels()
       .filter((channel) => !supportsFormat(this.format(), channel))
       .map(channelName);
-    return names.length > 0 ? `Su ${names.join(' e ')} ${FORMAT_NAMES[this.format()]} non c’è.` : '';
+    if (names.length === 0) return '';
+    const format = this.i18n.t(`ideas.create.formats.${this.format()}.name`);
+    return this.i18n.t('ideas.create.unsupported', { channels: names.join(` ${this.i18n.t('ideas.create.and')} `), format });
   });
 
   ngOnInit(): void {

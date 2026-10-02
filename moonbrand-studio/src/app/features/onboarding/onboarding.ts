@@ -4,10 +4,14 @@ import { Router } from '@angular/router';
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandKind, SectionKey } from '@moonbrand/shared/domain/brand';
 import { isSkippable, sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
@@ -25,27 +29,40 @@ import { ThemesStep } from './steps/themes-step';
 import { VisualStep } from './steps/visual-step';
 import { VoiceStep } from './steps/voice-step';
 
-function stepCopy(step: OnboardingStep, kind: BrandKind, name: string) {
+function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: Locale) {
   if (step === 'intro') {
-    return {
-      title: 'Ciao, costruiamo la tua presenza',
-      subtitle: 'Prima di generare qualsiasi cosa mi serve sapere per chi scrivo e come. Poi lavoro da solo.',
-    };
+    return { title: translate(locale, 'onboarding.intro.title'), subtitle: translate(locale, 'onboarding.intro.subtitle') };
   }
   if (step === 'summary') {
     const firstName = name.trim().split(/\s+/)[0];
     return {
-      title: kind === 'person' && firstName ? `Tutto pronto, ${firstName}` : 'Tutto pronto',
-      subtitle: 'Ecco cosa ho capito. Controlla e creiamo il profilo.',
+      title:
+        kind === 'person' && firstName
+          ? translate(locale, 'onboarding.summary.titleNamed', { name: firstName })
+          : translate(locale, 'onboarding.summary.title'),
+      subtitle: translate(locale, 'onboarding.summary.subtitle'),
     };
   }
-  return sectionCopy(step, kind);
+  return sectionCopy(step, kind, locale);
 }
 
 @Component({
   selector: 'mb-onboarding',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, Logo, StepList, IntroStep, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, SummaryStep],
+  imports: [
+    Icon,
+    Logo,
+    StepList,
+    TranslatePipe,
+    IntroStep,
+    IdentityStep,
+    PositioningStep,
+    ChannelsStep,
+    ThemesStep,
+    VoiceStep,
+    VisualStep,
+    SummaryStep,
+  ],
   // I passi scrivono nella bozza del brand nuovo.
   providers: [{ provide: DraftStore, useExisting: OnboardingStore }],
   templateUrl: './onboarding.html',
@@ -56,6 +73,7 @@ export class Onboarding {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly ai = inject(AiJobsService);
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
 
@@ -68,7 +86,13 @@ export class Onboarding {
 
   protected readonly copy = computed(() => {
     const draft = this.store.draft();
-    return stepCopy(this.store.step(), draft?.identity.kind ?? 'person', draft?.identity.name ?? '');
+    return stepCopy(this.store.step(), draft?.identity.kind ?? 'person', draft?.identity.name ?? '', this.i18n.locale());
+  });
+
+  protected readonly barLabel = computed(() => {
+    if (this.preparing()) return this.i18n.t('onboarding.almostReady');
+    if (this.store.step() === 'intro') return this.i18n.t('onboarding.setup');
+    return this.i18n.t('onboarding.stepOf', { n: this.store.stepIndex(), total: this.total });
   });
 
   protected readonly sectionStep = computed<SectionKey | null>(() => {
@@ -79,7 +103,7 @@ export class Onboarding {
   protected readonly error = computed(() => {
     const key = this.sectionStep();
     const draft = this.store.draft();
-    return key && draft ? sectionError(key, draft) : null;
+    return key && draft ? sectionError(key, draft, this.i18n.locale()) : null;
   });
 
   protected readonly skippable = computed(() => {
@@ -98,16 +122,16 @@ export class Onboarding {
 
   protected primaryLabel(): string {
     const step = this.store.step();
-    if (step === 'intro') return 'Iniziamo';
-    if (step === 'summary') return this.creating() ? 'Sto preparando il profilo…' : 'Crea il profilo';
-    return 'Continua';
+    if (step === 'intro') return this.i18n.t('onboarding.primary.start');
+    if (step === 'summary') return this.i18n.t(this.creating() ? 'onboarding.primary.creating' : 'onboarding.primary.create');
+    return this.i18n.t('common.continue');
   }
 
   protected primary(): void {
     const step = this.store.step();
     if (step === 'intro') {
       if (!this.store.draft()) {
-        this.toast.show('Scegli per chi costruiamo la presenza.');
+        this.toast.show(this.i18n.t('onboarding.chooseKind'));
         return;
       }
       this.store.next();
@@ -126,7 +150,7 @@ export class Onboarding {
   }
 
   protected skip(): void {
-    this.toast.show('Saltato: lo ritrovi nelle Impostazioni brand.');
+    this.toast.show(this.i18n.t('onboarding.skipped'));
     this.store.next();
   }
 
@@ -139,13 +163,12 @@ export class Onboarding {
     if (!draft) return;
     const name = draft.identity.name.trim();
     const index = this.store.stepIndex();
-    const who = name ? `«${name}»` : 'Il brand che stavi creando';
-    const where = index === 0 ? 'all’inizio' : `al passo ${index} di ${this.total}`;
+    const where = index === 0 ? this.i18n.t('onboarding.restart.atStart') : this.i18n.t('onboarding.restart.atStep', { n: index, total: this.total });
     const restart = await this.confirm.ask({
-      title: 'Hai un brand in sospeso',
-      message: `${who} è rimasto ${where}. Puoi riprendere da lì o ricominciare da capo: quello che hai inserito andrà perso.`,
-      cancelLabel: 'Riprendi',
-      confirmLabel: 'Ricomincia',
+      title: this.i18n.t('onboarding.restart.title'),
+      message: name ? this.i18n.t('onboarding.restart.messageNamed', { name, where }) : this.i18n.t('onboarding.restart.message', { where }),
+      cancelLabel: this.i18n.t('onboarding.restart.resume'),
+      confirmLabel: this.i18n.t('onboarding.restart.confirm'),
       tone: 'danger',
     });
     if (restart) this.store.reset();
@@ -161,7 +184,7 @@ export class Onboarding {
       jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples())).setupJobs;
       this.store.reset();
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a creare il profilo. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.createFailed')));
       this.creating.set(false);
       return;
     }
@@ -187,6 +210,6 @@ export class Onboarding {
           ),
       ),
     );
-    if (failures.some(Boolean)) this.toast.show('Il profilo è pronto, ma una parte della preparazione non è riuscita: la rifaccio quando serve.');
+    if (failures.some(Boolean)) this.toast.show(this.i18n.t('onboarding.partlyFailed'));
   }
 }

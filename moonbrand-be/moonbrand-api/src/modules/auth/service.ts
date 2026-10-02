@@ -1,17 +1,18 @@
 import type pg from 'pg';
 
-import type { Account, Me, SignInRequest, SignUpRequest } from '@moonbrand/shared/api/contract';
+import type { Account, Me, SignInRequest, SignUpRequest, UpdateMeRequest } from '@moonbrand/shared/api/contract';
+import { DEFAULT_LOCALE } from '@moonbrand/shared/i18n/locales';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
-import { createAccount, findAccount, recordSignIn } from './accounts';
+import { createAccount, findAccount, recordSignIn, setLocale } from './accounts';
 import type { AuthGateway, Tokens } from './gateway';
 
 export interface AuthResult extends Tokens {
   account: Account;
 }
 
-const publicAccount = ({ id, email, name }: Account): Account => ({ id, email, name });
+const publicAccount = ({ id, email, name, locale }: Account): Account => ({ id, email, name, locale });
 
 export async function signUp(pool: pg.Pool, gateway: AuthGateway, input: SignUpRequest): Promise<AuthResult> {
   const email = input.email.trim().toLowerCase();
@@ -21,7 +22,7 @@ export async function signUp(pool: pg.Pool, gateway: AuthGateway, input: SignUpR
     if (created) throw new Error('accesso non riuscito subito dopo la registrazione');
     throw ApiError.conflict('EMAIL_TAKEN', 'Questa email è già registrata: accedi con la sua password.');
   }
-  await createAccount(pool, { id: session.userId, email, name: input.name.trim() });
+  await createAccount(pool, { id: session.userId, email, name: input.name.trim(), locale: input.locale ?? DEFAULT_LOCALE });
   await recordSignIn(pool, session.userId);
   const account = await findAccount(pool, session.userId);
   if (!account) throw new Error('account non creato');
@@ -43,4 +44,9 @@ export async function me(pool: pg.Pool, identity: Identity): Promise<Me> {
   const account = await withIdentity(pool, identity, (db) => findAccount(db, identity.accountId));
   if (!account) throw ApiError.forbidden('NO_ACCOUNT', 'Questa email non ha ancora un account: registrati.');
   return { account: publicAccount(account), activeBrandId: account.activeBrandId };
+}
+
+export async function updateMe(pool: pg.Pool, identity: Identity, input: UpdateMeRequest): Promise<Me> {
+  await withIdentity(pool, identity, (db) => setLocale(db, identity.accountId, input.locale));
+  return me(pool, identity);
 }

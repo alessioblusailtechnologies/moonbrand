@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Injectable, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
 
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { lockPageScroll } from './scroll-lock';
 
 export interface ConfirmOptions {
@@ -36,6 +37,7 @@ export class ConfirmService {
 @Component({
   selector: 'mb-confirm',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
   host: { '(document:keydown.escape)': 'service.close(false)' },
   template: `
     @if (service.current(); as open) {
@@ -48,11 +50,11 @@ export class ConfirmService {
         }
         <div class="actions">
           <button #cancel class="btn btn-secondary" type="button" (click)="service.close(false)">
-            {{ open.cancelLabel ?? 'Annulla' }}
+            {{ open.cancelLabel ?? ('common.cancel' | t) }}
           </button>
           <button class="btn" type="button" [class.btn-primary]="open.tone !== 'danger'" [class.btn-accent]="open.tone === 'danger'"
             (click)="service.close(true)">
-            {{ open.confirmLabel ?? 'Conferma' }}
+            {{ open.confirmLabel ?? ('common.confirm' | t) }}
           </button>
         </div>
       </div>

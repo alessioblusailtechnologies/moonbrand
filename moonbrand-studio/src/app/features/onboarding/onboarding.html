@@ -2,12 +2,12 @@
 @let draft = store.draft();
 
 <div class="scrim"></div>
-<div class="dialog" role="dialog" aria-modal="true" aria-label="Nuovo brand">
+<div class="dialog" role="dialog" aria-modal="true" [attr.aria-label]="'onboarding.dialog' | t">
   <header class="bar">
     <div class="bar-side">
       @if (!creating()) {
         @if (store.stepIndex() > 0 && draft) {
-          <button class="icon-btn" type="button" aria-label="Passo precedente" (click)="store.back()">
+          <button class="icon-btn" type="button" [attr.aria-label]="'onboarding.previousStep' | t" (click)="store.back()">
             <mb-icon name="chevron-left" />
           </button>
         } @else if (!canClose()) {
@@ -16,7 +16,7 @@
       }
     </div>
     <div class="bar-center">
-      <span class="label">{{ preparing() ? 'Quasi pronto' : step === 'intro' ? 'Configurazione' : 'Passo ' + store.stepIndex() + ' di ' + total }}</span>
+      <span class="label">{{ barLabel() }}</span>
       <div class="progress" aria-hidden="true">
         @for (segment of segments; track segment) {
           <span [class.on]="preparing() || (draft && segment <= store.stepIndex())"></span>
@@ -25,10 +25,10 @@
     </div>
     <div class="bar-side end">
       @if (skippable()) {
-        <button class="link-btn muted" type="button" (click)="skip()">Lo faccio dopo</button>
+        <button class="link-btn muted" type="button" (click)="skip()">{{ 'onboarding.later' | t }}</button>
       }
       @if (canClose() && !creating()) {
-        <button class="icon-btn" type="button" aria-label="Chiudi" (click)="close()">
+        <button class="icon-btn" type="button" [attr.aria-label]="'common.close' | t" (click)="close()">
           <mb-icon name="x" />
         </button>
       }
@@ -39,10 +39,10 @@
     @if (preparing()) {
       <div class="step">
         <div class="titles">
-          <h1 class="title">Preparo il tuo brand</h1>
-          <p class="body">Studio lo stile dei riferimenti e preparo le prime idee: quando ho finito ti porto in chat.</p>
+          <h1 class="title">{{ 'onboarding.preparing.title' | t }}</h1>
+          <p class="body">{{ 'onboarding.preparing.body' | t }}</p>
         </div>
-        <mb-step-list [steps]="steps()" waiting="Rileggo il brand" />
+        <mb-step-list [steps]="steps()" [waiting]="'onboarding.preparing.waiting' | t" />
       </div>
     } @else {
       @for (key of [step]; track key) {

@@ -1,6 +1,9 @@
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
+import { sections } from '../i18n/messages/sections';
+import { translate } from '../i18n/translate';
 import type { BrandDraft, BrandKind, SectionKey } from './brand';
 import { currentVoiceCard, isConnected } from './brand';
-import { CHANNELS } from './catalog';
+import { CHANNELS, paletteName, positioningLabel } from './catalog';
 import { themeLevelLabel, totalWeight } from './themes';
 
 export type SectionStatus = 'complete' | 'partial' | 'missing';
@@ -13,81 +16,30 @@ export function isSkippable(key: SectionKey): boolean {
   return key === 'voice' || key === 'visual' || key === 'references';
 }
 
-type ByKind = Record<BrandKind, string>;
-
-const same = (text: string): ByKind => ({ person: text, company: text, client: text });
-
-const COPY: Record<SectionKey, { name: ByKind; title: ByKind; subtitle: ByKind }> = {
-  identity: {
-    name: { person: 'Chi sei', company: 'Chi siete', client: 'Il cliente' },
-    title: { person: 'Chi sei e cosa fai', company: 'Chi siete e cosa fate', client: 'Chi è il cliente e cosa fa' },
-    subtitle: {
-      person: 'Serve nei post: nome, ruolo e una frase che dice cosa fai davvero. Se c’è un sito, lo leggo e preparo i passi successivi.',
-      company: 'Serve nei post: nome, settore e una frase che dice cosa fa davvero l’azienda. Se c’è un sito, lo leggo e preparo i passi successivi.',
-      client: 'Serve nei post: nome, settore e una frase che dice cosa fa davvero il cliente. Se c’è un sito, lo leggo e preparo i passi successivi.',
-    },
-  },
-  positioning: {
-    name: same('Obiettivo'),
-    title: { person: 'Perché pubblichi e per chi', company: 'Perché pubblicate e per chi', client: 'Perché pubblica e per chi' },
-    subtitle: {
-      person: 'Da qui decido il taglio: un post per founder non somiglia a un post per candidati.',
-      company: 'Da qui decido il taglio: un post per chi compra non somiglia a un post per chi cerca lavoro.',
-      client: 'Da qui decido il taglio: un post per chi compra non somiglia a un post per chi cerca lavoro.',
-    },
-  },
-  channels: {
-    name: same('Canali'),
-    title: same('Scegli i canali'),
-    subtitle: same('Le proposte si adattano ai canali scelti. Collegarli serve a pubblicare al posto tuo: puoi farlo adesso o più avanti.'),
-  },
-  themes: {
-    name: same('Temi'),
-    title: { person: 'I tuoi temi', company: 'I temi del brand', client: 'I temi del cliente' },
-    subtitle: same('Per ognuno scegli quanto spesso deve uscire: il piano dà più spazio ai temi che escono spesso.'),
-  },
-  voice: {
-    name: same('Voce'),
-    title: { person: 'Come scrivi', company: 'Come scrive il brand', client: 'Come scrive il cliente' },
-    subtitle: same('Leggo testi reali e ne ricavo registro, ritmo e lessico. È la parte che fa la differenza.'),
-  },
-  visual: {
-    name: same('Identità'),
-    title: { person: 'Come vuoi apparire', company: 'Come appare il brand', client: 'Come appare il cliente' },
-    subtitle: same('Logo, colori e qualche immagine che ti piace: ne ricavo lo stile delle card e ti mostro un esempio per ogni canale.'),
-  },
-  references: {
-    name: same('Riferimenti'),
-    title: same('Riferimenti e fonti'),
-    subtitle: same('Profili da cui imparare, fonti dei segnali e le date che contano. Servono a proporre idee con un appiglio reale.'),
-  },
-};
-
-export function sectionCopy(key: SectionKey, kind: BrandKind) {
-  const copy = COPY[key];
+export function sectionCopy(key: SectionKey, kind: BrandKind, locale: Locale = DEFAULT_LOCALE) {
+  const copy = sections[locale][key];
   return { name: copy.name[kind], title: copy.title[kind], subtitle: copy.subtitle[kind] };
 }
 
-export function sectionError(key: SectionKey, draft: BrandDraft): string | null {
+export function sectionError(key: SectionKey, draft: BrandDraft, locale: Locale = DEFAULT_LOCALE): string | null {
   const { identity, positioning, channels, themes } = draft;
+  const errors = sections[locale].errors;
   switch (key) {
     case 'identity':
       if (!identity.name.trim() || !identity.pitch.trim()) {
-        return identity.kind === 'person'
-          ? 'Mi servono almeno il tuo nome e una frase su cosa fai.'
-          : 'Mi servono almeno il nome e una frase su cosa fa.';
+        return identity.kind === 'person' ? errors.identityPerson : errors.identityOther;
       }
       return null;
     case 'positioning':
-      if (positioning.goals.length === 0) return 'Scegli almeno un obiettivo.';
-      if (positioning.audiences.length === 0) return 'Scegli almeno un pubblico.';
+      if (positioning.goals.length === 0) return errors.goal;
+      if (positioning.audiences.length === 0) return errors.audience;
       return null;
     case 'channels':
-      return CHANNELS.some(({ id }) => channels[id].selected) ? null : 'Scegli almeno un canale.';
+      return CHANNELS.some(({ id }) => channels[id].selected) ? null : errors.channel;
     case 'themes':
-      if (themes.length === 0) return 'Serve almeno un tema.';
-      if (themes.some((theme) => !theme.name.trim())) return 'Dai un nome a ogni tema.';
-      if (totalWeight(themes) !== 100) return 'I pesi devono fare 100.';
+      if (themes.length === 0) return errors.theme;
+      if (themes.some((theme) => !theme.name.trim())) return errors.themeName;
+      if (totalWeight(themes) !== 100) return errors.weights;
       return null;
     default:
       return null;
@@ -116,44 +68,47 @@ export function sectionStatus(key: SectionKey, draft: BrandDraft): SectionStatus
   }
 }
 
-export function identityLine(draft: BrandDraft): string {
+export function identityLine(draft: BrandDraft, locale: Locale = DEFAULT_LOCALE): string {
   const { kind, name, role, company, sector } = draft.identity;
   if (kind !== 'person') return [name, sector].filter(Boolean).join(' · ');
-  const job = role && company ? `${role} di ${company}` : role || company;
+  const job = role && company ? translate(locale, 'sections.summary.roleAt', { role, company }) : role || company;
   return [name, job].filter(Boolean).join(' · ');
 }
 
-export function sectionSummary(key: SectionKey, draft: BrandDraft): string {
+export function sectionSummary(key: SectionKey, draft: BrandDraft, locale: Locale = DEFAULT_LOCALE): string {
+  const summary = sections[locale].summary;
+  const t = (name: keyof typeof summary, params: Record<string, string | number>) => translate(locale, `sections.summary.${name}`, params);
   switch (key) {
     case 'identity':
-      return identityLine(draft) || 'Da completare';
+      return identityLine(draft, locale) || summary.toComplete;
     case 'positioning': {
       const { goals, audiences, postsPerWeek } = draft.positioning;
-      const parts = [goals.join(', '), audiences.length ? `per ${audiences.join(', ')}` : ''];
-      parts.push(`${postsPerWeek} ${postsPerWeek === 1 ? 'uscita' : 'uscite'} a settimana`);
+      const label = (value: string) => positioningLabel(value, locale);
+      const parts = [goals.map(label).join(', '), audiences.length ? t('forAudiences', { audiences: audiences.map(label).join(', ') }) : ''];
+      parts.push(t('postsPerWeek', { n: postsPerWeek }));
       return parts.filter(Boolean).join(' · ');
     }
     case 'channels': {
       const selected = CHANNELS.filter(({ id }) => draft.channels[id].selected);
-      if (selected.length === 0) return 'Nessun canale scelto';
-      return selected.map(({ id, name }) => `${name} ${isConnected(draft.channels[id]) ? 'collegato' : 'da collegare'}`).join(' · ');
+      if (selected.length === 0) return summary.noChannels;
+      return selected.map(({ id, name }) => t(isConnected(draft.channels[id]) ? 'connected' : 'toConnect', { channel: name })).join(' · ');
     }
     case 'themes':
       return draft.themes.length
-        ? draft.themes.map((theme) => `${theme.name} (${themeLevelLabel(theme).toLowerCase()})`).join(' · ')
-        : 'Nessun tema';
+        ? draft.themes.map((theme) => `${theme.name} (${themeLevelLabel(theme, locale).toLowerCase()})`).join(' · ')
+        : summary.noThemes;
     case 'voice': {
       const card = currentVoiceCard(draft.voice);
-      return card ? `Scheda v${card.version} da ${card.sourceLabel}` : 'Da completare: nessun testo analizzato';
+      return card ? t('voiceCard', { version: card.version, source: card.sourceLabel }) : summary.noVoice;
     }
     case 'visual': {
       const { logoUri, palette, signature, references = [], line } = draft.visual;
       return [
-        logoUri ? 'Logo caricato' : 'Nessun logo',
-        palette.name.toLowerCase(),
-        references.length > 0 ? `${references.length} ${references.length === 1 ? 'riferimento' : 'riferimenti'}` : '',
-        line ? 'linea pronta' : '',
-        signature && logoUri ? 'firma sulle card' : '',
+        logoUri ? summary.logo : summary.noLogo,
+        paletteName(palette, locale).toLowerCase(),
+        references.length > 0 ? t('references', { n: references.length }) : '',
+        line ? summary.lineReady : '',
+        signature && logoUri ? summary.signature : '',
       ]
         .filter(Boolean)
         .join(' · ');
@@ -161,7 +116,7 @@ export function sectionSummary(key: SectionKey, draft: BrandDraft): string {
     case 'references': {
       const { profiles, sources, milestones } = draft.references;
       const enabled = sources.filter((source) => source.enabled).length;
-      return `${profiles.length} ${profiles.length === 1 ? 'profilo' : 'profili'} · ${enabled} fonti · ${milestones.length} ${milestones.length === 1 ? 'data' : 'date'}`;
+      return t('sources', { profiles: profiles.length, sources: enabled, dates: milestones.length });
     }
   }
 }

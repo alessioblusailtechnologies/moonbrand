@@ -5,9 +5,12 @@ import type { BrandProfile, ChannelChoice, ChannelChoicesRequest } from '@moonbr
 import type { ChannelId, SectionKey } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName, kindLabel } from '@moonbrand/shared/domain/catalog';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
@@ -15,23 +18,23 @@ import { ToastService } from '../../ui/toast';
 import { ChannelChoiceDialog } from './channel-choice';
 import { SectionEditor } from './section-editor';
 
-const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
+const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }> = {
   complete: { color: 'var(--mint-400)', label: null },
-  partial: { color: 'var(--accent-soft)', label: 'Da completare' },
-  missing: { color: 'var(--grey-300)', label: 'Da fare' },
+  partial: { color: 'var(--accent-soft)', label: 'profile.page.toComplete' },
+  missing: { color: 'var(--grey-300)', label: 'profile.page.toDo' },
 };
 
 @Component({
   selector: 'mb-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon, SectionEditor, ChannelChoiceDialog],
+  imports: [BrandAvatar, Icon, SectionEditor, ChannelChoiceDialog, TranslatePipe],
   template: `
     @if (brands.activeBrand(); as brand) {
       <section class="profile">
         <header class="head">
           <mb-brand-avatar [name]="brand.name" [logo]="brand.logoUri" [color]="brand.color" [size]="64" />
           <div class="grow texts">
-            <span class="label">{{ kindLabel(brand.kind) }}</span>
+            <span class="label">{{ kindLabel(brand.kind, i18n.locale()) }}</span>
             <h1 class="title">{{ brand.name }}</h1>
             @if (line()) {
               <p class="caption">{{ line() }}</p>
@@ -50,21 +53,21 @@ const STATUS: Record<SectionStatus, { color: string; label: string | null }> = {
                   <span class="name">
                     <span class="strong-sm">{{ row.name }}</span>
                     @if (row.status) {
-                      <span class="badge">{{ row.status }}</span>
+                      <span class="badge">{{ row.status | t }}</span>
                     }
                   </span>
                   <span class="caption summary">{{ row.summary }}</span>
                 </span>
-                <span class="edit caption">Modifica</span>
+                <span class="edit caption">{{ 'common.edit' | t }}</span>
                 <mb-icon name="chevron-right" [size]="16" class="chevron" />
               </button>
             }
           </div>
-          <p class="caption">Ogni modifica vale dalle prossime idee e dai prossimi contenuti; quelli già scritti restano come sono.</p>
+          <p class="caption">{{ 'profile.page.note' | t }}</p>
         } @else {
           <div class="empty">
-            <p class="strong-sm">Non riesco a leggere il profilo</p>
-            <button class="btn btn-secondary btn-sm" type="button" (click)="load(brand.id)">Riprova</button>
+            <p class="strong-sm">{{ 'profile.page.loadFailedTitle' | t }}</p>
+            <button class="btn btn-secondary btn-sm" type="button" (click)="load(brand.id)">{{ 'common.retry' | t }}</button>
           </div>
         }
       </section>
@@ -169,6 +172,7 @@ export class ProfilePage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   protected readonly brands = inject(BrandsService);
+  protected readonly i18n = inject(I18nService);
   protected readonly kindLabel = kindLabel;
 
   protected readonly profile = signal<BrandProfile | null>(null);
@@ -182,20 +186,22 @@ export class ProfilePage {
 
   protected readonly line = computed(() => {
     const draft = this.profile()?.draft;
-    return draft ? identityLine(draft) : '';
+    return draft ? identityLine(draft, this.i18n.locale()) : '';
   });
 
   protected readonly rows = computed(() => {
     const draft = this.profile()?.draft;
     if (!draft) return [];
+    const locale = this.i18n.locale();
     return SECTION_KEYS.map((key) => {
       const status = STATUS[sectionStatus(key, draft)];
-      return { key, name: sectionCopy(key, draft.identity.kind).name, summary: sectionSummary(key, draft), color: status.color, status: status.label };
+      const name = sectionCopy(key, draft.identity.kind, locale).name;
+      return { key, name, summary: sectionSummary(key, draft, locale), color: status.color, status: status.label };
     });
   });
 
   constructor() {
-    pageHeader(() => [{ label: 'Impostazioni brand' }]);
+    pageHeader(() => [{ label: this.i18n.t('profile.title') }]);
     void this.finishConnection();
     effect(() => {
       const brandId = this.activeId();
@@ -226,20 +232,20 @@ export class ProfilePage {
         const choices = await this.brands.channelChoices(brandId, channel, request);
         this.choosing.set({ brandId, channel, choices, request });
       } catch (error) {
-        this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`));
+        this.toast.show(errorMessage(error, this.failed(channel)));
       }
       return;
     }
     if (failed || !accountId) {
-      this.toast.show(params.get('error_message') ?? `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`);
+      this.toast.show(params.get('error_message') ?? this.failed(channel));
       return;
     }
     try {
       const { state } = await this.brands.confirmChannel(brandId, channel, accountId);
-      this.toast.show(`${channelName(channel)} collegato come ${state.handle}.`);
+      this.toast.show(this.i18n.t('profile.connection.connected', { channel: channelName(channel), handle: state.handle ?? '' }));
       if (this.activeId() === brandId) await this.load(brandId);
     } catch (error) {
-      this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(channel)}. Riprova.`));
+      this.toast.show(errorMessage(error, this.failed(channel)));
     }
   }
 
@@ -250,10 +256,10 @@ export class ProfilePage {
     try {
       const { state } = await this.brands.selectChannel(pending.brandId, pending.channel, { ...pending.request, choiceId });
       this.choosing.set(null);
-      this.toast.show(`${channelName(pending.channel)} collegato come ${state.handle}.`);
+      this.toast.show(this.i18n.t('profile.connection.connected', { channel: channelName(pending.channel), handle: state.handle ?? '' }));
       if (this.activeId() === pending.brandId) await this.load(pending.brandId);
     } catch (error) {
-      this.toast.show(errorMessage(error, `Non sono riuscito a collegare ${channelName(pending.channel)}. Riprova.`));
+      this.toast.show(errorMessage(error, this.failed(pending.channel)));
     } finally {
       this.selecting.set(false);
     }
@@ -262,7 +268,11 @@ export class ProfilePage {
   protected cancelChoice(): void {
     const pending = this.choosing();
     this.choosing.set(null);
-    if (pending) this.toast.show(`Collegamento di ${channelName(pending.channel)} annullato.`);
+    if (pending) this.toast.show(this.i18n.t('profile.connection.cancelled', { channel: channelName(pending.channel) }));
+  }
+
+  private failed(channel: ChannelId): string {
+    return this.i18n.t('profile.connection.failed', { channel: channelName(channel) });
   }
 
   protected async load(brandId: string): Promise<void> {
@@ -273,7 +283,7 @@ export class ProfilePage {
       if (this.activeId() === brandId) this.profile.set(profile);
     } catch (error) {
       this.profile.set(null);
-      this.toast.show(errorMessage(error, 'Non riesco a leggere il profilo. Riprova tra poco.'));
+      this.toast.show(errorMessage(error, this.i18n.t('profile.page.loadFailed')));
     } finally {
       if (this.activeId() === brandId) this.loading.set(false);
     }

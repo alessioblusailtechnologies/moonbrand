@@ -9,13 +9,13 @@
 
     @if ((ready() || scripted()) && !preparing()) {
       <div class="channel-bar">
-        <p class="label">Esce su</p>
+        <p class="label">{{ 'contents.page.channels' | t }}</p>
         <div class="chips">
           @for (channel of current.channels; track channel) {
             <span class="chip selected on-channel" [class.removable]="current.channels.length > 1">
               {{ name(channel) }}
               @if (current.channels.length > 1) {
-                <button class="remove" type="button" [attr.aria-label]="'Togli ' + name(channel)" [disabled]="changingChannels()"
+                <button class="remove" type="button" [attr.aria-label]="'contents.page.removeChannel' | t: { channel: name(channel) }" [disabled]="changingChannels()"
                   (click)="removeChannel(channel)">
                   <mb-icon name="x" [size]="14" />
                 </button>
@@ -41,7 +41,7 @@
     @if (preparing()) {
       <div class="panel">
         <p class="strong-sm">{{ workLabel() }}</p>
-        <mb-step-list [steps]="steps()" waiting="Rileggo l’idea e il brand" />
+        <mb-step-list [steps]="steps()" [waiting]="'contents.page.waiting' | t" />
         <mb-pending-media [tiles]="pending()" />
       </div>
     }
@@ -57,14 +57,14 @@
     @if (ready() || scripted()) {
       @if (current.conversationId) {
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
-          <mb-icon name="message-circle" [size]="16" /> Ritocca nella conversazione
+          <mb-icon name="message-circle" [size]="16" /> {{ 'contents.page.refineInChat' | t }}
         </a>
       } @else {
         <div class="row edit">
-          <input class="sunken grow" aria-label="Cosa ritoccare"
-            [placeholder]="ready() ? 'Cosa cambio? es. più corto su Instagram, un’altra foto in copertina' : 'Cosa cambio nel copione? es. più breve, apri con una domanda'"
+          <input class="sunken grow" [attr.aria-label]="'contents.page.refineLabel' | t"
+            [placeholder]="(ready() ? 'contents.page.refinePlaceholder' : 'contents.page.refineScriptPlaceholder') | t"
             [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
-          <button class="icon-btn solid" type="button" aria-label="Invia il ritocco" [disabled]="preparing() || !instruction().trim()" (click)="send()">
+          <button class="icon-btn solid" type="button" [attr.aria-label]="'contents.page.sendRefine' | t" [disabled]="preparing() || !instruction().trim()" (click)="send()">
             <mb-icon name="arrow-up" />
           </button>
         </div>
@@ -77,11 +77,11 @@
 <ng-template #headerActions>
   @if (content(); as current) {
     @if (!current.conversationId) {
-      <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">Rigenera da zero</button>
+      <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">{{ 'contents.page.regenerate' | t }}</button>
     }
     <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
       (click)="toggleApproved()">
-      {{ current.status === 'approved' ? 'Riapri' : 'Approva' }}
+      {{ (current.status === 'approved' ? 'contents.page.reopen' : 'contents.page.approve') | t }}
     </button>
   }
 </ng-template>

@@ -3,8 +3,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import { currentVoiceCard, isConnected, type BrandDraft, type VoiceCard } from '@moonbrand/shared/domain/brand';
 import { CHANNELS } from '@moonbrand/shared/domain/catalog';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { errorMessage } from '../../../core/errors';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon, type IconName } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
@@ -12,21 +15,20 @@ import { DraftStore } from '../draft-store';
 import { MockAi, type VoiceAnalysis, type VoiceSample } from '../mock-ai';
 
 const ROWS = [
-  { key: 'register', label: 'Registro' },
-  { key: 'rhythm', label: 'Ritmo' },
-  { key: 'lexicon', label: 'Lessico ammesso' },
-  { key: 'avoid', label: 'Da evitare' },
-] as const;
+  { key: 'register', label: 'onboarding.voice.rows.register' },
+  { key: 'rhythm', label: 'onboarding.voice.rows.rhythm' },
+  { key: 'lexicon', label: 'onboarding.voice.rows.lexicon' },
+  { key: 'avoid', label: 'onboarding.voice.rows.avoid' },
+] as const satisfies readonly { key: string; label: MessageKey }[];
 
 type RowKey = (typeof ROWS)[number]['key'];
 type Mode = 'sources' | 'paste' | 'recording';
 
-const dateFormat = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 @Component({
   selector: 'mb-voice-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, StepList],
+  imports: [Icon, StepList, TranslatePipe],
   templateUrl: './voice-step.html',
   styleUrl: './voice-step.scss',
 })
@@ -34,6 +36,7 @@ export class VoiceStep {
   private readonly ai = inject(MockAi);
   private readonly toast = inject(ToastService);
   private readonly store = inject(DraftStore);
+  private readonly i18n = inject(I18nService);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly rows = ROWS;
@@ -56,24 +59,28 @@ export class VoiceStep {
     return [
       {
         key: 'paste',
-        title: 'Incolla qualche testo',
-        meta: 'Il modo più veloce: copia da LinkedIn, dal sito o dalle note',
+        title: this.i18n.t('onboarding.voice.sources.pasteTitle'),
+        meta: this.i18n.t('onboarding.voice.sources.pasteMeta'),
         icon: 'clipboard',
         disabled: false,
         run: () => this.mode.set('paste'),
       },
       {
         key: 'history',
-        title: channel ? `Leggi lo storico di ${channel.name}` : 'Leggi lo storico di un canale',
-        meta: channel ? `Leggo gli ultimi post pubblicati da ${this.draft().channels[channel.id].handle}` : 'Serve un canale collegato',
+        title: channel
+          ? this.i18n.t('onboarding.voice.sources.historyTitleChannel', { channel: channel.name })
+          : this.i18n.t('onboarding.voice.sources.historyTitle'),
+        meta: channel
+          ? this.i18n.t('onboarding.voice.sources.historyMetaHandle', { handle: this.draft().channels[channel.id].handle ?? '' })
+          : this.i18n.t('onboarding.voice.sources.historyMeta'),
         icon: 'history',
         disabled: !channel,
         run: () => channel && void this.analyze({ source: 'history', channel: channel.id }),
       },
       {
         key: 'recording',
-        title: 'Registra un minuto di voce',
-        meta: 'Racconta com’è andata la settimana: trascrivo e ne ricavo il ritmo',
+        title: this.i18n.t('onboarding.voice.sources.recordingTitle'),
+        meta: this.i18n.t('onboarding.voice.sources.recordingMeta'),
         icon: 'mic',
         disabled: false,
         run: () => this.startRecording(),
@@ -81,12 +88,16 @@ export class VoiceStep {
     ];
   });
 
+  private readonly dateFormat = computed(
+    () => new Intl.DateTimeFormat(this.i18n.intl(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+  );
+
   constructor() {
     inject(DestroyRef).onDestroy(() => clearInterval(this.timer));
   }
 
   protected formatDate(iso: string): string {
-    return dateFormat.format(new Date(iso));
+    return this.dateFormat().format(new Date(iso));
   }
 
   protected clock(): string {
@@ -96,7 +107,7 @@ export class VoiceStep {
 
   protected submitTexts(): void {
     if (this.texts().trim().length < 40) {
-      this.toast.show('Incolla almeno qualche riga scritta da te.');
+      this.toast.show(this.i18n.t('onboarding.voice.tooShort'));
       return;
     }
     void this.analyze({ source: 'pasted', texts: this.texts() });
@@ -130,7 +141,7 @@ export class VoiceStep {
 
   protected restore(older: VoiceCard): void {
     const { version: _version, createdAt: _createdAt, ...content } = older;
-    this.toast.show(`Ripristinata come v${this.append(content)}.`);
+    this.toast.show(this.i18n.t('onboarding.voice.restored', { n: this.append(content) }));
   }
 
   protected addMore(): void {
@@ -143,13 +154,13 @@ export class VoiceStep {
     this.analyzing.set(true);
     this.steps.set([]);
     try {
-      const analysis = await this.ai.analyzeVoice(sample, this.draft().identity, (steps) => this.steps.set(steps));
+      const analysis = await this.ai.analyzeVoice(sample, this.draft().identity, this.i18n.locale(), (steps) => this.steps.set(steps));
       const version = this.append(analysis);
       this.adding.set(false);
       this.texts.set('');
-      this.toast.show(`Scheda voce v${version} pronta.`);
+      this.toast.show(this.i18n.t('onboarding.voice.ready', { n: version }));
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Analisi non riuscita. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.voice.failed')));
     } finally {
       this.analyzing.set(false);
     }

@@ -1,14 +1,20 @@
 import { palette } from '../design/tokens';
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
+import { catalog } from '../i18n/messages/catalog';
+import { translate, type MessageKey } from '../i18n/translate';
 import type { BrandDraft, BrandKind, ChannelId, Channels, Palette, SignalSource, TypographyId } from './brand';
 
-export const KIND_OPTIONS: { kind: BrandKind; title: string; meta: string; label: string }[] = [
-  { kind: 'person', title: 'Per me', meta: 'Personal brand: parli in prima persona, con il tuo nome', label: 'Personal brand' },
-  { kind: 'company', title: 'Per la mia azienda', meta: 'Il brand parla a nome del team, dei servizi e dei prodotti', label: 'Azienda' },
-  { kind: 'client', title: 'Per un cliente', meta: 'Curi la presenza di qualcun altro, come agenzia o freelance', label: 'Cliente' },
-];
+// I testi del catalogo sono nei dizionari (i18n/messages/catalog): le funzioni qui sotto li danno nella lingua chiesta,
+// di base l'italiano, che è quella dei prompt del motore.
 
-export function kindLabel(kind: BrandKind): string {
-  return KIND_OPTIONS.find((option) => option.kind === kind)?.label ?? '';
+const KINDS: BrandKind[] = ['person', 'company', 'client'];
+
+export function kindOptions(locale: Locale = DEFAULT_LOCALE): { kind: BrandKind; title: string; meta: string; label: string }[] {
+  return KINDS.map((kind) => ({ kind, ...catalog[locale].kinds[kind] }));
+}
+
+export function kindLabel(kind: BrandKind, locale: Locale = DEFAULT_LOCALE): string {
+  return catalog[locale].kinds[kind]?.label ?? '';
 }
 
 export const CHANNELS: { id: ChannelId; name: string }[] = [
@@ -35,28 +41,38 @@ export function channelName(id: ChannelId): string {
   return CHANNELS.find((channel) => channel.id === id)?.name ?? id;
 }
 
-const BUSINESS_GOALS = [
-  'Far conoscere il brand',
-  'Vendere di più',
-  'Fidelizzare i clienti',
-  'Lanciare un prodotto',
-  'Attirare candidati',
-  'Costruire una community',
-];
+// Obiettivi e pubblici proposti: si salvano con l'id (goals.sellMore, audiences.consumers) e si mostrano con
+// positioningLabel. Quelli scritti da chi usa l'app o letti dal sito restano testo, nella lingua in cui sono scritti.
+type GoalId = keyof (typeof catalog)['it']['goals'];
+type AudienceId = keyof (typeof catalog)['it']['audiences'];
+
+const goals = (ids: GoalId[]) => ids.map((id) => `goals.${id}`);
+const audiences = (ids: AudienceId[]) => ids.map((id) => `audiences.${id}`);
+
+const BUSINESS_GOALS = goals(['awareness', 'sellMore', 'loyalty', 'launch', 'hiring', 'community']);
 
 export const GOALS: Record<BrandKind, string[]> = {
-  person: ['Autorevolezza nel settore', 'Trovare clienti', 'Attirare candidati', 'Raccogliere investimenti', 'Costruire una community'],
+  person: goals(['authority', 'clients', 'hiring', 'funding', 'community']),
   company: BUSINESS_GOALS,
   client: BUSINESS_GOALS,
 };
 
-const BUSINESS_AUDIENCES = ['Clienti privati', 'Aziende', 'Rivenditori', 'Candidati', 'Community locale'];
+const BUSINESS_AUDIENCES = audiences(['consumers', 'businesses', 'resellers', 'candidates', 'local']);
 
 export const AUDIENCES: Record<BrandKind, string[]> = {
-  person: ['Founder di PMI', 'Direttori operativi', 'Sviluppatori', 'Investitori', 'Candidati'],
+  person: audiences(['founders', 'operations', 'developers', 'investors', 'candidates']),
   company: BUSINESS_AUDIENCES,
   client: BUSINESS_AUDIENCES,
 };
+
+const POSITIONING_ID = /^(goals|audiences)\.\w+$/;
+
+// Un obiettivo o un pubblico come si legge: l'etichetta se è una voce del catalogo, altrimenti il testo com'è.
+export function positioningLabel(value: string, locale: Locale = DEFAULT_LOCALE): string {
+  if (!POSITIONING_ID.test(value)) return value;
+  const label = translate(locale, `catalog.${value}` as MessageKey);
+  return label === `catalog.${value}` ? value : label;
+}
 
 export const THEME_COLORS = [palette.navy700, palette.orange500, palette.lime400, palette.mint400, palette.yellow400, palette.navy500];
 
@@ -66,23 +82,56 @@ export const PALETTE_PRESETS: Palette[] = [
   { id: 'navy-grey', name: 'Solo navy e grigio', colors: ['#2F3452', '#8A8F9A', '#CDD1D4', '#ECEEEF'], origin: 'preset' },
 ];
 
-export const PALETTE_SLOT_LABELS = ['Principale', 'Secondario', 'Accento', 'Sfondo'] as const;
+const PRESET_NAMES: Record<string, keyof (typeof catalog)['it']['palettes']> = {
+  'indigo-coral': 'indigoCoral',
+  'navy-lime': 'navyLime',
+  'navy-grey': 'navyGrey',
+};
+
+// Il nome di una palette nella lingua chiesta: quelle preimpostate, e quelle dal sito o scelte a mano finché hanno il nome
+// che dà l'app («Dal sito», «I miei colori»); un nome dato da chi la usa resta com'è.
+export function paletteName(value: Pick<Palette, 'id' | 'name' | 'origin'>, locale: Locale = DEFAULT_LOCALE): string {
+  const names = catalog[locale].palettes;
+  if (value.origin === 'preset') return PRESET_NAMES[value.id] ? names[PRESET_NAMES[value.id]] : value.name;
+  return value.name === catalog.it.palettes[value.origin] ? names[value.origin] : value.name;
+}
+
+// I ruoli dei quattro colori della palette, nell'ordine.
+export function paletteSlotLabels(locale: Locale = DEFAULT_LOCALE): [string, string, string, string] {
+  const { main, secondary, accent, background } = catalog[locale].paletteSlots;
+  return [main, secondary, accent, background];
+}
 
 export interface FontFace {
   family: string;
   weight: number;
 }
 
-export const TYPOGRAPHY_OPTIONS: { id: TypographyId; name: string; heading: FontFace; body: FontFace }[] = [
-  { id: 'inter', name: 'Moderno', heading: { family: 'Inter Tight', weight: 700 }, body: { family: 'Inter', weight: 400 } },
-  { id: 'archivo', name: 'Deciso', heading: { family: 'Archivo', weight: 800 }, body: { family: 'Archivo', weight: 400 } },
-  { id: 'space-grotesk', name: 'Tecnico', heading: { family: 'Space Grotesk', weight: 700 }, body: { family: 'Inter', weight: 400 } },
-  { id: 'manrope', name: 'Morbido', heading: { family: 'Manrope', weight: 800 }, body: { family: 'Manrope', weight: 400 } },
-  { id: 'fraunces', name: 'Editoriale', heading: { family: 'Fraunces', weight: 700 }, body: { family: 'Inter', weight: 400 } },
-  { id: 'dm-serif', name: 'Elegante', heading: { family: 'DM Serif Display', weight: 400 }, body: { family: 'DM Sans', weight: 400 } },
-  { id: 'playfair', name: 'Classico', heading: { family: 'Playfair Display', weight: 700 }, body: { family: 'Source Sans 3', weight: 400 } },
-  { id: 'ibm-plex', name: 'Istituzionale', heading: { family: 'IBM Plex Sans', weight: 700 }, body: { family: 'IBM Plex Sans', weight: 400 } },
+export const TYPOGRAPHY_OPTIONS: { id: TypographyId; heading: FontFace; body: FontFace }[] = [
+  { id: 'inter', heading: { family: 'Inter Tight', weight: 700 }, body: { family: 'Inter', weight: 400 } },
+  { id: 'archivo', heading: { family: 'Archivo', weight: 800 }, body: { family: 'Archivo', weight: 400 } },
+  { id: 'space-grotesk', heading: { family: 'Space Grotesk', weight: 700 }, body: { family: 'Inter', weight: 400 } },
+  { id: 'manrope', heading: { family: 'Manrope', weight: 800 }, body: { family: 'Manrope', weight: 400 } },
+  { id: 'fraunces', heading: { family: 'Fraunces', weight: 700 }, body: { family: 'Inter', weight: 400 } },
+  { id: 'dm-serif', heading: { family: 'DM Serif Display', weight: 400 }, body: { family: 'DM Sans', weight: 400 } },
+  { id: 'playfair', heading: { family: 'Playfair Display', weight: 700 }, body: { family: 'Source Sans 3', weight: 400 } },
+  { id: 'ibm-plex', heading: { family: 'IBM Plex Sans', weight: 700 }, body: { family: 'IBM Plex Sans', weight: 400 } },
 ];
+
+const TYPOGRAPHY_NAMES: Record<TypographyId, keyof (typeof catalog)['it']['typography']> = {
+  inter: 'inter',
+  archivo: 'archivo',
+  'space-grotesk': 'spaceGrotesk',
+  manrope: 'manrope',
+  fraunces: 'fraunces',
+  'dm-serif': 'dmSerif',
+  playfair: 'playfair',
+  'ibm-plex': 'ibmPlex',
+};
+
+export function typographyName(id: TypographyId, locale: Locale = DEFAULT_LOCALE): string {
+  return catalog[locale].typography[TYPOGRAPHY_NAMES[id]];
+}
 
 export function typographyOption(id: TypographyId | undefined) {
   return TYPOGRAPHY_OPTIONS.find((option) => option.id === id) ?? TYPOGRAPHY_OPTIONS[0];
@@ -123,27 +172,43 @@ export function lineFontId(family: string): string | null {
   return LINE_FONTS.find((font) => font.family === family)?.id ?? null;
 }
 
-const BUSINESS_SOURCES = (milestones: string): SignalSource[] => [
-  { label: 'Testate di settore', enabled: true },
-  { label: 'Recensioni dei clienti', enabled: true },
-  { label: 'Trend su Instagram e TikTok', enabled: true },
-  { label: 'Fiere ed eventi', enabled: true },
-  { label: 'Ricorrenze e stagionalità', enabled: true },
-  { label: milestones, enabled: true },
+// Le fonti dei segnali proposte: si salvano con l'id (milestones vale per tutti i tipi di brand, cambia solo come si
+// legge) e l'etichetta italiana, che resta per chi legge i dati senza dizionario.
+type SourceId = keyof (typeof catalog)['it']['sources'] | 'milestones';
+
+const source = (kind: BrandKind, id: SourceId, enabled = true): SignalSource => ({ id, label: sourceText(kind, id, DEFAULT_LOCALE), enabled });
+
+function sourceText(kind: BrandKind, id: SourceId, locale: Locale): string {
+  return id === 'milestones' ? catalog[locale].milestones[kind] : catalog[locale].sources[id];
+}
+
+const BUSINESS_SOURCES = (kind: BrandKind): SignalSource[] => [
+  source(kind, 'tradePress'),
+  source(kind, 'reviews'),
+  source(kind, 'socialTrends'),
+  source(kind, 'events'),
+  source(kind, 'seasons'),
+  source(kind, 'milestones'),
 ];
 
 const DEFAULT_SOURCES: Record<BrandKind, SignalSource[]> = {
   person: [
-    { label: 'Stampa economica', enabled: true },
-    { label: 'Testate di settore', enabled: true },
-    { label: 'La tua rete LinkedIn', enabled: true },
-    { label: 'Eventi di settore', enabled: true },
-    { label: 'Discussioni su X', enabled: false },
-    { label: 'Le tue milestone', enabled: true },
+    source('person', 'businessPress'),
+    source('person', 'tradePress'),
+    source('person', 'linkedinNetwork'),
+    source('person', 'industryEvents'),
+    source('person', 'xDiscussions', false),
+    source('person', 'milestones'),
   ],
-  company: BUSINESS_SOURCES('Le milestone dell’azienda'),
-  client: BUSINESS_SOURCES('Le milestone del cliente'),
+  company: BUSINESS_SOURCES('company'),
+  client: BUSINESS_SOURCES('client'),
 };
+
+// Una fonte come si legge: quelle del catalogo nella lingua chiesta, le altre con la loro etichetta.
+export function sourceLabel(value: SignalSource, kind: BrandKind, locale: Locale = DEFAULT_LOCALE): string {
+  const id = value.id as SourceId | undefined;
+  return id && (id === 'milestones' || id in catalog[locale].sources) ? sourceText(kind, id, locale) : value.label;
+}
 
 function emptyChannels(): Channels {
   const channels = {} as Channels;
@@ -151,9 +216,10 @@ function emptyChannels(): Channels {
   return channels;
 }
 
-export function createEmptyDraft(kind: BrandKind): BrandDraft {
+// language: la lingua in cui il brand pubblicherà; di solito quella di chi lo crea.
+export function createEmptyDraft(kind: BrandKind, language: Locale = DEFAULT_LOCALE): BrandDraft {
   return {
-    identity: { kind, name: '', role: '', company: '', sector: '', site: '', pitch: '' },
+    identity: { kind, name: '', role: '', company: '', sector: '', site: '', pitch: '', language },
     positioning: { goals: [], audiences: [], postsPerWeek: 3 },
     channels: emptyChannels(),
     themes: [],

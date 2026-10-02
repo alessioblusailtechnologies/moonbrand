@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Injectable, computed, inject, signal } from '@angular/core';
 
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { Icon } from './icon';
 import { lockPageScroll } from './scroll-lock';
 
@@ -33,7 +34,7 @@ export class LightboxService {
 @Component({
   selector: 'mb-lightbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   host: {
     '(document:keydown.escape)': 'service.close()',
     '(document:keydown.arrowleft)': 'service.move(-1)',
@@ -42,15 +43,15 @@ export class LightboxService {
   template: `
     @if (current(); as image) {
       <div class="backdrop" (click)="service.close()"></div>
-      <div class="viewer" role="dialog" aria-modal="true" aria-label="Immagine ingrandita">
-        <button class="icon-btn close" type="button" aria-label="Chiudi" (click)="service.close()">
+      <div class="viewer" role="dialog" aria-modal="true" [attr.aria-label]="'ui.lightbox.label' | t">
+        <button class="icon-btn close" type="button" [attr.aria-label]="'common.close' | t" (click)="service.close()">
           <mb-icon name="x" />
         </button>
         @if (count() > 1) {
-          <button class="icon-btn nav prev" type="button" aria-label="Immagine precedente" (click)="service.move(-1)">
+          <button class="icon-btn nav prev" type="button" [attr.aria-label]="'ui.lightbox.previous' | t" (click)="service.move(-1)">
             <mb-icon name="chevron-left" />
           </button>
-          <button class="icon-btn nav next" type="button" aria-label="Immagine successiva" (click)="service.move(1)">
+          <button class="icon-btn nav next" type="button" [attr.aria-label]="'ui.lightbox.next' | t" (click)="service.move(1)">
             <mb-icon name="chevron-right" />
           </button>
         }

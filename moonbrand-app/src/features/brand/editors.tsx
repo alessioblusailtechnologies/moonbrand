@@ -3,8 +3,8 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import type { AiStep, WebsiteInsights } from '@moonbrand/shared/ai/steps';
 import type { BrandDraft, BrandKind, Identity, Positioning, Theme } from '@moonbrand/shared/domain/brand';
-import { AUDIENCES, CHANNELS, GOALS, KIND_OPTIONS } from '@moonbrand/shared/domain/catalog';
-import { addTheme, MAX_THEMES, removeTheme, setThemeLevel, THEME_LEVELS, themeLevel } from '@moonbrand/shared/domain/themes';
+import { AUDIENCES, CHANNELS, GOALS, kindOptions, positioningLabel } from '@moonbrand/shared/domain/catalog';
+import { addTheme, MAX_THEMES, removeTheme, setThemeLevel, themeLevel, themeLevels } from '@moonbrand/shared/domain/themes';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
 import { readWebsite } from '../../lib/services';
@@ -18,7 +18,7 @@ import { useToast } from '../../ui/toast';
 export function KindEditor({ kind, onChange }: { kind: BrandKind | null; onChange: (kind: BrandKind) => void }) {
   return (
     <View style={{ gap: 10 }}>
-      {KIND_OPTIONS.map((option) => {
+      {kindOptions().map((option) => {
         const on = option.kind === kind;
         return (
           <Pressable key={option.kind} onPress={() => onChange(option.kind)} style={[styles.option, on && styles.optionOn]} accessibilityRole="radio" accessibilityState={{ checked: on }}>
@@ -172,7 +172,7 @@ export function PositioningEditor({ draft, onChange, insights }: { draft: BrandD
         <T variant="label">{GOAL_LABEL[kind]}</T>
         <View style={styles.chips}>
           {goals.map((goal) => (
-            <Chip key={goal} label={goal} selected={value.goals.includes(goal)} onPress={() => set({ goals: toggle(value.goals, goal) })} />
+            <Chip key={goal} label={positioningLabel(goal)} selected={value.goals.includes(goal)} onPress={() => set({ goals: toggle(value.goals, goal) })} />
           ))}
         </View>
       </View>
@@ -180,7 +180,7 @@ export function PositioningEditor({ draft, onChange, insights }: { draft: BrandD
         <T variant="label">{AUDIENCE_LABEL[kind]}</T>
         <View style={styles.chips}>
           {audiences.map((audience) => (
-            <Chip key={audience} label={audience} selected={value.audiences.includes(audience)} onPress={() => set({ audiences: toggle(value.audiences, audience) })} />
+            <Chip key={audience} label={positioningLabel(audience)} selected={value.audiences.includes(audience)} onPress={() => set({ audiences: toggle(value.audiences, audience) })} />
           ))}
         </View>
         <View style={styles.siteRow}>
@@ -253,7 +253,7 @@ export function ThemesEditor({ themes, onChange }: { themes: Theme[]; onChange: 
             <IconButton name="trash-2" label={`Togli ${theme.name || 'il tema'}`} onPress={() => onChange(removeTheme(themes, index))} size={34} color={colors.body} />
           </View>
           <Segmented
-            options={THEME_LEVELS.map((level) => ({ key: level.value, label: level.label }))}
+            options={themeLevels().map((level) => ({ key: level.value, label: level.label }))}
             value={themeLevel(theme)}
             onChange={(level) => onChange(setThemeLevel(themes, index, level))}
           />

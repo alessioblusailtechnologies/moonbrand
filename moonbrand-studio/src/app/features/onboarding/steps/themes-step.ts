@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal, ty
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandDraft, Theme, ThemeLevel } from '@moonbrand/shared/domain/brand';
-import { addTheme, createThemes, MAX_THEMES, removeTheme, setThemeLevel, THEME_LEVELS, themeLevel } from '@moonbrand/shared/domain/themes';
+import { addTheme, createThemes, MAX_THEMES, removeTheme, setThemeLevel, themeLevels, themeLevel } from '@moonbrand/shared/domain/themes';
 
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
@@ -13,36 +15,39 @@ import { MockAi } from '../mock-ai';
 @Component({
   selector: 'mb-themes-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, StepList],
+  imports: [Icon, StepList, TranslatePipe],
   template: `
     @if (themes().length === 0) {
       <div class="panel">
         @if (suggesting()) {
-          <p class="strong-sm">Sto proponendo i temi a partire da quello che fai</p>
+          <p class="strong-sm">{{ 'onboarding.themes.suggesting' | t }}</p>
           <mb-step-list [steps]="steps()" />
         } @else {
-          <p class="strong-sm">Nessun tema per ora</p>
-          <button class="link-btn" type="button" (click)="save(addTheme(themes()))">Aggiungi un tema</button>
+          <p class="strong-sm">{{ 'onboarding.themes.none' | t }}</p>
+          <button class="link-btn" type="button" (click)="save(addTheme(themes()))">{{ 'onboarding.themes.add' | t }}</button>
         }
       </div>
     } @else {
       @if (store.insights(); as insights) {
-        <p class="caption">Proposti leggendo {{ insights.site }}, dal più importante. Rinominali e scegli quanto spesso usarli.</p>
+        <p class="caption">{{ 'onboarding.themes.fromSite' | t: { site: insights.site } }}</p>
       }
       @for (theme of themes(); track theme.id; let i = $index) {
         <div class="panel theme">
           <div class="row">
             <span class="dot" [style.background]="theme.color"></span>
-            <input class="name grow" placeholder="Nome del tema" [attr.aria-label]="'Nome del tema ' + (i + 1)" [value]="theme.name"
+            <input class="name grow" [placeholder]="'onboarding.themes.namePlaceholder' | t"
+              [attr.aria-label]="'onboarding.themes.nameLabel' | t: { n: i + 1 }" [value]="theme.name"
               (input)="rename(i, $any($event.target).value)" />
             @if (themes().length > 1) {
-              <button class="icon-btn" type="button" [attr.aria-label]="'Rimuovi ' + (theme.name || 'il tema')" (click)="save(removeTheme(themes(), i))">
+              <button class="icon-btn" type="button" (click)="save(removeTheme(themes(), i))"
+                [attr.aria-label]="theme.name ? ('onboarding.themes.remove' | t: { name: theme.name }) : ('onboarding.themes.removeUnnamed' | t)">
                 <mb-icon name="x" [size]="16" />
               </button>
             }
           </div>
-          <div class="segmented" role="radiogroup" [attr.aria-label]="'Quanto spesso esce ' + (theme.name || 'questo tema')">
-            @for (level of levels; track level.value) {
+          <div class="segmented" role="radiogroup"
+            [attr.aria-label]="theme.name ? ('onboarding.themes.frequency' | t: { name: theme.name }) : ('onboarding.themes.frequencyUnnamed' | t)">
+            @for (level of levels(); track level.value) {
               <button type="button" role="radio" [attr.aria-checked]="level.value === themeLevel(theme)"
                 [class.selected]="level.value === themeLevel(theme)" (click)="setLevel(i, level.value)">
                 {{ level.label }}
@@ -52,11 +57,11 @@ import { MockAi } from '../mock-ai';
         </div>
       }
       <div class="row footer">
-        <p class="caption grow">Nel piano escono più spesso i temi «Spesso», meno quelli «Di rado».</p>
+        <p class="caption grow">{{ 'onboarding.themes.levelsNote' | t }}</p>
         @if (themes().length < maxThemes) {
-          <button class="link-btn" type="button" (click)="save(addTheme(themes()))">Aggiungi un tema</button>
+          <button class="link-btn" type="button" (click)="save(addTheme(themes()))">{{ 'onboarding.themes.add' | t }}</button>
         } @else {
-          <p class="caption">Al massimo {{ maxThemes }} temi: togline uno per aggiungerne un altro.</p>
+          <p class="caption">{{ 'onboarding.themes.max' | t: { n: maxThemes } }}</p>
         }
       </div>
     }
@@ -91,10 +96,11 @@ import { MockAi } from '../mock-ai';
 export class ThemesStep implements OnInit {
   private readonly ai = inject(MockAi);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
 
-  protected readonly levels = THEME_LEVELS;
+  protected readonly levels = computed(() => themeLevels(this.i18n.locale()));
   protected readonly maxThemes = MAX_THEMES;
   protected readonly themeLevel = themeLevel;
   protected readonly addTheme = addTheme;
@@ -107,9 +113,9 @@ export class ThemesStep implements OnInit {
     if (this.themes().length > 0) return;
     this.suggesting.set(true);
     this.ai
-      .suggestThemes(this.draft().identity, (steps) => this.steps.set(steps))
+      .suggestThemes(this.draft().identity, this.i18n.locale(), (steps) => this.steps.set(steps))
       .then((names) => this.save(createThemes(names)))
-      .catch(() => this.toast.show('Non riesco a proporre i temi: aggiungili a mano.'))
+      .catch(() => this.toast.show(this.i18n.t('onboarding.themes.suggestFailed')))
       .finally(() => this.suggesting.set(false));
   }
 

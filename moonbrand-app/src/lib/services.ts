@@ -1,4 +1,5 @@
 import type { OnAiSteps, WebsiteInsights } from '@moonbrand/shared/ai/steps';
+import { siteLanguage } from '@moonbrand/shared/i18n/locales';
 import type {
   AiJob,
   AiJobCreated,
@@ -150,5 +151,6 @@ export async function readWebsite(site: string, onSteps?: OnAiSteps, cancelled?:
     palette: { id: `site-${host}`, name: 'Dal sito', colors: reading.colors as Palette['colors'], origin: 'site' },
     // Un logo SVG lo studio lo rifà in PNG con il canvas; qui non si riesce, e un brand senza logo è meglio di uno che non si vede.
     logoUri: reading.logo && !reading.logo.startsWith('data:image/svg') ? reading.logo : null,
+    language: siteLanguage(reading.language),
   };
 }

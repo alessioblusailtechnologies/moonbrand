@@ -1,4 +1,6 @@
-import { dayPart, type DayPart, type Greeting } from '@moonbrand/shared/domain/welcome';
+import { dayPart, type Greeting } from '@moonbrand/shared/domain/welcome';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate, type MessageKey } from '@moonbrand/shared/i18n/translate';
 import { planNow } from '@moonbrand/shared/lib/dates';
 
 // Il saluto in cima alla chat: uno di quelli di oggi per la fascia oraria, diverso dagli ultimi visti sullo stesso brand.
@@ -7,20 +9,23 @@ import { planNow } from '@moonbrand/shared/lib/dates';
 const RECENT_KEY = 'moonbrand:greetings:';
 const RECENT = 6;
 
-// «, {nome}» sparisce quando il nome non c'è. Come quelli scritti da Sonnet: niente che indovini il genere.
-const FALLBACK: Record<DayPart, string[]> = {
-  mattina: ['Buongiorno, {nome}', 'Buongiorno, {nome}: da dove partiamo?', 'Caffè fatto, {nome}? Si comincia'],
-  pranzo: ['Buon pranzo, {nome}', 'Pausa pranzo o si lavora, {nome}?', 'Un’idea veloce prima di pranzo, {nome}?'],
-  pomeriggio: ['Buon pomeriggio, {nome}', 'Come procede la giornata, {nome}?', 'Pomeriggio produttivo, {nome}?'],
-  sera: ['Buonasera, {nome}', 'Ultime cose della giornata, {nome}?', 'Serata di idee, {nome}?'],
-  notte: ['Ancora al lavoro, {nome}?', 'Si è fatto tardi, {nome}', 'Le idee migliori arrivano di notte, {nome}?'],
-};
+// Quello che si mostra: il testo di uno di quelli di oggi, già nella lingua dell'account, o uno di riserva (chiave e nome),
+// che si legge nella lingua dell'interfaccia.
+export type ShownGreeting = { text: string } | { key: MessageKey; name: string };
 
-export function fallbackGreeting(name: string, part = dayPart(planNow().time)): string {
-  const first = name.trim().split(/\s+/)[0] ?? '';
-  const options = FALLBACK[part];
-  const text = options[Math.floor(Math.random() * options.length)];
-  return first ? text.replace('{nome}', first) : text.replace(/,? \{nome\}/, '');
+// I saluti di riserva sono nel dizionario, tre per fascia oraria (chat.greetings).
+const VARIANTS = ['a', 'b', 'c'] as const;
+
+export function fallbackGreeting(name: string, part = dayPart(planNow().time)): ShownGreeting {
+  const variant = VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
+  return { key: `chat.greetings.${part}.${variant}` as MessageKey, name: name.trim().split(/\s+/)[0] ?? '' };
+}
+
+// «, {name}» sparisce quando il nome non c'è. Come quelli scritti da Sonnet: niente che indovini il genere.
+export function greetingText(shown: ShownGreeting, locale: Locale): string {
+  if ('text' in shown) return shown.text;
+  const text = translate(locale, shown.key);
+  return shown.name ? text.replace('{name}', shown.name) : text.replace(/,? \{name\}/, '');
 }
 
 function recent(brandId: string): string[] {
@@ -40,7 +45,7 @@ function remember(brandId: string, text: string): void {
   }
 }
 
-export function pickGreeting(brandId: string, greetings: readonly Greeting[], name: string): string {
+export function pickGreeting(brandId: string, greetings: readonly Greeting[], name: string): ShownGreeting {
   const part = dayPart(planNow().time);
   const options = greetings.filter((greeting) => greeting.part === part).map((greeting) => greeting.text);
   if (options.length === 0) return fallbackGreeting(name, part);
@@ -49,5 +54,5 @@ export function pickGreeting(brandId: string, greetings: readonly Greeting[], na
   const pool = fresh.length > 0 ? fresh : options;
   const text = pool[Math.floor(Math.random() * pool.length)];
   remember(brandId, text);
-  return text;
+  return { text };
 }

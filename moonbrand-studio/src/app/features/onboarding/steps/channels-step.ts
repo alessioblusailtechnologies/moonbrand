@@ -6,6 +6,8 @@ import { CHANNELS, channelName } from '@moonbrand/shared/domain/catalog';
 import { ChannelMark } from '../../../ui/channel-mark';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { ConfirmService } from '../../../ui/confirm';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
@@ -13,7 +15,7 @@ import { DraftStore } from '../draft-store';
 @Component({
   selector: 'mb-channels-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChannelMark],
+  imports: [ChannelMark, TranslatePipe],
   template: `
     @for (channel of channels; track channel.id) {
       @let state = draft().channels[channel.id];
@@ -28,19 +30,19 @@ import { DraftStore } from '../draft-store';
         </button>
         @if (connected) {
           <button class="btn btn-ghost btn-sm" type="button" [disabled]="busy() !== null" (click)="disconnect(channel.id)">
-            {{ busy() === channel.id ? 'Scollego…' : 'Scollega' }}
+            {{ (busy() === channel.id ? 'onboarding.channels.disconnecting' : 'onboarding.channels.disconnect') | t }}
           </button>
         } @else if (connectable) {
           <button class="btn btn-primary btn-sm" type="button" [disabled]="busy() !== null" (click)="connect(channel.id)">
-            {{ busy() === channel.id ? 'Collego…' : 'Collega' }}
+            {{ (busy() === channel.id ? 'onboarding.channels.connecting' : 'onboarding.channels.connect') | t }}
           </button>
         }
       </div>
     }
     @if (connectable) {
-      <p class="caption">Scegline almeno uno. Collegarli serve per pubblicare al posto tuo: ti porto alla pagina di accesso del social e poi torni qui.</p>
+      <p class="caption">{{ 'onboarding.channels.hintConnectable' | t }}</p>
     } @else {
-      <p class="caption">Scegline almeno uno. Per pubblicare al posto tuo li colleghi dalle Impostazioni brand, quando il brand è pronto.</p>
+      <p class="caption">{{ 'onboarding.channels.hint' | t }}</p>
     }
   `,
   styles: `
@@ -86,6 +88,7 @@ export class ChannelsStep {
   private readonly confirm = inject(ConfirmService);
   private readonly toast = inject(ToastService);
   private readonly store = inject(DraftStore);
+  private readonly i18n = inject(I18nService);
   readonly draft = input.required<BrandDraft>();
 
   protected readonly channels = CHANNELS;
@@ -94,9 +97,9 @@ export class ChannelsStep {
   protected readonly busy = signal<ChannelId | null>(null);
 
   protected status(id: ChannelId, state: ChannelState): string {
-    if (isConnected(state)) return `Collegato come ${state.handle}`;
-    if (this.busy() === id) return 'Ti porto alla pagina di accesso…';
-    return state.selected ? 'Scelto · da collegare per pubblicare' : 'Tocca per sceglierlo';
+    if (isConnected(state)) return this.i18n.t('onboarding.channels.connectedAs', { handle: state.handle ?? '' });
+    if (this.busy() === id) return this.i18n.t('onboarding.channels.redirecting');
+    return this.i18n.t(state.selected ? 'onboarding.channels.chosen' : 'onboarding.channels.tapToChoose');
   }
 
   // Scegliere o togliere un canale non tocca il collegamento: quello si cambia solo con Collega e Scollega.
@@ -110,10 +113,10 @@ export class ChannelsStep {
     if (!brandId) return;
     if (this.store.unsaved()) {
       const leave = await this.confirm.ask({
-        title: 'Collegare senza salvare?',
-        message: 'Per collegare il canale vai alla pagina del social: le modifiche non salvate di questa sezione andranno perse.',
-        cancelLabel: 'Resta qui',
-        confirmLabel: 'Vai a collegare',
+        title: this.i18n.t('onboarding.channels.leave.title'),
+        message: this.i18n.t('onboarding.channels.leave.message'),
+        cancelLabel: this.i18n.t('onboarding.channels.leave.stay'),
+        confirmLabel: this.i18n.t('onboarding.channels.leave.go'),
         tone: 'danger',
       });
       if (!leave) return;
@@ -125,7 +128,7 @@ export class ChannelsStep {
       back.searchParams.set('brand', brandId);
       window.location.assign(await this.brands.connectChannel(brandId, id, back.toString()));
     } catch (error) {
-      this.toast.show(errorMessage(error, `Non riesco a collegare ${channelName(id)}. Riprova.`));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.channels.connectFailed', { channel: channelName(id) })));
       this.busy.set(null);
     }
   }
@@ -134,10 +137,10 @@ export class ChannelsStep {
     const brandId = this.store.brandId();
     if (!brandId) return;
     const ok = await this.confirm.ask({
-      title: `Scollegare ${channelName(id)}?`,
-      message: 'moonbrand non potrà più pubblicare su questo account finché non lo ricolleghi.',
-      cancelLabel: 'Annulla',
-      confirmLabel: 'Scollega',
+      title: this.i18n.t('onboarding.channels.disconnectTitle', { channel: channelName(id) }),
+      message: this.i18n.t('onboarding.channels.disconnectMessage'),
+      cancelLabel: this.i18n.t('common.cancel'),
+      confirmLabel: this.i18n.t('onboarding.channels.disconnect'),
       tone: 'danger',
     });
     if (!ok) return;
@@ -145,9 +148,9 @@ export class ChannelsStep {
     try {
       const { state } = await this.brands.disconnectChannel(brandId, id);
       this.store.applyChannel(id, state);
-      this.toast.show(`${channelName(id)} scollegato.`);
+      this.toast.show(this.i18n.t('onboarding.channels.disconnected', { channel: channelName(id) }));
     } catch (error) {
-      this.toast.show(errorMessage(error, `Non riesco a scollegare ${channelName(id)}. Riprova.`));
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.channels.disconnectFailed', { channel: channelName(id) })));
     } finally {
       this.busy.set(null);
     }

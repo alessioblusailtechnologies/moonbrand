@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 
 import type { ChannelChoice } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { ChannelMark } from '../../ui/channel-mark';
 import { lockPageScroll } from '../../ui/scroll-lock';
 
@@ -12,7 +14,7 @@ import { lockPageScroll } from '../../ui/scroll-lock';
 @Component({
   selector: 'mb-channel-choice',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChannelMark],
+  imports: [ChannelMark, TranslatePipe],
   host: { '(document:keydown.escape)': 'cancel()' },
   template: `
     <div class="backdrop" (click)="cancel()"></div>
@@ -20,12 +22,12 @@ import { lockPageScroll } from '../../ui/scroll-lock';
       <header class="head">
         <mb-channel-mark [channel]="channel()" [active]="true" [size]="30" />
         <div class="titles">
-          <h2 id="choice-title" class="dialog-title">Dove pubblichiamo su {{ name() }}?</h2>
+          <h2 id="choice-title" class="dialog-title">{{ 'profile.channelChoice.title' | t: { channel: name() } }}</h2>
           <p class="caption">{{ hint() }}</p>
         </div>
       </header>
 
-      <div class="list" role="radiogroup" [attr.aria-label]="'Account ' + name()">
+      <div class="list" role="radiogroup" [attr.aria-label]="'profile.channelChoice.accounts' | t: { channel: name() }">
         @for (choice of choices(); track choice.id) {
           <button class="option" type="button" role="radio" [attr.aria-checked]="picked() === choice.id" [class.on]="picked() === choice.id"
             [disabled]="busy()" (click)="picked.set(choice.id)">
@@ -44,12 +46,12 @@ import { lockPageScroll } from '../../ui/scroll-lock';
       </div>
 
       <div class="actions">
-        <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="cancel()">Annulla</button>
+        <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="cancel()">{{ 'common.cancel' | t }}</button>
         <button class="btn btn-primary" type="button" [class.busy]="busy()" [attr.aria-disabled]="!picked()" (click)="confirm()">
           @if (busy()) {
             <span class="spinner"></span>
           }
-          Collega
+          {{ 'profile.channelChoice.connect' | t }}
         </button>
       </div>
     </div>
@@ -160,6 +162,7 @@ import { lockPageScroll } from '../../ui/scroll-lock';
   `,
 })
 export class ChannelChoiceDialog {
+  private readonly i18n = inject(I18nService);
   readonly channel = input.required<ChannelId>();
   readonly choices = input.required<ChannelChoice[]>();
   readonly busy = input(false);
@@ -170,8 +173,8 @@ export class ChannelChoiceDialog {
   protected readonly name = computed(() => channelName(this.channel()));
   protected readonly hint = computed(() =>
     this.channel() === 'linkedin'
-      ? 'Scegli se pubblicare come te o come una pagina aziendale che gestisci.'
-      : 'Scegli la Pagina su cui pubblicare: moonbrand pubblica solo lì.',
+      ? this.i18n.t('profile.channelChoice.linkedinHint')
+      : this.i18n.t('profile.channelChoice.facebookHint'),
   );
 
   constructor() {

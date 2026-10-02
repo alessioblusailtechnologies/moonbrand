@@ -1,5 +1,10 @@
 import { query, type SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
 
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
+
+import { languageName } from './language';
+
 // Gli step che la tabella di moonbrand-shared non sa tradurre (Bash, Read, i tool nuovi, il testo che Claude si scrive
 // tra un passaggio e l'altro) li legge Haiku, sullo stesso login di Claude Code. Una sessione per job: il contesto ha
 // solo i passaggi di quel job, e il processo parte con il job, così alla prima richiesta è già pronto. Le richieste
@@ -43,7 +48,21 @@ Rispondi solo con un array JSON, un oggetto per ogni id, senza altro testo: {"id
 - I passaggi arrivano in ordine: usa quelli già visti per capire il filo. Se un passaggio continua lo stesso lavoro del precedente con la stessa label, hide.
 - Non inventare: se non si capisce cosa fa, «Preparo il materiale».`;
 
-// Le letture valgono per tutti i job: la chiave è il passaggio stesso, con i percorsi già senza la cartella del brand.
+// Le righe sono per chi aspetta, nella lingua del suo account: gli esempi qui sopra restano in italiano.
+const STYLE: Record<Exclude<Locale, 'it'>, string> = {
+  en: 'con il gerundio e senza soggetto, come «Rereading the brand voice», «Looking at the photos you sent», «Editing the video»',
+  fr: 'in prima persona, al presente e dando del vous, come «Je relis la voix de la marque», «Je regarde les photos que vous avez envoyées», «Je monte la vidéo»',
+};
+
+function promptFor(locale: Locale): string {
+  if (locale === 'it') return PROMPT;
+  return `${PROMPT}
+
+Scrivi label e detail in ${languageName(locale)}, ${STYLE[locale]}. Gli esempi sopra valgono per cosa dire, non per la lingua. Se non si capisce cosa fa, «${translate(locale, 'steps.fallback')}».`;
+}
+
+// Le letture valgono per tutti i job della stessa lingua: la chiave è la lingua e il passaggio, con i percorsi già senza la
+// cartella del brand.
 const cache = new Map<string, StepReading>();
 
 function remember(key: string, reading: StepReading): void {
@@ -66,7 +85,8 @@ function readingOf(item: { hide?: unknown; label?: unknown; detail?: unknown }):
 }
 
 // brandsDir: la cartella dei brand, che con l'id del brand si toglie dai percorsi prima di mandarli a Haiku.
-export function createStepReader(brandsDir: string): StepReader {
+// locale: la lingua dell'account che aspetta.
+export function createStepReader(brandsDir: string, locale: Locale): StepReader {
   const root = brandsDir.replaceAll('\\', '/').replace(/\/+$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const brandDir = new RegExp(`${root}/[^/]+/?`, 'gi');
   // L'input accorciato: di un file scritto basta l'inizio, di un comando la prima parte.
@@ -132,7 +152,7 @@ export function createStepReader(brandsDir: string): StepReader {
         options: {
           model: 'haiku',
           tools: [],
-          systemPrompt: PROMPT,
+          systemPrompt: promptFor(locale),
           settingSources: [],
           persistSession: false,
           thinking: { type: 'disabled' },
@@ -157,7 +177,7 @@ export function createStepReader(brandsDir: string): StepReader {
 
   return {
     read(request, onRead) {
-      const key = `${request.tool} ${shortInput(request.input)}`;
+      const key = `${locale} ${request.tool} ${shortInput(request.input)}`;
       const known = cache.get(key);
       if (known !== undefined) {
         onRead(known);

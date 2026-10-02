@@ -4,6 +4,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import type pg from 'pg';
 
 import type { BrandContext, WelcomeJobInput, WelcomeResponse, WelcomeSignals } from '@moonbrand/shared/api/contract';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { planNow } from '@moonbrand/shared/lib/dates';
 
 import { withIdentity, type Identity } from '../../db/identity';
@@ -19,7 +20,8 @@ import { activeWelcomeJob, brandsToWelcome, findSignals, findWelcome, lockWelcom
 const REFRESH_MINUTES = 20;
 
 // Lo stato del brand da cui nascono: le conversazioni restano fuori, una nuova non basta a rifarli.
-function fingerprintOf(brand: BrandContext, signals: WelcomeSignals): string {
+// Davanti, la lingua dell'account in cui sono scritti: se cambia si rifanno subito (vedi sameLocale).
+function fingerprintOf(locale: Locale, brand: BrandContext, signals: WelcomeSignals): string {
   const { recentChats: _chats, ...rest } = signals;
   const state = {
     identity: brand.identity,
@@ -29,8 +31,10 @@ function fingerprintOf(brand: BrandContext, signals: WelcomeSignals): string {
     plan: brand.plan.map((slot) => [slot.id, slot.date, slot.time, slot.status, slot.title]),
     ...rest,
   };
-  return createHash('sha1').update(JSON.stringify(state)).digest('hex');
+  return `${locale}:${createHash('sha1').update(JSON.stringify(state)).digest('hex')}`;
 }
+
+const sameLocale = (stored: string, current: string) => stored.split(':')[0] === current.split(':')[0];
 
 // Il benvenuto di oggi, se c'è; se manca o il brand è cambiato, il job che lo riscrive parte e la risposta lo dice.
 async function welcome(db: Queryable, accountId: string, brandId: string): Promise<WelcomeResponse> {
@@ -39,13 +43,14 @@ async function welcome(db: Queryable, accountId: string, brandId: string): Promi
   const signals = await findSignals(db, brandId);
   if (!brand || !signals) throw ApiError.notFound('Brand non trovato.');
   const day = planNow().date;
+  const account = await findAccount(db, accountId);
   const stored = await findWelcome(db, brandId);
-  const fresh = stored?.day === day ? stored : null;
-  const fingerprint = fingerprintOf(brand.context, signals);
+  const fingerprint = fingerprintOf(account?.locale ?? 'it', brand.context, signals);
+  // Quelli scritti in un'altra lingua non si mostrano: intanto la chat usa i suoi saluti di riserva.
+  const fresh = stored?.day === day && sameLocale(stored.fingerprint, fingerprint) ? stored : null;
   let jobId = await activeWelcomeJob(db, brandId);
   const changed = fresh && fresh.fingerprint !== fingerprint && Date.now() - fresh.generatedAt.getTime() > REFRESH_MINUTES * 60_000;
   if (!jobId && (!fresh || changed)) {
-    const account = await findAccount(db, accountId);
     const input: WelcomeJobInput = { brandId, day, fingerprint, name: account?.name ?? '', brand: brand.context, signals };
     jobId = await insertJob(db, accountId, 'welcome', input);
   }

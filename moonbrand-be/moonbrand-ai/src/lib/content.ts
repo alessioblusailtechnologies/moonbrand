@@ -1,14 +1,14 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { query, type McpServerConfig, type Options } from '@anthropic-ai/claude-agent-sdk';
+import { query, type McpServerConfig } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { FORMAT_ASPECT, formatAspects, hasDocument, type ContentFormat } from '@moonbrand/shared/domain/content';
 
 import { audioTools } from '../tools/audio';
+import { clipTools } from '../tools/clip';
 import { graphicsTools } from '../tools/grafica';
-import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
 import { lambdaKeys, lambdaTools } from '../tools/lambda';
 import { musicTools } from '../tools/musica';
@@ -170,7 +170,7 @@ export function contentSchema(contentId: string, format: ContentFormat, channels
   };
 }
 
-// Claude Code nella cartella del brand, con i tool per immagini (e per i video: Higgsfield per le clip, ElevenLabs per musica,
+// Claude Code nella cartella del brand, con i tool per immagini (e per i video: Atlas Cloud per le clip, ElevenLabs per musica,
 // voce ed effetti);
 // con resume riprende la sessione di prima. scriptOnly: il copione di un video, senza testi per canale né file.
 export async function runContentAgent(options: {
@@ -182,7 +182,7 @@ export async function runContentAgent(options: {
   scriptOnly?: boolean;
   resume?: string;
 }): Promise<void> {
-  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, ...env } = process.env;
+  const { GEMINI_API_KEY, ELEVENLABS_API_KEY, ATLASCLOUD_API_KEY, ...env } = process.env;
   if (!GEMINI_API_KEY) {
     console.error('Manca GEMINI_API_KEY nel .env di moonbrand-ai.');
     process.exit(1);
@@ -197,7 +197,6 @@ export async function runContentAgent(options: {
     vista: visionTools(options.brandDir, GEMINI_API_KEY),
   };
   let videoEnv: Record<string, string> = {};
-  let clips: Pick<Options, 'disallowedTools' | 'hooks'> = {};
   if (options.format === 'video') {
     if (!ELEVENLABS_API_KEY) {
       console.error('Manca ELEVENLABS_API_KEY nel .env di moonbrand-ai.');
@@ -209,13 +208,8 @@ export async function runContentAgent(options: {
     // Gli export finali su Remotion Lambda, se ci sono le chiavi AWS (.env.lambda).
     const lambda = lambdaKeys();
     if (lambda) mcpServers.lambda = lambdaTools(options.brandDir, path.basename(path.resolve(options.brandDir)), lambda);
-    // Le clip le gira Higgsfield; i suoi file arrivano nella cartella di lavoro del contenuto.
-    const token = await higgsfieldToken();
-    if (token) {
-      const { server, disallowedTools, hooks } = higgsfield(token, options.brandDir, `${contentDir(options.contentId)}/lavoro/higgsfield`);
-      mcpServers.higgsfield = server;
-      clips = { disallowedTools, hooks };
-    }
+    // Le clip le gira Grok Imagine su Atlas Cloud.
+    if (ATLASCLOUD_API_KEY) mcpServers.clip = clipTools(options.brandDir, ATLASCLOUD_API_KEY);
   }
 
   // Il browser del render resta aperto per tutto il job: si chiude alla fine.
@@ -226,7 +220,6 @@ export async function runContentAgent(options: {
         cwd: options.brandDir,
         env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
         mcpServers,
-        ...clips,
         plugins: MOONBRAND_PLUGINS,
         permissionMode: 'bypassPermissions',
         allowDangerouslySkipPermissions: true,

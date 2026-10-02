@@ -22,9 +22,11 @@ import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { ToastService } from '../../ui/toast';
-import { cssAspect, FORMAT_LABELS, STATUS_LABELS } from './labels';
+import { cssAspect, formatLabel, statusLabel } from './labels';
 
 // Mentre un contenuto si prepara, l'elenco si aggiorna da solo.
 const REFRESH_MS = 5000;
@@ -44,7 +46,7 @@ function aspectRatio(aspect: string | null): number {
 @Component({
   selector: 'mb-contents-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, TranslatePipe],
   template: `
     @if (brands.activeBrand()) {
       <section class="contents">
@@ -52,8 +54,8 @@ function aspectRatio(aspect: string | null): number {
           <div class="empty"><span class="spinner"></span></div>
         } @else if (contents().length === 0) {
           <div class="empty">
-            <p class="strong-sm">Ancora nessun contenuto</p>
-            <p class="caption">Parti da un’idea: scegli formato e canali, e preparo testo e immagini.</p>
+            <p class="strong-sm">{{ 'contents.list.empty' | t }}</p>
+            <p class="caption">{{ 'contents.list.emptyHint' | t }}</p>
           </div>
         } @else {
           <div class="grid" #grid>
@@ -68,15 +70,15 @@ function aspectRatio(aspect: string | null): number {
                           <span class="play"><mb-icon name="play" [size]="18" /></span>
                         }
                       } @else if (content.format === 'video') {
-                        <span class="caption">{{ content.preparing ? 'Preparo il video…' : 'Video ancora da fare' }}</span>
+                        <span class="caption">{{ (content.preparing ? 'contents.list.preparingVideo' : 'contents.list.noVideo') | t }}</span>
                       } @else {
-                        <span class="caption">{{ content.preparing ? 'Preparo testo e immagini…' : 'Senza immagine' }}</span>
+                        <span class="caption">{{ (content.preparing ? 'contents.list.preparingPost' : 'contents.list.noImage') | t }}</span>
                       }
                     </div>
                     <div class="meta">
                       <span class="badge">{{ formatLabel(content) }}</span>
                       @if (content.preparing) {
-                        <span class="badge">In preparazione</span>
+                        <span class="badge">{{ 'contents.list.preparing' | t }}</span>
                       } @else {
                         <span class="badge" [class.mint]="content.status === 'approved'">{{ statusLabel(content) }}</span>
                       }
@@ -93,7 +95,7 @@ function aspectRatio(aspect: string | null): number {
     }
 
     <ng-template #headerActions>
-      <a class="btn btn-secondary btn-sm from-idea" routerLink="/">Crea da un’idea</a>
+      <a class="btn btn-secondary btn-sm from-idea" routerLink="/">{{ 'contents.list.fromIdea' | t }}</a>
     </ng-template>
   `,
   styles: `
@@ -179,6 +181,7 @@ export class ContentsPage {
   private readonly api = inject(ContentsService);
   private readonly toast = inject(ToastService);
   protected readonly brands = inject(BrandsService);
+  private readonly i18n = inject(I18nService);
 
   private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
   protected readonly contents = signal<ContentSummary[]>([]);
@@ -203,7 +206,7 @@ export class ContentsPage {
 
   constructor() {
     pageHeader(
-      () => [{ label: 'Contenuti' }],
+      () => [{ label: this.i18n.t('contents.title') }],
       () => this.headerActions(),
     );
     effect(() => {
@@ -235,24 +238,25 @@ export class ContentsPage {
       const contents = await this.api.list(brandId);
       if (this.brands.activeBrand()?.id === brandId) this.contents.set(contents);
     } catch (error) {
-      if (first) this.toast.show(errorMessage(error, 'Non riesco a caricare i contenuti. Riprova tra poco.'));
+      if (first) this.toast.show(errorMessage(error, this.i18n.t('contents.list.loadError')));
     } finally {
       if (first) this.loading.set(false);
     }
   }
 
   protected formatLabel(content: ContentSummary): string {
-    return FORMAT_LABELS[content.format];
+    return formatLabel(content.format, this.i18n.locale());
   }
 
   protected statusLabel(content: ContentSummary): string {
-    return STATUS_LABELS[content.status];
+    return statusLabel(content.status, this.i18n.locale());
   }
 
   // I canali e, se è nel piano, quando esce: sulla stessa riga, così la card resta alta uguale.
   protected channelsLabel(content: ContentSummary): string {
     const channels = content.channels.map(channelName).join(', ');
     const when = content.scheduledFor;
-    return when ? `${channels} · esce ${formatWeekdayShort(when.date)}, ${when.time}` : channels;
+    if (!when) return channels;
+    return this.i18n.t('contents.list.scheduled', { channels, day: formatWeekdayShort(when.date, this.i18n.locale()), time: when.time });
   }
 }

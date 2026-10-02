@@ -4,19 +4,21 @@ import { RouterLink } from '@angular/router';
 import type { PlanResponse, SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import { bestChannelFor } from '@moonbrand/shared/domain/plan';
+import type { ContentFormat } from '@moonbrand/shared/domain/content';
+import { bestChannelFor, slotStatusLabels } from '@moonbrand/shared/domain/plan';
 import { formatWeekdayLong, isDay, isPast, isTime, planNow } from '@moonbrand/shared/lib/dates';
 
 import { BrandsService } from '../../core/brands/brands.service';
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { PlanService } from '../../core/plan/plan.service';
 import { ChannelMark } from '../../ui/channel-mark';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
-import { FORMAT_LABELS } from '../contents/labels';
-import { canMove, SLOT_STATUS_LABELS, SLOT_TONES, slotTitle, timeFor } from './labels';
+import { canMove, SLOT_TONES, slotTitle, timeFor } from './labels';
 
 // Un'uscita da creare: il giorno e, se arriva dal pannello, il contenuto o l'idea da metterci.
 export interface SlotDraftInput {
@@ -32,7 +34,7 @@ type What = { kind: 'empty' } | { kind: 'idea'; id: string } | { kind: 'content'
 @Component({
   selector: 'mb-slot-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, ChannelMark],
+  imports: [RouterLink, Icon, ChannelMark, TranslatePipe],
   host: { '(document:keydown.escape)': 'saving() || closed.emit()' },
   templateUrl: './slot-drawer.html',
   styleUrl: './slot-drawer.scss',
@@ -42,6 +44,7 @@ export class SlotDrawer implements OnInit {
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly i18n = inject(I18nService);
 
   readonly slot = input<SlotView | null>(null);
   readonly draft = input<SlotDraftInput | null>(null);
@@ -65,8 +68,8 @@ export class SlotDrawer implements OnInit {
 
   protected readonly name = channelName;
   protected readonly tones = SLOT_TONES;
-  protected readonly statusLabels = SLOT_STATUS_LABELS;
-  protected readonly formatLabels = FORMAT_LABELS;
+  protected readonly statusLabels = computed(() => slotStatusLabels(this.i18n.locale()));
+  protected readonly formatLabel = (format: ContentFormat): string => this.i18n.t(`plan.format.${format}`);
   protected readonly today = planNow().date;
 
   protected readonly creating = computed(() => this.slot() === null);
@@ -92,9 +95,15 @@ export class SlotDrawer implements OnInit {
   });
   protected readonly heading = computed(() => {
     const slot = this.slot();
-    return slot ? slotTitle(slot, (id) => this.plan().themes.find((theme) => theme.id === id)?.name ?? null) : 'Nuova uscita';
+    const themeName = (id: string | null) => this.plan().themes.find((theme) => theme.id === id)?.name ?? null;
+    return slot ? slotTitle(slot, themeName, this.i18n.locale()) : this.i18n.t('plan.drawer.newSlot');
   });
-  protected readonly when = computed(() => (isDay(this.date()) ? formatWeekdayLong(this.date()) : ''));
+  // Il giorno per esteso, con l'ora se c'è.
+  protected readonly when = computed(() => {
+    if (!isDay(this.date())) return '';
+    const day = formatWeekdayLong(this.date(), this.i18n.locale());
+    return this.time() ? this.i18n.t('plan.drawer.when', { day, time: this.time() }) : day;
+  });
   protected readonly valid = computed(
     () => isDay(this.date()) && isTime(this.time()) && (this.content() !== null || this.channels().length > 0) && !isPast(this.date(), this.time()),
   );
@@ -156,7 +165,7 @@ export class SlotDrawer implements OnInit {
           time: this.time(),
           ...(!slot.content && { channels: this.channels(), themeId: this.themeId(), ideaId: this.ideaId() }),
         });
-        this.toast.show('Uscita aggiornata.');
+        this.toast.show(this.i18n.t('plan.drawer.updated'));
       } else {
         const what = this.what();
         await this.api.create(brand.id, {
@@ -165,11 +174,11 @@ export class SlotDrawer implements OnInit {
           ...(what.kind === 'content' ? { contentId: what.id } : { channels: this.channels(), themeId: this.themeId() }),
           ...(what.kind === 'idea' && { ideaId: what.id }),
         });
-        this.toast.show('Uscita aggiunta al piano.');
+        this.toast.show(this.i18n.t('plan.drawer.added'));
       }
       this.saved.emit();
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a salvare l’uscita. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.drawer.saveError')));
     } finally {
       this.saving.set(false);
     }
@@ -179,19 +188,19 @@ export class SlotDrawer implements OnInit {
     const slot = this.slot();
     if (!slot || this.saving()) return;
     const confirmed = await this.confirm.ask({
-      title: 'Tolgo l’uscita dal piano?',
-      message: slot.content ? 'Il contenuto resta tra i Contenuti, senza data.' : 'L’idea resta tra le idee salvate.',
-      confirmLabel: 'Togli dal piano',
+      title: this.i18n.t('plan.drawer.removeTitle'),
+      message: this.i18n.t(slot.content ? 'plan.drawer.removeKeepsContent' : 'plan.drawer.removeKeepsIdea'),
+      confirmLabel: this.i18n.t('plan.drawer.remove'),
       tone: 'danger',
     });
     if (!confirmed) return;
     this.saving.set(true);
     try {
       await this.api.remove(slot.id);
-      this.toast.show('Uscita tolta dal piano.');
+      this.toast.show(this.i18n.t('plan.drawer.removed'));
       this.saved.emit();
     } catch (error) {
-      this.toast.show(errorMessage(error, 'Non sono riuscito a toglierla. Riprova.'));
+      this.toast.show(errorMessage(error, this.i18n.t('plan.drawer.removeError')));
     } finally {
       this.saving.set(false);
     }

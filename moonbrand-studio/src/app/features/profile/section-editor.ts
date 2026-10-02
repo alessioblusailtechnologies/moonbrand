@@ -4,6 +4,8 @@ import type { BrandDraft, SectionKey } from '@moonbrand/shared/domain/brand';
 import { sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 
 import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { lockPageScroll } from '../../ui/scroll-lock';
@@ -22,14 +24,14 @@ import { ReferencesEditor } from './references-editor';
 @Component({
   selector: 'mb-section-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, ReferencesEditor],
+  imports: [Icon, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, ReferencesEditor, TranslatePipe],
   providers: [ProfileDraftStore, { provide: DraftStore, useExisting: ProfileDraftStore }],
   template: `
     <div class="scrim" (click)="close()"></div>
     <div class="dialog" role="dialog" aria-modal="true" [attr.aria-label]="copy().name">
       <header class="bar">
-        <span class="label">Impostazioni brand · {{ copy().name }}</span>
-        <button class="icon-btn" type="button" aria-label="Chiudi" (click)="close()">
+        <span class="label">{{ 'profile.editor.crumb' | t: { section: copy().name } }}</span>
+        <button class="icon-btn" type="button" [attr.aria-label]="'common.close' | t" (click)="close()">
           <mb-icon name="x" />
         </button>
       </header>
@@ -58,20 +60,17 @@ import { ReferencesEditor } from './references-editor';
         @if (error(); as error) {
           <p class="caption grow">{{ error }}</p>
         } @else if (newReferences() > 0) {
-          <p class="caption grow">
-            Salvando, {{ newReferences() === 1 ? 'l’esempio scelto prende' : 'i ' + newReferences() + ' esempi scelti prendono' }}
-            il posto dei riferimenti da seguire.
-          </p>
+          <p class="caption grow">{{ 'profile.editor.newReferences' | t: { n: newReferences() } }}</p>
         } @else {
           <span class="grow"></span>
         }
-        <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="close()">Annulla</button>
+        <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="close()">{{ 'common.cancel' | t }}</button>
         <button class="btn btn-primary" type="button" [class.busy]="saving()" [attr.aria-disabled]="!store.dirty() || error() !== null"
           (click)="save()">
           @if (saving()) {
             <span class="spinner"></span>
           }
-          Salva
+          {{ 'common.save' | t }}
         </button>
       </footer>
     </div>
@@ -164,6 +163,7 @@ import { ReferencesEditor } from './references-editor';
 export class SectionEditor implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly i18n = inject(I18nService);
   protected readonly store = inject(ProfileDraftStore);
 
   constructor() {
@@ -177,10 +177,10 @@ export class SectionEditor implements OnInit {
   readonly closed = output<void>();
 
   protected readonly saving = signal(false);
-  protected readonly copy = computed(() => sectionCopy(this.section(), this.draft().identity.kind));
+  protected readonly copy = computed(() => sectionCopy(this.section(), this.draft().identity.kind, this.i18n.locale()));
   protected readonly error = computed(() => {
     const draft = this.store.draft();
-    return draft ? sectionError(this.section(), draft) : null;
+    return draft ? sectionError(this.section(), draft, this.i18n.locale()) : null;
   });
   protected readonly newReferences = computed(() => (this.section() === 'visual' ? this.store.selectedExamples().length : 0));
 
@@ -192,10 +192,10 @@ export class SectionEditor implements OnInit {
     if (this.saving()) return;
     if (this.store.dirty()) {
       const leave = await this.confirm.ask({
-        title: 'Esci senza salvare?',
-        message: 'Le modifiche a questa sezione andranno perse.',
-        cancelLabel: 'Continua a modificare',
-        confirmLabel: 'Esci senza salvare',
+        title: this.i18n.t('profile.editor.leaveTitle'),
+        message: this.i18n.t('profile.editor.leaveMessage'),
+        cancelLabel: this.i18n.t('profile.editor.keepEditing'),
+        confirmLabel: this.i18n.t('profile.editor.leave'),
         tone: 'danger',
       });
       if (!leave) return;
@@ -216,9 +216,9 @@ export class SectionEditor implements OnInit {
     this.saving.set(true);
     try {
       this.saved.emit(await this.store.save());
-      this.toast.show('Salvato.');
+      this.toast.show(this.i18n.t('profile.editor.saved'));
     } catch (err) {
-      this.toast.show(errorMessage(err, 'Non sono riuscito a salvare. Riprova.'));
+      this.toast.show(errorMessage(err, this.i18n.t('profile.editor.saveFailed')));
     } finally {
       this.saving.set(false);
     }

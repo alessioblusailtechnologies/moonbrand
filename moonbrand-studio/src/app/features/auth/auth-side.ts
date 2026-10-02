@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Logo } from '../../ui/logo';
 
 const SHAPES = [
@@ -17,12 +18,12 @@ const SHAPES = [
 @Component({
   selector: 'mb-auth-side',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Logo],
+  imports: [Logo, TranslatePipe],
   template: `
     <mb-logo />
     <div class="claim-block">
-      <p class="claim">La tua presenza sui social, scritta come la scriveresti tu.</p>
-      <p class="note">Brand, idee, piano e contenuti in un solo studio.</p>
+      <p class="claim">{{ 'auth.side.claim' | t }}</p>
+      <p class="note">{{ 'auth.side.note' | t }}</p>
     </div>
     <div class="shapes" aria-hidden="true">
       @for (shape of shapes; track $index) {

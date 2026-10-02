@@ -1,15 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { LogoBackdrop } from './logo-backdrop';
 
 @Component({
   selector: 'mb-brand-avatar',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LogoBackdrop],
+  imports: [LogoBackdrop, TranslatePipe],
   host: { style: 'display: inline-flex; flex: none' },
   template: `
     @if (logo()) {
-      <img class="avatar" [src]="logo()" [alt]="'Logo di ' + name()" [mbLogoBackdrop]="logo()" [style.width.px]="size()"
+      <img class="avatar" [src]="logo()" [alt]="'ui.brandAvatar.logoOf' | t: { name: name() }" [mbLogoBackdrop]="logo()" [style.width.px]="size()"
         [style.height.px]="size()" [style.border-radius.px]="size() / 4" [style.padding.px]="size() / 10" />
     } @else {
       <span class="avatar monogram" [style.width.px]="size()" [style.height.px]="size()" [style.border-radius.px]="size() / 4"

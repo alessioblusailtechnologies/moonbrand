@@ -2,40 +2,40 @@
 <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="session-title">
   <header class="dialog-head">
     <div class="stack-sm">
-      <h2 id="session-title" class="dialog-title">Pianifica le prossime settimane</h2>
-      <p class="caption">Giorni e orari migliori per canale, temi secondo il loro peso e le idee salvate dello stesso tema.</p>
+      <h2 id="session-title" class="dialog-title">{{ 'plan.session.title' | t }}</h2>
+      <p class="caption">{{ 'plan.session.hint' | t }}</p>
     </div>
-    <button class="icon-btn" type="button" aria-label="Chiudi" [disabled]="saving()" (click)="closed.emit()">
+    <button class="icon-btn" type="button" [attr.aria-label]="'common.close' | t" [disabled]="saving()" (click)="closed.emit()">
       <mb-icon name="x" />
     </button>
   </header>
 
   <div class="settings">
     <div class="setting">
-      <p class="label">Da quando</p>
+      <p class="label">{{ 'plan.session.from' | t }}</p>
       <div class="segmented">
-        <button type="button" [class.selected]="start() === 'tomorrow'" (click)="start.set('tomorrow')">Da domani</button>
-        <button type="button" [class.selected]="start() === 'nextWeek'" (click)="start.set('nextWeek')">Dalla prossima settimana</button>
+        <button type="button" [class.selected]="start() === 'tomorrow'" (click)="start.set('tomorrow')">{{ 'plan.session.tomorrow' | t }}</button>
+        <button type="button" [class.selected]="start() === 'nextWeek'" (click)="start.set('nextWeek')">{{ 'plan.session.nextWeek' | t }}</button>
       </div>
     </div>
     <div class="setting">
-      <p class="label">Per quanto</p>
+      <p class="label">{{ 'plan.session.duration' | t }}</p>
       <div class="segmented">
         @for (option of weekOptions; track option) {
-          <button type="button" [class.selected]="weeks() === option" (click)="weeks.set(option)">{{ option }} {{ option === 1 ? 'settimana' : 'settimane' }}</button>
+          <button type="button" [class.selected]="weeks() === option" (click)="weeks.set(option)">{{ 'plan.session.weeks' | t: { n: option } }}</button>
         }
       </div>
     </div>
     <div class="setting">
-      <p class="label">Uscite a settimana</p>
+      <p class="label">{{ 'plan.session.perWeek' | t }}</p>
       <div class="stepper">
-        <button class="icon-btn" type="button" aria-label="Una in meno" [disabled]="perWeek() <= 1" (click)="stepPerWeek(-1)"><mb-icon name="minus" [size]="16" /></button>
+        <button class="icon-btn" type="button" [attr.aria-label]="'plan.session.fewer' | t" [disabled]="perWeek() <= 1" (click)="stepPerWeek(-1)"><mb-icon name="minus" [size]="16" /></button>
         <span class="strong">{{ perWeek() }}</span>
-        <button class="icon-btn" type="button" aria-label="Una in più" [disabled]="perWeek() >= 7" (click)="stepPerWeek(1)"><mb-icon name="plus" [size]="16" /></button>
+        <button class="icon-btn" type="button" [attr.aria-label]="'plan.session.more' | t" [disabled]="perWeek() >= 7" (click)="stepPerWeek(1)"><mb-icon name="plus" [size]="16" /></button>
       </div>
     </div>
     <div class="setting wide">
-      <p class="label">Canali</p>
+      <p class="label">{{ 'plan.session.channels' | t }}</p>
       <div class="chips">
         @for (channel of plan().channels; track channel) {
           <button class="chip" type="button" [class.selected]="channels().includes(channel)" [attr.aria-pressed]="channels().includes(channel)"
@@ -61,17 +61,17 @@
           }
         </span>
         <div class="draft-texts">
-          <span class="draft-title" [class.muted]="!draft.ideaId">{{ ideaTitle(draft.ideaId) ?? 'Da riempire' }}</span>
+          <span class="draft-title" [class.muted]="!draft.ideaId">{{ ideaTitle(draft.ideaId) ?? ('plan.status.empty' | t) }}</span>
           @if (themeName(draft.themeId); as theme) {
             <span class="caption">{{ theme }}</span>
           }
         </div>
-        <button class="link-btn" type="button" (click)="changeIdea(i)">Cambia idea</button>
-        <button class="icon-btn" type="button" aria-label="Togli questa uscita" (click)="removeDraft(i)"><mb-icon name="x" [size]="16" /></button>
+        <button class="link-btn" type="button" (click)="changeIdea(i)">{{ 'plan.session.changeIdea' | t }}</button>
+        <button class="icon-btn" type="button" [attr.aria-label]="'plan.session.removeDraft' | t" (click)="removeDraft(i)"><mb-icon name="x" [size]="16" /></button>
       </div>
     } @empty {
       <p class="caption none">
-        {{ loading() ? 'Preparo la proposta…' : channels().length === 0 ? 'Scegli almeno un canale.' : 'In questo periodo i giorni del ritmo hanno già un’uscita.' }}
+        {{ (loading() ? 'plan.session.preparing' : channels().length === 0 ? 'plan.session.pickChannel' : 'plan.session.full') | t }}
       </p>
     }
   </div>
@@ -81,9 +81,9 @@
       <p class="caption hint">{{ hint }}</p>
     }
     <span class="grow"></span>
-    <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="closed.emit()">Annulla</button>
+    <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
     <button class="btn btn-primary" type="button" [disabled]="saving() || loading() || drafts().length === 0" (click)="confirm()">
-      {{ saving() ? 'Aggiungo…' : 'Aggiungi ' + drafts().length + (drafts().length === 1 ? ' uscita' : ' uscite') }}
+      {{ saving() ? ('plan.session.adding' | t) : ('plan.session.add' | t: { n: drafts().length }) }}
     </button>
   </footer>
 </div>

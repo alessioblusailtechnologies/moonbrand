@@ -6,6 +6,7 @@ import type { IdeasJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
 import { HORIZON_DAYS, MAX_PER_THEME, MAX_TRENDS } from '../lib/ideas-rules';
+import { replyRule } from '../lib/language';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 
 const [brandDir, inputJson] = process.argv.slice(2);
@@ -104,7 +105,7 @@ const prompt = `Proponi fino a ${count} idee di contenuto nuove per il brand des
 Oggi è ${day(today)}: l’orizzonte per ricorrenze e stagione arriva a ${day(horizon)}.
 Al massimo ${MAX_PER_THEME} idee sullo stesso tema e ${MAX_TRENDS} trend.
 
-Rispondi in italiano.
+${replyRule()}
 
 ${describeHistory()}`;
 

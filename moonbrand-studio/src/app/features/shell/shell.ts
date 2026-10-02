@@ -5,12 +5,18 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter, map } from 'rxjs';
 
 import type { ConversationSummary } from '@moonbrand/shared/api/contract';
+import { LOCALE_NAMES, LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { errorMessage } from '../../core/errors';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { PageHeader } from '../../core/layout/page-header';
 import { Icon, type IconName } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
+import { ToastService } from '../../ui/toast';
 import { BrandPicker, BrandPickerService } from './brand-picker';
 import { BrandSwitcher } from './brand-switcher';
 
@@ -19,21 +25,21 @@ import { BrandSwitcher } from './brand-switcher';
 const RECENT_CHATS = 40;
 const COLLAPSED_KEY = 'mb.sidebar-collapsed';
 
-const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[] = [
-  { path: '/assistente', label: 'Assistente', icon: 'message-circle', exact: false },
-  { path: '/', label: 'Idee', icon: 'lightbulb', exact: true },
-  { path: '/contenuti', label: 'Contenuti', icon: 'file-text', exact: false },
-  { path: '/piano', label: 'Piano', icon: 'calendar', exact: false },
+const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolean }[] = [
+  { path: '/assistente', label: 'shell.assistant', icon: 'message-circle', exact: false },
+  { path: '/', label: 'shell.ideas', icon: 'lightbulb', exact: true },
+  { path: '/contenuti', label: 'shell.contents', icon: 'file-text', exact: false },
+  { path: '/piano', label: 'shell.plan', icon: 'calendar', exact: false },
 ];
 
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, TranslatePipe],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
   host: {
     '[style.--topbar-height.px]': 'topbarHeight()',
-    '(document:keydown.escape)': 'menuOpen.set(false)',
+    '(document:keydown.escape)': 'menuOpen.set(false); languageOpen.set(false)',
     '(document:keydown)': 'shortcut($event)',
   },
   template: `
@@ -44,13 +50,15 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
       <div class="head">
         <a class="brand-mark" routerLink="/assistente" aria-label="Moonbrand Studio"><mb-logo [compact]="collapsed()" /></a>
         @if (!collapsed()) {
-          <button class="side-btn toggle" type="button" title="Comprimi la barra" aria-label="Comprimi la barra" (click)="toggleCollapsed()">
+          <button class="side-btn toggle" type="button" [title]="'shell.collapse' | t" [attr.aria-label]="'shell.collapse' | t"
+            (click)="toggleCollapsed()">
             <mb-icon name="panel-left" [stroke]="1.8" />
           </button>
         }
       </div>
       @if (collapsed()) {
-        <button class="side-btn toggle wide" type="button" title="Espandi la barra" aria-label="Espandi la barra" (click)="toggleCollapsed()">
+        <button class="side-btn toggle wide" type="button" [title]="'shell.expand' | t" [attr.aria-label]="'shell.expand' | t"
+          (click)="toggleCollapsed()">
           <mb-icon name="panel-left" [stroke]="1.8" />
         </button>
       }
@@ -58,66 +66,86 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
       <mb-brand-switcher [compact]="collapsed()" />
 
       <div class="quick">
-        <a class="new-chat" routerLink="/assistente" [attr.title]="collapsed() ? 'Nuova chat' : null">
+        <a class="new-chat" routerLink="/assistente" [attr.title]="collapsed() ? ('shell.newChat' | t) : null">
           <mb-icon name="plus" [size]="16" [stroke]="2.2" />
           @if (!collapsed()) {
-            <span>Nuova chat</span>
+            <span>{{ 'shell.newChat' | t }}</span>
           }
         </a>
         @if (!collapsed()) {
-          <a class="side-btn search" routerLink="/conversazioni" [title]="'Cerca tra le conversazioni (' + shortcutLabel + ')'"
-            aria-label="Cerca tra le conversazioni">
+          <a class="side-btn search" routerLink="/conversazioni" [title]="'shell.searchChatsShortcut' | t: { shortcut: shortcutLabel }"
+            [attr.aria-label]="'shell.searchChats' | t">
             <mb-icon name="search" [size]="16" />
           </a>
         }
       </div>
 
-      <nav class="nav" aria-label="Sezioni">
+      <nav class="nav" [attr.aria-label]="'shell.sections' | t">
         @for (section of sections; track section.path) {
           <a class="nav-item" [routerLink]="section.path" routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label">
+            [routerLinkActiveOptions]="{ exact: section.exact }" ariaCurrentWhenActive="page" [attr.title]="section.label | t">
             <mb-icon [name]="section.icon" [stroke]="1.8" />
-            <span class="nav-label">{{ section.label }}</span>
+            <span class="nav-label">{{ section.label | t }}</span>
           </a>
         }
       </nav>
 
-      <div class="history" aria-label="Conversazioni">
+      <div class="history" [attr.aria-label]="'shell.conversations' | t">
         @if (!collapsed()) {
           @for (group of chatGroups(); track group.label) {
             <div class="group">
-              <p class="group-label">{{ group.label }}</p>
+              <p class="group-label">{{ group.label | t }}</p>
               @for (item of group.items; track item.id) {
                 <a class="session" [routerLink]="['/assistente', item.id]" routerLinkActive="active" ariaCurrentWhenActive="page"
                   [attr.title]="item.title">
                   <span class="session-title">{{ item.title }}</span>
                   @if (item.busy) {
-                    <span class="spinner" aria-label="Sta rispondendo"></span>
+                    <span class="spinner" [attr.aria-label]="'shell.replying' | t"></span>
                   }
                 </a>
               }
             </div>
           }
           @if (chat.conversations().length > recentCount) {
-            <a class="show-all" routerLink="/conversazioni">Mostra tutte <mb-icon name="chevron-right" [size]="14" /></a>
+            <a class="show-all" routerLink="/conversazioni">{{ 'shell.showAll' | t }} <mb-icon name="chevron-right" [size]="14" /></a>
           }
         }
       </div>
 
       <div class="foot">
-        <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" ariaCurrentWhenActive="page" title="Impostazioni brand">
+        <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" ariaCurrentWhenActive="page" [title]="'shell.brandSettings' | t">
           <mb-icon name="settings" [stroke]="1.8" />
-          <span class="nav-label">Impostazioni brand</span>
+          <span class="nav-label">{{ 'shell.brandSettings' | t }}</span>
         </a>
+        <div class="language" (focusout)="closeLanguage($event)">
+          @if (languageOpen()) {
+            <div class="language-menu" role="menu" [attr.aria-label]="'language.choose' | t">
+              @for (option of locales; track option) {
+                @let current = option === i18n.locale();
+                <button class="language-option" type="button" role="menuitemradio" [attr.aria-checked]="current" (click)="chooseLocale(option)">
+                  <span class="grow">{{ localeNames[option] }}</span>
+                  @if (current) {
+                    <mb-icon name="check" [size]="14" />
+                  }
+                </button>
+              }
+            </div>
+          }
+          <button class="nav-item" type="button" aria-haspopup="menu" [attr.aria-expanded]="languageOpen()" [title]="'language.label' | t"
+            (click)="languageOpen.set(!languageOpen())">
+            <mb-icon name="globe" [stroke]="1.8" />
+            <span class="nav-label">{{ localeNames[i18n.locale()] }}</span>
+          </button>
+        </div>
         @if (auth.account(); as account) {
           <div class="account">
             <span class="initials" [attr.title]="collapsed() ? account.name : null">{{ initials(account.name) }}</span>
             @if (!collapsed()) {
               <span class="account-texts">
-                <span class="account-name">{{ account.name || 'Il tuo account' }}</span>
+                <span class="account-name">{{ account.name || ('shell.yourAccount' | t) }}</span>
                 <span class="account-email">{{ account.email }}</span>
               </span>
-              <button class="side-btn" type="button" title="Esci" aria-label="Esci" (click)="signOut()">
+              <button class="side-btn" type="button" [title]="'shell.signOut' | t" [attr.aria-label]="'shell.signOut' | t" (click)="signOut()">
                 <mb-icon name="log-out" [size]="16" />
               </button>
             }
@@ -127,10 +155,10 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
     </aside>
     <div class="main">
       <header class="topbar" #topbar>
-        <button class="icon-btn burger" type="button" aria-label="Apri il menu" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
+        <button class="icon-btn burger" type="button" [attr.aria-label]="'shell.openMenu' | t" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
           <mb-icon name="menu" [size]="20" />
         </button>
-        <nav class="crumbs" aria-label="Dove sei">
+        <nav class="crumbs" [attr.aria-label]="'shell.breadcrumbs' | t">
           @for (crumb of header.crumbs(); track $index; let last = $last) {
             @if (crumb.link && !last) {
               <a class="crumb" [routerLink]="crumb.link">{{ crumb.label }}</a>
@@ -365,6 +393,44 @@ const SECTIONS: { path: string; label: string; icon: IconName; exact: boolean }[
       padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.07);
     }
+    .language {
+      position: relative;
+    }
+    button.nav-item {
+      width: 100%;
+      border: 0;
+      background: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .language-menu {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 0;
+      z-index: 5;
+      display: grid;
+      min-width: 180px;
+      padding: 4px;
+      border-radius: 12px;
+      background: var(--white);
+      box-shadow: var(--shadow-menu);
+    }
+    .language-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 8px;
+      background: none;
+      color: var(--text-title);
+      font: inherit;
+      cursor: pointer;
+    }
+    .language-option:hover {
+      background: var(--grey-100);
+    }
     .account {
       display: flex;
       align-items: center;
@@ -565,7 +631,12 @@ export class Shell {
   protected readonly chat = inject(ChatService);
   protected readonly header = inject(PageHeader);
   private readonly picker = inject(BrandPickerService);
+  private readonly toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
   protected readonly sections = SECTIONS;
+  protected readonly locales = LOCALES;
+  protected readonly localeNames = LOCALE_NAMES;
+  protected readonly languageOpen = signal(false);
   protected readonly recentCount = RECENT_CHATS;
   protected readonly shortcutLabel = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl+K';
 
@@ -647,6 +718,21 @@ export class Shell {
     );
   }
 
+  protected async chooseLocale(locale: Locale): Promise<void> {
+    this.languageOpen.set(false);
+    try {
+      await this.i18n.use(locale);
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('language.saveError')));
+    }
+  }
+
+  // Il menu delle lingue si chiude quando il fuoco esce da lì (un clic altrove).
+  protected closeLanguage(event: FocusEvent): void {
+    const next = event.relatedTarget as Node | null;
+    if (!next || !(event.currentTarget as HTMLElement).contains(next)) this.languageOpen.set(false);
+  }
+
   protected async signOut(): Promise<void> {
     await this.auth.signOut();
     await this.router.navigateByUrl('/login');
@@ -654,19 +740,19 @@ export class Shell {
 }
 
 // Le conversazioni sono già dalla più recente: i gruppi seguono lo stesso ordine.
-function groupByDay(items: ConversationSummary[]): { label: string; items: ConversationSummary[] }[] {
+function groupByDay(items: ConversationSummary[]): { label: MessageKey; items: ConversationSummary[] }[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const day = 24 * 60 * 60 * 1000;
-  const labelOf = (date: string): string => {
+  const labelOf = (date: string): MessageKey => {
     const age = today.getTime() - new Date(date).getTime();
-    if (age <= 0) return 'Oggi';
-    if (age <= day) return 'Ieri';
-    if (age <= 6 * day) return 'Questa settimana';
-    if (age <= 29 * day) return 'Questo mese';
-    return 'Più vecchie';
+    if (age <= 0) return 'days.today';
+    if (age <= day) return 'days.yesterday';
+    if (age <= 6 * day) return 'days.thisWeek';
+    if (age <= 29 * day) return 'days.thisMonth';
+    return 'days.older';
   };
-  const groups: { label: string; items: ConversationSummary[] }[] = [];
+  const groups: { label: MessageKey; items: ConversationSummary[] }[] = [];
   for (const item of items) {
     const label = labelOf(item.updatedAt);
     const group = groups.find((entry) => entry.label === label);

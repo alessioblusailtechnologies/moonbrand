@@ -7,6 +7,7 @@ import { DAY_PARTS, WELCOME_ICONS } from '@moonbrand/shared/domain/welcome';
 import { formatWeekdayLong, formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 
 import { describeBrand } from '../lib/brand-brief';
+import { replyRule } from '../lib/language';
 import { GREETINGS_PER_PART, SUGGESTIONS } from '../lib/welcome-rules';
 
 // Il benvenuto della chat per un brand: i saluti di oggi per ogni fascia oraria e gli spunti per la prima domanda.
@@ -55,7 +56,7 @@ Gli spunti:
 - Label al massimo 60 caratteri, niente emoji. Cose diverse tra loro: non quattro modi di dire «fai un post».
 - Cose che sai fare: proporre idee, scrivere post, caroselli e video (anche dalle foto che ti mandano), ritoccare i contenuti, riempire e spostare le uscite del piano, dire cosa è uscito e cosa manca. Approvare no: lo fa la persona in Contenuti, quindi per una bozza lo spunto è rivederla o ritoccarla con te.
 
-Scrivi in italiano.`;
+${replyRule()}`;
 
 const plan = list(
   brand.plan.map(

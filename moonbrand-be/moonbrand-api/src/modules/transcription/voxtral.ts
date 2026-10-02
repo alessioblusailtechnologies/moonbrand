@@ -1,3 +1,5 @@
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+
 import { ApiError } from '../../errors';
 
 // La dettatura nella casella dell'assistente: il browser registra, qui si trascrive con Voxtral di Mistral e il testo
@@ -24,10 +26,10 @@ export interface Transcript {
 export const biasTerms = (terms: readonly string[]): string[] =>
   [...new Set(terms.flatMap((term) => term.split(/[\s,]+/)).filter((term) => term.length > 1 && !/[\s,]/.test(term)))].slice(0, 100);
 
-function call(apiKey: string, model: string, audio: Audio, terms: readonly string[]): Promise<Response> {
+function call(apiKey: string, model: string, audio: Audio, terms: readonly string[], language: Locale): Promise<Response> {
   const form = new FormData();
   form.append('model', model);
-  form.append('language', 'it');
+  form.append('language', language);
   const extension = audio.type.includes('mp4') ? 'm4a' : audio.type.includes('ogg') ? 'ogg' : 'webm';
   form.append('file', new Blob([new Uint8Array(audio.bytes)], { type: audio.type }), `dettatura.${extension}`);
   for (const term of terms) form.append('context_bias', term);
@@ -55,13 +57,13 @@ export function tidy(text: string): string {
     .replace(/([.!?]\s+)(\p{Ll})/gu, (_, before: string, letter: string) => before + letter.toUpperCase());
 }
 
-export async function transcribe(apiKey: string, model: string, audio: Audio, terms: readonly string[]): Promise<Transcript> {
-  let response = await call(apiKey, model, audio, terms);
+export async function transcribe(apiKey: string, model: string, audio: Audio, terms: readonly string[], language: Locale): Promise<Transcript> {
+  let response = await call(apiKey, model, audio, terms, language);
   // Se i termini non passano si riprova senza: meglio una trascrizione senza aiuto che nessuna.
   if (!response.ok && response.status >= 400 && response.status < 500 && terms.length > 0) {
     const detail = await response.text().catch(() => '');
     if (!/context.?bias/i.test(detail)) throw failure(response.status);
-    response = await call(apiKey, model, audio, []);
+    response = await call(apiKey, model, audio, [], language);
   }
   if (!response.ok) throw failure(response.status);
   const body = (await response.json()) as { text?: unknown; usage?: { prompt_audio_seconds?: unknown } };

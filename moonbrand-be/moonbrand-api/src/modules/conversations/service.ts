@@ -13,12 +13,15 @@ import type {
   ConversationSummary,
 } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
+import { translate } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
+import { findAccount } from '../auth/accounts';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
 import { ensureStyleJob } from '../brands/style';
 import { listConversationContents } from '../contents/repository';
@@ -54,11 +57,17 @@ interface Mentions {
   slot: ChatSlot | null;
 }
 
-// Il titolo è l'idea da cui parte la conversazione, o l'uscita, o il primo messaggio, accorciato.
-function titleOf({ message }: ChatMessage, { idea, slot }: Mentions): string {
-  const fromSlot = slot && `Uscita di ${formatWeekdayShort(slot.date)} alle ${slot.time} su ${slot.channels.map(channelName).join(', ')}`;
+// Il titolo è l'idea da cui parte la conversazione, o l'uscita, o il primo messaggio, accorciato; nella lingua dell'account.
+function titleOf({ message }: ChatMessage, { idea, slot }: Mentions, locale: Locale): string {
+  const fromSlot =
+    slot &&
+    translate(locale, 'server.conversationFromSlot', {
+      day: formatWeekdayShort(slot.date, locale),
+      time: slot.time,
+      channels: slot.channels.map(channelName).join(', '),
+    });
   const line = (idea?.title ?? fromSlot ?? message).replace(/\s+/g, ' ').trim();
-  if (!line) return 'Foto allegate';
+  if (!line) return translate(locale, 'server.conversationPhotos');
   return line.length > TITLE_MAX ? `${line.slice(0, TITLE_MAX - 1).trimEnd()}…` : line;
 }
 
@@ -130,7 +139,8 @@ export function getConversations(pool: pg.Pool, identity: Identity, brandId: str
 export function startConversation(pool: pg.Pool, identity: Identity, brandId: string, message: ChatMessage): Promise<ChatTurnCreated> {
   return withIdentity(pool, identity, async (db) => {
     const mentions = await mentionsOf(db, brandId, message);
-    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, mentions));
+    const locale = (await findAccount(db, identity.accountId))?.locale ?? 'it';
+    const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, mentions, locale));
     return queueTurn(db, identity, { id, brandId }, message, mentions);
   });
 }

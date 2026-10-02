@@ -4,14 +4,16 @@ import { Router, RouterLink } from '@angular/router';
 import { PASSWORD_MIN } from '@moonbrand/shared/api/contract';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { errorMessage } from '../../core/errors';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Logo } from '../../ui/logo';
 import { AuthSide } from './auth-side';
 
 @Component({
   selector: 'mb-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, AuthSide, Logo],
+  imports: [RouterLink, AuthSide, Logo, TranslatePipe],
   styleUrl: './auth-layout.scss',
   template: `
     <mb-auth-side />
@@ -19,37 +21,38 @@ import { AuthSide } from './auth-side';
       <mb-logo class="mobile-logo" />
       <form (submit)="submit($event)" novalidate>
         <div class="head">
-          <h1 class="title">Crea il tuo account</h1>
-          <p class="body">Poi costruiamo insieme il primo brand: bastano cinque minuti.</p>
+          <h1 class="title">{{ 'auth.register.title' | t }}</h1>
+          <p class="body">{{ 'auth.register.subtitle' | t }}</p>
         </div>
         <div class="field">
-          <label for="name">Nome</label>
-          <input id="name" type="text" autocomplete="name" placeholder="Marco Sereni" [value]="name()"
+          <label for="name">{{ 'auth.fields.name' | t }}</label>
+          <input id="name" type="text" autocomplete="name" [placeholder]="'auth.register.namePlaceholder' | t" [value]="name()"
             (input)="name.set($any($event.target).value)" />
         </div>
         <div class="field">
-          <label for="email">Email</label>
-          <input id="email" type="email" autocomplete="email" placeholder="nome@azienda.it" [value]="email()"
+          <label for="email">{{ 'auth.fields.email' | t }}</label>
+          <input id="email" type="email" autocomplete="email" [placeholder]="'auth.fields.emailPlaceholder' | t" [value]="email()"
             (input)="email.set($any($event.target).value)" />
         </div>
         <div class="field">
-          <label for="password">Password</label>
-          <input id="password" type="password" autocomplete="new-password" [placeholder]="'Almeno ' + passwordMin + ' caratteri'"
+          <label for="password">{{ 'auth.fields.password' | t }}</label>
+          <input id="password" type="password" autocomplete="new-password" [placeholder]="'auth.register.passwordPlaceholder' | t: { n: passwordMin }"
             [value]="password()" (input)="password.set($any($event.target).value)" />
         </div>
         @if (error()) {
           <p class="error" role="alert">{{ error() }}</p>
         }
         <button class="btn btn-accent btn-lg btn-block submit" type="submit" [class.busy]="busy()" [disabled]="busy()">
-          {{ busy() ? 'Creo l’account…' : 'Crea l’account' }}
+          {{ (busy() ? 'auth.register.submitting' : 'auth.register.submit') | t }}
         </button>
-        <p class="caption switch">Hai già un account? <a routerLink="/login">Accedi</a></p>
+        <p class="caption switch">{{ 'auth.register.hasAccount' | t }} <a routerLink="/login">{{ 'auth.register.signIn' | t }}</a></p>
       </form>
     </main>
   `,
 })
 export class Register {
   private readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
 
   protected readonly passwordMin = PASSWORD_MIN;
@@ -70,19 +73,19 @@ export class Register {
     this.busy.set(true);
     this.error.set('');
     try {
-      await this.auth.signUp({ name: this.name().trim(), email: this.email().trim(), password: this.password() });
+      await this.auth.signUp({ name: this.name().trim(), email: this.email().trim(), password: this.password(), locale: this.i18n.locale() });
       await this.router.navigateByUrl('/onboarding');
     } catch (error) {
-      this.error.set(errorMessage(error, 'Non riesco a creare l’account. Riprova tra poco.'));
+      this.error.set(errorMessage(error, this.i18n.t('auth.register.failed')));
     } finally {
       this.busy.set(false);
     }
   }
 
   private validate(): string | null {
-    if (!this.name().trim()) return 'Scrivi il tuo nome.';
-    if (!/^\S+@\S+\.\S+$/.test(this.email().trim())) return 'Scrivi un indirizzo email valido.';
-    if (this.password().length < PASSWORD_MIN) return `La password deve avere almeno ${PASSWORD_MIN} caratteri.`;
+    if (!this.name().trim()) return this.i18n.t('auth.register.nameMissing');
+    if (!/^\S+@\S+\.\S+$/.test(this.email().trim())) return this.i18n.t('auth.register.emailInvalid');
+    if (this.password().length < PASSWORD_MIN) return this.i18n.t('auth.register.passwordShort', { n: PASSWORD_MIN });
     return null;
   }
 }

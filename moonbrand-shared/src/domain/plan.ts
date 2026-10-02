@@ -1,3 +1,6 @@
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
+import { plan } from '../i18n/messages/plan';
+import { translate } from '../i18n/translate';
 import { addDays, isPast, planNow, weekdayIndex } from '../lib/dates';
 import type { ChannelId, Theme } from './brand';
 import type { ContentStatus } from './content';
@@ -31,13 +34,12 @@ export interface PlanSlot extends SlotDraft {
   createdAt: string;
 }
 
-export const SLOT_STATUS_LABELS: Record<SlotStatus, string> = {
-  empty: 'Da riempire',
-  toPrepare: 'Da preparare',
-  toApprove: 'Da approvare',
-  scheduled: 'Programmata',
-  published: 'Pubblicata',
-};
+// Gli stati come si leggono; SLOT_STATUS_LABELS è l'italiano, per i prompt del motore e i tool dell'assistente.
+export function slotStatusLabels(locale: Locale = DEFAULT_LOCALE): Record<SlotStatus, string> {
+  return plan[locale].status;
+}
+
+export const SLOT_STATUS_LABELS: Record<SlotStatus, string> = slotStatusLabels();
 
 // Come è andata la pubblicazione di un contenuto su un canale (presenza.publications), con Zernio.
 export type PublicationStatus = 'publishing' | 'published' | 'failed';
@@ -209,10 +211,10 @@ export function themeBalance(themes: PlanBrand['themes'], slots: readonly Pick<S
 }
 
 // Il tema più lontano da quanto spesso dovrebbe uscire, se lo scarto è evidente.
-export function balanceHint(balance: ReturnType<typeof themeBalance>): string | null {
+export function balanceHint(balance: ReturnType<typeof themeBalance>, locale: Locale = DEFAULT_LOCALE): string | null {
   const worst = [...balance].sort((a, b) => a.planned - a.target - (b.planned - b.target))[0];
   if (!worst || worst.target - worst.planned < 15) return null;
-  return worst.count === 0 ? `Manca «${worst.theme.name}».` : `«${worst.theme.name}» ha poche uscite rispetto al suo peso.`;
+  return translate(locale, worst.count === 0 ? 'plan.balance.missing' : 'plan.balance.low', { theme: worst.theme.name });
 }
 
 // Il primo giorno senza uscite dopo from, tra quelli consigliati per il canale, entro quattro settimane.

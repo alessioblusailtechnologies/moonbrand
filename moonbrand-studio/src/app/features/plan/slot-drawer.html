@@ -5,14 +5,14 @@
   <header class="sheet-head">
     <div class="titles">
       @if (current) {
-        <span class="status" [style.--tone]="tones[current.status]">{{ statusLabels[current.status] }}</span>
+        <span class="status" [style.--tone]="tones[current.status]">{{ statusLabels()[current.status] }}</span>
       }
       <h2 id="slot-title" class="sheet-title">{{ heading() }}</h2>
       @if (when()) {
-        <p class="caption">{{ when() }}{{ time() ? ' alle ' + time() : '' }}</p>
+        <p class="caption">{{ when() }}</p>
       }
     </div>
-    <button class="icon-btn" type="button" aria-label="Chiudi" [disabled]="saving()" (click)="closed.emit()">
+    <button class="icon-btn" type="button" [attr.aria-label]="'common.close' | t" [disabled]="saving()" (click)="closed.emit()">
       <mb-icon name="x" />
     </button>
   </header>
@@ -20,18 +20,18 @@
   <div class="sheet-body">
     @if (creating()) {
       <label class="field-line">
-        <span class="label">Cosa esce</span>
+        <span class="label">{{ 'plan.drawer.what' | t }}</span>
         <select class="sunken" (change)="chooseWhat($any($event.target).value)">
-          <option value="empty" [selected]="whatValue() === 'empty'">Da decidere: lascio il posto</option>
+          <option value="empty" [selected]="whatValue() === 'empty'">{{ 'plan.drawer.whatEmpty' | t }}</option>
           @if (plan().ideas.length > 0) {
-            <optgroup label="Un’idea salvata">
+            <optgroup [label]="'plan.drawer.savedIdea' | t">
               @for (idea of plan().ideas; track idea.id) {
                 <option [value]="'idea:' + idea.id" [selected]="whatValue() === 'idea:' + idea.id">{{ idea.title }}</option>
               }
             </optgroup>
           }
           @if (plan().unscheduled.length > 0) {
-            <optgroup label="Un contenuto senza data">
+            <optgroup [label]="'plan.drawer.undatedContent' | t">
               @for (item of plan().unscheduled; track item.id) {
                 <option [value]="'content:' + item.id" [selected]="whatValue() === 'content:' + item.id">{{ item.title }}</option>
               }
@@ -50,7 +50,7 @@
         </span>
         <span class="content-texts">
           <span class="strong-sm">{{ item.title }}</span>
-          <span class="caption">{{ formatLabels[item.format] }} · {{ item.status === 'approved' ? 'Approvato' : 'Bozza da approvare' }}</span>
+          <span class="caption">{{ formatLabel(item.format) }} · {{ (item.status === 'approved' ? 'plan.drawer.approved' : 'plan.drawer.toApprove') | t }}</span>
         </span>
         <mb-icon name="chevron-right" [size]="16" />
       </a>
@@ -58,35 +58,35 @@
 
     <div class="when">
       <label class="field-line">
-        <span class="label">Giorno</span>
+        <span class="label">{{ 'plan.drawer.day' | t }}</span>
         <input class="sunken" type="date" [min]="today" [value]="date()" [disabled]="locked()" (change)="date.set($any($event.target).value)" />
       </label>
       <label class="field-line">
-        <span class="label">Ora</span>
+        <span class="label">{{ 'plan.drawer.time' | t }}</span>
         <input class="sunken" type="time" step="300" [value]="time()" [disabled]="locked()" (change)="time.set($any($event.target).value)" />
       </label>
     </div>
 
     <div class="field-line">
-      <span class="label">Canali</span>
+      <span class="label">{{ 'plan.drawer.channels' | t }}</span>
       @if (content(); as item) {
         <p class="marks">
           @for (channel of item.channels; track channel) {
             <span class="mark"><mb-channel-mark [channel]="channel" [active]="true" [size]="16" /> {{ name(channel) }}</span>
           }
         </p>
-        <p class="caption">Sono quelli del contenuto: si cambiano dalla sua pagina.</p>
+        <p class="caption">{{ 'plan.drawer.contentChannels' | t }}</p>
         @for (item of publications(); track item.channel) {
           <p class="caption publication" [class.warn]="item.status === 'failed'">
             @switch (item.status) {
               @case ('published') {
-                Uscito su {{ name(item.channel) }}.
+                {{ 'plan.drawer.published' | t: { channel: name(item.channel) } }}
                 @if (item.url) {
-                  <a [href]="item.url" target="_blank" rel="noopener">Apri il post</a>
+                  <a [href]="item.url" target="_blank" rel="noopener">{{ 'plan.drawer.openPost' | t }}</a>
                 }
               }
-              @case ('publishing') { Sta uscendo su {{ name(item.channel) }}… }
-              @case ('failed') { Non uscito su {{ name(item.channel) }}: {{ item.error }} }
+              @case ('publishing') { {{ 'plan.drawer.publishing' | t: { channel: name(item.channel) } }} }
+              @case ('failed') { {{ 'plan.drawer.failed' | t: { channel: name(item.channel), error: item.error ?? '' } }} }
             }
           </p>
         }
@@ -105,9 +105,9 @@
     @if (!content()) {
       @if (plan().themes.length > 0) {
         <label class="field-line">
-          <span class="label">Tema</span>
+          <span class="label">{{ 'plan.drawer.theme' | t }}</span>
           <select class="sunken" [disabled]="locked()" (change)="themeId.set($any($event.target).value || null)">
-            <option value="" [selected]="!themeId()">Nessun tema in particolare</option>
+            <option value="" [selected]="!themeId()">{{ 'plan.drawer.noTheme' | t }}</option>
             @for (theme of plan().themes; track theme.id) {
               <option [value]="theme.id" [selected]="themeId() === theme.id">{{ theme.name }}</option>
             }
@@ -116,9 +116,9 @@
       }
       @if (current) {
         <label class="field-line">
-          <span class="label">Idea</span>
+          <span class="label">{{ 'plan.drawer.idea' | t }}</span>
           <select class="sunken" [disabled]="locked()" (change)="ideaId.set($any($event.target).value || null)">
-            <option value="" [selected]="!ideaId()">Nessuna idea, per ora</option>
+            <option value="" [selected]="!ideaId()">{{ 'plan.drawer.noIdea' | t }}</option>
             @for (idea of ideas(); track idea.id) {
               <option [value]="idea.id" [selected]="ideaId() === idea.id">{{ idea.title }}</option>
             }
@@ -128,23 +128,23 @@
     }
 
     @if (!valid() && !locked() && date() && time()) {
-      <p class="caption warn">Scegli un giorno e un’ora da adesso in poi{{ !content() && channels().length === 0 ? ', e almeno un canale' : '' }}.</p>
+      <p class="caption warn">{{ (!content() && channels().length === 0 ? 'plan.drawer.invalidWithChannel' : 'plan.drawer.invalid') | t }}</p>
     }
   </div>
 
   <footer class="sheet-foot">
     @if (current && !locked()) {
-      <button class="link-btn danger" type="button" [disabled]="saving()" (click)="remove()">Togli dal piano</button>
+      <button class="link-btn danger" type="button" [disabled]="saving()" (click)="remove()">{{ 'plan.drawer.remove' | t }}</button>
     }
     <span class="grow"></span>
     @if (current && !current.content && !locked()) {
       <button class="btn btn-secondary btn-sm" type="button" [disabled]="saving() || busy()" (click)="prepare.emit(current)">
-        <mb-icon name="message-circle" [size]="15" /> Prepara in chat
+        <mb-icon name="message-circle" [size]="15" /> {{ 'plan.drawer.prepare' | t }}
       </button>
     }
     @if (!locked()) {
       <button class="btn btn-primary btn-sm" type="button" [disabled]="!valid() || saving()" (click)="save()">
-        {{ saving() ? 'Salvo…' : creating() ? 'Aggiungi al piano' : 'Salva' }}
+        {{ (saving() ? 'common.saving' : creating() ? 'plan.drawer.addToPlan' : 'common.save') | t }}
       </button>
     }
   </footer>

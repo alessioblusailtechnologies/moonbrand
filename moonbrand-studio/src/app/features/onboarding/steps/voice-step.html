@@ -2,68 +2,66 @@
 
 @if (analyzing()) {
   <div class="panel big">
-    <p class="strong-sm">Sto leggendo i tuoi testi</p>
+    <p class="strong-sm">{{ 'onboarding.voice.reading' | t }}</p>
     <mb-step-list [steps]="steps()" />
   </div>
 } @else if (mode() === 'paste') {
   <div class="panel big">
-    <p class="label">Incolla i tuoi testi</p>
-    <textarea class="sunken" rows="8" placeholder="Incolla qui i post, separati da una riga vuota." aria-label="Testi da analizzare"
+    <p class="label">{{ 'onboarding.voice.pasteLabel' | t }}</p>
+    <textarea class="sunken" rows="8" [placeholder]="'onboarding.voice.pastePlaceholder' | t" [attr.aria-label]="'onboarding.voice.pasteAria' | t"
       [value]="texts()" (input)="texts.set($any($event.target).value)"></textarea>
-    <p class="caption">Più testi leggo, meno correzioni farai dopo. Con tre ci siamo, con dieci si sente la differenza.</p>
+    <p class="caption">{{ 'onboarding.voice.pasteHint' | t }}</p>
     <div class="actions">
-      <button class="btn btn-ghost btn-sm" type="button" (click)="mode.set('sources')">Annulla</button>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="mode.set('sources')">{{ 'common.cancel' | t }}</button>
       <button class="btn btn-primary btn-sm" type="button" [attr.aria-disabled]="texts().trim().length < 40" (click)="submitTexts()">
-        Analizza
+        {{ 'onboarding.voice.analyze' | t }}
       </button>
     </div>
   </div>
 } @else if (mode() === 'recording') {
   <div class="panel big">
-    <p class="label">Registrazione</p>
+    <p class="label">{{ 'onboarding.voice.recording' | t }}</p>
     <div class="row">
       <span class="dot rec"></span>
       <span class="display">{{ clock() }}</span>
     </div>
-    <p class="caption">
-      Registrazione simulata. Racconta com’è andata la settimana come lo diresti a un collega: trascrivo e ne ricavo il ritmo.
-    </p>
+    <p class="caption">{{ 'onboarding.voice.recordingHint' | t }}</p>
     <div class="actions">
-      <button class="btn btn-ghost btn-sm" type="button" (click)="cancelRecording()">Annulla</button>
-      <button class="btn btn-primary btn-sm" type="button" [disabled]="seconds() < 3" (click)="stopRecording()">Ferma e analizza</button>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="cancelRecording()">{{ 'common.cancel' | t }}</button>
+      <button class="btn btn-primary btn-sm" type="button" [disabled]="seconds() < 3" (click)="stopRecording()">{{ 'onboarding.voice.stopAndAnalyze' | t }}</button>
     </div>
   </div>
 } @else if (current && !adding()) {
   <div class="panel big">
     <div class="row">
-      <span class="badge mint">Scheda voce v{{ current.version }}</span>
-      <span class="caption grow ellipsis">da {{ current.sourceLabel }}</span>
-      <button class="link-btn" type="button" (click)="editing.set(!editing())">{{ editing() ? 'Fatto' : 'Correggi' }}</button>
+      <span class="badge mint">{{ 'onboarding.voice.card' | t: { n: current.version } }}</span>
+      <span class="caption grow ellipsis">{{ 'onboarding.voice.from' | t: { source: current.sourceLabel } }}</span>
+      <button class="link-btn" type="button" (click)="editing.set(!editing())">{{ (editing() ? 'common.done' : 'onboarding.voice.fix') | t }}</button>
     </div>
     @for (row of rows; track row.key) {
       <div class="voice-row">
-        <p class="label">{{ row.label }}</p>
+        <p class="label">{{ row.label | t }}</p>
         @if (editing()) {
-          <textarea class="sunken" rows="2" [attr.aria-label]="row.label" [value]="current[row.key]"
+          <textarea class="sunken" rows="2" [attr.aria-label]="row.label | t" [value]="current[row.key]"
             (input)="editRow(row.key, $any($event.target).value)"></textarea>
         } @else {
           <p class="body ink">{{ current[row.key] }}</p>
         }
       </div>
     }
-    <button class="btn btn-ghost btn-block" type="button" (click)="addMore()">Aggiungi altri testi</button>
+    <button class="btn btn-ghost btn-block" type="button" (click)="addMore()">{{ 'onboarding.voice.addMore' | t }}</button>
   </div>
 
   @if (previous().length > 0) {
     <div class="panel">
-      <p class="label">Versioni precedenti</p>
+      <p class="label">{{ 'onboarding.voice.previous' | t }}</p>
       @for (older of previous(); track older.version + older.createdAt) {
         <div class="history-row">
           <div class="grow">
             <p class="strong-sm">v{{ older.version }} · {{ formatDate(older.createdAt) }}</p>
-            <p class="caption">da {{ older.sourceLabel }}</p>
+            <p class="caption">{{ 'onboarding.voice.from' | t: { source: older.sourceLabel } }}</p>
           </div>
-          <button class="btn btn-ghost btn-sm" type="button" (click)="restore(older)">Ripristina</button>
+          <button class="btn btn-ghost btn-sm" type="button" (click)="restore(older)">{{ 'onboarding.voice.restore' | t }}</button>
         </div>
       }
     </div>
@@ -80,13 +78,9 @@
     </button>
   }
   <p class="caption">
-    @if (current) {
-      La nuova scheda prende il posto di quella in uso; le precedenti restano nello storico.
-    } @else {
-      Più testi reali leggo, meno correzioni farai dopo. Con tre testi ci siamo, con dieci si sente la differenza.
-    }
+    {{ (current ? 'onboarding.voice.replaceHint' : 'onboarding.voice.firstHint') | t }}
   </p>
   @if (current) {
-    <button class="btn btn-ghost btn-block" type="button" (click)="adding.set(false)">Torna alla scheda in uso</button>
+    <button class="btn btn-ghost btn-block" type="button" (click)="adding.set(false)">{{ 'onboarding.voice.backToCurrent' | t }}</button>
   }
 }

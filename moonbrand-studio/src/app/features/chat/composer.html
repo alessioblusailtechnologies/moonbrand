@@ -19,7 +19,7 @@
           } @else if (item.video) {
             <span class="pending-video"><mb-icon name="play" [size]="14" /></span>
           }
-          <button class="pending-remove" type="button" [attr.aria-label]="item.video ? 'Togli il video' : 'Togli la foto'" (click)="unattach(item.id)">
+          <button class="pending-remove" type="button" [attr.aria-label]="(item.video ? 'chat.composer.removeVideo' : 'chat.composer.removePhoto') | t" (click)="unattach(item.id)">
             <mb-icon name="x" [size]="12" [stroke]="3" />
           </button>
         </div>
@@ -30,7 +30,7 @@
     #field
     class="composer-input"
     rows="1"
-    [attr.aria-label]="label()"
+    [attr.aria-label]="ariaLabel()"
     [placeholder]="placeholder()"
     [value]="draft()"
     (input)="draft.set($any($event.target).value)"
@@ -39,8 +39,8 @@
   ></textarea>
   <div class="composer-bar">
     <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
-    <button class="attach" type="button" title="Allega foto o video" (click)="pick()">
-      <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> Allega
+    <button class="attach" type="button" [title]="'chat.composer.attachTitle' | t" (click)="pick()">
+      <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> {{ 'chat.composer.attach' | t }}
     </button>
     <span class="grow"></span>
     @if (dictation() === 'recording') {
@@ -50,8 +50,8 @@
       class="icon-btn mic"
       type="button"
       [class.recording]="dictation() === 'recording'"
-      [attr.aria-label]="dictation() === 'recording' ? 'Ferma e trascrivi' : dictation() === 'transcribing' ? 'Sto trascrivendo' : 'Detta a voce'"
-      [attr.title]="dictation() === 'recording' ? 'Ferma e trascrivi' : 'Detta a voce'"
+      [attr.aria-label]="(dictation() === 'recording' ? 'chat.composer.stopAndTranscribe' : dictation() === 'transcribing' ? 'chat.composer.transcribing' : 'chat.composer.dictate') | t"
+      [attr.title]="(dictation() === 'recording' ? 'chat.composer.stopAndTranscribe' : 'chat.composer.dictate') | t"
       [disabled]="dictation() === 'transcribing' || busy()"
       (click)="toggleDictation()"
     >
@@ -64,12 +64,12 @@
       }
     </button>
     @if (running()) {
-      <button class="icon-btn solid send" type="button" aria-label="Ferma la risposta" title="Ferma la risposta" [disabled]="stopping()"
+      <button class="icon-btn solid send" type="button" [attr.aria-label]="'chat.composer.stopReply' | t" [title]="'chat.composer.stopReply' | t" [disabled]="stopping()"
         (click)="stopped.emit()">
         <mb-icon name="square" [size]="14" />
       </button>
     } @else if (send()) {
-      <button class="icon-btn solid send" type="button" aria-label="Invia" [disabled]="!canSend()" (click)="submit()">
+      <button class="icon-btn solid send" type="button" [attr.aria-label]="'chat.composer.send' | t" [disabled]="!canSend()" (click)="submit()">
         <mb-icon name="arrow-up" />
       </button>
     }

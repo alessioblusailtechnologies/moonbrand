@@ -9,7 +9,7 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 
 ## Regole di scrittura
 
-- Scrivi in italiano semplice e concreto: niente gergo di marketing, niente frasi fatte, niente trattini lunghi.
+- Scrivi nella lingua dei post del brand (in CLAUDE.md, «Lingua dei post»), semplice e concreto: niente gergo di marketing, niente frasi fatte, niente trattini lunghi. Gli esempi di queste skill sono in italiano: valgono per il tono, non per la lingua.
 - Segui la voce del brand alla lettera: se «Da evitare» nomina esclamativi o emoji, non usarne; se il lessico chiede i numeri in cifre, scrivi 3 e non tre.
 - Non inventare fatti, numeri, prezzi, nomi di clienti o risultati: quando serve un dato che non conosci, metti il segnaposto tra parentesi quadre, per esempio [prezzo].
 - Ogni canale ha la sua variante, scritta per quel canale e non copiata dalle altre.

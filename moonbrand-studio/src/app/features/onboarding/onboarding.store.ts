@@ -6,6 +6,7 @@ import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
 export type OnboardingStep = 'intro' | SectionKey | 'summary';
@@ -37,6 +38,7 @@ function newBrandId(): string {
 export class OnboardingStore extends DraftStore<State> {
   private readonly auth = inject(AuthService);
   private readonly brands = inject(BrandsService);
+  private readonly i18n = inject(I18nService);
   private readonly storageKey = computed(() => `moonbrand/onboarding/v1/${this.auth.account()?.id ?? 'anon'}`);
   protected readonly state = signal<State>(this.read(this.storageKey()));
 
@@ -74,7 +76,7 @@ export class OnboardingStore extends DraftStore<State> {
     this.state.update((state) => ({
       ...state,
       brandId: state.brandId ?? newBrandId(),
-      draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind),
+      draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind, this.i18n.locale()),
     }));
   }
 
