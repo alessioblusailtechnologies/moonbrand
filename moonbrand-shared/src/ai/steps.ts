@@ -173,6 +173,7 @@ const TOOL_STEPS: Record<string, string | null> = {
   mcp__musica__genera_musica: 'Compongo la musica',
   mcp__musica__genera_canzone: 'Compongo la canzone',
   mcp__musica__attendi_musica: 'Aspetto che la musica sia pronta',
+  mcp__lambda__esporta_video: 'Esporto i video finali',
   mcp__higgsfield__generate_video: 'Giro una clip',
   mcp__higgsfield__generate_video_batch: 'Giro le clip',
   mcp__higgsfield__generate_image: 'Creo un’immagine',

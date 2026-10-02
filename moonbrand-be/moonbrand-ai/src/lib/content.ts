@@ -10,6 +10,7 @@ import { audioTools } from '../tools/audio';
 import { graphicsTools } from '../tools/grafica';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
+import { lambdaKeys, lambdaTools } from '../tools/lambda';
 import { musicTools } from '../tools/musica';
 import { visionTools } from '../tools/vista';
 import { MOONBRAND_PLUGINS } from './plugin';
@@ -205,6 +206,9 @@ export async function runContentAgent(options: {
     mcpServers.audio = audioTools(options.brandDir, ELEVENLABS_API_KEY);
     mcpServers.musica = musicTools(options.brandDir, ELEVENLABS_API_KEY);
     videoEnv = await prepareVideoProject(options.brandDir);
+    // Gli export finali su Remotion Lambda, se ci sono le chiavi AWS (.env.lambda).
+    const lambda = lambdaKeys();
+    if (lambda) mcpServers.lambda = lambdaTools(options.brandDir, path.basename(path.resolve(options.brandDir)), lambda);
     // Le clip le gira Higgsfield; i suoi file arrivano nella cartella di lavoro del contenuto.
     const token = await higgsfieldToken();
     if (token) {

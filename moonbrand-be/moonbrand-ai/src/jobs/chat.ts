@@ -12,6 +12,7 @@ import { audioTools } from '../tools/audio';
 import { graphicsTools } from '../tools/grafica';
 import { higgsfield, higgsfieldToken } from '../tools/higgsfield';
 import { imageTools } from '../tools/immagini';
+import { lambdaKeys, lambdaTools } from '../tools/lambda';
 import { musicTools } from '../tools/musica';
 import { visionTools } from '../tools/vista';
 import { moonbrandTools } from '../tools/moonbrand';
@@ -59,6 +60,9 @@ if (ELEVENLABS_API_KEY) {
   mcpServers.audio = audioTools(brandDir, ELEVENLABS_API_KEY);
   mcpServers.musica = musicTools(brandDir, ELEVENLABS_API_KEY);
 }
+// Gli export finali dei video su Remotion Lambda, se ci sono le chiavi AWS (.env.lambda).
+const lambda = lambdaKeys();
+if (lambda) mcpServers.lambda = lambdaTools(brandDir, path.basename(path.resolve(brandDir)), lambda);
 
 const guide = `# moonbrand
 

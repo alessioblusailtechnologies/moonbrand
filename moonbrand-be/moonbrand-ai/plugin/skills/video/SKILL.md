@@ -90,9 +90,10 @@ Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool g
 - Mentre lavori, esporta in PNG il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile, a metà risoluzione (`--scale=0.5`), e passali a guarda: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Quando ritocchi una scena, riesporta e ricontrolla solo quella.
 - Apri tu un fotogramma solo quando devi correggere un'impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - Correggi e riesporta finché è tutto a posto; lancia anche `pnpm check` per i tipi.
-- Poi esporta il video finale in MP4 e passalo intero a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.
+- Poi esporta i video finali in MP4 con esporta_video, che li renderizza su Remotion Lambda in pochi secondi: tutte le composizioni in una sola chiamata, e ogni nuovo export dopo una correzione allo stesso modo. Passali interi a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.
 - Esporta anche una copertina in JPEG o PNG, scegliendo il fotogramma che meglio rappresenta il video. Video finale e copertina a risoluzione piena, senza `--scale`.
-- Il render occupa la CPU e richiede tempo: lancia insieme, in un solo comando, gli export finali di tutte le composizioni e delle copertine (ognuno con `&` in fondo, poi `wait`), invece che uno dopo l'altro.
+- Le copertine e i fotogrammi di controllo esportali qui con `npx remotion still`/`render`: sono veloci. Lancia insieme quelli indipendenti, in un solo comando (ognuno con `&` in fondo, poi `wait`), nello stesso messaggio di esporta_video.
+- Se esporta_video non c'è o non riesce, esporta i video finali qui con `npx remotion render`, tutti insieme nello stesso modo: il render in locale occupa la CPU e richiede tempo.
 
 ## Dove vanno i file
 
