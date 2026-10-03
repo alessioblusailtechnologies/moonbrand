@@ -34,6 +34,8 @@ Il copione è uno per tutti i canali: scene e clip sono le stesse, mentre testo 
 
 Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare qualcosa (una durata, una fonte che manca), cambialo e dillo.
 
+Il montaggio lo fa il subagente montaggio, quando c'è. Scritto il copione (in chat, quando l'utente l'ha approvato), affidagli il lavoro con il tool Agent e passagli tutto quello che gli serve, perché la conversazione non la vede: il copione completo, l'id del video, la cartella dei file finali, i canali con la loro confezione e gli allegati o i file da usare. Mentre lavora non fare altro. Quando risponde, salva il contenuto con i file che ti indica e racconta all'utente cosa è uscito e cosa è cambiato rispetto al copione. Il resto di questa skill è il lavoro del montatore, o il tuo se il subagente non c'è.
+
 ## Formati
 
 | Proporzione | Misure | Dove |

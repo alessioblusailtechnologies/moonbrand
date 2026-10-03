@@ -13,6 +13,7 @@ import { imageTools } from '../tools/immagini';
 import { lambdaKeys, lambdaTools } from '../tools/lambda';
 import { musicTools } from '../tools/musica';
 import { visionTools } from '../tools/vista';
+import { VIDEO_AGENTS } from './montaggio';
 import { MOONBRAND_PLUGINS } from './plugin';
 import { prepareVideoProject } from './video';
 
@@ -221,6 +222,7 @@ export async function runContentAgent(options: {
         env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
         mcpServers,
         plugins: MOONBRAND_PLUGINS,
+        ...(options.format === 'video' && { agents: VIDEO_AGENTS }),
         permissionMode: 'bypassPermissions',
         allowDangerouslySkipPermissions: true,
         outputFormat: {

@@ -166,6 +166,9 @@ const JOBS: Record<string, JobKind> = {
 const url = process.env.DATABASE_URL ?? '';
 
 // Il DB è del worker: gli script dei job (e quindi Claude) non ne ricevono l'indirizzo.
+// I connettori dell'account claude.ai di questa macchina (Canva, Drive, Gmail...) non servono né ai job né al lettore dei
+// passaggi: accesi, i nomi dei loro tool entravano nel contesto (circa 50.000 caratteri) e si rileggevano a ogni chiamata.
+process.env.ENABLE_CLAUDEAI_MCP_SERVERS = 'false';
 const { DATABASE_URL: _database, ...jobEnv } = process.env;
 const local = url.includes('localhost') || url.includes('127.0.0.1');
 const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { rejectUnauthorized: false } }), max: CONCURRENCY + 2 });
@@ -343,6 +346,8 @@ async function run(job: Job): Promise<void> {
         const index = blockCount.get(messageId) ?? 0;
         blockCount.set(messageId, index + 1);
         if (block.type === 'text') {
+          // Nella chat il testo è la risposta all'utente: quello di un subagente (il montatore) è lavoro suo e non si mostra.
+          if (kind.reply && message.parent_tool_use_id) continue;
           const id = `${messageId}-${index}`;
           const text = block.text.trim();
           if (!text) {
