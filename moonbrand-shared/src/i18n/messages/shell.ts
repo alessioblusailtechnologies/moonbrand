@@ -20,6 +20,8 @@ export const shell = defineMessages({
     signOut: 'Esci',
     openMenu: 'Apri il menu',
     breadcrumbs: 'Dove sei',
+    creditsUsed: '{n, plural, one {# credito} other {# crediti}} questo mese',
+    creditsHint: 'Crediti consumati dal primo del mese',
   },
   en: {
     sections: 'Sections',
@@ -40,6 +42,8 @@ export const shell = defineMessages({
     signOut: 'Sign out',
     openMenu: 'Open menu',
     breadcrumbs: 'You are here',
+    creditsUsed: '{n, plural, one {# credit} other {# credits}} this month',
+    creditsHint: 'Credits used since the first of the month',
   },
   fr: {
     sections: 'Sections',
@@ -60,5 +64,7 @@ export const shell = defineMessages({
     signOut: 'Se déconnecter',
     openMenu: 'Ouvrir le menu',
     breadcrumbs: 'Vous êtes ici',
+    creditsUsed: '{n, plural, one {# crédit} other {# crédits}} ce mois-ci',
+    creditsHint: 'Crédits utilisés depuis le premier du mois',
   },
 });

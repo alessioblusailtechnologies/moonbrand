@@ -17,6 +17,7 @@ import type { Palette } from '@moonbrand/shared/domain/brand';
 import { siteLanguage } from '@moonbrand/shared/i18n/locales';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
 
+import { CreditsService } from '../credits/credits.service';
 import { LOGO_SIDE, resizedDataUri } from '../images';
 
 const POLL_MS = 1000;
@@ -33,6 +34,7 @@ export class StoppedJobError extends Error {}
 @Injectable({ providedIn: 'root' })
 export class AiJobsService {
   private readonly http = inject(HttpClient);
+  private readonly credits = inject(CreditsService);
 
   async readWebsite(site: string, onSteps?: OnAiSteps): Promise<WebsiteInsights> {
     const host = normalizeSite(site);
@@ -89,6 +91,7 @@ export class AiJobsService {
         continue;
       }
       onSteps?.(job.steps);
+      if (job.status !== 'queued' && job.status !== 'running') void this.credits.refresh();
       if (job.status === 'done' && job.result) return job.result;
       if (job.status === 'stopped') throw new StoppedJobError('Fermato.');
       if (job.status === 'failed' || job.status === 'done') throw new Error(job.error ?? 'Lavoro AI senza risultato.');

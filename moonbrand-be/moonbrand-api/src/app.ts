@@ -15,6 +15,7 @@ import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
 import { registerConversationRoutes } from './modules/conversations/routes';
+import { registerCreditRoutes } from './modules/credits/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
 import { registerPlanRoutes } from './modules/plan/routes';
@@ -62,6 +63,7 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.settings);
   registerWelcomeRoutes(app, options.pool);
+  registerCreditRoutes(app, options.pool);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;

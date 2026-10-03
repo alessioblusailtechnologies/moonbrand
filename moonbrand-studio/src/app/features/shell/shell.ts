@@ -10,6 +10,7 @@ import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -117,6 +118,13 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
           <mb-icon name="settings" [stroke]="1.8" />
           <span class="nav-label">{{ 'shell.brandSettings' | t }}</span>
         </a>
+        @if (credits.credits(); as balance) {
+          @let used = 'shell.creditsUsed' | t: { n: balance.usedThisMonth };
+          <div class="nav-item credits" [title]="collapsed() ? used : ('shell.creditsHint' | t)">
+            <mb-icon name="coins" [stroke]="1.8" />
+            <span class="nav-label">{{ used }}</span>
+          </div>
+        }
         <div class="language" (focusout)="closeLanguage($event)">
           @if (languageOpen()) {
             <div class="language-menu" role="menu" [attr.aria-label]="'language.choose' | t">
@@ -310,6 +318,10 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     .nav-item.active {
       background: var(--surface-sidebar-active);
       color: var(--white);
+    }
+    .nav-item.credits:hover {
+      background: none;
+      color: var(--sidebar-text);
     }
     .collapsed .nav-label {
       display: none;
@@ -629,6 +641,7 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly chat = inject(ChatService);
+  protected readonly credits = inject(CreditsService);
   protected readonly header = inject(PageHeader);
   private readonly picker = inject(BrandPickerService);
   private readonly toast = inject(ToastService);

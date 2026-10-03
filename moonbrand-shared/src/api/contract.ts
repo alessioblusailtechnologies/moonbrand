@@ -587,3 +587,11 @@ export interface WelcomeJobInput {
   brand: BrandContext;
   signals: WelcomeSignals;
 }
+
+// I crediti dell'account: ogni interazione costa quanto è costata davvero, 1 credito per centesimo di dollaro.
+// Per ora si contano soltanto: senza piani il saldo va sotto zero e non blocca niente.
+export interface CreditsResponse {
+  balance: number;
+  // Consumati dal primo del mese (a Roma).
+  usedThisMonth: number;
+}
