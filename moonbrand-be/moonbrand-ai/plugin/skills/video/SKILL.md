@@ -53,7 +53,7 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 - Lo stile del brand si prende come per le immagini: riferimenti-da-seguire e file-riferimento danno palette, font, tono delle foto e dettagli grafici, da seguire senza ricalcare l'impaginazione. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile».
 - video/src/brand.ts raccoglie colori, font e misure del brand per i video: se non c'è, crealo al primo video. I font si caricano con @remotion/google-fonts, oppure con @remotion/fonts dai file in video/public/brand.
 - video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro.
-- Guarda le composizioni degli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri.
+- Guarda come sono fatti gli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri. Per capirlo bastano i nomi e l'inizio delle composizioni, non i file interi.
 - Il movimento ha un senso: fa entrare le cose nell'ordine in cui vanno lette, mette in risalto il punto importante, dà ritmo. Niente animazioni messe tanto per muovere.
 
 ## Immagini e clip
@@ -88,16 +88,25 @@ Musica e canzoni si fanno in sottofondo: genera_musica e genera_canzone rispondo
 - **Parole di una canzone o di un audio che non hai fatto con genera_voce**: i tempi li trova tempi_parole, che separa la voce dalla musica e allinea il testo a quello che si sente, parola per parola. Passagli il testo esatto quando lo conosci; il modello a volte ripete o salta qualche parola, quindi se non sei sicuro lascialo vuoto e il tool trascrive (e ti dice cosa ha sentito). Con da e a lavora solo sul pezzo del brano che usi. Non stimare i tempi a orecchio e non trascrivere per conto tuo con altri programmi: le parole che si accendono fuori tempo si notano subito.
 - **Effetti**: genera_effetto per transizioni, colpi e ambienti, descritti in inglese. Pochi e al servizio del ritmo.
 
+## Pochi passaggi
+
+Ogni passaggio, cioè ogni chiamata a un tool, rilegge tutta la conversazione: a costare è il numero dei passaggi, più di quanto fa ciascuno.
+
+- I comandi che servono uno dopo l'altro vanno in un solo Bash; i tool che non dipendono l'uno dall'altro nello stesso messaggio.
+- Per correggere un file cambia con Edit le righe che servono; riscrivilo per intero solo se cambia quasi tutto.
+- Leggi solo quello che ti serve (le righe giuste, con grep o con un intervallo), non file interi che conosci già: quello che leggi resta nella conversazione fino alla fine.
+- Scrivi la composizione con i tempi presi dai file (durate di clip, voce e musica, tempi delle parole), così il primo controllo trova poco da correggere.
+
 ## Controllo
 
-Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool guarda, e ti risponde a parole. Fagli sempre una lista precisa di cosa controllare.
+Non puoi guardare il video mentre scorre: lo guarda per te Gemini e ti risponde a parole. Fagli sempre una lista precisa di cosa controllare.
 
-- Mentre lavori, esporta in PNG il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile, a metà risoluzione (`--scale=0.5`), e passali a guarda: testo leggibile, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Quando ritocchi una scena, riesporta e ricontrolla solo quella.
-- Apri tu un fotogramma solo quando devi correggere un'impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
-- Correggi e riesporta finché è tutto a posto; lancia anche `pnpm check` per i tipi.
+- Mentre lavori, controlla con controlla_video: in una sola chiamata controlla i tipi, esporta a metà risoluzione i fotogrammi che chiedi di tutte le composizioni e li fa guardare a Gemini. Chiedi il primo e l'ultimo fotogramma e, per ogni scena, quello in cui il testo è tutto visibile (al massimo 20 in tutto), con la lista: testo leggibile e intero, niente tagli o sovrapposizioni, margini rispettati, colori del brand, nessun fotogramma vuoto per errore. Se i tipi o l'export non vanno ti dice solo l'errore: correggi e richiamalo. Non esportare fotogrammi di controllo con npx remotion e non lanciare pnpm check a parte.
+- Correggi in un giro solo tutto quello che segnala, poi ricontrolla solo i fotogrammi delle scene che hai toccato.
+- Apri tu un fotogramma (sono in video/out/controllo) solo quando devi correggere un'impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - Poi esporta i video finali in MP4 con esporta_video, che li renderizza su Remotion Lambda in pochi secondi: tutte le composizioni in una sola chiamata, e ogni nuovo export dopo una correzione allo stesso modo. Passali interi a guarda: oltre ai controlli di sopra, che testi e scene restino a schermo abbastanza da leggerli, che musica, voce ed effetti partano a tempo con le scene, che i sottotitoli seguano la voce, che i volumi siano giusti e che il finale si chiuda bene. Correggi quello che segnala, riesporta e ricontrolla.
 - Esporta anche una copertina in JPEG o PNG, scegliendo il fotogramma che meglio rappresenta il video. Video finale e copertina a risoluzione piena, senza `--scale`.
-- Le copertine e i fotogrammi di controllo esportali qui con `npx remotion still`/`render`: sono veloci. Lancia insieme quelli indipendenti, in un solo comando (ognuno con `&` in fondo, poi `wait`), nello stesso messaggio di esporta_video.
+- Le copertine esportale qui con `npx remotion still`: sono veloci. Lanciale insieme in un solo comando (ognuna con `&` in fondo, poi `wait`), nello stesso messaggio di esporta_video.
 - Se esporta_video non c'è o non riesce, esporta i video finali qui con `npx remotion render`, tutti insieme nello stesso modo: il render in locale occupa la CPU e richiede tempo.
 
 ## Dove vanno i file
@@ -106,4 +115,4 @@ Non puoi guardare il video mentre scorre: lo guarda per te Gemini, con il tool g
 
 - La composizione in video/src/contenuti/<id>/, registrata in video/src/Root.tsx.
 - Musica, immagini e clip in video/public/contenuti/<id>/.
-- I fotogrammi di controllo, il video finale e la copertina nella cartella indicata dal lavoro.
+- Il video finale e la copertina nella cartella indicata dal lavoro; i fotogrammi di controllo li mette controlla_video in video/out/controllo.

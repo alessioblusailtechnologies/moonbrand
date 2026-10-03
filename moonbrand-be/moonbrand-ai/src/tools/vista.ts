@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { geminiCost } from '../lib/prices';
 import { measure, type ToolUsage } from '../lib/usage';
+import { checkVideoTool } from './controllo';
 import { PARALLEL } from './parallel';
 
 // Gemini guarda immagini e video al posto di Claude e risponde a parole: i pixel non entrano nella conversazione di
@@ -126,5 +127,5 @@ export function visionTools(folder: string, apiKey: string) {
     PARALLEL,
   );
 
-  return createSdkMcpServer({ name: 'vista', tools: [look] });
+  return createSdkMcpServer({ name: 'vista', tools: [look, checkVideoTool(folder, lookAt)] });
 }

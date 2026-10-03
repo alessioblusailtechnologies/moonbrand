@@ -173,6 +173,7 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
   mcp__musica__genera_canzone: 'steps.tools.song',
   mcp__musica__attendi_musica: 'steps.tools.waitMusic',
   mcp__lambda__esporta_video: 'steps.tools.exportVideos',
+  mcp__vista__controlla_video: 'steps.tools.checkVideo',
   mcp__clip__gira_clip: 'steps.tools.clip',
   mcp__clip__attendi_clip: 'steps.tools.waitClips',
   mcp__social__scarica_social: 'steps.tools.downloadSocial',

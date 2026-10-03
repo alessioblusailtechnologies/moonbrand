@@ -128,7 +128,7 @@ export function lambdaTools(folder: string, brandId: string, keys: Record<string
     'esporta_video',
     'Esporta i video finali in MP4 su Remotion Lambda: tutte le composizioni insieme, in pochi secondi, senza occupare la CPU. ' +
       'Passa in una sola chiamata tutti gli export finali (per esempio il Reel e il TikTok). Prima il progetto deve essere a posto ' +
-      '(pnpm check) e la musica pronta (attendi_musica). Copertine e fotogrammi di controllo esportali come prima, con npx remotion still/render.',
+      '(controlla_video) e la musica pronta (attendi_musica). I fotogrammi di controllo si fanno con controlla_video, le copertine con npx remotion still.',
     {
       video: z
         .array(

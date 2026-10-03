@@ -47,7 +47,7 @@ Una variante di testo per ciascuno: ${channels.map((channel) => `${channelName(c
 
 ## File
 Servono ${neededFiles('video', channels)}.
-L’id del video è ${contentId}. Salva video e copertine finali in ${dir} (es. ${dir}/video-9x16.mp4 e ${dir}/cover-9x16.jpg) e i fotogrammi di controllo in ${dir}/lavoro.
+L’id del video è ${contentId}. Salva video e copertine finali in ${dir} (es. ${dir}/video-9x16.mp4 e ${dir}/cover-9x16.jpg); i fotogrammi di controllo li fa controlla_video.
 Nel risultato riporta anche il copione, con le correzioni che hai dovuto fare mentre facevi il video.
 
 ${languageRules()}`;
