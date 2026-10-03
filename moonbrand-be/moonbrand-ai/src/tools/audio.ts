@@ -8,7 +8,8 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 import { contentLanguage } from '../lib/language';
-import { measure, type Meter } from '../lib/usage';
+import { ELEVENLABS } from '../lib/prices';
+import { measure } from '../lib/usage';
 import { ffmpeg } from '../lib/video';
 import { PARALLEL } from './parallel';
 
@@ -104,11 +105,6 @@ export function audioTools(folder: string, apiKey: string) {
     if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
     return response;
   };
-  // I crediti usati nel periodo: la differenza prima e dopo è quanto è costata una generazione.
-  const credits: Meter = {
-    unit: 'crediti ElevenLabs',
-    read: async () => ((await (await call('/user/subscription')).json()) as { character_count: number }).character_count,
-  };
   const text = (value: string) => ({ content: [{ type: 'text' as const, text: value }] });
   const failure = (error: unknown) => ({
     content: [{ type: 'text' as const, text: `Non riuscito: ${error instanceof Error ? error.message : String(error)}` }],
@@ -169,12 +165,19 @@ export function audioTools(folder: string, apiKey: string) {
     },
     async ({ testo, voce, lingua = contentLanguage, file }) => {
       try {
-        const { audio_base64, alignment } = await measure({ task: 'voice', model: VOICE_MODEL, meter: credits }, async () => {
-          const response = await call(`/text-to-speech/${encodeURIComponent(voce)}/with-timestamps?output_format=mp3_44100_128`, {
-            body: { text: testo, model_id: VOICE_MODEL, language_code: lingua },
-          });
-          return (await response.json()) as { audio_base64: string; alignment: Alignment };
-        });
+        const { audio_base64, alignment } = await measure(
+          {
+            task: 'voice',
+            model: VOICE_MODEL,
+            extra: () => ({ units: testo.length, unit: 'caratteri', costUsd: (testo.length / 1000) * ELEVENLABS.voicePerThousandCharacters }),
+          },
+          async () => {
+            const response = await call(`/text-to-speech/${encodeURIComponent(voce)}/with-timestamps?output_format=mp3_44100_128`, {
+              body: { text: testo, model_id: VOICE_MODEL, language_code: lingua },
+            });
+            return (await response.json()) as { audio_base64: string; alignment: Alignment };
+          },
+        );
         const captions = toCaptions(alignment);
         const captionsFile = file.replace(/\.mp3$/, '.json');
         await save(file, Buffer.from(audio_base64, 'base64'));
@@ -223,11 +226,17 @@ export function audioTools(folder: string, apiKey: string) {
           env: { ...process.env, LD_LIBRARY_PATH: dir },
         });
 
-        let voice = new Blob([await readFile(piece)]);
+        const wav = await readFile(piece);
+        let voice = new Blob([wav]);
+        // I secondi del pezzo, dalla dimensione del WAV: 22050 campioni al secondo da 2 byte, dopo un'intestazione di 44.
+        const seconds = Math.max(0, wav.length - 44) / (22050 * 2);
+        const listened = (perHour: number) => () => ({ units: seconds, unit: 'secondi audio', costUsd: (seconds / 3600) * perHour });
         if (canzone) {
           const form = new FormData();
           form.append('audio', voice, 'pezzo.wav');
-          const isolated = await measure({ task: 'voice-isolation', model: 'audio-isolation', meter: credits }, () => upload('/audio-isolation', form));
+          const isolated = await measure({ task: 'voice-isolation', model: 'audio-isolation', extra: listened(ELEVENLABS.isolationPerMinute * 60) }, () =>
+            upload('/audio-isolation', form),
+          );
           voice = new Blob([await isolated.arrayBuffer()]);
         }
 
@@ -238,7 +247,9 @@ export function audioTools(folder: string, apiKey: string) {
         let loss: number | undefined;
         if (lyrics) {
           form.append('text', lyrics);
-          const aligned = await measure({ task: 'word-timing', model: 'forced-alignment', meter: credits }, () => upload('/forced-alignment', form));
+          const aligned = await measure({ task: 'word-timing', model: 'forced-alignment', extra: listened(ELEVENLABS.transcriptionPerHour) }, () =>
+            upload('/forced-alignment', form),
+          );
           const result = (await aligned.json()) as { words: TimedWord[]; loss: number };
           found = result.words;
           loss = result.loss;
@@ -246,7 +257,9 @@ export function audioTools(folder: string, apiKey: string) {
           form.append('model_id', 'scribe_v1');
           form.append('language_code', lingua);
           form.append('timestamps_granularity', 'word');
-          const transcribed = await measure({ task: 'word-timing', model: 'scribe_v1', meter: credits }, () => upload('/speech-to-text', form));
+          const transcribed = await measure({ task: 'word-timing', model: 'scribe_v1', extra: listened(ELEVENLABS.transcriptionPerHour) }, () =>
+            upload('/speech-to-text', form),
+          );
           found = ((await transcribed.json()) as { words: TimedWord[] }).words.filter((item) => item.type === 'word');
         }
 
@@ -284,12 +297,24 @@ export function audioTools(folder: string, apiKey: string) {
     },
     async ({ descrizione, secondi, loop = false, file }) => {
       try {
-        const response = await measure({ task: 'sound-effect', model: 'sound-generation', meter: credits }, () =>
-          call('/sound-generation?output_format=mp3_44100_128', {
-            body: { text: descrizione, loop, ...(secondi !== undefined && { duration_seconds: secondi }) },
-          }),
+        // Se la durata la sceglie ElevenLabs, la dice l'MP3: a 128 kbit/s sono 16000 byte al secondo.
+        const audio = await measure(
+          {
+            task: 'sound-effect',
+            model: 'sound-generation',
+            extra: (result: Buffer) => {
+              const length = secondi ?? result.length / 16_000;
+              return { units: length, unit: 'secondi', costUsd: (length / 60) * ELEVENLABS.effectPerMinute };
+            },
+          },
+          async () => {
+            const response = await call('/sound-generation?output_format=mp3_44100_128', {
+              body: { text: descrizione, loop, ...(secondi !== undefined && { duration_seconds: secondi }) },
+            });
+            return Buffer.from(await response.arrayBuffer());
+          },
         );
-        await save(file, Buffer.from(await response.arrayBuffer()));
+        await save(file, audio);
         return text(`Effetto salvato in ${file}`);
       } catch (error) {
         return failure(error);

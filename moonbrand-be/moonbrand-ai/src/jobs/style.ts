@@ -4,7 +4,7 @@ import path from 'node:path';
 import { GoogleGenAI, type Part } from '@google/genai';
 
 import { measure } from '../lib/usage';
-import { MAX_FILES, MIME_TYPES, VISION_INSTRUCTION, VISION_MODEL } from '../tools/vista';
+import { MAX_FILES, MIME_TYPES, VISION_INSTRUCTION, VISION_MODEL, visionUsage } from '../tools/vista';
 
 // Lo stile del brand dai suoi riferimenti, letto una volta da Gemini: finisce nel CLAUDE.md di ogni job, così chi fa un
 // contenuto non riguarda i riferimenti ogni volta. La domanda è sempre la stessa, quindi niente Claude.
@@ -60,7 +60,7 @@ if (chosen.length > 0) {
     {
       task: 'vision',
       model: VISION_MODEL,
-      extra: ({ usageMetadata }) => ({ inputTokens: usageMetadata?.promptTokenCount, outputTokens: usageMetadata?.candidatesTokenCount }),
+      extra: ({ usageMetadata }) => visionUsage(usageMetadata),
     },
     () => ai.models.generateContent({ model: VISION_MODEL, contents: [{ role: 'user', parts }], config: { systemInstruction: VISION_INSTRUCTION } }),
   );

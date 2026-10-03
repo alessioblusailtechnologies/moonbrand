@@ -2,16 +2,23 @@ import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
-import { GoogleGenAI, type Part } from '@google/genai';
+import { GoogleGenAI, type GenerateContentResponseUsageMetadata, type Part } from '@google/genai';
 import { z } from 'zod';
 
-import { measure } from '../lib/usage';
+import { geminiCost } from '../lib/prices';
+import { measure, type ToolUsage } from '../lib/usage';
 import { PARALLEL } from './parallel';
 
 // Gemini guarda immagini e video al posto di Claude e risponde a parole: i pixel non entrano nella conversazione di
 // Claude, che altrimenti li rilegge a ogni passaggio. I video li guarda interi, con l'audio.
 export const VISION_MODEL = process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash';
 export const MAX_FILES = 10;
+
+// Il ragionamento si paga come la risposta.
+export function visionUsage(usage: GenerateContentResponseUsageMetadata | undefined): Partial<ToolUsage> {
+  const outputTokens = (usage?.candidatesTokenCount ?? 0) + (usage?.thoughtsTokenCount ?? 0);
+  return { inputTokens: usage?.promptTokenCount, outputTokens, costUsd: geminiCost(VISION_MODEL, usage?.promptTokenCount, outputTokens) };
+}
 const PROCESSING_POLL_MS = 2000;
 const PROCESSING_MAX_MS = 5 * 60_000;
 
@@ -83,7 +90,7 @@ export function createLooker(folder: string, apiKey: string): (file: string[], d
         {
           task: 'vision',
           model: VISION_MODEL,
-          extra: ({ usageMetadata }) => ({ inputTokens: usageMetadata?.promptTokenCount, outputTokens: usageMetadata?.candidatesTokenCount }),
+          extra: ({ usageMetadata }) => visionUsage(usageMetadata),
         },
         () => ai.models.generateContent({ model: VISION_MODEL, contents: [{ role: 'user', parts }], config: { systemInstruction: VISION_INSTRUCTION } }),
       );

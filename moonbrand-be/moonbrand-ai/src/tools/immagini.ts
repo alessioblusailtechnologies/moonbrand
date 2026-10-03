@@ -5,6 +5,7 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 
+import { GEMINI_IMAGE_2K, geminiCost } from '../lib/prices';
 import { measure } from '../lib/usage';
 import { PARALLEL } from './parallel';
 
@@ -56,7 +57,13 @@ export function imageTools(folder: string, apiKey: string) {
           {
             task: 'image',
             model: MODEL,
-            extra: ({ usage }) => ({ units: 1, unit: 'immagini', inputTokens: usage?.total_input_tokens, outputTokens: usage?.total_output_tokens }),
+            extra: ({ usage }) => ({
+              units: 1,
+              unit: 'immagini',
+              inputTokens: usage?.total_input_tokens,
+              outputTokens: usage?.total_output_tokens,
+              costUsd: (geminiCost(MODEL, usage?.total_input_tokens) ?? 0) + GEMINI_IMAGE_2K,
+            }),
           },
           () =>
             ai.interactions.create({

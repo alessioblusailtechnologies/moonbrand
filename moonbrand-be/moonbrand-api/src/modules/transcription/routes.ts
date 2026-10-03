@@ -17,6 +17,9 @@ const brandParams = z.object({ brandId: z.uuid('Brand non trovato.') });
 // Qualche minuto di voce in Opus sta in pochi MB: oltre, meglio registrare in più riprese.
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 
+// Voxtral Mini Transcribe si paga al minuto di audio (listino Mistral, ottobre 2026).
+const USD_PER_MINUTE = 0.003;
+
 // La dettatura: l'audio registrato dal browser arriva così com'è (Content-Type audio/*) e torna come testo.
 // I nomi del brand vanno a Voxtral come termini da riconoscere. Ogni trascrizione finisce in ai_usage, con i secondi di audio.
 export function registerTranscriptionRoutes(app: FastifyInstance, pool: pg.Pool, settings: Pick<Config, 'MISTRAL_API_KEY' | 'TRANSCRIPTION_MODEL'>): void {
@@ -41,9 +44,18 @@ export function registerTranscriptionRoutes(app: FastifyInstance, pool: pg.Pool,
       const record = (outcome: 'ok' | 'failed', seconds: number | null, error?: string) =>
         pool
           .query(
-            `insert into presenza.ai_usage (account_id, brand_id, task, model, outcome, error, duration_ms, units, unit)
-             values ($1, $2, 'transcription', $3, $4, $5, $6, $7, 'secondi audio')`,
-            [request.identity.accountId, brandId, model, outcome, error ?? null, Date.now() - started, seconds],
+            `insert into presenza.ai_usage (account_id, brand_id, task, model, outcome, error, duration_ms, units, unit, cost_usd)
+             values ($1, $2, 'transcription', $3, $4, $5, $6, $7, 'secondi audio', $8)`,
+            [
+              request.identity.accountId,
+              brandId,
+              model,
+              outcome,
+              error ?? null,
+              Date.now() - started,
+              seconds,
+              outcome === 'ok' && seconds !== null ? (seconds / 60) * USD_PER_MINUTE : null,
+            ],
           )
           .catch((failure: unknown) => request.log.warn({ failure }, 'trascrizione non registrata'));
       try {

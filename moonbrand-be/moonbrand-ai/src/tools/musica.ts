@@ -4,7 +4,8 @@ import path from 'node:path';
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
-import { measure, type Meter } from '../lib/usage';
+import { ELEVENLABS } from '../lib/prices';
+import { measure } from '../lib/usage';
 import { PARALLEL } from './parallel';
 
 // Musica e canzoni con ElevenLabs Music: una chiamata sola, che risponde con il brano già fatto (pochi secondi per 10 s di musica).
@@ -63,16 +64,6 @@ export function musicTools(folder: string, apiKey: string) {
     return full;
   };
 
-  // I crediti usati nel periodo, come per voce ed effetti: la differenza prima e dopo è quanto è costato il brano.
-  const credits: Meter = {
-    unit: 'crediti ElevenLabs',
-    read: async () => {
-      const response = await fetch(`${API}/user/subscription`, { headers: { 'xi-api-key': apiKey } });
-      if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}`);
-      return ((await response.json()) as { character_count: number }).character_count;
-    },
-  };
-
   const generate = async (body: Record<string, unknown>, file: string) => {
     const started = Date.now();
     let response: Response;
@@ -102,8 +93,10 @@ export function musicTools(folder: string, apiKey: string) {
   // I brani in corso, per file chiesto: ognuno finisce con il messaggio di generate o con l'errore.
   type Result = Awaited<ReturnType<typeof generate>> | ReturnType<typeof failure>;
   const pending = new Map<string, Promise<Result>>();
-  const start = (task: 'music' | 'song', body: Record<string, unknown>, file: string) => {
-    pending.set(file, measure({ task, model: MODEL, meter: credits }, () => generate(body, file)).catch(failure));
+  // La musica si paga al minuto chiesto.
+  const start = (task: 'music' | 'song', body: Record<string, unknown>, file: string, seconds: number) => {
+    const extra = () => ({ units: seconds, unit: 'secondi', costUsd: (seconds / 60) * ELEVENLABS.musicPerMinute });
+    pending.set(file, measure({ task, model: MODEL, extra }, () => generate(body, file)).catch(failure));
     return {
       content: [
         {
@@ -136,7 +129,7 @@ export function musicTools(folder: string, apiKey: string) {
       file: audioFile('musica.mp3'),
     },
     ({ descrizione, durata, file }) =>
-      Promise.resolve(start('music', { prompt: descrizione, music_length_ms: Math.round(durata * 1000), force_instrumental: true }, file)),
+      Promise.resolve(start('music', { prompt: descrizione, music_length_ms: Math.round(durata * 1000), force_instrumental: true }, file, durata)),
     PARALLEL,
   );
 
@@ -159,7 +152,7 @@ export function musicTools(folder: string, apiKey: string) {
       if (plan.length === 0) return Promise.resolve(failure(new Error('il testo non ha righe')));
       const styles = (stile ?? '').split(',').map((item) => item.trim()).filter(Boolean);
       return Promise.resolve(
-        start('song', { composition_plan: { positive_global_styles: styles, negative_global_styles: [], sections: plan } }, file),
+        start('song', { composition_plan: { positive_global_styles: styles, negative_global_styles: [], sections: plan } }, file, durata),
       );
     },
     PARALLEL,

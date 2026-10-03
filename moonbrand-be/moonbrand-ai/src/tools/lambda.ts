@@ -8,6 +8,7 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { deploySite, downloadMedia, getFunctions, getOrCreateBucket, getRenderProgress, renderMediaOnLambda, type AwsRegion } from '@remotion/lambda';
 import { z } from 'zod';
 
+import { reportUsage } from '../lib/usage';
 import { PARALLEL } from './parallel';
 
 // Gli export finali dei video su Remotion Lambda: il progetto video del brand si pubblica su S3 (un sito per brand, che si
@@ -86,6 +87,16 @@ export function lambdaExporter(folder: string, brandId: string, keys: Record<str
         const target = inside(item.file);
         await mkdir(path.dirname(target), { recursive: true });
         await downloadMedia({ region, bucketName, renderId, outPath: target });
+        // Il costo del render lo stima Remotion dai secondi di Lambda usati.
+        reportUsage({
+          task: 'video-export',
+          model: 'remotion-lambda',
+          outcome: 'ok',
+          durationMs: Date.now() - started,
+          units: 1,
+          unit: 'video',
+          costUsd: progress.costs.accruedSoFar,
+        });
         return `${item.file}: ${item.composizione} esportato in ${((Date.now() - started) / 1000).toFixed(0)} s (${progress.costs.displayCost}).`;
       }
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
