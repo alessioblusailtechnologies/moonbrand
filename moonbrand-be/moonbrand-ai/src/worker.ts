@@ -346,8 +346,6 @@ async function run(job: Job): Promise<void> {
         const index = blockCount.get(messageId) ?? 0;
         blockCount.set(messageId, index + 1);
         if (block.type === 'text') {
-          // Nella chat il testo è la risposta all'utente: quello di un subagente (il montatore) è lavoro suo e non si mostra.
-          if (kind.reply && message.parent_tool_use_id) continue;
           const id = `${messageId}-${index}`;
           const text = block.text.trim();
           if (!text) {

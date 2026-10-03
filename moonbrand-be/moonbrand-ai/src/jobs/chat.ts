@@ -7,7 +7,6 @@ import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
 import { languageRules } from '../lib/language';
-import { VIDEO_AGENTS } from '../lib/montaggio';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
 import { audioTools } from '../tools/audio';
@@ -132,7 +131,6 @@ try {
       env: { ...env, ...videoEnv, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,
       plugins: MOONBRAND_PLUGINS,
-      agents: VIDEO_AGENTS,
       includePartialMessages: true,
       abortController: abort,
       permissionMode: 'bypassPermissions',

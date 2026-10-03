@@ -183,7 +183,7 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
 // (allora la legge Haiku nel worker). locale: la lingua dell'account che aspetta.
 export function toolStep(
   name: string,
-  input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown; subagent_type?: unknown },
+  input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown },
   locale: Locale = DEFAULT_LOCALE,
 ): { label: string; detail?: string } | null | undefined {
   const text = (value: unknown) => (typeof value === 'string' && value.trim() ? shorten(value.replace(/\s+/g, ' ').trim(), 90) : undefined);
@@ -192,7 +192,6 @@ export function toolStep(
     const detail = text(input.query);
     return { label: translate(locale, 'steps.searchWeb'), ...(detail && { detail }) };
   }
-  if ((name === 'Agent' || name === 'Task') && input.subagent_type === 'montaggio') return { label: translate(locale, 'steps.tools.montage') };
   if (name === 'mcp__vista__guarda') {
     return { label: translate(locale, lookLabel(Array.isArray(input.file) ? input.file.filter((file) => typeof file === 'string') : [])) };
   }
