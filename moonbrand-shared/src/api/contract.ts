@@ -3,6 +3,7 @@ import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFil
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
+import type { SubscriptionPlanId } from '../domain/subscription';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 import type { Locale } from '../i18n/locales';
 
@@ -588,10 +589,14 @@ export interface WelcomeJobInput {
   signals: WelcomeSignals;
 }
 
-// I crediti dell'account: ogni interazione costa quanto è costata davvero, 1 credito per centesimo di dollaro.
-// Per ora si contano soltanto: senza piani il saldo va sotto zero e non blocca niente.
+// I crediti del mese: ogni interazione costa quanto è costata davvero, 1 credito per centesimo di dollaro, e si
+// scala dai crediti del piano. Per ora si contano soltanto: finiti i crediti non si blocca niente.
 export interface CreditsResponse {
-  balance: number;
-  // Consumati dal primo del mese (a Roma).
+  plan: SubscriptionPlanId;
+  monthlyCredits: number;
+  // Consumati dal primo del mese (a Roma); remaining può andare sotto zero.
   usedThisMonth: number;
+  remaining: number;
+  // Il giorno in cui i crediti si rinnovano, YYYY-MM-DD.
+  renewsOn: string;
 }

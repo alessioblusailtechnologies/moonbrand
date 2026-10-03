@@ -5,7 +5,8 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter, map } from 'rxjs';
 
 import type { ConversationSummary } from '@moonbrand/shared/api/contract';
-import { LOCALE_NAMES, LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
+import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
+import { INTL_LOCALES, LOCALE_NAMES, LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { AuthService } from '../../core/auth/auth.service';
@@ -118,11 +119,14 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
           <mb-icon name="settings" [stroke]="1.8" />
           <span class="nav-label">{{ 'shell.brandSettings' | t }}</span>
         </a>
-        @if (credits.credits(); as balance) {
-          @let used = 'shell.creditsUsed' | t: { n: balance.usedThisMonth };
-          <div class="nav-item credits" [title]="collapsed() ? used : ('shell.creditsHint' | t)">
-            <mb-icon name="coins" [stroke]="1.8" />
-            <span class="nav-label">{{ used }}</span>
+        @if (creditRing(); as ring) {
+          <div class="nav-item credits" [title]="'shell.creditsHint' | t: ring.hint">
+            <svg class="ring" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+              <circle class="ring-track" cx="10" cy="10" r="8" />
+              <circle class="ring-fill" [class.low]="ring.low" cx="10" cy="10" r="8" pathLength="100" transform="rotate(-90 10 10)"
+                [attr.stroke-dasharray]="ring.share * 100 + ' 100'" />
+            </svg>
+            <span class="nav-label">{{ 'shell.creditsLeft' | t: { n: ring.left } }}</span>
           </div>
         }
         <div class="language" (focusout)="closeLanguage($event)">
@@ -322,6 +326,23 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     .nav-item.credits:hover {
       background: none;
       color: var(--sidebar-text);
+    }
+    .ring {
+      flex: none;
+      margin: 0 1px;
+      fill: none;
+      stroke-width: 2.5;
+    }
+    .ring-track {
+      stroke: rgba(255, 255, 255, 0.14);
+    }
+    .ring-fill {
+      stroke: var(--mint-400);
+      stroke-linecap: round;
+      transition: stroke-dasharray 600ms var(--ease);
+    }
+    .ring-fill.low {
+      stroke: var(--danger);
     }
     .collapsed .nav-label {
       display: none;
@@ -641,7 +662,7 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly chat = inject(ChatService);
-  protected readonly credits = inject(CreditsService);
+  private readonly credits = inject(CreditsService);
   protected readonly header = inject(PageHeader);
   private readonly picker = inject(BrandPickerService);
   private readonly toast = inject(ToastService);
@@ -694,6 +715,22 @@ export class Shell {
       destroyRef.onDestroy(() => observer.disconnect());
     });
   }
+
+  // I crediti del piano che restano nel mese: il cerchio si svuota man mano e sotto il 10% diventa rosso.
+  protected readonly creditRing = computed(() => {
+    const credits = this.credits.credits();
+    if (!credits) return null;
+    const intl = INTL_LOCALES[this.i18n.locale()];
+    const left = Math.max(credits.remaining, 0);
+    const share = Math.min(left / credits.monthlyCredits, 1);
+    const date = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`));
+    return {
+      left,
+      share,
+      low: share < 0.1,
+      hint: { left: left.toLocaleString(intl), total: credits.monthlyCredits.toLocaleString(intl), plan: SUBSCRIPTION_PLANS[credits.plan].name, date },
+    };
+  });
 
   // Le ultime conversazioni, più quella aperta se è più vecchia (si vede sempre dove si è), divise per giorno.
   protected readonly chatGroups = computed(() => {
