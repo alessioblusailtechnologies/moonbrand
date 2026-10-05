@@ -60,8 +60,11 @@ L'autenticazione non ha bisogno di email: la registrazione crea l'utente già co
 
 ## 3. Macchina
 
-1. Hetzner Cloud → **CCX33** (8 vCPU dedicate, 32 GB), **Ubuntu 24.04**, Falkenstein o Norimberga, con la tua
-   chiave SSH.
+1. Hetzner Cloud → **CX53** (16 vCPU condivise, 32 GB, 320 GB; circa 22–30 €/mese), **Ubuntu 24.04**,
+   Falkenstein o Norimberga, con la tua chiave SSH.
+   Il worker passa quasi tutto il tempo ad aspettare Claude e gli altri servizi: la CPU serve solo a picchi (bundle
+   di Remotion, Chrome, ffmpeg), e le vCPU condivise bastano. Se i picchi rallentano troppo, dal pannello la macchina
+   passa a una CCX (vCPU dedicate, dopo gli aumenti di giugno 2026 la CCX33 costa circa 138 €/mese) con un riavvio.
 2. Firewall Hetzner: in entrata solo 22 (meglio solo dal tuo IP), 80 e 443.
 3. Attiva i backup automatici della macchina.
 
