@@ -8,7 +8,7 @@ In produzione si parte vuoti: niente migrazione dei dati né dei file dei brand 
 ```
 moonbrand.app            sito vetrina (Cloudflare Worker, come oggi)
 studio.moonbrand.app     studio (file statici) + /v1 → API
-                         una macchina Hetzner: Caddy + API + worker
+                         un server dedicato Hetzner AX42: Caddy + API + worker
 Supabase (prod)          DB, autenticazione, file dei brand (bucket presenza-brands, protocollo S3)
 AWS                      solo Remotion Lambda (export dei video)
 ```
@@ -36,7 +36,7 @@ aggiungono macchine worker, senza cambiare codice (vedi [Secondo worker](#13-sec
 | Mistral | chiave (dettatura) | API `MISTRAL_API_KEY` |
 | Zernio | piano a pagamento, chiave | API e worker `ZERNIO_API_KEY` |
 | AWS | le chiavi Remotion di oggi (`.env.lambda`) | worker `.env.lambda` |
-| Hetzner Cloud | account e progetto «moonbrand» | — |
+| Hetzner | account (lo stesso per cloud e server dedicati), con ragione sociale e partita IVA | — |
 
 Non servono: `MUREKA_API_KEY`, `AI_PROVIDER`, `DEEPSEEK_*` (nessun codice le legge).
 
@@ -60,13 +60,29 @@ L'autenticazione non ha bisogno di email: la registrazione crea l'utente già co
 
 ## 3. Macchina
 
-1. Hetzner Cloud → **CX53** (16 vCPU condivise, 32 GB, 320 GB; circa 22–30 €/mese), **Ubuntu 24.04**,
-   Falkenstein o Norimberga, con la tua chiave SSH.
-   Il worker passa quasi tutto il tempo ad aspettare Claude e gli altri servizi: la CPU serve solo a picchi (bundle
-   di Remotion, Chrome, ffmpeg), e le vCPU condivise bastano. Se i picchi rallentano troppo, dal pannello la macchina
-   passa a una CCX (vCPU dedicate, dopo gli aumenti di giugno 2026 la CCX33 costa circa 138 €/mese) con un riavvio.
-2. Firewall Hetzner: in entrata solo 22 (meglio solo dal tuo IP), 80 e 443.
-3. Attiva i backup automatici della macchina.
+Un server dedicato **AX42**: AMD Ryzen 7 PRO 8700GE (8 core / 16 thread), 64 GB DDR5, 2 × 512 GB NVMe; circa
+99 €/mese più 49 € di attivazione (ottobre 2026). Le macchine cloud condivise (CX, CPX) erano esaurite e quelle con
+vCPU dedicate (CCX) costano di più per meno RAM; la RAM è il limite dei job in parallelo, e qui ne stanno 15–20.
+
+1. Ordine da https://www.hetzner.com/dedicated-rootserver/ax42/ :
+   - **Server type**: AX42-2-LTD se c'è (ECC, prezzo ridotto, a quantità limitata), altrimenti AX42-2.
+   - **Operating system**: Ubuntu 24.04 preinstallato; i due dischi in **RAID 1** (software).
+   - **Location**: Germania (Falkenstein o Norimberga), vicino a Supabase.
+   - **Primary IPv4**: attivo.
+   - La tua chiave SSH pubblica, se il form la chiede.
+2. Arriva un'email con IP e accesso root (di solito in qualche ora). Il server si gestisce da **Robot**
+   (https://robot.hetzner.com): reset, reinstallazione, fatture.
+3. Al primo accesso controlla il RAID: `cat /proc/mdstat` deve mostrare gli array `md` con `[UU]` (due dischi attivi).
+   Se il server è arrivato senza RAID, reinstallalo da Robot (Rescue System e `installimage`, con `SWRAID 1`).
+4. Firewall sulla macchina (quello di Robot non serve):
+   ```bash
+   ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw --force enable
+   ```
+5. Niente snapshot come nel cloud, e non servono: DB e file dei brand stanno su Supabase, il codice su GitHub.
+   Tieni una copia dei `.env` (punti 6 e 7) in un gestore di password: con quelli si rifà la macchina da zero.
+
+Per crescere non si prende un server più grande: se ne aggiunge un altro come worker
+(vedi [Secondo worker](#13-secondo-worker)).
 
 ## 4. Dominio
 
@@ -94,10 +110,18 @@ chown -R moonbrand:moonbrand /srv/moonbrand
 Le librerie servono a Chrome headless (grafica, controlli dei video); Chrome lo scarica Remotion al primo uso.
 `pnpm` serve ai progetti video dei brand.
 
-Da utente `moonbrand` (`su - moonbrand`):
+Da utente `moonbrand` (`su - moonbrand`). Il repo è privato: il server lo scarica con una **deploy key**, una chiave
+che può solo leggere questo repo.
 
 ```bash
-git clone https://github.com/alessioblusailtechnologies/moonbrand.git ~/moonbrand
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519 -C "moonbrand-prod"
+cat ~/.ssh/id_ed25519.pub
+```
+
+Su GitHub: repo → *Settings → Deploy keys → Add deploy key*, incolla la chiave, senza «Allow write access». Poi:
+
+```bash
+git clone git@github.com:alessioblusailtechnologies/moonbrand.git ~/moonbrand
 cd ~/moonbrand/moonbrand-be/moonbrand-api && npm ci && npm run build
 cd ~/moonbrand/moonbrand-be/moonbrand-ai && npm ci
 cd ~/moonbrand/moonbrand-studio && npm ci && npm run build
@@ -137,7 +161,7 @@ ZERNIO_API_KEY=
 DATABASE_URL=            # lo stesso dell'API
 ANTHROPIC_API_KEY=
 WORKER_ID=worker-1       # fisso per macchina: i brand restano legati a questo nome
-WORKER_CONCURRENCY=6
+WORKER_CONCURRENCY=12     # AX42, 64 GB: si può salire verso 15-20 guardando la RAM (free -h) nelle ore piene
 API_URL=http://localhost:3012
 BRANDS_DIR=/srv/moonbrand/brands
 CLAUDE_CONFIG_DIR=/srv/moonbrand/claude
@@ -260,7 +284,8 @@ Le migration nuove (data dopo `20261005100000`) si lanciano dall'SQL Editor prim
 
 ## 13. Secondo worker
 
-Stessa preparazione dei punti 3 e 5, senza Caddy, senza API e senza studio; solo il servizio `moonbrand-worker`.
+Un altro AX42, con la stessa preparazione dei punti 3 e 5 (stessa deploy key o una nuova), senza Caddy, senza API e
+senza studio: solo il servizio `moonbrand-worker`.
 Nel `.env` del worker cambiano:
 
 ```
