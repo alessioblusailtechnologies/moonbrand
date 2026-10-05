@@ -8,6 +8,7 @@ import type { ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
 import { ApiError } from '../../errors';
 import { EXTENSIONS, parseImage, uploadSchema } from '../media/routes';
 import { REFERENCES_DIR, type BrandFiles } from './files';
+import { LINK_CACHE_SECONDS } from './s3';
 
 const brandParams = z.object({ brandId: z.uuid('Brand non valido.') });
 const referenceParams = brandParams.extend({ name: z.string().regex(/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/, 'File non valido.') });
@@ -43,11 +44,13 @@ export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles)
 
   // Pubblica: un <img> o un <video> non può mandare il token, il link è firmato.
   // Con Range manda solo il pezzo chiesto: serve ai video per partire subito e per spostarsi avanti e indietro.
+  // Se i file stanno sullo storage, rimanda lì: il file non passa dall'API e lo storage risponde da sé ai Range.
   app.get('/v1/files/:brandId/*', async (request, reply) => {
     const { brandId, '*': path } = fileParams.parse(request.params);
     const { sig } = fileQuery.parse(request.query);
     if (!files.verify(brandId, path, sig)) throw ApiError.notFound('File non trovato.');
     const file = await files.open(brandId, path);
+    if ('redirect' in file) return reply.header('cache-control', `private, max-age=${LINK_CACHE_SECONDS}`).redirect(file.redirect, 302);
     reply.header('content-type', file.contentType).header('cache-control', 'private, max-age=3600').header('accept-ranges', 'bytes');
     if (file.size === 0) return reply.header('content-length', 0).send('');
     const range = parseRange(request.headers.range, file.size);

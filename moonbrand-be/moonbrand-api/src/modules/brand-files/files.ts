@@ -1,9 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { createReadStream, createWriteStream, type ReadStream } from 'node:fs';
+import { createReadStream, type ReadStream } from 'node:fs';
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { Transform, type Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 
 import type pg from 'pg';
 
@@ -20,14 +18,14 @@ export const ATTACHMENTS_DIR = 'allegati';
 
 // Chi ha aperto la cartella di un brand non ancora creato: il brand nasce
 // nella bozza dell'onboarding e sul DB arriva solo alla fine.
-const OWNER_FILE = '.account';
+export const OWNER_FILE = '.account';
 
 // Una cartella e uno o più livelli sotto; nessun segmento inizia col punto, quindi niente "..".
-const RELATIVE_PATH = /^[a-z0-9-]+(\/[A-Za-z0-9_-][A-Za-z0-9._-]*)+$/;
+export const RELATIVE_PATH = /^[a-z0-9-]+(\/[A-Za-z0-9_-][A-Za-z0-9._-]*)+$/;
 // Una cartella al primo livello del brand.
-const DIR_NAME = /^[a-z0-9-]+$/;
+export const DIR_NAME = /^[a-z0-9-]+$/;
 
-const CONTENT_TYPES: Record<string, string> = {
+export const CONTENT_TYPES: Record<string, string> = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -49,18 +47,19 @@ export interface OpenFile {
 export interface BrandFiles {
   claim(brandId: string, accountId: string): Promise<void>;
   save(brandId: string, relativePath: string, bytes: Uint8Array): Promise<void>;
-  // Scrive un file man mano che arriva, senza tenerlo in memoria; oltre maxBytes si ferma e lo toglie.
-  saveStream(brandId: string, relativePath: string, stream: Readable, maxBytes: number): Promise<void>;
-  // Il percorso sul disco, per gli strumenti che lavorano sui file (ffmpeg).
-  localPath(brandId: string, relativePath: string): string;
+  // Un file già su disco (per esempio uscito da ffmpeg), senza tenerlo in memoria.
+  saveFile(brandId: string, relativePath: string, localFile: string): Promise<void>;
+  read(brandId: string, relativePath: string): Promise<Buffer>;
   remove(brandId: string, relativePath: string): Promise<void>;
   removeDir(brandId: string, dir: string): Promise<void>;
   copy(brandId: string, from: string, to: string): Promise<void>;
-  open(brandId: string, relativePath: string): Promise<OpenFile>;
+  // Il file da mandare dall'API, oppure, se i file stanno su uno storage, un link temporaneo dove scaricarlo.
+  open(brandId: string, relativePath: string): Promise<OpenFile | { redirect: string }>;
   url(brandId: string, relativePath: string): string;
   verify(brandId: string, relativePath: string, signature: string): boolean;
 }
 
+// I file dei brand sul disco di questa macchina: per lo sviluppo, o con API e worker sulla stessa macchina.
 export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR' | 'FILES_SECRET' | 'SUPABASE_SERVICE_ROLE_KEY'>): BrandFiles {
   const root = brandsDir(config);
   const secret = config.FILES_SECRET ?? config.SUPABASE_SERVICE_ROLE_KEY;
@@ -70,7 +69,7 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
     if (!RELATIVE_PATH.test(relativePath)) throw ApiError.invalid('Percorso del file non valido.');
     return path.join(brandDir(brandId), relativePath);
   };
-  const sign = (brandId: string, relativePath: string) => createHmac('sha256', secret).update(`${brandId}/${relativePath}`).digest('base64url');
+  const { url, verify } = fileLinks(secret);
 
   return {
     async claim(brandId, accountId) {
@@ -93,23 +92,13 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
       await mkdir(path.dirname(target), { recursive: true });
       await writeFile(target, bytes);
     },
-    async saveStream(brandId, relativePath, stream, maxBytes) {
+    async saveFile(brandId, relativePath, localFile) {
       const target = filePath(brandId, relativePath);
       await mkdir(path.dirname(target), { recursive: true });
-      let size = 0;
-      const limit = new Transform({
-        transform(chunk: Buffer, _encoding, done) {
-          size += chunk.length;
-          done(size > maxBytes ? ApiError.invalid(`Il file supera ${Math.round(maxBytes / 1024 ** 3)} GB.`) : null, chunk);
-        },
-      });
-      await pipeline(stream, limit, createWriteStream(target)).catch(async (error: unknown) => {
-        await rm(target, { force: true });
-        throw error;
-      });
+      await copyFile(localFile, target);
     },
-    localPath(brandId, relativePath) {
-      return filePath(brandId, relativePath);
+    async read(brandId, relativePath) {
+      return readFile(filePath(brandId, relativePath));
     },
     async remove(brandId, relativePath) {
       await rm(filePath(brandId, relativePath), { force: true });
@@ -133,6 +122,15 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
         stream: (start, end) => createReadStream(target, { start, end }),
       };
     },
+    url,
+    verify,
+  };
+}
+
+// I link firmati dell'API ai file dei brand: un <img> o un <video> non può mandare il token.
+export function fileLinks(secret: string): Pick<BrandFiles, 'url' | 'verify'> {
+  const sign = (brandId: string, relativePath: string) => createHmac('sha256', secret).update(`${brandId}/${relativePath}`).digest('base64url');
+  return {
     url(brandId, relativePath) {
       return `/v1/files/${brandId}/${relativePath}?sig=${sign(brandId, relativePath)}`;
     },

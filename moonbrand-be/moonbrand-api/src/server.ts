@@ -5,6 +5,7 @@ import { config } from './config';
 import { createPool } from './db/pool';
 import { supabaseAuthGateway } from './modules/auth/gateway';
 import { localBrandFiles } from './modules/brand-files/files';
+import { ensureBrandsBucket, s3BrandFiles } from './modules/brand-files/s3';
 import { supabaseStorage } from './modules/media/storage';
 import { schedulePublishing } from './modules/social/publisher';
 import { scheduleMorningWelcome } from './modules/welcome/service';
@@ -12,7 +13,8 @@ import { supabaseVerifier } from './plugins/auth';
 
 const settings = config();
 const pool = createPool(settings.DATABASE_URL);
-const files = localBrandFiles(pool, settings);
+const files = settings.S3_ENDPOINT ? s3BrandFiles(pool, settings) : localBrandFiles(pool, settings);
+await ensureBrandsBucket(files);
 
 const app = buildApp({
   logger: { level: settings.LOG_LEVEL },

@@ -1,5 +1,10 @@
 import { randomBytes, randomUUID } from 'node:crypto';
-import type { Readable } from 'node:stream';
+import { createWriteStream } from 'node:fs';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { Transform, type Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import type pg from 'pg';
 
@@ -196,20 +201,32 @@ export async function uploadAttachment(files: BrandFiles, identity: Identity, br
 // ovunque e che Remotion sa montare, con la copertina accanto. L'originale non resta.
 export const MAX_VIDEO_BYTES = 2 * 1024 ** 3;
 
+// Il lavoro di ffmpeg si fa in una cartella temporanea di questa macchina; nel brand vanno solo MP4 e copertina.
 export async function uploadVideoAttachment(files: BrandFiles, identity: Identity, brandId: string, stream: Readable): Promise<ChatAttachment> {
   await files.claim(brandId, identity.accountId);
   const id = randomUUID();
-  const upload = `${ATTACHMENTS_DIR}/${id}.upload`;
   const file = `${ATTACHMENTS_DIR}/${id}.mp4`;
   const poster = `${ATTACHMENTS_DIR}/${id}.jpg`;
-  await files.saveStream(brandId, upload, stream, MAX_VIDEO_BYTES);
+  const work = await mkdtemp(path.join(tmpdir(), 'moonbrand-video-'));
   try {
-    await normalizeVideo(files.localPath(brandId, upload), files.localPath(brandId, file), files.localPath(brandId, poster));
-  } catch {
-    await Promise.all([files.remove(brandId, file), files.remove(brandId, poster)]);
-    throw ApiError.invalid('Non riesco a leggere questo video: prova con un MP4 o un MOV.');
+    const upload = path.join(work, 'upload');
+    let size = 0;
+    const limit = new Transform({
+      transform(chunk: Buffer, _encoding, done) {
+        size += chunk.length;
+        done(size > MAX_VIDEO_BYTES ? ApiError.invalid(`Il file supera ${Math.round(MAX_VIDEO_BYTES / 1024 ** 3)} GB.`) : null, chunk);
+      },
+    });
+    await pipeline(stream, limit, createWriteStream(upload));
+    try {
+      await normalizeVideo(upload, path.join(work, 'video.mp4'), path.join(work, 'poster.jpg'));
+    } catch {
+      throw ApiError.invalid('Non riesco a leggere questo video: prova con un MP4 o un MOV.');
+    }
+    await files.saveFile(brandId, file, path.join(work, 'video.mp4'));
+    await files.saveFile(brandId, poster, path.join(work, 'poster.jpg'));
   } finally {
-    await files.remove(brandId, upload);
+    await rm(work, { recursive: true, force: true });
   }
   return attachment(files, brandId, file);
 }

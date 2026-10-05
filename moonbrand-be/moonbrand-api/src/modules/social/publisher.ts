@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { FastifyBaseLogger } from 'fastify';
@@ -94,7 +93,7 @@ async function buildPost(client: Zernio, files: BrandFiles, content: Content, ch
     const extension = path.extname(file.file).toLowerCase();
     const type = CONTENT_TYPES[extension];
     if (!type) throw ApiError.invalid(`Formato non pubblicabile: ${path.basename(file.file)}.`);
-    const bytes = await readFile(files.localPath(content.brandId, file.file));
+    const bytes = await files.read(content.brandId, file.file);
     return client.upload(path.basename(file.file), type, bytes);
   };
 

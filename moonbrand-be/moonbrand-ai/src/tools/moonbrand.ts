@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { hasDocument } from '@moonbrand/shared/domain/content';
 
+import { putBrandFiles } from '../lib/brand-sync';
 import { carouselDocument } from '../lib/document';
 
 const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
@@ -96,10 +97,17 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
 
   // Un carosello per LinkedIn esce anche come documento PDF: lo fa moonbrand dalle slide, prima di salvare.
   // Se le slide non si leggono si salva senza: l'API dirà a Claude quale percorso è sbagliato.
+  // L'API copia i file dallo storage: prima di salvare ci vanno quelli fatti in questo job.
   const withDocument = async (input: ContentInput) => {
-    if (!hasDocument(input.format, input.channels)) return input;
-    const document = await carouselDocument(brandDir, input.files, `${workDir}/documento-linkedin-${Date.now().toString(36)}.pdf`).catch(() => null);
-    return document ? { ...input, files: [...input.files, document] } : input;
+    const document = hasDocument(input.format, input.channels)
+      ? await carouselDocument(brandDir, input.files, `${workDir}/documento-linkedin-${Date.now().toString(36)}.pdf`).catch(() => null)
+      : null;
+    const ready = document ? { ...input, files: [...input.files, document] } : input;
+    await putBrandFiles(
+      brandDir,
+      ready.files.map((item) => item.file),
+    ).catch((error: unknown) => console.error('file del contenuto non caricati', error));
+    return ready;
   };
 
   const day = z.string().describe('Il giorno, AAAA-MM-GG, ora di Roma');

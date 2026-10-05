@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { hostname } from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +24,7 @@ import type {
   WelcomeJobInput,
 } from '@moonbrand/shared/api/contract';
 
+import { pullBrand, pushBrand, putBrandFiles } from './lib/brand-sync';
 import { examplesDir } from './lib/examples';
 import { createStepReader } from './lib/step-reader';
 import { USAGE_MESSAGE, type ToolUsage } from './lib/usage';
@@ -36,6 +38,8 @@ process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const BRANDS_DIR = path.resolve(process.env.BRANDS_DIR || path.join(ROOT, '../../moonbrand-brands'));
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY) || 2;
+// Il nome di questo worker in presenza.brand_workers: deve restare lo stesso tra un riavvio e l'altro.
+const WORKER_ID = process.env.WORKER_ID || hostname();
 const POLL_MS = 2000;
 const LEASE = '5 minutes';
 const HEARTBEAT_MS = 60_000;
@@ -62,12 +66,14 @@ interface Job {
 // Ogni tipo di job è uno script autonomo in src/jobs: qui come lanciarlo (env: variabili in più per lo script) e,
 // quando il risultato va salvato altrove oltre al job, come salvarlo.
 // reply: il job non ha uno schema, il risultato è la risposta finale di Claude.
+// folder: false se il job non usa la cartella del brand, che allora non si scarica dallo storage.
 // finish: completa il risultato prima di salvarlo (per esempio scarica un file che Claude ha indicato).
 interface JobKind {
   launch: (input: unknown, job: Job) => { script: string; args: string[]; env?: Record<string, string> };
   finish?: (result: unknown) => Promise<unknown>;
   save?: (job: Job, result: unknown) => Promise<void>;
   reply?: boolean;
+  folder?: false;
 }
 
 const JOBS: Record<string, JobKind> = {
@@ -148,6 +154,7 @@ const JOBS: Record<string, JobKind> = {
       return { script: 'src/jobs/welcome.ts', args: [JSON.stringify(rest)] };
     },
     save: (job, result) => saveWelcome(pool, job.id, job.input as WelcomeJobInput, result),
+    folder: false,
   },
   // Il token arriva allo script per variabile d'ambiente: i tool della chat lo usano per chiamare l'API.
   chat: {
@@ -176,27 +183,64 @@ const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { reje
 const running = new Map<string, ChildProcess>();
 let stopping = false;
 
+// Si prendono solo i job dei brand di questo worker, o di brand che non hanno ancora un worker: il brand diventa suo
+// (presenza.brand_workers). Se nel frattempo un altro worker ha preso lo stesso brand nuovo, il job resta a lui e si
+// cerca il prossimo: il brand appena assegnato non passa più il filtro.
 async function claim(): Promise<Job | null> {
   await pool.query(
     `update presenza.ai_jobs set status = 'failed', error = 'Interrotto troppe volte.', finished_at = now(), locked_until = null
      where status = 'running' and locked_until < now() and attempts >= $1`,
     [MAX_ATTEMPTS],
   );
-  const { rows } = await pool.query<Job>(
-    `update presenza.ai_jobs set status = 'running', attempts = attempts + 1, started_at = now(), locked_until = now() + $1::interval
-     where id = (
-       select id from presenza.ai_jobs
-       where status = 'queued' or (status = 'running' and locked_until < now())
-       order by created_at
-       for update skip locked
-       limit 1
-     )
-     returning id, kind, input, account_id, agent_token,
-       (select locale from presenza.accounts where id = ai_jobs.account_id) as locale,
-       (select identity->>'language' from presenza.brands where id::text = ai_jobs.input->>'brandId') as content_language`,
-    [LEASE],
-  );
-  return rows[0] ?? null;
+  const client = await pool.connect();
+  try {
+    for (;;) {
+      await client.query('begin');
+      const { rows: candidates } = await client.query<{ id: string; brand_id: string | null }>(
+        `select j.id, j.input->>'brandId' as brand_id from presenza.ai_jobs j
+         left join presenza.brand_workers w on w.brand_id = j.input->>'brandId'
+         where (j.status = 'queued' or (j.status = 'running' and j.locked_until < now()))
+           and (w.worker_id is null or w.worker_id = $1)
+         order by j.created_at
+         for update of j skip locked
+         limit 1`,
+        [WORKER_ID],
+      );
+      const candidate = candidates[0];
+      if (!candidate) {
+        await client.query('commit');
+        return null;
+      }
+      if (candidate.brand_id) {
+        await client.query('insert into presenza.brand_workers (brand_id, worker_id) values ($1, $2) on conflict (brand_id) do nothing', [
+          candidate.brand_id,
+          WORKER_ID,
+        ]);
+        const { rows: owners } = await client.query<{ worker_id: string }>('select worker_id from presenza.brand_workers where brand_id = $1', [
+          candidate.brand_id,
+        ]);
+        if (owners[0]?.worker_id !== WORKER_ID) {
+          await client.query('rollback');
+          continue;
+        }
+      }
+      const { rows } = await client.query<Job>(
+        `update presenza.ai_jobs set status = 'running', attempts = attempts + 1, started_at = now(), locked_until = now() + $2::interval
+         where id = $1
+         returning id, kind, input, account_id, agent_token,
+           (select locale from presenza.accounts where id = ai_jobs.account_id) as locale,
+           (select identity->>'language' from presenza.brands where id::text = ai_jobs.input->>'brandId') as content_language`,
+        [candidate.id, LEASE],
+      );
+      await client.query('commit');
+      return rows[0] ?? null;
+    }
+  } catch (error) {
+    await client.query('rollback').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 // I job di cui è stato chiesto lo stop: lo script riceve «stop» sullo stdin e ferma Claude;
@@ -284,6 +328,31 @@ async function run(job: Job): Promise<void> {
   const heartbeat = setInterval(() => {
     void pool.query(`update presenza.ai_jobs set locked_until = now() + $2::interval where id = $1`, [job.id, LEASE]).catch(() => undefined);
   }, HEARTBEAT_MS);
+
+  // La cartella del brand arriva dallo storage prima del job e ci torna dopo, con le sessioni di Claude Code.
+  const brandId = kind.folder === false ? undefined : (job.input as { brandId?: string } | null)?.brandId;
+  const brandDir = brandId && path.join(BRANDS_DIR, brandId);
+  const pushed = async (): Promise<string | undefined> =>
+    brandId
+      ? pushBrand(BRANDS_DIR, brandId).then(
+          () => undefined,
+          (error: unknown) => `File del brand non caricati: ${error instanceof Error ? error.message : String(error)}`,
+        )
+      : undefined;
+  if (brandId) {
+    const pullError = await pullBrand(BRANDS_DIR, brandId).then(
+      () => undefined,
+      (error: unknown) => `File del brand non scaricati: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    if (pullError) {
+      clearInterval(heartbeat);
+      await finish(job.id, { status: 'failed', error: pullError });
+      console.log(`[${job.id}] fallito: ${pullError}`);
+      return;
+    }
+  }
+  // Le immagini e i video che lo studio mostra appena pronti: lo step è finito quando il file è sullo storage.
+  const uploads: Promise<void>[] = [];
 
   // Le due lingue arrivano a ogni script: senza un brand (o se il brand non l'ha scelta) si scrive nella lingua dell'account.
   const languages = { MOONBRAND_LOCALE: job.locale, MOONBRAND_CONTENT_LANGUAGE: job.content_language ?? job.locale };
@@ -382,7 +451,21 @@ async function run(job: Job): Promise<void> {
       for (const block of message.message.content) {
         if (block.type !== 'tool_result') continue;
         const step = steps.get(block.tool_use_id);
-        if (step) steps.set(step.id, { ...step, status: block.is_error ? 'failed' : 'done', endedAt: lastEventAt });
+        if (!step) continue;
+        const done = { ...step, status: block.is_error ? ('failed' as const) : ('done' as const), endedAt: lastEventAt };
+        const media = (step.media ?? []).flatMap((item) => (item.file ? [item.file] : []));
+        if (!brandDir || block.is_error || media.length === 0) {
+          steps.set(step.id, done);
+          continue;
+        }
+        uploads.push(
+          putBrandFiles(brandDir, media)
+            .catch((error: unknown) => console.error(`[${job.id}] file dello step non caricati`, error))
+            .then(() => {
+              steps.set(step.id, done);
+              changed();
+            }),
+        );
       }
       changed();
     } else if (message.type === 'result') {
@@ -399,14 +482,20 @@ async function run(job: Job): Promise<void> {
   running.delete(job.id);
   // Le ultime letture di Haiku finiscono negli step del job; se il job è stato fermato non si aspettano.
   await reader.close(stopping || cancelled.has(job.id) ? 0 : READ_GRACE_MS);
-  clearInterval(heartbeat);
+  if (!stopping) await Promise.all(uploads);
   clearTimeout(flushTimer);
   await saved;
   const wasCancelled = cancelled.delete(job.id);
-  if (stopping) return;
+  if (stopping) {
+    clearInterval(heartbeat);
+    return;
+  }
 
   for (const step of steps.values()) if (step.status === 'running') steps.set(step.id, { ...step, status: 'done', endedAt: Date.now() });
   if (wasCancelled) {
+    const pushError = await pushed();
+    if (pushError) console.error(`[${job.id}] ${pushError}`);
+    clearInterval(heartbeat);
     await finish(job.id, { status: 'stopped', steps: visible(), cost: outcome.cost, sessionId });
     console.log(`[${job.id}] fermato`);
     return;
@@ -419,6 +508,10 @@ async function run(job: Job): Promise<void> {
       .then(() => undefined)
       .catch((saveError: unknown) => `Risultato non salvato: ${saveError instanceof Error ? saveError.message : String(saveError)}`);
   }
+  // Anche un job fallito carica la sua sessione: si può riprendere. Il battito va avanti finché non è sullo storage.
+  const pushError = await pushed();
+  error ??= pushError;
+  clearInterval(heartbeat);
   await finish(job.id, {
     status: error ? 'failed' : 'done',
     result: outcome.result,
@@ -525,5 +618,5 @@ process.on('SIGTERM', shutdown);
 
 const poller = setInterval(() => void tick(), POLL_MS);
 const canceller = setInterval(() => void watchCancellations().catch(() => undefined), CANCEL_POLL_MS);
-console.log(`worker pronto: ${CONCURRENCY} lavori in parallelo, tipi: ${Object.keys(JOBS).join(', ')}`);
+console.log(`worker ${WORKER_ID} pronto: ${CONCURRENCY} lavori in parallelo, tipi: ${Object.keys(JOBS).join(', ')}`);
 void tick();

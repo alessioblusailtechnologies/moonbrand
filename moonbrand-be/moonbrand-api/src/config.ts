@@ -14,6 +14,14 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   MEDIA_BUCKET: z.string().min(1).default('presenza-media'),
   BRANDS_DIR: optional,
+  // I file dei brand su Supabase Storage, con il protocollo S3: senza chiavi restano sul disco, in BRANDS_DIR.
+  S3_ENDPOINT: optional,
+  S3_REGION: z.string().min(1).default('eu-north-1'),
+  S3_ACCESS_KEY_ID: optional,
+  S3_SECRET_ACCESS_KEY: optional,
+  // In alternativa alle chiavi S3: S3_ACCESS_KEY_ID = id del progetto, S3_SECRET_ACCESS_KEY = anon key e qui la service role.
+  S3_SESSION_TOKEN: optional,
+  BRANDS_BUCKET: z.string().min(1).default('presenza-brands'),
   FILES_SECRET: optional,
   API_PORT: z.coerce.number().int().default(3012),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
