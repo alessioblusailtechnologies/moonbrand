@@ -3,7 +3,7 @@ import type pg from 'pg';
 import type { WelcomeJobInput } from '@moonbrand/shared/api/contract';
 import { DAY_PARTS, WELCOME_ICONS, type Greeting, type WelcomeSuggestion } from '@moonbrand/shared/domain/welcome';
 
-import { cleanText, GREETINGS_PER_PART, MAX_DRAFT, MAX_GREETING, MAX_LABEL, SUGGESTIONS } from '../lib/welcome-rules';
+import { cleanText, GREETINGS_PER_PART, guessesGender, MAX_DRAFT, MAX_GREETING, MAX_LABEL, SUGGESTIONS } from '../lib/welcome-rules';
 
 interface RawWelcome {
   greetings: { part: string; text: string }[];
@@ -11,7 +11,7 @@ interface RawWelcome {
 }
 
 // Il benvenuto del job va nel brand, al posto di quello di prima. Lo schema l'ha già validato; qui valgono le regole
-// che il modello potrebbe non rispettare: niente emoji, lunghezze, doppioni. Se nel frattempo è finito un job chiesto
+// che il modello potrebbe non rispettare: niente emoji, lunghezze, doppioni, parole che indovinano il genere. Se nel frattempo è finito un job chiesto
 // dopo, vale quello.
 export async function saveWelcome(pool: pg.Pool, jobId: string, input: WelcomeJobInput, result: unknown): Promise<void> {
   const raw = result as RawWelcome;
@@ -21,7 +21,7 @@ export async function saveWelcome(pool: pg.Pool, jobId: string, input: WelcomeJo
   for (const item of raw.greetings) {
     const text = cleanText(item.text, MAX_GREETING);
     const part = DAY_PARTS.find((value) => value === item.part);
-    if (!text || !part || seen.has(text.toLowerCase()) || (perPart.get(part) ?? 0) >= GREETINGS_PER_PART) continue;
+    if (!text || !part || guessesGender(text) || seen.has(text.toLowerCase()) || (perPart.get(part) ?? 0) >= GREETINGS_PER_PART) continue;
     seen.add(text.toLowerCase());
     perPart.set(part, (perPart.get(part) ?? 0) + 1);
     greetings.push({ part, text });

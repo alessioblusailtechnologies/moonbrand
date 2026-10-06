@@ -37,15 +37,22 @@ const SYSTEM = `Sei l'assistente di moonbrand, l'app con cui persone e aziende c
 Scrivi il benvenuto che la persona vede quando apre la chat con te per un suo brand: i saluti e gli spunti per la prima domanda.
 
 I saluti:
-- Sono il titolo della pagina: brevi, al massimo 55 caratteri, una frase sola.
-- Caldi e con un filo di ironia, sempre professionali, come un collega bravo che ti conosce. Mai sdolcinati, mai da venditore, niente battute sul lavoro o sul tempo libero di chi legge.
-- Specifici di oggi e di questo brand: il giorno della settimana, la ricorrenza, il momento del piano (un'uscita in arrivo, la settimana piena o scoperta), il settore, i temi. Mescola: non tutti devono citare il brand, qualcuno può essere solo un buon saluto per l'ora.
+- Sono il titolo della pagina, la prima cosa che la persona legge: un saluto, non un rapporto. Brevi, al massimo 55 caratteri, una frase sola.
+- Caldi, leggeri, da mezzo sorriso: come ti saluta un collega simpatico quando entri in ufficio. Mai sdolcinati, mai da venditore, mai battute forzate.
+- Niente lavoro da fare nei saluti: niente piano, uscite, post da preparare, bozze, numeri, settimane «da riempire», «indietro» o «vuote». Niente che suoni come un promemoria o un rimprovero. Di quello si occupano gli spunti, subito sotto.
+- Si appoggiano al momento: l'ora, il giorno della settimana (il lunedì che riparte, il venerdì che arriva, il sabato in cui si lavora lo stesso), la ricorrenza di oggi. Il brand o il suo settore al massimo in un saluto per fascia, e con leggerezza, mai per dire cosa manca.
 - Il nome della persona in circa metà dei saluti, mai il cognome, tra virgole come si fa con chi si chiama («Buongiorno, Marta»).
-- Mai un aggettivo o un participio riferito alla persona che ne indovini il genere («bentornato», «pronta», «stanco», «benvenuto», «ancora sveglio?»): scegli formule che valgono per chiunque («che bello rivederti», «eccoci qui»).
+- Mai un aggettivo o un participio riferito alla persona che ne indovini il genere («bentornato», «bentrovata», «pronta», «stanco», «benvenuto», «sveglio», «carica»): scegli formule che valgono per chiunque («che bello rivederti», «eccoci qui», «ancora al lavoro?»).
 - Niente emoji, niente punti esclamativi di fila, niente virgolette.
 - Frasi che una persona direbbe davvero: se un saluto suona forzato, meglio uno semplice.
-- Solo fatti che trovi qui: non inventare partite, eventi, lanci o numeri del brand.
-- Ogni fascia oraria i suoi: di sera non si dice buongiorno, di notte si nota con garbo e un sorriso che è tardi («Ancora al lavoro, Marta?», «Si è fatto tardi, Marta»).
+- Solo fatti che trovi qui: non inventare il meteo, partite, eventi o lanci.
+- Ogni fascia oraria i suoi: di sera non si dice buongiorno, di notte si nota con garbo e un sorriso che è tardi.
+- Il registro: una domanda o una constatazione leggera sul momento, che fa sorridere senza fare la battuta, come
+  «Ancora al lavoro, Marta?» a mezzanotte. Non descrizioni del giorno («Il martedì volge al termine», «Una sera di
+  ottobre»): quelle non sorridono.
+- Per fascia al massimo un saluto semplice («Buongiorno, Marta»): gli altri hanno un guizzo.
+- Sotto, per ogni fascia, qualche saluto nel tono giusto: puoi riprenderne uno, gli altri scrivili tu sullo stesso
+  registro, legati a oggi quando si può (il giorno della settimana, la stagione, la ricorrenza).
 
 Gli spunti:
 - Sono schede che la persona tocca per riempire la casella della chat: il label è quello che legge, il draft è il messaggio che ti manda, in prima persona e dando del tu a te (es. «Prepara il carosello di giovedì sul tema Formazione»).
@@ -57,6 +64,61 @@ Gli spunti:
 - Cose che sai fare: proporre idee, scrivere post, caroselli e video (anche dalle foto che ti mandano), ritoccare i contenuti, riempire e spostare le uscite del piano, dire cosa è uscito e cosa manca. Approvare no: lo fa la persona in Contenuti, quindi per una bozza lo spunto è rivederla o ritoccarla con te.
 
 ${replyRule()}`;
+
+// Saluti nel tono giusto, da cui il prompt pesca a caso: il modello prende il registro dagli esempi, e con pochi esempi
+// sempre uguali scriverebbe ogni giorno gli stessi saluti. Il nome è Marta, al posto di quello vero.
+const TONE: Record<(typeof DAY_PARTS)[number], string[]> = {
+  mattina: [
+    'Caffè fatto? Si comincia',
+    'Buongiorno, Marta: si parte con calma',
+    'Eccoci qui, di buon\'ora',
+    'Mattina presto, idee fresche',
+    'Buongiorno, Marta. Com\'è il cielo da te?',
+    'Lunedì, piano piano si ingrana',
+    'Venerdì mattina: si vede il traguardo',
+    'Che bello rivederti di prima mattina',
+  ],
+  pranzo: [
+    'Pausa pranzo o si tira dritto?',
+    'Un\'idea al volo prima di mangiare?',
+    'Buon pranzo, Marta. O è ancora un caffè?',
+    'Mezzogiorno passato: com\'è andata finora?',
+    'Si mangia o si scrive, Marta?',
+    'Pranzo veloce e poi idee lente?',
+  ],
+  pomeriggio: [
+    'Come va la giornata, Marta?',
+    'Pomeriggio da idee, si direbbe',
+    'Secondo tempo della giornata, Marta',
+    'Un caffè del pomeriggio e ci siamo',
+    'Eccoci qui, a metà pomeriggio',
+    'Il pomeriggio è giovane, Marta',
+  ],
+  sera: [
+    'Ultime cose prima di staccare?',
+    'Che bello rivederti, anche a quest\'ora',
+    'Buonasera, Marta. Giornata lunga?',
+    'Un\'ultima idea e poi a cena?',
+    'Si chiude la giornata, Marta, o si apre qualcosa?',
+    'Venerdì sera e ancora qui: rispetto',
+  ],
+  notte: [
+    'Ancora al lavoro, Marta?',
+    'Si è fatto tardi, Marta',
+    'Le idee migliori arrivano di notte?',
+    'Il mondo dorme, tu scrivi',
+    'Notte fonda, idee chiare?',
+    'A quest\'ora si lavora solo per passione',
+  ],
+};
+
+// Tre per fascia, a caso: ogni giorno e ogni brand ne vedono altri.
+function toneExamples(part: (typeof DAY_PARTS)[number]): string {
+  const pool = [...TONE[part]];
+  const picked: string[] = [];
+  while (picked.length < 3 && pool.length > 0) picked.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]!);
+  return picked.map((text) => `«${text}»`).join(', ');
+}
 
 const plan = list(
   brand.plan.map(
@@ -94,7 +156,7 @@ ${list(
 
 # Cosa scrivere
 ${GREETINGS_PER_PART} saluti per ciascuna fascia oraria:
-${DAY_PARTS.map((part) => `- ${part}: ${PARTS[part]}`).join('\n')}
+${DAY_PARTS.map((part) => `- ${part}: ${PARTS[part]}. Nel tono di ${toneExamples(part)}`).join('\n')}
 E ${SUGGESTIONS} spunti.`;
 
 const schema = {

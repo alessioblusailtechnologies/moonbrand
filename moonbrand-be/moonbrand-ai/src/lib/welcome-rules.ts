@@ -5,6 +5,13 @@ export const MAX_GREETING = 70;
 export const MAX_LABEL = 80;
 export const MAX_DRAFT = 400;
 
+// Le parole che indovinano il genere di chi legge, nelle lingue dei saluti: il prompt le vieta, ma se ne scappa una il
+// saluto si scarta (ne restano altri per la stessa fascia).
+const GENDERED =
+  /(?<!\p{L})(bentornat[oa]|bentrovat[oa]|benvenut[oa]|svegli[oae]|stanc[oa]|pront[oa]|caric[oa]|bienvenue?|fatigu[ée]e?|pr[eê]te?|r[ée]veill[ée]e?)(?!\p{L})/iu;
+
+export const guessesGender = (text: string): boolean => GENDERED.test(text);
+
 // Emoji e simboli pittografici, con i selettori di variante e i giunti che li compongono.
 const EMOJI = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{FE0F}\u{200D}\u{20E3}]/gu;
 
