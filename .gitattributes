@@ -1,0 +1,2 @@
+# Gli script di shell restano con le righe Unix anche su Windows: bash non regge il ritorno a capo di Windows.
+*.sh text eol=lf

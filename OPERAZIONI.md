@@ -63,20 +63,16 @@ Si rifà solo quello che è cambiato:
 
 `npm ci` serve solo se è cambiato un `package-lock.json`, ma rifarlo non fa danni.
 
-Tutto insieme, dal PC di sviluppo:
+Tutto insieme, dal PC di sviluppo, dalla cartella del repo:
 
 ```bash
-ssh moonbrand 'su - moonbrand -c "set -e
-cd ~/moonbrand && git pull -q
-git log --oneline -1
-cd moonbrand-be/moonbrand-api && npm ci --no-audit --no-fund >/tmp/api-ci.log 2>&1 && npm run build >/tmp/api-build.log 2>&1 && echo api_ok
-cd ../moonbrand-ai && npm ci --no-audit --no-fund >/tmp/ai-ci.log 2>&1 && echo worker_ok
-cd ~/moonbrand/moonbrand-studio && npm ci --no-audit --no-fund >/tmp/st-ci.log 2>&1 && npm run build >/tmp/st-build.log 2>&1
-cp -r dist/moonbrand-studio/browser/* /srv/moonbrand/studio/ && find /srv/moonbrand/studio -type f -mtime +7 -delete && echo studio_ok"'
-ssh moonbrand 'systemctl restart moonbrand-api moonbrand-worker'
+bash deploy.sh
 ```
 
-`git pull` sta su una riga sua: con `set -e` un pull che non riesce (GitHub che non risponde) ferma tutto, invece di
+Lo script (`deploy.sh`) scarica master sul server, compila API, worker e studio, copia lo studio, riavvia i servizi e
+controlla `/v1/health`. Le migration non le lancia: vanno prima, a mano (sotto).
+
+Con `set -e` un pull che non riesce (GitHub che non risponde) ferma tutto, invece di
 ricompilare la versione di prima senza dirlo. Se un passo fallisce, il log è in `/tmp/*.log` sul server (`ssh moonbrand 'tail -30 /tmp/st-build.log'`).
 
 Solo lo studio (per esempio una modifica grafica) non tocca i servizi: niente riavvio, la pagina nuova arriva al
