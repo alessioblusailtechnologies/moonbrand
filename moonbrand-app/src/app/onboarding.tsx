@@ -125,7 +125,7 @@ export default function Onboarding() {
   if (preparing) {
     return (
       <SafeAreaView style={styles.preparing}>
-        <Moon size={56} shade={colors.surface} />
+        <Moon size={64} shade={colors.surface} ring={colors.title} />
         <T variant="title" style={{ textAlign: 'center' }}>
           Preparo {draft?.identity.name || 'il brand'}
         </T>

@@ -6,20 +6,37 @@ import type { BrandSummary } from '@moonbrand/shared/api/contract';
 import { fileUrl } from '../lib/api';
 import { colors, fonts } from './theme';
 
-// La luna di Moonbrand: un disco arancio con la parte in ombra del colore di fondo.
-export function Moon({ size = 28, shade = colors.primary }: { size?: number; shade?: string }) {
-  const inner = size * 0.85;
+// Il marchio di Moonbrand, Transito: un anello e la falce arancio che lo abbraccia, staccata da un filo vuoto.
+// È lo stesso disegno del sito (viewBox 10 10 80 80): la falce è il disco (62, 50, r 26.5) coperto dal cerchio
+// (38.5, 50, r 30) del colore di fondo, `shade`; l'anello ha centro (38.5, 50), raggio esterno 27 e spessore 6.
+export function Moon({ size = 28, shade = colors.primary, ring = colors.white }: { size?: number; shade?: string; ring?: string }) {
+  const k = size / 80;
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', backgroundColor: colors.accent }}>
+    <View style={{ width: size, height: size }}>
       <View
         style={{
           position: 'absolute',
-          top: -size * 0.12,
-          left: -size * 0.27,
-          width: inner,
-          height: inner,
-          borderRadius: inner / 2,
-          backgroundColor: shade,
+          left: 25.5 * k,
+          top: 13.5 * k,
+          width: 53 * k,
+          height: 53 * k,
+          borderRadius: 26.5 * k,
+          overflow: 'hidden',
+          backgroundColor: colors.accent,
+        }}
+      >
+        <View style={{ position: 'absolute', left: -27 * k, top: -3.5 * k, width: 60 * k, height: 60 * k, borderRadius: 30 * k, backgroundColor: shade }} />
+      </View>
+      <View
+        style={{
+          position: 'absolute',
+          left: 1.5 * k,
+          top: 13 * k,
+          width: 54 * k,
+          height: 54 * k,
+          borderRadius: 27 * k,
+          borderWidth: 6 * k,
+          borderColor: ring,
         }}
       />
     </View>
@@ -28,9 +45,9 @@ export function Moon({ size = 28, shade = colors.primary }: { size?: number; sha
 
 export function Wordmark({ light = false, size = 20 }: { light?: boolean; size?: number }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: size * 0.5 }}>
-      <Moon size={size * 1.35} shade={light ? colors.primary : colors.surface} />
-      <Text style={{ fontFamily: fonts.semibold, fontSize: size, color: light ? colors.white : colors.title, letterSpacing: -0.3 }}>Moonbrand</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: size * 0.4 }}>
+      <Moon size={size * 1.75} shade={light ? colors.primary : colors.surface} ring={light ? colors.white : colors.title} />
+      <Text style={{ fontFamily: fonts.semibold, fontSize: size, color: light ? colors.white : colors.title, letterSpacing: -size * 0.03 }}>Moonbrand</Text>
     </View>
   );
 }
