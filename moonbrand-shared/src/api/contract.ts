@@ -2,7 +2,7 @@ import type { AiStep } from '../ai/steps';
 import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
-import type { PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
+import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { SubscriptionPlanId } from '../domain/subscription';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 import type { Locale } from '../i18n/locales';
@@ -243,6 +243,8 @@ export interface ContentSummary {
   format: ContentFormat;
   channels: ChannelId[];
   status: ContentStatus;
+  // Lo stato con com'è andata la pubblicazione: quello da mostrare.
+  state: ContentState;
   coverUrl: string | null;
   // La proporzione della copertina, es. 9:16: la griglia sa quanto è alta la card prima che l'immagine arrivi.
   coverAspect: string | null;

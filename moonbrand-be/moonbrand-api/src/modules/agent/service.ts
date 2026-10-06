@@ -22,6 +22,7 @@ import { withIdentity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent } from '../contents/repository';
+import { requireNotOut } from '../contents/service';
 import { findBrandForIdeas, insertIdea, listIdeas } from '../ideas/repository';
 import { attachContentIn, syncContentSlot } from '../plan/service';
 import { checkPublishable } from '../social/publish-now';
@@ -222,6 +223,8 @@ export function updateAgentContent(
     if ((await activeContentJobs(db, agent.brandId)).has(contentId)) {
       throw ApiError.conflict('BUSY', 'Un altro lavoro sta preparando questo contenuto: riprova quando ha finito.');
     }
+    // Già uscito: il post sui social non cambierebbe. Per una versione nuova, un contenuto nuovo con contenuto_salva.
+    await requireNotOut(db, content);
     const brand = await findBrandForIdeas(db, agent.brandId);
     if (!brand) throw ApiError.notFound('Brand non trovato.');
     const variants = check(request, brand.context.channels);

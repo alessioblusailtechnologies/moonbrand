@@ -101,7 +101,11 @@
                     <div class="content-card-titles">
                       <div class="content-card-meta">
                         <span class="badge">{{ formatLabel(proposal.content) }}</span>
-                        <span class="badge">{{ 'chat.publish.kind' | t }}</span>
+                        @if (proposal.publications.length > 0) {
+                          <span class="badge" [class]="stateTone(proposalState(proposal))">{{ stateLabel(proposal) }}</span>
+                        } @else {
+                          <span class="badge">{{ 'chat.publish.kind' | t }}</span>
+                        }
                       </div>
                       <h3 class="strong">{{ proposal.content.title }}</h3>
                     </div>

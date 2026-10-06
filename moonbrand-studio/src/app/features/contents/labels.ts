@@ -1,12 +1,19 @@
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
-import type { ContentFormat, ContentStatus, SceneSource } from '@moonbrand/shared/domain/content';
+import type { ContentFormat, SceneSource } from '@moonbrand/shared/domain/content';
+import type { ContentState } from '@moonbrand/shared/domain/plan';
 import { INTL_LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
 // Formati, stati e fonti nella lingua dell'interfaccia (dizionario contents).
 export const formatLabel = (format: ContentFormat, locale: Locale): string => translate(locale, `contents.format.${format}`);
 
-export const statusLabel = (status: ContentStatus, locale: Locale): string => translate(locale, `contents.status.${status}`);
+export const statusLabel = (state: ContentState, locale: Locale): string => translate(locale, `contents.status.${state}`);
+
+// Il tono del badge dello stato: verde se è approvato o uscito, arancio se qualcosa non è uscito.
+export function stateTone(state: ContentState): 'mint' | 'warn' | null {
+  if (state === 'approved' || state === 'published') return 'mint';
+  return state === 'partial' || state === 'failed' ? 'warn' : null;
+}
 
 export const sourceLabel = (source: SceneSource, locale: Locale): string => translate(locale, `contents.source.${source}`);
 

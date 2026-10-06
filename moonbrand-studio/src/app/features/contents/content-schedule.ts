@@ -3,7 +3,8 @@ import { RouterLink } from '@angular/router';
 
 import type { SlotView } from '@moonbrand/shared/api/contract';
 import type { Content } from '@moonbrand/shared/domain/content';
-import { slotStatusLabels } from '@moonbrand/shared/domain/plan';
+import { contentState } from '@moonbrand/shared/domain/plan';
+import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { addDays, formatWeekdayLong, isDay, isPast, isTime, planNow } from '@moonbrand/shared/lib/dates';
 
 import { errorMessage } from '../../core/errors';
@@ -13,9 +14,10 @@ import { PlanService } from '../../core/plan/plan.service';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
-import { SLOT_TONES, timeFor } from '../plan/labels';
+import { timeFor } from '../plan/labels';
 
 // Quando esce il contenuto: la sua uscita nel piano, da spostare o togliere, oppure il giorno e l'ora per programmarlo.
+// Quando ha già provato a uscire la riga lo dice al passato e non si sposta più: com'è andata lo dice lo stato in alto.
 @Component({
   selector: 'mb-content-schedule',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,12 +37,9 @@ import { SLOT_TONES, timeFor } from '../plan/labels';
           <span class="caption warn">{{ 'contents.schedule.fromNow' | t }}</span>
         }
       } @else if (current) {
-        <span class="when">
-          {{ 'contents.schedule.when' | t: { day: when(current.date), time: current.time } }}
-          <span class="status" [style.--tone]="tones[current.status]">{{ statusLabels()[current.status] }}</span>
-        </span>
+        <span class="when">{{ whenKey() | t: { day: when(current.date), time: current.time } }}</span>
         <a class="link-btn" routerLink="/piano" [queryParams]="{ giorno: current.date }">{{ 'contents.schedule.seeInPlan' | t }}</a>
-        @if (current.status !== 'published') {
+        @if (current.publications.length === 0) {
           <button class="link-btn" type="button" (click)="startEdit()">{{ 'contents.schedule.move' | t }}</button>
           <button class="link-btn muted" type="button" [disabled]="saving()" (click)="unschedule()">{{ 'contents.schedule.unschedule' | t }}</button>
         }
@@ -64,19 +63,7 @@ import { SLOT_TONES, timeFor } from '../plan/labels';
       padding: 6px 10px;
     }
     .when {
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
       font-weight: 500;
-    }
-    .status {
-      padding: 1px 8px 1px 6px;
-      border-left: 3px solid var(--tone);
-      border-radius: 4px;
-      background: var(--surface-sunken);
-      font-size: 11px;
-      font-weight: 600;
     }
     .muted {
       color: var(--text-body);
@@ -102,8 +89,14 @@ export class ContentSchedule {
   protected readonly time = signal('');
 
   protected readonly today = planNow().date;
-  protected readonly tones = SLOT_TONES;
-  protected readonly statusLabels = computed(() => slotStatusLabels(this.i18n.locale()));
+  // Esce, sta uscendo, è uscito o doveva uscire: dipende da com'è andata, non dall'ora.
+  protected readonly whenKey = computed<MessageKey>(() => {
+    const slot = this.slot();
+    const state = contentState(this.content().status, this.content().channels, slot?.publications ?? []);
+    if (state === 'publishing') return 'contents.schedule.goingOut';
+    if (state === 'published' || state === 'partial') return 'contents.schedule.wentOut';
+    return state === 'failed' ? 'contents.schedule.missed' : 'contents.schedule.when';
+  });
   protected readonly when = (day: string) => formatWeekdayLong(day, this.i18n.locale());
   protected readonly valid = computed(() => isDay(this.date()) && isTime(this.time()) && !isPast(this.date(), this.time()));
 

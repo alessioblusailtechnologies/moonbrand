@@ -27,6 +27,7 @@ import {
   type ContentFormat,
   type ContentStatus,
 } from '@moonbrand/shared/domain/content';
+import { contentState, isOut, type Publication } from '@moonbrand/shared/domain/plan';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
@@ -34,6 +35,7 @@ import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import type { BrandFiles } from '../brand-files/files';
 import { ensureStyleJob } from '../brands/style';
+import { listPublications } from '../social/publications';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import {
   activeContentJobs,
@@ -123,12 +125,13 @@ export function withUrls(content: Content, files: BrandFiles): Content {
   };
 }
 
-// Per le card: la prima copertina o la prima slide, se un job ci sta lavorando e quando esce, se è nel piano.
+// Per le card: la prima copertina o la prima slide, se un job ci sta lavorando, quando esce, se è nel piano, e com'è andata.
 export function summarize(
   content: Content,
   files: BrandFiles,
   preparing: boolean,
   scheduledFor: ContentSummary['scheduledFor'] = null,
+  publications: readonly Publication[] = [],
 ): ContentSummary {
   const cover = withUrls(content, files).visual.files?.find((file) => file.index === 0 && (file.role === 'cover' || file.role === 'slide'));
   return {
@@ -137,6 +140,7 @@ export function summarize(
     format: content.format,
     channels: content.channels,
     status: content.status,
+    state: contentState(content.status, content.channels, publications),
     coverUrl: cover?.url ?? null,
     coverAspect: cover?.aspect ?? null,
     updatedAt: content.updatedAt,
@@ -148,8 +152,11 @@ export function summarize(
 export function listBrandContents(pool: pg.Pool, files: BrandFiles, identity: Identity, brandId: string): Promise<ContentSummary[]> {
   return withIdentity(pool, identity, async (db) => {
     const [contents, jobs, slots] = await Promise.all([listContents(db, brandId), activeContentJobs(db, brandId), listSlots(db, brandId)]);
+    const publications = await listPublications(db, contents.map((content) => content.id));
     const when = new Map(slots.map((slot) => [slot.id, { date: slot.date, time: slot.time }]));
-    return contents.map((content) => summarize(content, files, jobs.has(content.id), (content.slotId && when.get(content.slotId)) || null));
+    return contents.map((content) =>
+      summarize(content, files, jobs.has(content.id), (content.slotId && when.get(content.slotId)) || null, publications.get(content.id)),
+    );
   });
 }
 
@@ -182,13 +189,26 @@ async function requireIdle(db: Queryable, content: Content): Promise<void> {
   }
 }
 
+// Un contenuto uscito, o che sta uscendo, resta com'è stato pubblicato: cambiarlo qui non cambierebbe il post sui social.
+export async function requireNotOut(db: Queryable, content: Content): Promise<void> {
+  const publications = (await listPublications(db, [content.id])).get(content.id) ?? [];
+  if (isOut(contentState(content.status, content.channels, publications))) {
+    throw ApiError.conflict('PUBLISHED', 'Questo contenuto è già uscito: resta com’è stato pubblicato.');
+  }
+}
+
+async function requireChangeable(db: Queryable, content: Content): Promise<void> {
+  await requireIdle(db, content);
+  await requireNotOut(db, content);
+}
+
 // Un ritocco riprende la sessione dell'ultima scrittura: Claude sa come ha fatto testi e immagini.
 export function editContent(pool: pg.Pool, identity: Identity, contentId: string, instruction: string): Promise<{ jobId: string }> {
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     requireOutsideChat(content);
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     const sessionId = await lastContentSession(db, contentId);
     if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Questo contenuto non è ancora pronto da ritoccare.');
     const input: ContentEditJobInput = {
@@ -210,7 +230,7 @@ export function regenerateContent(pool: pg.Pool, identity: Identity, contentId: 
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     requireOutsideChat(content);
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     const input = await contentJobInput(db, content);
     await bumpRevision(db, contentId);
     await syncContentSlot(db, { slotId: content.slotId, status: 'draft' });
@@ -231,7 +251,7 @@ export function saveContentScript(
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     if (!hasScript(content)) throw ApiError.conflict('NO_SCRIPT', 'Questo contenuto non ha un copione.');
     requireOutsideChat(content);
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     const saved = await setContentScript(db, contentId, request.script.trim(), request.scenes);
     if (!saved) throw ApiError.notFound('Contenuto non trovato.');
     await syncContentSlot(db, saved);
@@ -246,7 +266,7 @@ export function generateContentVideo(pool: pg.Pool, identity: Identity, contentI
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     if (!hasScript(content)) throw ApiError.conflict('NO_SCRIPT', 'Prima serve il copione del video.');
     requireOutsideChat(content);
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     const sessionId = await lastContentSession(db, contentId);
     if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Il copione non è ancora pronto.');
     const input: ContentVideoJobInput = {
@@ -270,6 +290,9 @@ export function changeContentStatus(
   status: ContentStatus,
 ): Promise<Content> {
   return withIdentity(pool, identity, async (db) => {
+    const before = await findContent(db, contentId);
+    if (!before) throw ApiError.notFound('Contenuto non trovato.');
+    await requireNotOut(db, before);
     const content = await setContentStatus(db, contentId, status);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     await syncContentSlot(db, content);
@@ -289,7 +312,7 @@ export function saveContentVariant(
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     if (!content.variants.some((variant) => variant.channel === channel)) {
       throw ApiError.notFound(`Questo contenuto non ha un testo per ${channelName(channel)}.`);
     }
@@ -309,7 +332,7 @@ export function removeContentChannel(pool: pg.Pool, files: BrandFiles, identity:
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     if (!content.channels.includes(channel)) throw ApiError.notFound(`Questo contenuto non esce su ${channelName(channel)}.`);
     if (content.channels.length === 1) throw ApiError.invalid('Un contenuto esce almeno su un canale.');
     const channels = content.channels.filter((item) => item !== channel);
@@ -338,7 +361,7 @@ export function addContentChannel(
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    await requireIdle(db, content);
+    await requireChangeable(db, content);
     const brand = await findBrandForIdeas(db, content.brandId);
     if (!brand) throw ApiError.notFound('Brand non trovato.');
     const brandChannels = brand.context.channels;

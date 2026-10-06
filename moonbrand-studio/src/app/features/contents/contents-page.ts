@@ -26,7 +26,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { ToastService } from '../../ui/toast';
-import { cssAspect, formatLabel, statusLabel } from './labels';
+import { cssAspect, formatLabel, stateTone, statusLabel } from './labels';
 
 // Mentre un contenuto si prepara, l'elenco si aggiorna da solo.
 const REFRESH_MS = 5000;
@@ -83,7 +83,7 @@ function aspectRatio(aspect: string | null): number {
                       @if (content.preparing) {
                         <span class="badge">{{ 'contents.list.preparing' | t }}</span>
                       } @else {
-                        <span class="badge" [class.mint]="content.status === 'approved'">{{ statusLabel(content) }}</span>
+                        <span class="badge" [class]="stateTone(content.state)">{{ statusLabel(content) }}</span>
                       }
                     </div>
                     <h2 class="strong">{{ content.title }}</h2>
@@ -207,6 +207,7 @@ export class ContentsPage {
   private readonly grid = viewChild<ElementRef<HTMLElement>>('grid');
   private readonly columnCount = signal(1);
   protected readonly cssAspect = cssAspect;
+  protected readonly stateTone = stateTone;
 
   // Le card nella colonna più corta, nell'ordine dell'elenco.
   protected readonly columns = computed(() => {
@@ -268,7 +269,7 @@ export class ContentsPage {
   }
 
   protected statusLabel(content: ContentSummary): string {
-    return statusLabel(content.status, this.i18n.locale());
+    return statusLabel(content.state, this.i18n.locale());
   }
 
   // I canali e, se è nel piano, quando esce: sulla stessa riga, così la card resta alta uguale.

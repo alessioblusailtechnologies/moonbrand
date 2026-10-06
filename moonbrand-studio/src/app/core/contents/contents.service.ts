@@ -11,6 +11,7 @@ import type {
   ContentSummary,
   ContentVariantRequest,
   CreateContentRequest,
+  PublishProposal,
 } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import type { Content } from '@moonbrand/shared/domain/content';
@@ -62,6 +63,11 @@ export class ContentsService {
 
   removeChannel(contentId: string, channel: ChannelId): Promise<Content> {
     return firstValueFrom(this.http.delete<Content>(`/v1/contents/${contentId}/channels/${channel}`));
+  }
+
+  // Pubblica adesso sui canali dove non è ancora uscito: si approva, la sua uscita va a quest'ora ed esce subito.
+  publish(contentId: string): Promise<PublishProposal> {
+    return firstValueFrom(this.http.post<PublishProposal>(`/v1/contents/${contentId}/publish`, {}));
   }
 
   setApproved(contentId: string, approved: boolean): Promise<Content> {

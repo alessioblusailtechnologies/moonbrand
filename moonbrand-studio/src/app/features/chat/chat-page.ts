@@ -19,6 +19,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
+import { contentState, type ContentState } from '@moonbrand/shared/domain/plan';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import type { ConversationSummary, ConversationTurn, PublishProposal, WelcomeResponse } from '@moonbrand/shared/api/contract';
@@ -39,6 +40,7 @@ import { Markdown } from '../../ui/markdown';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from '../contents/content-preview';
+import { stateTone, statusLabel } from '../contents/labels';
 import { Composer, type ComposerMessage } from './composer';
 import { type ShownGreeting, fallbackGreeting, greetingText, pickGreeting } from './greeting';
 
@@ -411,6 +413,16 @@ export class ChatPage {
     if (proposal.publications.some((item) => item.status === 'publishing')) return [];
     const done = new Set(proposal.publications.filter((item) => item.status === 'published').map((item) => item.channel));
     return proposal.content.channels.filter((channel) => !done.has(channel));
+  }
+
+  protected readonly stateTone = stateTone;
+
+  protected proposalState(proposal: PublishProposal): ContentState {
+    return contentState(proposal.content.status, proposal.content.channels, proposal.publications);
+  }
+
+  protected stateLabel(proposal: PublishProposal): string {
+    return statusLabel(this.proposalState(proposal), this.i18n.locale());
   }
 
   protected channelNames(channels: readonly ChannelId[]): string {

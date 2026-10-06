@@ -2,41 +2,78 @@
   @if (loading()) {
     <div class="empty"><span class="spinner"></span></div>
   } @else if (content(); as current) {
-    <div class="meta">
-      <span class="badge">{{ formatLabel() }}</span>
-      <span class="badge" [class.mint]="current.status === 'approved'">{{ statusLabel() }}</span>
-    </div>
-
-    @if ((ready() || scripted()) && !preparing()) {
-      <div class="channel-bar">
-        <p class="label">{{ 'contents.page.channels' | t }}</p>
-        <div class="chips">
-          @for (channel of current.channels; track channel) {
-            <span class="chip selected on-channel" [class.removable]="current.channels.length > 1">
-              {{ name(channel) }}
-              @if (current.channels.length > 1) {
-                <button class="remove" type="button" [attr.aria-label]="'contents.page.removeChannel' | t: { channel: name(channel) }" [disabled]="changingChannels()"
-                  (click)="removeChannel(channel)">
-                  <mb-icon name="x" [size]="14" />
-                </button>
-              }
-            </span>
-          }
-          @for (channel of addable(); track channel) {
-            <button class="chip add" type="button" [disabled]="changingChannels()" (click)="addChannel(channel)">
-              <mb-icon name="plus" [size]="14" /> {{ name(channel) }}
-            </button>
-          }
-        </div>
-        @if (unsupported()) {
-          <p class="caption">{{ unsupported() }}</p>
-        }
+    <!-- In cima: cos'è, a che punto è, dove e quando esce. Le azioni stanno nella topbar. -->
+    <header class="head">
+      <div class="badges">
+        <span class="badge">{{ formatLabel() }}</span>
+        <span class="badge" [class]="stateTone(state())">{{ statusLabel() }}</span>
       </div>
-    }
+      <h1 class="heading">{{ current.title }}</h1>
 
-    @if ((ready() || scripted()) && !preparing()) {
-      <mb-content-schedule [content]="current" [slot]="slot()" (changed)="slot.set($event)" />
-    }
+      @if ((ready() || scripted()) && !preparing()) {
+        <dl class="facts">
+          <div class="fact">
+            <dt class="label">{{ 'contents.page.sideChannels' | t }}</dt>
+            <dd>
+              @if (publications().length > 0) {
+                <!-- Ha già provato a uscire: canale per canale com'è andata, senza più cambiare i canali. -->
+                <ul class="outcomes">
+                  @for (channel of current.channels; track channel) {
+                    @let outcome = outcomeOf(channel);
+                    <li class="outcome">
+                      <span class="strong-sm">{{ name(channel) }}</span>
+                      @switch (outcome?.status) {
+                        @case ('published') {
+                          <span class="badge mint">{{ 'contents.schedule.published' | t }}</span>
+                          @if (outcome?.url) {
+                            <a class="link-btn" [href]="outcome!.url" target="_blank" rel="noopener">{{ 'contents.schedule.openPost' | t }}</a>
+                          }
+                        }
+                        @case ('publishing') {
+                          <span class="caption publishing"><span class="spinner"></span> {{ 'contents.schedule.publishing' | t }}</span>
+                        }
+                        @case ('failed') {
+                          <span class="caption failed">{{ 'contents.schedule.failed' | t: { error: outcome?.error || ('contents.schedule.unknownError' | t) } }}</span>
+                        }
+                        @default {
+                          <span class="caption">{{ 'contents.schedule.notYet' | t }}</span>
+                        }
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div class="chips">
+                  @for (channel of current.channels; track channel) {
+                    <span class="chip selected on-channel" [class.removable]="current.channels.length > 1">
+                      {{ name(channel) }}
+                      @if (current.channels.length > 1) {
+                        <button class="remove" type="button" [attr.aria-label]="'contents.page.removeChannel' | t: { channel: name(channel) }" [disabled]="changingChannels()"
+                          (click)="removeChannel(channel)">
+                          <mb-icon name="x" [size]="14" />
+                        </button>
+                      }
+                    </span>
+                  }
+                  @for (channel of addable(); track channel) {
+                    <button class="chip add" type="button" [disabled]="changingChannels()" (click)="addChannel(channel)">
+                      <mb-icon name="plus" [size]="14" /> {{ name(channel) }}
+                    </button>
+                  }
+                </div>
+                @if (unsupported()) {
+                  <p class="caption">{{ unsupported() }}</p>
+                }
+              }
+            </dd>
+          </div>
+          <div class="fact">
+            <dt class="label">{{ 'contents.page.sideWhen' | t }}</dt>
+            <dd><mb-content-schedule [content]="current" [slot]="slot()" (changed)="slot.set($event)" /></dd>
+          </div>
+        </dl>
+      }
+    </header>
 
     @if (preparing()) {
       <div class="panel">
@@ -47,14 +84,14 @@
     }
 
     @if (ready()) {
-      <mb-content-preview [content]="current" [editable]="!preparing()" (updated)="show($event)" />
+      <mb-content-preview [content]="current" [editable]="!preparing() && !locked()" (updated)="show($event)" />
     }
 
-    @if (scripted() && !current.conversationId) {
+    @if (scripted() && !current.conversationId && !locked()) {
       <mb-script-editor [content]="current" [busy]="preparing()" (saved)="saveScript($event)" (generated)="generateVideo($event)" />
     }
 
-    @if (ready() || scripted()) {
+    @if ((ready() || scripted()) && !locked()) {
       @if (current.conversationId) {
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
           <mb-icon name="message-circle" [size]="16" /> {{ 'contents.page.refineInChat' | t }}
@@ -73,15 +110,24 @@
   }
 </section>
 
-<!-- Nella topbar, accanto al brand. -->
+<!-- Nella topbar, accanto al brand: cosa si può fare in questo stato. Un contenuto uscito non si tocca più; dove non è
+     uscito si riprova. -->
 <ng-template #headerActions>
   @if (content(); as current) {
-    @if (!current.conversationId) {
-      <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">{{ 'contents.page.regenerate' | t }}</button>
+    @if (!locked()) {
+      @if (!current.conversationId) {
+        <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">{{ 'contents.page.regenerate' | t }}</button>
+      }
+      @if (current.status === 'approved') {
+        <button class="btn btn-secondary btn-sm" type="button" (click)="toggleApproved()">{{ 'contents.page.reopen' | t }}</button>
+      } @else {
+        <button class="btn btn-primary btn-sm" type="button" (click)="toggleApproved()">{{ 'contents.page.approve' | t }}</button>
+      }
     }
-    <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
-      (click)="toggleApproved()">
-      {{ (current.status === 'approved' ? 'contents.page.reopen' : 'contents.page.approve') | t }}
-    </button>
+    @if (retryChannels().length > 0) {
+      <button class="btn btn-primary btn-sm" type="button" [disabled]="retrying()" (click)="retry()">
+        {{ 'contents.page.retry' | t: { channels: channelList(retryChannels()) } }}
+      </button>
+    }
   }
 </ng-template>

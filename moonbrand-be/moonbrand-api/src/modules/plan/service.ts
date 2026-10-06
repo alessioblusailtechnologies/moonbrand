@@ -81,7 +81,7 @@ export async function slotViews(db: Queryable, files: BrandFiles, brandId: strin
       status: publishedStatus(slotStatus(slot, content, now), channels, publications),
       publications,
       idea: slot.ideaId && ideaTitle ? { id: slot.ideaId, title: ideaTitle } : null,
-      content: content ? summarize(content, files, jobs.has(content.id), { date: slot.date, time: slot.time }) : null,
+      content: content ? summarize(content, files, jobs.has(content.id), { date: slot.date, time: slot.time }, publications) : null,
     };
   });
 }

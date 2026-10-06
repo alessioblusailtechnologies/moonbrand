@@ -6,6 +6,7 @@ import type { ContentScriptRequest, SlotView } from '@moonbrand/shared/api/contr
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import { formatAspects, hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
+import { contentState, isOut, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey, MessageParams } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
@@ -22,12 +23,15 @@ import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ContentPreview } from './content-preview';
 import { ContentSchedule } from './content-schedule';
-import { formatLabel, statusLabel, unsupportedLine } from './labels';
+import { formatLabel, stateTone, statusLabel, unsupportedLine } from './labels';
 import { ScriptEditor } from './script-editor';
 
 // Cosa sta facendo il lavoro in corso: preparare il contenuto (o il copione di un video), ritoccarlo, fare il video,
 // scrivere per un canale aggiunto.
 type Work = 'prepare' | 'edit' | 'video' | 'channel';
+
+const PUBLISH_POLL_MS = 3000;
+const PUBLISH_POLL_MAX = 100;
 
 @Component({
   selector: 'mb-content-page',
@@ -61,10 +65,29 @@ export class ContentPage {
   // Il canale che un lavoro sta aggiungendo.
   protected readonly adding = signal<ChannelId | null>(null);
   protected readonly changingChannels = signal(false);
+  protected readonly retrying = signal(false);
   protected readonly name = channelName;
+  protected readonly stateTone = stateTone;
 
   protected readonly formatLabel = computed(() => (this.content() ? formatLabel(this.content()!.format, this.i18n.locale()) : ''));
-  protected readonly statusLabel = computed(() => (this.content() ? statusLabel(this.content()!.status, this.i18n.locale()) : ''));
+  // Com'è andata sui social, canale per canale: vuoto finché non è uscito.
+  protected readonly publications = computed<Publication[]>(() => this.slot()?.publications ?? []);
+  // Lo stato da mostrare: bozza o approvato finché non esce, poi com'è andata.
+  protected readonly state = computed(() => {
+    const content = this.content();
+    return content ? contentState(content.status, content.channels, this.publications()) : 'draft';
+  });
+  protected readonly statusLabel = computed(() => statusLabel(this.state(), this.i18n.locale()));
+  // Uscito o in uscita: si guarda e basta, perché cambiarlo qui non cambierebbe il post sui social.
+  protected readonly locked = computed(() => isOut(this.state()));
+  // I canali dove ha provato a uscire e non ci è riuscito, o non ci ha ancora provato mentre altrove è uscito.
+  protected readonly retryChannels = computed<ChannelId[]>(() => {
+    const content = this.content();
+    const publications = this.publications();
+    if (!content || publications.length === 0 || publications.some((item) => item.status === 'publishing')) return [];
+    const out = new Set(publications.filter((item) => item.status === 'published').map((item) => item.channel));
+    return content.channels.filter((channel) => !out.has(channel));
+  });
   protected readonly ready = computed(() => (this.content()?.variants.length ?? 0) > 0);
   // Un video ha il copione da leggere e correggere, prima e dopo il video.
   protected readonly scripted = computed(() => {
@@ -141,6 +164,8 @@ export class ContentPage {
       this.show(content);
       this.slot.set(slot);
       this.brandChannels.set(brandChannels);
+      // Sta uscendo mentre lo si apre: si segue finché ogni canale ha finito.
+      if (slot?.publications.some((item) => item.status === 'publishing')) void this.watchPublishing(contentId).catch(() => undefined);
       // Un lavoro già in corso su un video con il copione è il video; altrimenti la preparazione.
       if (jobId) void this.follow(jobId, content.format === 'video' && hasScript(content) ? 'video' : 'prepare');
     } catch (error) {
@@ -173,6 +198,53 @@ export class ContentPage {
 
   protected show(content: Content): void {
     this.content.set(content);
+  }
+
+  protected outcomeOf(channel: ChannelId): Publication | undefined {
+    return this.publications().find((item) => item.channel === channel);
+  }
+
+  protected channelList(channels: readonly ChannelId[]): string {
+    return channels.map(channelName).join(', ');
+  }
+
+  // Dove non è uscito si riprova adesso, con la conferma: poi si segue finché ogni canale ha finito.
+  protected async retry(): Promise<void> {
+    const content = this.content();
+    const channels = this.channelList(this.retryChannels());
+    if (!content || this.retrying()) return;
+    const confirmed = await this.confirm.ask({
+      title: this.i18n.t('contents.page.retryConfirm.title'),
+      message: this.i18n.t('contents.page.retryConfirm.message', { channels }),
+      confirmLabel: this.i18n.t('contents.page.retryConfirm.confirm'),
+    });
+    if (!confirmed) return;
+    this.retrying.set(true);
+    try {
+      const started = await this.api.publish(content.id);
+      this.show(started.content);
+      await this.watchPublishing(content.id);
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('contents.page.errors.retry')));
+    } finally {
+      this.retrying.set(false);
+    }
+  }
+
+  // Si rilegge l'uscita finché ogni canale è uscito o non è riuscito: un post esce in pochi secondi, un video in qualche decina.
+  private async watchPublishing(contentId: string): Promise<void> {
+    for (let round = 0; round < PUBLISH_POLL_MAX; round++) {
+      await new Promise((resolve) => setTimeout(resolve, PUBLISH_POLL_MS));
+      if (this.contentId() !== contentId) return;
+      const { content, slot } = await this.api.get(contentId);
+      this.show(content);
+      this.slot.set(slot);
+      const publications = slot?.publications ?? [];
+      const settled = content.channels.every((channel) =>
+        publications.some((item) => item.channel === channel && item.status !== 'publishing'),
+      );
+      if (settled) return;
+    }
   }
 
   protected async addChannel(channel: ChannelId): Promise<void> {

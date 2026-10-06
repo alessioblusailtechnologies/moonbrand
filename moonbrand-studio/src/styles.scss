@@ -505,6 +505,12 @@ p {
   &.mint {
     background: rgba(109, 212, 126, 0.25);
   }
+
+  // Da guardare: un contenuto uscito solo in parte o non uscito.
+  &.warn {
+    background: var(--accent-tint);
+    color: var(--accent-strong);
+  }
 }
 
 .dot {

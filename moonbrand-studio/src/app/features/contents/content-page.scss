@@ -12,9 +12,91 @@
   padding: 48px 16px;
 }
 
-.meta {
+// In cima: badge, titolo e, in due righe etichettate, dove e quando esce.
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.badges {
   display: flex;
   gap: 6px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 10px 20px;
+  margin: 6px 0 0;
+}
+
+// Le righe stanno nella griglia di .facts: etichette in colonna, contenuti allineati.
+.fact {
+  display: contents;
+
+  dt {
+    margin: 0;
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .caption {
+    margin: 0;
+  }
+}
+
+.outcomes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.outcome {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.publishing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.failed {
+  color: var(--danger);
+}
+
+// Sul telefono l'etichetta va sopra la sua riga.
+@media (max-width: 640px) {
+  .facts {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .fact dd {
+    margin-bottom: 6px;
+  }
 }
 
 .edit {
@@ -37,18 +119,6 @@
   align-self: flex-start;
   gap: 6px;
   text-decoration: none;
-}
-
-.channel-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-
-  .label,
-  .caption {
-    margin: 0;
-  }
 }
 
 .chip.on-channel {

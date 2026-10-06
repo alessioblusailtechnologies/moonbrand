@@ -54,6 +54,21 @@ export interface Publication {
   publishedAt: string | null;
 }
 
+// Lo stato di un contenuto come lo vede chi lo usa: bozza o approvato finché non esce, poi com'è andata sui social.
+// partial: uscito su qualche canale e non su altri; failed: non è uscito da nessuna parte.
+export type ContentState = ContentStatus | 'publishing' | 'published' | 'partial' | 'failed';
+
+export function contentState(status: ContentStatus, channels: readonly ChannelId[], publications: readonly Publication[]): ContentState {
+  if (publications.length === 0) return status;
+  if (publications.some((item) => item.status === 'publishing')) return 'publishing';
+  const out = new Set(publications.filter((item) => item.status === 'published').map((item) => item.channel));
+  if (out.size === 0) return 'failed';
+  return channels.every((channel) => out.has(channel)) ? 'published' : 'partial';
+}
+
+// Un contenuto già uscito, o che sta uscendo, non si cambia più: testi, canali e data restano quelli pubblicati.
+export const isOut = (state: ContentState): boolean => state === 'publishing' || state === 'published' || state === 'partial';
+
 // Lo stato segue quello che l'uscita ha: niente, un'idea, una bozza, un contenuto approvato. Questa regola, come in social-app,
 // dà pubblicata un'uscita programmata il cui orario è passato; con la pubblicazione vera conta cosa è uscito davvero
 // (publishedStatus).
