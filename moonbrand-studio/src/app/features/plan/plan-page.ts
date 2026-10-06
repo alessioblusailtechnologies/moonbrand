@@ -60,7 +60,8 @@ export class PlanPage {
   readonly giorno = input<string>();
 
   private readonly headerActions = viewChild<TemplateRef<unknown>>('headerActions');
-  protected readonly mode = signal<Mode>('month');
+  // Sul telefono si parte dalla settimana: nel mese le caselle sono troppo piccole per leggere e toccare le uscite.
+  protected readonly mode = signal<Mode>(window.matchMedia('(max-width: 640px)').matches ? 'week' : 'month');
   protected readonly anchor = signal(planNow().date);
   protected readonly plan = signal<PlanResponse | null>(null);
   protected readonly loading = signal(true);

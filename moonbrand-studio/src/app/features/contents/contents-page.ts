@@ -33,7 +33,10 @@ const REFRESH_MS = 5000;
 
 // La griglia masonry: colonne di almeno COLUMN_MIN px; ogni card va nella colonna più corta, così le copertine
 // restano intere in ogni proporzione (un Reel 9:16 accanto a un post 4:5) e l'ordine si legge per righe.
+// Sul telefono comunque due colonne, più strette: una card per schermata costringerebbe a scorrere troppo.
 const COLUMN_MIN = 240;
+const PHONE_COLUMNS = 2;
+const PHONE_WIDTH = 300;
 const GAP = 16;
 // L'altezza della card oltre la copertina (badge, titolo, canali), in proporzione alla larghezza: basta per scegliere la colonna.
 const CARD_TEXT = 0.55;
@@ -169,6 +172,20 @@ function aspectRatio(aspect: string | null): number {
       flex-wrap: wrap;
       gap: 6px;
     }
+    @media (max-width: 640px) {
+      .grid,
+      .column {
+        gap: 10px;
+      }
+      .card {
+        gap: 8px;
+        padding: 8px;
+      }
+      .play {
+        width: 36px;
+        height: 36px;
+      }
+    }
     .strong {
       margin: 0;
     }
@@ -216,7 +233,9 @@ export class ContentsPage {
     // Quante colonne ci stanno: si ricalcola quando cambia la larghezza della pagina.
     // La griglia compare solo quando ci sono contenuti.
     const observer = new ResizeObserver(([entry]) =>
-      this.columnCount.set(Math.max(1, Math.floor((entry.contentRect.width + GAP) / (COLUMN_MIN + GAP)))),
+      this.columnCount.set(
+        Math.max(entry.contentRect.width >= PHONE_WIDTH ? PHONE_COLUMNS : 1, Math.floor((entry.contentRect.width + GAP) / (COLUMN_MIN + GAP))),
+      ),
     );
     effect(() => {
       const grid = this.grid()?.nativeElement;

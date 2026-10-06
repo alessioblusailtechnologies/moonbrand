@@ -81,6 +81,16 @@ textarea {
   color: inherit;
 }
 
+// Sotto i 16 px Safari su iPhone ingrandisce la pagina quando si tocca un campo, e non torna indietro da solo:
+// sul telefono e sugli schermi touch i campi stanno a 16 px, qualunque sia la loro dimensione altrove.
+@media (max-width: 760px), (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio'], [type='range'], [type='file']),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 // I link sul bianco restano blu: l'accento non si legge.
 a {
   color: var(--primary-soft);

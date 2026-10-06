@@ -26,6 +26,13 @@
   box-shadow: var(--shadow-menu);
 }
 
+// Sul telefono, mentre si scrive un testo a mano, la barra in basso coprirebbe il campo (e la tastiera ne lascia poco).
+@media (max-width: 640px) {
+  :host:has(mb-content-preview textarea.editor) .edit {
+    display: none;
+  }
+}
+
 .in-chat {
   align-self: flex-start;
   gap: 6px;
