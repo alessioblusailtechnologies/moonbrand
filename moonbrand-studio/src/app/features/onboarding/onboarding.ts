@@ -8,6 +8,7 @@ import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
@@ -76,6 +77,7 @@ export class Onboarding {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly ai = inject(AiJobsService);
+  private readonly auth = inject(AuthService);
   private readonly i18n = inject(I18nService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
@@ -168,6 +170,11 @@ export class Onboarding {
 
   protected close(): void {
     void this.router.navigateByUrl('/');
+  }
+
+  protected async signOut(): Promise<void> {
+    await this.auth.signOut();
+    await this.router.navigateByUrl('/login');
   }
 
   private async askRestart(): Promise<void> {
