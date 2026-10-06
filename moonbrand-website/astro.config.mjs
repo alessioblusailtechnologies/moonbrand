@@ -2,13 +2,13 @@
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
-import { IUBENDA_POLICY_ID } from './src/data/iubenda';
+import { iubendaId } from './src/data/iubenda';
 import { LANGS, pagePath } from './src/i18n';
 
-// Fuori dalla sitemap: la 404 e i documenti legali di una lingua finché su iubenda non c'è la sua policy (sono noindex).
+// Fuori dalla sitemap: la 404 e i documenti legali finché su iubenda non sono generati (sono noindex).
 const site = 'https://moonbrand.app';
-const excluded = LANGS.filter((lang) => !IUBENDA_POLICY_ID[lang]).flatMap((lang) =>
-  (/** @type {const} */ (['privacy', 'terms'])).map((page) => site + pagePath(lang, page)),
+const excluded = LANGS.flatMap((lang) =>
+  (/** @type {const} */ (['privacy', 'terms'])).filter((page) => !iubendaId(page, lang)).map((page) => site + pagePath(lang, page)),
 );
 
 export default defineConfig({
