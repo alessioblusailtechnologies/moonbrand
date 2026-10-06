@@ -1,0 +1,42 @@
+---
+// La 404 in una lingua: Cloudflare serve la 404.html più vicina al percorso, quindi /en/... riceve quella inglese.
+import { getCopy, homePath, type Lang } from '../i18n';
+import Base from '../layouts/Base.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { notFound } = getCopy(lang);
+---
+
+<Base lang={lang} title={notFound.title} noindex>
+  <Header lang={lang} />
+  <main class="not-found">
+    <p class="mono code">404</p>
+    <h1 class="display">{notFound.heading}</h1>
+    <p class="text">{notFound.text}</p>
+    <a href={homePath(lang)} class="btn btn-dark">{notFound.back}</a>
+  </main>
+  <Footer lang={lang} />
+</Base>
+
+<style>
+  .not-found {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 120px 24px 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+  .code { margin: 0; font-size: 14px; color: var(--accent-dark); letter-spacing: 0.08em; }
+  h1 { font-size: clamp(40px, 6vw, 64px); }
+  .text { margin: 0 0 8px; font-size: 17px; line-height: 1.55; color: var(--text); }
+  .btn { padding: 13px 22px; }
+</style>

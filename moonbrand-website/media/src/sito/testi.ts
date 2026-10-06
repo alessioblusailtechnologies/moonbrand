@@ -26,6 +26,8 @@ export const TESTI = {
     libreriaEtichetta: 'Consigli di settembre',
     libreriaTitolo: 'Tre libri per chi ha finito le vacanze,',
     libreriaChiusa: 'ma non la voglia di partire.',
+    anteprima: ['Contenuti social con', 'la voce del tuo brand.'],
+    anteprimaSub: 'Crei, organizzi e pianifichi i post con un’AI che conosce il tuo tone of voice.',
   },
   en: {
     solcoClaim: 'Transparent by choice.',
@@ -51,6 +53,8 @@ export const TESTI = {
     libreriaEtichetta: 'September picks',
     libreriaTitolo: 'Three books for anyone whose holiday is over,',
     libreriaChiusa: 'but not their urge to travel.',
+    anteprima: ['Social content in', 'your brand’s voice.'],
+    anteprimaSub: 'Create, organise and plan your posts with an AI that knows your tone of voice.',
   },
   fr: {
     solcoClaim: 'Transparents par choix.',
@@ -76,5 +80,7 @@ export const TESTI = {
     libreriaEtichetta: 'Conseils de septembre',
     libreriaTitolo: 'Trois livres pour ceux qui ont fini leurs vacances,',
     libreriaChiusa: 'mais pas l’envie de partir.',
+    anteprima: ['Vos contenus social media', 'avec la voix de votre marque.'],
+    anteprimaSub: 'Créez, organisez et planifiez vos posts avec une IA qui connaît votre ton.',
   },
 } satisfies Record<Lingua, Record<string, string | string[]>>;

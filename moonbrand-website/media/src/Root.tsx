@@ -1,5 +1,6 @@
 import { Still } from 'remotion';
 
+import { Anteprima, Icona } from './sito/Anteprima';
 import {
   FormaSlide,
   FormaTikTok,
@@ -32,6 +33,8 @@ export const RemotionRoot: React.FC = () => {
       <Still id="solco-countdown" component={SolcoCountdown} width={1080} height={1350} />
       <Still id="solco-team" component={SoloFoto} defaultProps={{ nome: 'solco-team' }} width={1080} height={1080} />
       <Still id="social-manager" component={SoloFoto} defaultProps={{ nome: 'social-manager' }} width={900} height={1200} />
+      <Still id="anteprima" component={Anteprima} width={1200} height={630} />
+      <Still id="icona" component={Icona} width={512} height={512} />
     </>
   );
 };

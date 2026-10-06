@@ -1,4 +1,14 @@
-<a href="#top" class="logo">
+---
+import { homePath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<a href={homePath(lang)} class="logo">
   <span class="mark" aria-hidden="true"><span class="sun"></span><span class="shadow"></span></span>
   <span class="name">Moonbrand</span>
 </a>

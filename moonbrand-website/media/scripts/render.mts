@@ -1,5 +1,6 @@
 // Esporta ogni Still di src/Root.tsx in ../public/images, alla larghezza che serve al sito (circa 720px, il doppio della card).
 // Le immagini con del testo escono una volta per lingua, in images/<lingua>/; le foto senza testo una volta sola.
+// L'anteprima per i social e le icone vanno fuori da images, in PNG: il percorso lo dà `file`, relativo a ../public.
 // Uso: npx tsx scripts/render.mts [id...]
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
@@ -13,7 +14,8 @@ const chrome = path.resolve(
   '../../moonbrand-be/moonbrand-ai/node_modules/.remotion/chrome-headless-shell/win64/chrome-headless-shell-win64/chrome-headless-shell.exe',
 );
 
-const stills: { id: string; out: string; scale: number; testo: boolean }[] = [
+type Lingua = (typeof LINGUE)[number];
+const stills: { id: string; out: string; scale: number; testo: boolean; file?: (lingua: Lingua | null) => string }[] = [
   { id: 'solco-buds', out: 'posts/solco-buds.jpg', scale: 2 / 3, testo: true },
   { id: 'solco-colori', out: 'posts/solco-colori.jpg', scale: 2 / 3, testo: true },
   { id: 'aurora-torta', out: 'posts/aurora-torta.jpg', scale: 2 / 3, testo: false },
@@ -31,13 +33,17 @@ const stills: { id: string; out: string; scale: number; testo: boolean }[] = [
   { id: 'solco-suono', out: 'studio/solco-suono.jpg', scale: 4 / 9, testo: true },
   { id: 'solco-countdown', out: 'studio/solco-countdown.jpg', scale: 4 / 9, testo: true },
   { id: 'solco-team', out: 'studio/solco-team.jpg', scale: 4 / 9, testo: false },
+  { id: 'anteprima', out: 'og.png', scale: 1, testo: true, file: (lingua) => `og/${lingua}.png` },
+  { id: 'icona', out: 'icon-512.png', scale: 1, testo: false, file: () => 'icon-512.png' },
+  { id: 'icona', out: 'apple-touch-icon.png', scale: 180 / 512, testo: false, file: () => 'apple-touch-icon.png' },
 ];
 
 const temp = mkdtempSync(path.join(tmpdir(), 'moonbrand-render-'));
 const scelte = process.argv.slice(2);
-for (const { id, out, scale, testo } of stills.filter((s) => !scelte.length || scelte.includes(s.id))) {
+for (const { id, out, scale, testo, file } of stills.filter((s) => !scelte.length || scelte.includes(s.id))) {
   for (const lingua of testo ? LINGUE : [null]) {
-    const target = path.resolve('../public/images', lingua ?? '', out);
+    const target = file ? path.resolve('../public', file(lingua)) : path.resolve('../public/images', lingua ?? '', out);
+    const png = target.endsWith('.png');
     // Le props passano da un file: in una riga di comando su Windows le virgolette del JSON si perdono.
     const props = path.join(temp, `${lingua ?? 'foto'}.json`);
     writeFileSync(props, JSON.stringify(lingua ? { lingua } : {}));
@@ -49,8 +55,7 @@ for (const { id, out, scale, testo } of stills.filter((s) => !scelte.length || s
         id,
         target,
         `--props=${props}`,
-        '--image-format=jpeg',
-        '--jpeg-quality=86',
+        ...(png ? ['--image-format=png'] : ['--image-format=jpeg', '--jpeg-quality=86']),
         `--scale=${scale}`,
         ...(existsSync(chrome) ? [`--browser-executable=${chrome}`] : []),
       ],

@@ -1,15 +1,59 @@
 ---
 import '../styles/global.css';
-import { getCopy, homePath, LANGS, type Lang } from '../i18n';
+import { getCopy, LANGS, pagePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
+  /** Lo slug della pagina, uguale in tutte le lingue ('' per la home): da qui canonical e hreflang. */
+  slug?: string;
+  /** Senza, titolo e descrizione sono quelli della home. */
+  title?: string;
+  description?: string;
+  /** L'immagine di anteprima sui social e nei messaggi; senza, quella generale nella lingua della pagina. */
+  image?: string;
+  /** Le pagine che Google non deve indicizzare, come la 404: niente canonical né hreflang. */
+  noindex?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, slug = '', noindex = false } = Astro.props;
 const { meta } = getCopy(lang);
+const title = Astro.props.title ?? meta.title;
+const description = Astro.props.description ?? meta.description;
 const site = Astro.site ?? new URL('https://moonbrand.app');
-const url = new URL(homePath(lang), site);
+const url = new URL(pagePath(lang, slug), site);
+const image = new URL(Astro.props.image ?? `/og/${lang}.png`, site);
+
+// Sulla home i dati strutturati dicono a Google chi è Moonbrand e cos'è.
+const jsonLd = slug === '' && !noindex && {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${site.origin}/#organization`,
+      name: 'Moonbrand',
+      url: site.origin,
+      logo: new URL('/icon-512.png', site).href,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${site.origin}/#website`,
+      name: 'Moonbrand',
+      url: site.origin,
+      inLanguage: LANGS,
+      publisher: { '@id': `${site.origin}/#organization` },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: 'Moonbrand',
+      url: url.href,
+      description,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      inLanguage: lang,
+      publisher: { '@id': `${site.origin}/#organization` },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -17,19 +61,34 @@ const url = new URL(homePath(lang), site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{meta.title}</title>
-    <meta name="description" content={meta.description} />
-    <link rel="canonical" href={url} />
-    {LANGS.map((other) => <link rel="alternate" hreflang={other} href={new URL(homePath(other), site)} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(homePath('en'), site)} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : (
+      <>
+        <link rel="canonical" href={url} />
+        {LANGS.map((other) => <link rel="alternate" hreflang={other} href={new URL(pagePath(other, slug), site)} />)}
+        <link rel="alternate" hreflang="x-default" href={new URL(pagePath('en', slug), site)} />
+      </>
+    )}
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moonbrand" />
     <meta property="og:url" content={url} />
-    <meta property="og:title" content={meta.title} />
-    <meta property="og:description" content={meta.description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:locale" content={meta.ogLocale} />
+    {LANGS.filter((other) => other !== lang).map((other) => <meta property="og:locale:alternate" content={getCopy(other).meta.ogLocale} />)}
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={meta.imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0B1324" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
     <slot />

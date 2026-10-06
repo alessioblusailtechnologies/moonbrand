@@ -8,6 +8,7 @@ export const en: Copy = {
     title: 'Moonbrand · Social content in your brand’s voice',
     description: 'Moonbrand helps you create, organise and plan social content with an AI that knows your tone of voice.',
     ogLocale: 'en_GB',
+    imageAlt: 'Moonbrand: social content in your brand’s voice',
   },
   nav: {
     platform: 'Platform',
@@ -273,5 +274,11 @@ export const en: Copy = {
     privacy: 'Privacy',
     terms: 'Terms',
     contact: 'Contact',
+  },
+  notFound: {
+    title: 'Page not found · Moonbrand',
+    heading: 'This page doesn’t exist.',
+    text: 'The link may be old, or there may be a typo. The home page has everything Moonbrand does.',
+    back: 'Back to the home page',
   },
 };

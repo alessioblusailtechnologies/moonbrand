@@ -8,6 +8,7 @@ export const fr: Copy = {
     title: 'Moonbrand · Des contenus social media avec la voix de votre marque',
     description: 'Avec Moonbrand, créez, organisez et planifiez vos contenus social media grâce à une IA qui connaît votre ton.',
     ogLocale: 'fr_FR',
+    imageAlt: 'Moonbrand : des contenus social media avec la voix de votre marque',
   },
   nav: {
     platform: 'Plateforme',
@@ -273,5 +274,11 @@ export const fr: Copy = {
     privacy: 'Confidentialité',
     terms: 'Conditions',
     contact: 'Contact',
+  },
+  notFound: {
+    title: 'Page introuvable · Moonbrand',
+    heading: 'Cette page n’existe pas.',
+    text: 'Le lien est peut-être ancien, ou il y a une faute de frappe. Sur la page d’accueil, vous trouverez tout ce que fait Moonbrand.',
+    back: 'Retour à l’accueil',
   },
 };

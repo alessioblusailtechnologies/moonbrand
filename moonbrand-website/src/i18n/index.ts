@@ -21,6 +21,14 @@ export function homePath(lang: Lang): string {
   return lang === 'it' ? '/' : `/${lang}/`;
 }
 
+/** Una pagina in una lingua: lo slug è lo stesso in tutte ('' per la home), cambia solo il prefisso. */
+export function pagePath(lang: Lang, slug: string): string {
+  return slug ? `${homePath(lang)}${slug}/` : homePath(lang);
+}
+
+/** Lo studio, dove si accede e ci si registra. */
+export const STUDIO_URL = 'https://studio.moonbrand.app';
+
 /** Le immagini con del testo dentro esistono una per lingua, in /images/<lingua>/; le foto sono uguali per tutte. */
 export function imagePath(lang: Lang, file: string, localized: boolean): string {
   return localized ? `/images/${lang}/${file}` : `/images/${file}`;

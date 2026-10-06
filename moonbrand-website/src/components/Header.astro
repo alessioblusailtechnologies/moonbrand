@@ -1,34 +1,38 @@
 ---
-import { getCopy, homePath, LANGS, type Lang } from '../i18n';
+import { getCopy, homePath, LANGS, pagePath, STUDIO_URL, type Lang } from '../i18n';
 import Logo from './Logo.astro';
 
 interface Props {
   lang: Lang;
+  /** La pagina corrente, perché il cambio lingua resti sulla stessa pagina. */
+  slug?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, slug = '' } = Astro.props;
 const { nav } = getCopy(lang);
+// Le sezioni stanno nella home: dalla home scorrono e basta, dalle altre pagine ci tornano.
+const home = homePath(lang);
 ---
 
 <header>
   <div class="bar">
-    <Logo />
+    <Logo lang={lang} />
     <nav>
-      <a href="#piattaforma">{nav.platform}</a>
-      <a href="#risultato">{nav.why}</a>
-      <a href="#sistema">{nav.features}</a>
-      <a href="#prova">{nav.trial}</a>
+      <a href={`${home}#piattaforma`}>{nav.platform}</a>
+      <a href={`${home}#risultato`}>{nav.why}</a>
+      <a href={`${home}#sistema`}>{nav.features}</a>
+      <a href={`${home}#prova`}>{nav.trial}</a>
     </nav>
     <div class="actions">
       <nav class="langs" aria-label={nav.language}>
         {LANGS.map((other) => (
-          <a href={homePath(other)} hreflang={other} lang={other} aria-current={other === lang ? 'page' : undefined}>
+          <a href={pagePath(other, slug)} hreflang={other} lang={other} aria-current={other === lang ? 'page' : undefined}>
             {other.toUpperCase()}
           </a>
         ))}
       </nav>
-      <a href="#" class="login">{nav.login}</a>
-      <a href="#prova" class="btn btn-dark cta">{nav.start}</a>
+      <a href={`${STUDIO_URL}/login`} class="login">{nav.login}</a>
+      <a href={`${home}#prova`} class="btn btn-dark cta">{nav.start}</a>
     </div>
   </div>
 </header>

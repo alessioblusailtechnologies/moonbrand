@@ -9,6 +9,7 @@ export const it = {
     title: 'Moonbrand · Contenuti social con la voce del tuo brand',
     description: 'Con Moonbrand crei, organizzi e pianifichi i contenuti social con un’AI che conosce il tuo tone of voice.',
     ogLocale: 'it_IT',
+    imageAlt: 'Moonbrand: contenuti social con la voce del tuo brand',
   },
   nav: {
     platform: 'Piattaforma',
@@ -278,6 +279,12 @@ export const it = {
     privacy: 'Privacy',
     terms: 'Termini',
     contact: 'Contatti',
+  },
+  notFound: {
+    title: 'Pagina non trovata · Moonbrand',
+    heading: 'Questa pagina non c’è.',
+    text: 'Forse il link è vecchio o c’è un errore di battitura. Dalla home trovi tutto quello che fa Moonbrand.',
+    back: 'Torna alla home',
   },
 };
 
