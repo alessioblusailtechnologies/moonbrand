@@ -24,6 +24,7 @@ import type {
   WelcomeJobInput,
 } from '@moonbrand/shared/api/contract';
 
+import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand, putBrandFiles } from './lib/brand-sync';
 import { examplesDir } from './lib/examples';
 import { createStepReader } from './lib/step-reader';
@@ -350,6 +351,7 @@ async function run(job: Job): Promise<void> {
       console.log(`[${job.id}] fallito: ${pullError}`);
       return;
     }
+    await writeBrandLogo(pool, path.join(BRANDS_DIR, brandId), brandId).catch((error: unknown) => console.error(`[${job.id}] logo non scritto`, error));
   }
   // Le immagini e i video che lo studio mostra appena pronti: lo step è finito quando il file è sullo storage.
   const uploads: Promise<void>[] = [];
