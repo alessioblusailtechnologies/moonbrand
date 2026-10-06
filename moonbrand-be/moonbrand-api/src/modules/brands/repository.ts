@@ -1,5 +1,5 @@
 import type { BrandSummary } from '@moonbrand/shared/api/contract';
-import type { BrandDraft, BrandKind } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, BrandKind, ChannelId } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
 
@@ -9,10 +9,12 @@ interface SummaryRow {
   name: string;
   logo_uri: string | null;
   color: string | null;
+  lost_channels: ChannelId[];
 }
 
 const SUMMARY = `id, identity->>'kind' as kind, identity->>'name' as name, visual->>'logoUri' as logo_uri,
-  visual->'palette'->'colors'->>0 as color`;
+  visual->'palette'->'colors'->>0 as color,
+  array(select key from jsonb_each(channels) where value->>'accountId' is not null and value->>'lost' = 'true') as lost_channels`;
 
 const toSummary = (row: SummaryRow): BrandSummary => ({
   id: row.id,
@@ -20,6 +22,7 @@ const toSummary = (row: SummaryRow): BrandSummary => ({
   name: row.name,
   logoUri: row.logo_uri,
   color: row.color ?? '#2F3452',
+  lostChannels: row.lost_channels ?? [],
 });
 
 export async function listBrandSummaries(db: Queryable, accountId: string): Promise<BrandSummary[]> {

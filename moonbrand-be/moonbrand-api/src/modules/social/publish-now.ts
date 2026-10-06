@@ -36,6 +36,13 @@ async function requireConnected(db: Queryable, brandId: string, channels: readon
       `${missing.map(channelName).join(', ')} non ${missing.length > 1 ? 'sono collegati' : 'è collegato'}: collegalo da Impostazioni brand → Canali.`,
     );
   }
+  const lost = channels.filter((channel) => rows[0]?.channels[channel]?.lost);
+  if (lost.length > 0) {
+    throw ApiError.conflict(
+      'CHANNEL_LOST',
+      `${lost.map(channelName).join(', ')} ha chiuso l’accesso a moonbrand: ricollegalo da Impostazioni brand → Canali.`,
+    );
+  }
 }
 
 // Il contenuto si può pubblicare adesso? Restituisce i canali dove uscirà.

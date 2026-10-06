@@ -5,11 +5,13 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter, map } from 'rxjs';
 
 import type { ConversationSummary } from '@moonbrand/shared/api/contract';
+import { channelName } from '@moonbrand/shared/domain/catalog';
 import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 import { INTL_LOCALES, LOCALE_NAMES, LOCALES, type Locale } from '@moonbrand/shared/i18n/locales';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
@@ -189,6 +191,13 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
         }
       </header>
       <main class="content" #scroller data-page-scroller>
+        @if (lostBanner(); as lost) {
+          <div class="lost" role="alert">
+            <mb-icon name="repeat" [size]="18" />
+            <span class="grow">{{ lost }}</span>
+            <a class="btn btn-primary btn-sm" routerLink="/impostazioni">{{ 'shell.lostAction' | t }}</a>
+          </div>
+        }
         <router-outlet />
       </main>
     </div>
@@ -583,6 +592,19 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     .scrim {
       display: none;
     }
+    .lost {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto 20px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--accent-soft);
+      border-radius: var(--radius-xl);
+      background: var(--white);
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--text-title);
+    }
     // Sul tablet la barra resta compressa: c'è posto solo per le icone.
     @media (max-width: 900px) {
       .toggle {
@@ -672,6 +694,7 @@ export class Shell {
   protected readonly header = inject(PageHeader);
   private readonly picker = inject(BrandPickerService);
   private readonly toast = inject(ToastService);
+  private readonly brands = inject(BrandsService);
   protected readonly i18n = inject(I18nService);
   protected readonly sections = SECTIONS;
   protected readonly locales = LOCALES;
@@ -721,6 +744,15 @@ export class Shell {
       destroyRef.onDestroy(() => observer.disconnect());
     });
   }
+
+  // I canali del brand dove il social ha chiuso l'accesso (avviso di Zernio): finché non si ricollegano i post lì aspettano.
+  protected readonly lostBanner = computed(() => {
+    const brand = this.brands.activeBrand();
+    const lost = brand?.lostChannels ?? [];
+    if (!brand || lost.length === 0) return null;
+    const channels = lost.map(channelName).join(', ');
+    return this.i18n.t(lost.length > 1 ? 'shell.lostMany' : 'shell.lostOne', { channels, brand: brand.name });
+  });
 
   // I crediti del piano che restano nel mese: il cerchio si svuota man mano e sotto il 10% diventa rosso.
   protected readonly creditRing = computed(() => {

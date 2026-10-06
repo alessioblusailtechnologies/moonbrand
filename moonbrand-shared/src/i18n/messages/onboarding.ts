@@ -120,6 +120,8 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Collega',
+      reconnect: 'Ricollega',
+      lost: '{handle} · da ricollegare: il social ha chiuso l’accesso e i post qui sono in attesa',
       connecting: 'Collego…',
       disconnect: 'Scollega',
       disconnecting: 'Scollego…',
@@ -406,6 +408,8 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Connect',
+      reconnect: 'Reconnect',
+      lost: '{handle} · needs reconnecting: the network closed access and posts here are waiting',
       connecting: 'Connecting…',
       disconnect: 'Disconnect',
       disconnecting: 'Disconnecting…',
@@ -692,6 +696,8 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Connecter',
+      reconnect: 'Reconnecter',
+      lost: '{handle} · à reconnecter : le réseau a fermé l’accès et les publications sont en attente',
       connecting: 'Je connecte…',
       disconnect: 'Déconnecter',
       disconnecting: 'Je déconnecte…',

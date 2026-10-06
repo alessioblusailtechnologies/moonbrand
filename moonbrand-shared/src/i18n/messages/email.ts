@@ -25,6 +25,13 @@ export const email = defineMessages({
       ignore: 'Se non l’hai chiesto tu, ignora questa email: la password resta quella di prima.',
       button: 'Scegli la nuova password',
     },
+    channelLost: {
+      subject: '{channel} di {brand} va ricollegato',
+      title: 'Ricollega {channel}',
+      body: 'Ciao {name}, {channel} ha chiuso l’accesso di Moonbrand all’account di {brand}: finché non lo ricolleghi i post programmati lì restano in attesa e non escono.',
+      why: 'Succede quando cambi la password, esci da tutte le sessioni, togli Moonbrand dalle app collegate o {channel} chiede un controllo di sicurezza. Ricollegare richiede un minuto e i post in attesa ripartono.',
+      button: 'Ricollega {channel}',
+    },
   },
   en: {
     footer: 'You received this email because your address was used on Moonbrand. If it wasn’t you, ignore it.',
@@ -49,6 +56,13 @@ export const email = defineMessages({
       ignore: 'If you didn’t ask for it, ignore this email: your password stays the same.',
       button: 'Choose a new password',
     },
+    channelLost: {
+      subject: '{channel} for {brand} needs reconnecting',
+      title: 'Reconnect {channel}',
+      body: 'Hi {name}, {channel} closed Moonbrand’s access to the {brand} account: until you reconnect it, posts scheduled there wait and don’t go out.',
+      why: 'This happens when you change your password, sign out of all sessions, remove Moonbrand from your connected apps, or {channel} runs a security check. Reconnecting takes a minute and the waiting posts start again.',
+      button: 'Reconnect {channel}',
+    },
   },
   fr: {
     footer: 'Vous recevez cet e-mail parce que votre adresse a été utilisée sur Moonbrand. Si ce n’était pas vous, ignorez-le.',
@@ -72,6 +86,13 @@ export const email = defineMessages({
       body: 'Bonjour {name}, quelqu’un a demandé à changer le mot de passe de votre compte. Le lien est valable une heure et ne fonctionne qu’une fois.',
       ignore: 'Si vous n’en êtes pas à l’origine, ignorez cet e-mail : votre mot de passe reste le même.',
       button: 'Choisir un nouveau mot de passe',
+    },
+    channelLost: {
+      subject: '{channel} de {brand} doit être reconnecté',
+      title: 'Reconnectez {channel}',
+      body: 'Bonjour {name}, {channel} a fermé l’accès de Moonbrand au compte de {brand} : tant que vous ne le reconnectez pas, les publications programmées y restent en attente.',
+      why: 'Cela arrive quand vous changez de mot de passe, vous déconnectez de toutes les sessions, retirez Moonbrand des applications connectées ou quand {channel} lance un contrôle de sécurité. La reconnexion prend une minute et les publications en attente repartent.',
+      button: 'Reconnecter {channel}',
     },
   },
 });

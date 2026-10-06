@@ -112,6 +112,8 @@ export class ChannelConnectionService {
   private async done(brandId: string, channel: ChannelId, state: ChannelState, connected: Connected): Promise<void> {
     this.toast.show(this.i18n.t('profile.connection.connected', { channel: channelName(channel), handle: state.handle ?? '' }));
     await connected(brandId, channel, state);
+    // Se era da ricollegare, l'avviso in alto se ne va.
+    await this.brands.reload().catch(() => undefined);
   }
 
   private failed(channel: ChannelId): string {

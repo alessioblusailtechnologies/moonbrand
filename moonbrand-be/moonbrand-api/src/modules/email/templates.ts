@@ -61,6 +61,17 @@ export function confirmEmail(locale: Locale, name: string, url: string): Content
   });
 }
 
+// Un social del brand ha chiuso l'accesso (avviso dal webhook di Zernio): i post lì aspettano che si ricolleghi.
+export function channelLostEmail(locale: Locale, name: string, channel: string, brand: string, url: string): Content {
+  return layout(locale, {
+    subject: translate(locale, 'email.channelLost.subject', { channel, brand }),
+    title: translate(locale, 'email.channelLost.title', { channel }),
+    paragraphs: [translate(locale, 'email.channelLost.body', { name, channel, brand }), translate(locale, 'email.channelLost.why', { channel })],
+    button: translate(locale, 'email.channelLost.button', { channel }),
+    url,
+  });
+}
+
 export function resetEmail(locale: Locale, name: string, url: string): Content {
   return layout(locale, {
     subject: translate(locale, 'email.reset.subject'),

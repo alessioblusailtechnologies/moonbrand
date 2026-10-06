@@ -2,7 +2,7 @@ import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
 import { sections } from '../i18n/messages/sections';
 import { translate } from '../i18n/translate';
 import type { BrandDraft, BrandKind, SectionKey } from './brand';
-import { currentVoiceCard, isConnected } from './brand';
+import { currentVoiceCard, isConnected, needsReconnect } from './brand';
 import { CHANNELS, paletteName, positioningLabel } from './catalog';
 import { themeLevelLabel, totalWeight } from './themes';
 
@@ -91,7 +91,7 @@ export function sectionSummary(key: SectionKey, draft: BrandDraft, locale: Local
     case 'channels': {
       const connected = CHANNELS.filter(({ id }) => draft.channels[id] && isConnected(draft.channels[id]));
       if (connected.length === 0) return summary.noChannels;
-      return connected.map(({ name }) => t('connected', { channel: name })).join(' · ');
+      return connected.map(({ id, name }) => t(needsReconnect(draft.channels[id]) ? 'lost' : 'connected', { channel: name })).join(' · ');
     }
     case 'themes':
       return draft.themes.length

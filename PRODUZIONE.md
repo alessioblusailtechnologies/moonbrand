@@ -172,6 +172,7 @@ S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
 MISTRAL_API_KEY=
 ZERNIO_API_KEY=
+ZERNIO_WEBHOOK_SECRET=   # openssl rand -hex 32, lo stesso che si dà a Zernio registrando il webhook (sotto)
 RESEND_API_KEY=
 EMAIL_FROM=Moonbrand <ciao@moonbrand.app>
 STUDIO_URL=https://studio.moonbrand.app
@@ -179,6 +180,14 @@ EMAIL_SECRET=            # openssl rand -base64 48
 ```
 
 Senza `RESEND_API_KEY` le email non partono: il testo, con il link, finisce nel log dell'API.
+
+Il webhook di Zernio dice all'API quando un social chiude l'accesso (password cambiata, sessioni chiuse, app tolta,
+controllo di sicurezza di Meta): il canale diventa *da ricollegare*, i suoi post aspettano e il cliente riceve
+un'email. Si registra una volta, con la chiave di Zernio:
+
+```bash
+curl -X POST https://zernio.com/api/v1/webhooks/settings   -H "Authorization: Bearer $ZERNIO_API_KEY" -H 'Content-Type: application/json'   -d '{"name":"moonbrand","url":"https://studio.moonbrand.app/v1/webhooks/zernio","secret":"<ZERNIO_WEBHOOK_SECRET>","events":["account.disconnected","account.connected"]}'
+```
 
 ## 7. `.env` del worker
 

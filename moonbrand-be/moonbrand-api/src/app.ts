@@ -22,6 +22,7 @@ import { registerMediaRoutes } from './modules/media/routes';
 import { registerOnboardingRoutes } from './modules/onboarding/drafts';
 import { registerPlanRoutes } from './modules/plan/routes';
 import { registerSocialRoutes } from './modules/social/routes';
+import { registerZernioWebhook } from './modules/social/webhooks';
 import { registerTranscriptionRoutes } from './modules/transcription/routes';
 import { registerWelcomeRoutes } from './modules/welcome/routes';
 import type { MediaStorage } from './modules/media/storage';
@@ -43,6 +44,7 @@ export interface AppOptions {
     | 'MISTRAL_API_KEY'
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
+    | 'ZERNIO_WEBHOOK_SECRET'
     | 'STUDIO_ORIGINS'
     | 'STUDIO_URL'
     | 'EMAIL_SECRET'
@@ -77,6 +79,7 @@ export function buildApp(options: AppOptions) {
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
+  registerZernioWebhook(app, options.pool, options.mailer, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);

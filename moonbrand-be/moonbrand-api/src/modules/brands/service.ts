@@ -86,8 +86,8 @@ export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: st
   });
 }
 
-// Dei canali il client sceglie solo quali usare: account e handle sono quelli collegati davvero (modulo social),
-// quindi restano quelli salvati; un brand nuovo non ne ha ancora.
+// Dei canali il client sceglie solo quali usare: account, handle e accesso perso sono quelli del collegamento vero
+// (modulo social), quindi restano quelli salvati; un brand nuovo non ne ha ancora.
 function connectionsFrom(channels: Channels, saved: Channels | null): Channels {
   const result = { ...channels };
   for (const id of Object.keys(result) as (keyof Channels)[]) {
@@ -97,6 +97,7 @@ function connectionsFrom(channels: Channels, saved: Channels | null): Channels {
       handle: connected?.handle ?? null,
       accountId: connected?.accountId ?? null,
       board: connected?.board ?? null,
+      ...(connected?.lost && { lost: true }),
     };
   }
   return result;

@@ -35,6 +35,9 @@ export interface ChannelState {
   accountId?: string | null;
   // Pinterest: la bacheca dove escono i pin, scelta quando si collega.
   board?: { id: string; name: string } | null;
+  // Il social ha chiuso l'accesso (token scaduto o revocato, lo dice Zernio): i post qui aspettano che si ricolleghi.
+  // Lo scrive solo il server; ricollegando lo stesso account si toglie.
+  lost?: boolean;
 }
 
 export type Channels = Record<ChannelId, ChannelState>;
@@ -228,4 +231,9 @@ export function currentVoiceCard(voice: Voice): VoiceCard | null {
 // Collegato vuol dire che Zernio può pubblicare: un handle senza account era il collegamento finto di prima.
 export function isConnected(channel: ChannelState): boolean {
   return Boolean(channel.accountId);
+}
+
+// Collegato, ma il social ha chiuso l'accesso: va ricollegato.
+export function needsReconnect(channel: ChannelState): boolean {
+  return isConnected(channel) && channel.lost === true;
 }

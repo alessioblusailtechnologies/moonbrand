@@ -33,6 +33,9 @@ const schema = z.object({
   TRANSCRIPTION_MODEL: z.string().min(1).default('voxtral-mini-latest'),
   // Il collegamento dei social dei brand, con Zernio: senza chiave Collega dice che non è configurato.
   ZERNIO_API_KEY: optional,
+  // Il segreto del webhook registrato su Zernio (POST /v1/webhooks/zernio, eventi account.*): dice quando un social chiude
+  // l'accesso. Senza, il webhook risponde 503 e un canale scollegato si scopre solo quando un post fallisce.
+  ZERNIO_WEBHOOK_SECRET: optional,
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
   // Le email (benvenuto, conferma, nuova password) con Resend: senza chiave non partono e il link finisce nel log.

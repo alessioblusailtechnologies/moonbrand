@@ -22,6 +22,9 @@ export const shell = defineMessages({
     breadcrumbs: 'Dove sei',
     creditsLeft: '{n, plural, one {# credito rimasto} other {# crediti rimasti}}',
     creditsHint: '{left} crediti su {total} del piano {plan}, si rinnovano il {date}',
+    lostOne: '{channels} ha chiuso l’accesso a {brand}: i post lì sono in attesa finché non lo ricolleghi.',
+    lostMany: '{channels} hanno chiuso l’accesso a {brand}: i post lì sono in attesa finché non li ricolleghi.',
+    lostAction: 'Ricollega',
   },
   en: {
     sections: 'Sections',
@@ -44,6 +47,9 @@ export const shell = defineMessages({
     breadcrumbs: 'You are here',
     creditsLeft: '{n, plural, one {# credit left} other {# credits left}}',
     creditsHint: '{left} of {total} {plan} plan credits, renewing on {date}',
+    lostOne: '{channels} closed access to {brand}: posts there wait until you reconnect it.',
+    lostMany: '{channels} closed access to {brand}: posts there wait until you reconnect them.',
+    lostAction: 'Reconnect',
   },
   fr: {
     sections: 'Sections',
@@ -66,5 +72,8 @@ export const shell = defineMessages({
     breadcrumbs: 'Vous êtes ici',
     creditsLeft: '{n, plural, one {# crédit restant} other {# crédits restants}}',
     creditsHint: '{left} crédits sur {total} du forfait {plan}, renouvelés le {date}',
+    lostOne: '{channels} a fermé l’accès à {brand} : les publications y attendent que vous le reconnectiez.',
+    lostMany: '{channels} ont fermé l’accès à {brand} : les publications y attendent que vous les reconnectiez.',
+    lostAction: 'Reconnecter',
   },
 });

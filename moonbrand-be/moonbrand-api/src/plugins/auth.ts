@@ -6,6 +6,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { Config } from '../config';
 import type { Identity } from '../db/identity';
 import { ApiError } from '../errors';
+import { ZERNIO_WEBHOOK } from '../modules/social/webhooks';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -30,6 +31,8 @@ const PUBLIC_ROUTES = new Set([
   '/v1/auth/password/reset',
   '/v1/auth/google',
   '/v1/auth/google/callback',
+  // Firmato da Zernio, non da un utente.
+  ZERNIO_WEBHOOK,
 ]);
 
 export function supabaseVerifier(config: Pick<Config, 'SUPABASE_URL' | 'SUPABASE_JWT_SECRET'>): VerifyToken {

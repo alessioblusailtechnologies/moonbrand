@@ -66,6 +66,8 @@ export interface BrandSummary {
   name: string;
   logoUri: string | null;
   color: string;
+  // I canali dove il social ha chiuso l'accesso: lo studio chiede di ricollegarli.
+  lostChannels: ChannelId[];
 }
 
 // La bozza dell'onboarding sul server, una per account: la stessa in ogni scheda e dispositivo. Lo stato è quello dello

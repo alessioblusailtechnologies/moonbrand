@@ -55,6 +55,12 @@ export class BrandsService {
     return this.loading;
   }
 
+  // Dopo un collegamento: l'elenco dice quali canali vanno ricollegati.
+  async reload(): Promise<void> {
+    this.brands.set(await firstValueFrom(this.http.get<BrandSummary[]>('/v1/brands')));
+    this.loaded.set(true);
+  }
+
   async setActive(brandId: string): Promise<void> {
     const previous = this.auth.activeBrandId();
     this.auth.activeBrandId.set(brandId);

@@ -15,7 +15,8 @@ import { platformOf, zernio, type PostOutcome, type PostRequest, type Zernio } f
 // La pubblicazione vera: ogni minuto, le uscite il cui contenuto è approvato e la cui ora è arrivata escono, con Zernio,
 // su ogni canale del contenuto. Una riga in presenza.publications per contenuto e canale: inserirla è prenderla in carico,
 // così due processi dell'API non pubblicano due volte. Si guarda indietro solo WINDOW: un'uscita passata da prima
-// (per esempio programmata e approvata quando la pubblicazione non c'era) non esce più.
+// (per esempio programmata e approvata quando la pubblicazione non c'era) non esce più. Un canale dove il social ha
+// chiuso l'accesso aspetta: se si ricollega entro WINDOW il post esce lo stesso, in ritardo.
 const CHECK_MS = 60_000;
 const WINDOW = '24 hours';
 // I post ancora in elaborazione (soprattutto i video) si ricontrollano finché il social non dice com'è andata.
@@ -38,8 +39,10 @@ async function claimDue(pool: pg.Pool): Promise<Claimed[]> {
        select c.id as content_id, c.brand_id, c.account_id, s.id as slot_id, ch.channel
        from presenza.slots s
          join presenza.contents c on c.slot_id = s.id and c.status = 'approved'
+         join presenza.brands b on b.id = c.brand_id
          cross join lateral unnest(c.channels) as ch(channel)
-       where ((s.publish_date + s.publish_time::time) at time zone 'Europe/Rome') <= now()
+       where coalesce(b.channels -> ch.channel ->> 'lost', 'false') <> 'true'
+         and ((s.publish_date + s.publish_time::time) at time zone 'Europe/Rome') <= now()
          and ((s.publish_date + s.publish_time::time) at time zone 'Europe/Rome') > now() - interval '${WINDOW}'
      )
      insert into presenza.publications (account_id, brand_id, content_id, slot_id, channel, status)

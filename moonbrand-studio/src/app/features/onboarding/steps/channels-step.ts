@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 
-import { isConnected, type BrandDraft, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
+import { isConnected, needsReconnect, type BrandDraft, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName } from '@moonbrand/shared/domain/catalog';
 
 import { ChannelMark } from '../../../ui/channel-mark';
@@ -25,13 +25,18 @@ const DISCONNECTED: ChannelState = { selected: false, handle: null, accountId: n
     @for (channel of channels; track channel.id) {
       @let state = draft().channels[channel.id] ?? disconnected;
       @let connected = isConnected(state);
-      <div class="card" [class.connected]="connected">
+      @let lost = needsReconnect(state);
+      <div class="card" [class.connected]="connected" [class.lost]="lost">
         <mb-channel-mark [channel]="channel.id" [active]="connected" [size]="30" />
         <span class="grow texts">
           <span class="strong">{{ channel.name }}</span>
-          <span class="caption" [class.ink]="connected">{{ status(channel.id, state) }}</span>
+          <span class="caption" [class.ink]="connected && !lost" [class.warn]="lost">{{ status(channel.id, state) }}</span>
         </span>
-        @if (connected) {
+        @if (lost) {
+          <button class="btn btn-primary btn-sm" type="button" [disabled]="busy() !== null" (click)="connect(channel.id)">
+            {{ (busy() === channel.id ? 'onboarding.channels.connecting' : 'onboarding.channels.reconnect') | t }}
+          </button>
+        } @else if (connected) {
           <button class="btn btn-ghost btn-sm" type="button" [disabled]="busy() !== null" (click)="disconnect(channel.id)">
             {{ (busy() === channel.id ? 'onboarding.channels.disconnecting' : 'onboarding.channels.disconnect') | t }}
           </button>
@@ -63,6 +68,13 @@ const DISCONNECTED: ChannelState = { selected: false, handle: null, accountId: n
     .card.connected {
       border-color: var(--border-strong);
     }
+    .card.lost {
+      border-color: var(--accent-soft);
+    }
+    .warn {
+      color: var(--text-title);
+      font-weight: 500;
+    }
     .texts {
       display: flex;
       flex-direction: column;
@@ -82,11 +94,13 @@ export class ChannelsStep {
 
   protected readonly channels = CHANNELS;
   protected readonly isConnected = isConnected;
+  protected readonly needsReconnect = needsReconnect;
   protected readonly disconnected = DISCONNECTED;
   protected readonly busy = signal<ChannelId | null>(null);
 
   protected status(id: ChannelId, state: ChannelState): string {
-    if (this.busy() === id && !isConnected(state)) return this.i18n.t('onboarding.channels.redirecting');
+    if (this.busy() === id && (!isConnected(state) || needsReconnect(state))) return this.i18n.t('onboarding.channels.redirecting');
+    if (needsReconnect(state)) return this.i18n.t('onboarding.channels.lost', { handle: state.handle ?? '' });
     if (!isConnected(state)) return this.i18n.t('onboarding.channels.notConnected');
     const handle = state.handle ?? '';
     return state.board
