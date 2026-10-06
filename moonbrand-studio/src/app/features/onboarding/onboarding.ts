@@ -14,7 +14,6 @@ import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
-import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
 import { Logo } from '../../ui/logo';
 import { lockPageScroll } from '../../ui/scroll-lock';
@@ -75,7 +74,6 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
 export class Onboarding {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
-  private readonly confirm = inject(ConfirmService);
   private readonly ai = inject(AiJobsService);
   private readonly auth = inject(AuthService);
   private readonly i18n = inject(I18nService);
@@ -126,8 +124,6 @@ export class Onboarding {
     if (this.connection.finish(inject(ActivatedRoute).snapshot.queryParamMap, this.connected)) {
       void this.router.navigate([], { queryParams: {}, replaceUrl: true });
     }
-    const fromNewBrand = this.router.currentNavigation()?.extras.state?.['newBrand'] === true;
-    if (fromNewBrand && this.store.draft()) void this.askRestart();
   }
 
   protected readonly connected = (brandId: string, channel: ChannelId, state: ChannelState) => {
@@ -175,22 +171,6 @@ export class Onboarding {
   protected async signOut(): Promise<void> {
     await this.auth.signOut();
     await this.router.navigateByUrl('/login');
-  }
-
-  private async askRestart(): Promise<void> {
-    const draft = this.store.draft();
-    if (!draft) return;
-    const name = draft.identity.name.trim();
-    const index = this.store.stepIndex();
-    const where = index === 0 ? this.i18n.t('onboarding.restart.atStart') : this.i18n.t('onboarding.restart.atStep', { n: index, total: this.total });
-    const restart = await this.confirm.ask({
-      title: this.i18n.t('onboarding.restart.title'),
-      message: name ? this.i18n.t('onboarding.restart.messageNamed', { name, where }) : this.i18n.t('onboarding.restart.message', { where }),
-      cancelLabel: this.i18n.t('onboarding.restart.resume'),
-      confirmLabel: this.i18n.t('onboarding.restart.confirm'),
-      tone: 'danger',
-    });
-    if (restart) this.store.reset();
   }
 
   private async create(): Promise<void> {

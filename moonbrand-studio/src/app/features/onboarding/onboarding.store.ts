@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 
 import type { BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
@@ -7,6 +7,7 @@ import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
 import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { ConfirmService } from '../../ui/confirm';
 import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
 export type OnboardingStep = 'intro' | SectionKey | 'summary';
@@ -39,6 +40,7 @@ export class OnboardingStore extends DraftStore<State> {
   private readonly auth = inject(AuthService);
   private readonly brands = inject(BrandsService);
   private readonly i18n = inject(I18nService);
+  private readonly confirm = inject(ConfirmService);
   private readonly storageKey = computed(() => `moonbrand/onboarding/v1/${this.auth.account()?.id ?? 'anon'}`);
   protected readonly state = signal<State>(this.read(this.storageKey()));
 
@@ -59,6 +61,31 @@ export class OnboardingStore extends DraftStore<State> {
         localStorage.setItem(this.storageKey(), JSON.stringify(value));
       } catch {}
     });
+    // Una bozza il cui brand esiste già è rimasta da un onboarding finito altrove (un'altra scheda, un altro passaggio):
+    // il brand c'è, la bozza non serve più.
+    effect(() => {
+      const brandId = this.state().brandId;
+      if (brandId && this.brands.brands().some((brand) => brand.id === brandId)) untracked(() => this.reset());
+    });
+  }
+
+  // Prima di un brand nuovo, se ce n'è uno a metà: si riprende o si ricomincia. Lo chiede chi apre l'onboarding, prima
+  // di aprirlo, così la domanda non dipende da come ci si arriva.
+  async offerRestart(): Promise<void> {
+    const draft = this.draft();
+    if (!draft) return;
+    const name = draft.identity.name.trim();
+    const index = this.stepIndex();
+    const total = ONBOARDING_STEPS.length - 1;
+    const where = index === 0 ? this.i18n.t('onboarding.restart.atStart') : this.i18n.t('onboarding.restart.atStep', { n: index, total });
+    const restart = await this.confirm.ask({
+      title: this.i18n.t('onboarding.restart.title'),
+      message: name ? this.i18n.t('onboarding.restart.messageNamed', { name, where }) : this.i18n.t('onboarding.restart.message', { where }),
+      cancelLabel: this.i18n.t('onboarding.restart.resume'),
+      confirmLabel: this.i18n.t('onboarding.restart.confirm'),
+      tone: 'danger',
+    });
+    if (restart) this.reset();
   }
 
   goTo(index: number): void {

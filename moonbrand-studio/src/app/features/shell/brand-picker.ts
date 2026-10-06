@@ -8,6 +8,7 @@ import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { BrandAvatar } from '../../ui/brand-avatar';
+import { OnboardingStore } from '../onboarding/onboarding.store';
 import { Icon } from '../../ui/icon';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
@@ -300,6 +301,7 @@ export class BrandPickerService {
 export class BrandPicker {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly onboarding = inject(OnboardingStore);
   protected readonly picker = inject(BrandPickerService);
   protected readonly brands = inject(BrandsService);
   protected readonly i18n = inject(I18nService);
@@ -361,8 +363,10 @@ export class BrandPicker {
     void this.router.navigateByUrl('/impostazioni');
   }
 
-  protected createBrand(): void {
+  // Un brand a metà si riprende o si ricomincia: si chiede qui, prima di aprire l'onboarding.
+  protected async createBrand(): Promise<void> {
     this.close();
-    void this.router.navigateByUrl('/onboarding', { state: { newBrand: true } });
+    await this.onboarding.offerRestart();
+    void this.router.navigateByUrl('/onboarding');
   }
 }
