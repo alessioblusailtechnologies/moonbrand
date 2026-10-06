@@ -87,7 +87,7 @@ riavvio dell'API (un paio di secondi) lo studio può mostrare un errore di rete 
 
 Una migration nuova è un file in `moonbrand-be/moonbrand-api/migrations` con data e ora nel nome, successiva a
 quelle già lanciate (in produzione: tutte quelle fino a `20261005100000` sono nello schema iniziale, dopo sono
-state lanciate `20261006100000_free_jobs.sql`; da lanciare: `20261006180000_account_email.sql`).
+state lanciate `20261006100000_free_jobs.sql` e `20261006180000_account_email.sql`).
 
 1. Si prova sul DB di sviluppo.
 2. Commit e push, `git pull` sul server.
