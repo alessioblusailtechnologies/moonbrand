@@ -649,11 +649,17 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
         padding: 0 0 2px;
         overflow-x: auto;
       }
-      // Solo icone (il cestino della chat): stanno sulla prima riga.
-      .page-actions:not(:has(.btn)) {
+      // Solo icone (il cestino della chat) o un pulsante solo (Idee, Contenuti, Piano): stanno sulla prima riga,
+      // a destra del titolo, che se serve si accorcia con i puntini. Due pulsanti o più vanno sulla riga sotto.
+      .page-actions:not(:has(.btn)),
+      .page-actions:has(> .btn:only-child) {
         order: 0;
         width: auto;
         padding: 0;
+        overflow: visible;
+      }
+      .crumb.current {
+        min-width: 0;
       }
     }
   `,
