@@ -21,7 +21,7 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
-import type { ConversationSummary, ConversationTurn, WelcomeResponse } from '@moonbrand/shared/api/contract';
+import type { ConversationSummary, ConversationTurn, PublishProposal, WelcomeResponse } from '@moonbrand/shared/api/contract';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -61,6 +61,10 @@ const LIVE_POLL_MS = 400;
 const WELCOME_POLL_MS = 2000;
 // Il filo segue la risposta finché chi legge sta in fondo (entro questa distanza).
 const STICK_PX = 80;
+// Dopo «Pubblica ora» si guarda com'è andata finché ogni canale ha finito: un post esce in pochi secondi, un video in
+// qualche decina; poi si smette, e il resto si vede riaprendo la conversazione.
+const PUBLISH_POLL_MS = 3000;
+const PUBLISH_POLL_MAX = 100;
 
 @Component({
   selector: 'mb-chat-page',
@@ -86,6 +90,10 @@ export class ChatPage {
   protected readonly current = signal<ConversationSummary | null>(null);
   protected readonly turns = signal<ConversationTurn[]>([]);
   protected readonly contents = signal<Content[]>([]);
+  protected readonly proposals = signal<PublishProposal[]>([]);
+  // I contenuti per cui si è appena premuto «Pubblica ora» e la risposta non è ancora arrivata.
+  protected readonly starting = signal<ReadonlySet<string>>(new Set());
+  private readonly watching = new Set<string>();
   protected readonly loading = signal(false);
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
@@ -126,12 +134,15 @@ export class ChatPage {
   protected readonly view = computed(() => {
     const turns = this.turns();
     const contents = this.contents();
+    const proposals = new Map(this.proposals().map((proposal) => [proposal.content.id, proposal]));
     return turns.map((turn, index) => {
       const next = turns[index + 1]?.createdAt;
       return {
         ...turn,
         blocks: blocksOf(turn.job.steps),
         contents: contents.filter((content) => content.createdAt >= turn.createdAt && (!next || content.createdAt < next)),
+        // I contenuti che l'assistente ha proposto di pubblicare in questo turno, con il pulsante.
+        proposals: turn.publishRequests.flatMap((id) => proposals.get(id) ?? []),
         // Le card che il turno in corso sta preparando: al loro posto arriva il contenuto, quando lo salva.
         pending: turn.job.status === 'queued' || turn.job.status === 'running' ? pendingFromSteps(turn.job.steps) : [],
       };
@@ -193,6 +204,7 @@ export class ChatPage {
     this.current.set(null);
     this.turns.set([]);
     this.contents.set([]);
+    this.proposals.set([]);
     queueMicrotask(() => this.composer()?.focus());
   }
 
@@ -227,9 +239,14 @@ export class ChatPage {
       this.loading.set(true);
       this.turns.set([]);
       this.contents.set([]);
+      this.proposals.set([]);
     }
     try {
       await this.refresh(conversationId);
+      // Un post che stava uscendo quando si è lasciata la conversazione: si segue fino alla fine.
+      for (const proposal of this.proposals()) {
+        if (proposal.publications.some((item) => item.status === 'publishing')) void this.watchPublishing(conversationId, proposal.content.id);
+      }
       const active = this.turns().find(
         (turn) => turn.job.status === 'queued' || turn.job.status === 'running',
       );
@@ -243,16 +260,22 @@ export class ChatPage {
   }
 
   private async refresh(conversationId: string): Promise<void> {
-    const { conversation, turns, contents } = await this.chat.get(conversationId);
+    const { conversation, turns, contents, proposals } = await this.chat.get(conversationId);
     if (this.conversationId() !== conversationId) return;
     this.current.set(conversation);
     this.turns.set(turns);
     this.contents.set(contents);
+    this.proposals.set(proposals);
   }
 
+  // I contenuti e le proposte di pubblicazione, con com'è andata; dei turni, che si stanno seguendo, solo le proposte.
   private async refreshContents(conversationId: string): Promise<void> {
-    const { contents } = await this.chat.get(conversationId).catch(() => ({ contents: null }));
-    if (contents && this.conversationId() === conversationId) this.contents.set(contents);
+    const response = await this.chat.get(conversationId).catch(() => null);
+    if (!response || this.conversationId() !== conversationId) return;
+    this.contents.set(response.contents);
+    this.proposals.set(response.proposals);
+    const requests = new Map(response.turns.map((turn) => [turn.id, turn.publishRequests]));
+    this.turns.update((turns) => turns.map((turn) => ({ ...turn, publishRequests: requests.get(turn.id) ?? turn.publishRequests })));
   }
 
   // Gli step arrivano man mano; a turno finito si rilegge tutto, per i contenuti salvati e lo stato finale.
@@ -383,6 +406,63 @@ export class ChatPage {
     return `${formatWeekdayShort(slot.date, this.i18n.locale())} · ${slot.time} · ${slot.channels.map(channelName).join(', ')}`;
   }
 
+  // I canali dove il contenuto non è ancora uscito: lì va il pulsante. Vuoto mentre sta uscendo o quando è uscito ovunque.
+  protected toPublish(proposal: PublishProposal): ChannelId[] {
+    if (proposal.publications.some((item) => item.status === 'publishing')) return [];
+    const done = new Set(proposal.publications.filter((item) => item.status === 'published').map((item) => item.channel));
+    return proposal.content.channels.filter((channel) => !done.has(channel));
+  }
+
+  protected channelNames(channels: readonly ChannelId[]): string {
+    return channels.map(channelName).join(', ');
+  }
+
+  protected channelLabel(channel: ChannelId): string {
+    return channelName(channel);
+  }
+
+  // La conferma è dell'utente: il pulsante chiede ancora una volta, poi il contenuto si approva ed esce subito.
+  protected async publish(proposal: PublishProposal): Promise<void> {
+    const conversationId = this.current()?.id;
+    const contentId = proposal.content.id;
+    if (!conversationId || this.starting().has(contentId)) return;
+    const confirmed = await this.confirm.ask({
+      title: this.i18n.t('chat.publish.confirmTitle'),
+      message: this.i18n.t('chat.publish.confirmMessage', { channels: this.channelNames(this.toPublish(proposal)) }),
+      confirmLabel: this.i18n.t('chat.publish.confirmLabel'),
+    });
+    if (!confirmed) return;
+    this.starting.update((set) => new Set(set).add(contentId));
+    try {
+      const started = await this.chat.publish(contentId);
+      this.proposals.update((list) => list.map((item) => (item.content.id === contentId ? started : item)));
+      void this.watchPublishing(conversationId, contentId);
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('chat.publish.startFailed')));
+    } finally {
+      this.starting.update((set) => new Set([...set].filter((id) => id !== contentId)));
+    }
+  }
+
+  // Si rilegge la conversazione finché ogni canale del contenuto è uscito o non è riuscito.
+  private async watchPublishing(conversationId: string, contentId: string): Promise<void> {
+    if (this.watching.has(contentId)) return;
+    this.watching.add(contentId);
+    try {
+      for (let round = 0; round < PUBLISH_POLL_MAX; round++) {
+        await new Promise((resolve) => setTimeout(resolve, PUBLISH_POLL_MS));
+        if (this.conversationId() !== conversationId) return;
+        await this.refreshContents(conversationId);
+        const proposal = this.proposals().find((item) => item.content.id === contentId);
+        const settled = (channel: ChannelId) =>
+          proposal?.publications.some((item) => item.channel === channel && item.status !== 'publishing') ?? true;
+        if (!proposal || proposal.content.channels.every(settled)) return;
+      }
+    } finally {
+      this.watching.delete(contentId);
+    }
+  }
+
   protected formatLabel(content: Content): string {
     return this.i18n.t(`chat.format.${content.format}`);
   }
@@ -392,9 +472,11 @@ export class ChatPage {
   }
 }
 
-// I tool che salvano o aggiornano un contenuto, già conclusi. Negli step più vecchi il nome del tool era la label.
+// I tool che salvano o aggiornano un contenuto o ne propongono la pubblicazione, già conclusi. Negli step più vecchi il nome del tool era la label.
 function savesOf(steps: AiStep[]): number {
-  return steps.filter((step) => step.kind === 'tool' && /contenuto_(salva|aggiorna)$/.test(step.tool ?? step.label) && step.status === 'done').length;
+  return steps.filter(
+    (step) => step.kind === 'tool' && /(contenuto_(salva|aggiorna)|pubblicazione_proponi)$/.test(step.tool ?? step.label) && step.status === 'done',
+  ).length;
 }
 
 // Un blocco di passaggi prende il nome dal testo che lo precede: resta lo stesso anche quando un passaggio

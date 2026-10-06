@@ -39,6 +39,20 @@ export const chat = defineMessages({
       draft: 'Bozza',
       approved: 'Approvato',
     },
+    // La card sotto la risposta quando l'assistente propone di pubblicare: esce solo se si preme il pulsante.
+    publish: {
+      kind: 'Da pubblicare',
+      button: 'Pubblica ora su {channels}',
+      confirmTitle: 'Pubblico adesso?',
+      confirmMessage: 'Il post esce subito su {channels}. Una volta uscito, si toglie solo dal social.',
+      confirmLabel: 'Pubblica ora',
+      publishing: 'Sta uscendo',
+      published: 'Pubblicato',
+      openPost: 'Apri il post',
+      failed: 'Non uscito: {error}',
+      retry: 'Riprova',
+      startFailed: 'Non sono riuscito a pubblicarlo. Riprova.',
+    },
     // Gli spunti di riserva: il draft finisce nella casella ed è il messaggio di chi scrive.
     suggestions: {
       ideas: { label: 'Proponimi 5 idee per i prossimi post', draft: 'Proponimi 5 idee per i prossimi post' },
@@ -125,6 +139,19 @@ export const chat = defineMessages({
       draft: 'Draft',
       approved: 'Approved',
     },
+    publish: {
+      kind: 'Ready to publish',
+      button: 'Publish now on {channels}',
+      confirmTitle: 'Publish now?',
+      confirmMessage: 'The post goes out right away on {channels}. Once it is out, it can only be removed on the social network.',
+      confirmLabel: 'Publish now',
+      publishing: 'Going out',
+      published: 'Published',
+      openPost: 'Open the post',
+      failed: 'Not published: {error}',
+      retry: 'Try again',
+      startFailed: 'I couldn’t publish it. Try again.',
+    },
     suggestions: {
       ideas: { label: 'Suggest 5 ideas for my next posts', draft: 'Suggest 5 ideas for my next posts' },
       carousel: { label: 'Make a carousel about…', draft: 'Make a carousel about ' },
@@ -210,6 +237,19 @@ export const chat = defineMessages({
     status: {
       draft: 'Brouillon',
       approved: 'Approuvé',
+    },
+    publish: {
+      kind: 'À publier',
+      button: 'Publier maintenant sur {channels}',
+      confirmTitle: 'Je publie maintenant ?',
+      confirmMessage: 'Le post part tout de suite sur {channels}. Une fois publié, il ne se retire que depuis le réseau social.',
+      confirmLabel: 'Publier maintenant',
+      publishing: 'En cours de publication',
+      published: 'Publié',
+      openPost: 'Ouvrir le post',
+      failed: 'Non publié : {error}',
+      retry: 'Réessayer',
+      startFailed: "Je n'ai pas réussi à le publier. Réessayez.",
     },
     suggestions: {
       ideas: { label: 'Propose-moi 5 idées pour mes prochains posts', draft: 'Propose-moi 5 idées pour mes prochains posts' },

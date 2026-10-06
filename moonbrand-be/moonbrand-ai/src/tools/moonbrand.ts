@@ -149,6 +149,15 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
       { alwaysLoad: true },
     ),
     tool(
+      'pubblicazione_proponi',
+      'Quando l’utente chiede di pubblicare adesso un contenuto salvato: sotto la tua risposta compare la card del contenuto con il pulsante «Pubblica ora», ' +
+        'che l’utente preme se vuole. Tu non pubblichi e non approvi: esce solo quando lo preme, su tutti i canali del contenuto. ' +
+        'Dà errore se un canale non è collegato o se il contenuto è già uscito ovunque: in quel caso dillo all’utente.',
+      { id: z.string().describe('L’id del contenuto') },
+      ({ id }) => call('POST', `/contents/${encodeURIComponent(id)}/publish-request`),
+      { alwaysLoad: true },
+    ),
+    tool(
       'piano_leggi',
       'Legge il piano: le uscite di un periodo (di default le prossime 4 settimane), con giorno, ora, canali, stato, tema, idea e contenuto. ' +
         'Stati: empty (da riempire), toPrepare (c’è l’idea), toApprove (c’è la bozza), scheduled (approvato, esce all’ora), ' +

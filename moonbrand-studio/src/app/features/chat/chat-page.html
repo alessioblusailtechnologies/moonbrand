@@ -95,6 +95,58 @@
                   <mb-content-preview [content]="content" [compact]="true" />
                 </article>
               }
+              @for (proposal of turn.proposals; track proposal.content.id) {
+                <article class="content-card">
+                  <header class="content-card-head">
+                    <div class="content-card-titles">
+                      <div class="content-card-meta">
+                        <span class="badge">{{ formatLabel(proposal.content) }}</span>
+                        <span class="badge">{{ 'chat.publish.kind' | t }}</span>
+                      </div>
+                      <h3 class="strong">{{ proposal.content.title }}</h3>
+                    </div>
+                    <a class="btn btn-secondary btn-sm open-content" [routerLink]="['/contenuti', proposal.content.id]">
+                      {{ 'chat.page.openInContents' | t }} <mb-icon name="chevron-right" [size]="14" />
+                    </a>
+                  </header>
+                  <mb-content-preview [content]="proposal.content" [compact]="true" />
+                  @if (proposal.publications.length > 0) {
+                    <ul class="publications">
+                      @for (item of proposal.publications; track item.channel) {
+                        <li class="publication">
+                          <span class="strong-sm">{{ channelLabel(item.channel) }}</span>
+                          @switch (item.status) {
+                            @case ('published') {
+                              <span class="badge mint">{{ 'chat.publish.published' | t }}</span>
+                              @if (item.url) {
+                                <a class="caption" [href]="item.url" target="_blank" rel="noopener">{{ 'chat.publish.openPost' | t }}</a>
+                              }
+                            }
+                            @case ('publishing') {
+                              <span class="caption thinking"><span class="spinner"></span> {{ 'chat.publish.publishing' | t }}</span>
+                            }
+                            @case ('failed') {
+                              <span class="caption failed">{{ 'chat.publish.failed' | t: { error: item.error || ('chat.page.unknownError' | t) } }}</span>
+                            }
+                          }
+                        </li>
+                      }
+                    </ul>
+                  }
+                  @if (toPublish(proposal); as channels) {
+                    @if (channels.length > 0) {
+                      <button class="btn btn-primary btn-sm publish" type="button" [disabled]="starting().has(proposal.content.id)" (click)="publish(proposal)">
+                        <mb-icon name="send" [size]="14" />
+                        @if (proposal.publications.length > 0) {
+                          {{ 'chat.publish.retry' | t }}
+                        } @else {
+                          {{ 'chat.publish.button' | t: { channels: channelNames(channels) } }}
+                        }
+                      </button>
+                    }
+                  }
+                </article>
+              }
               <mb-pending-media [tiles]="turn.pending" />
               @if (waiting(turn.blocks, turn)) {
                 <p class="caption thinking"><span class="spinner"></span> {{ 'chat.page.thinking' | t }}</p>

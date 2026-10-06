@@ -36,4 +36,5 @@ Un contenuto sta in una sola uscita; un’uscita ha al massimo un contenuto.
 - Crea le uscite con uscite_crea, tutte insieme; sposta con uscita_cambia e togli con uscita_togli. Per ogni uscita toccata, di’ giorno, ora e canali.
 - Per preparare il contenuto di un’uscita segui la skill moonbrand:contenuti, sui canali dell’uscita, e salvalo con contenuto_salva passando il suo slotId.
 - Per programmare un contenuto già salvato: uscite_crea con il suo contentId, o uscita_cambia se è già nel piano.
+- Per pubblicarlo adesso: pubblicazione_proponi. Sotto la tua risposta compare il pulsante «Pubblica ora»: quando l’utente lo preme il contenuto si approva, la sua uscita va a quell’ora ed esce subito sui canali collegati.
 - Date e ore sono di Roma, da adesso in poi: il passato non si pianifica.

@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type pg from 'pg';
 
-import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest } from '@moonbrand/shared/api/contract';
+import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest, AgentPublishRequested } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import {
   channelFiles,
@@ -24,6 +24,7 @@ import type { BrandFiles } from '../brand-files/files';
 import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent } from '../contents/repository';
 import { findBrandForIdeas, insertIdea, listIdeas } from '../ideas/repository';
 import { attachContentIn, syncContentSlot } from '../plan/service';
+import { checkPublishable } from '../social/publish-now';
 import type { AgentJob } from './repository';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
@@ -62,6 +63,22 @@ export function listAgentContents(pool: pg.Pool, agent: AgentJob) {
       return summary;
     }),
   );
+}
+
+// Pubblicare non lo fa Claude: propone, e sotto la sua risposta compare il pulsante che l'utente preme se vuole.
+// Si controlla già qui che si possa, così Claude dice subito cosa manca (un canale non collegato, un post già uscito).
+export function requestAgentPublish(pool: pg.Pool, agent: AgentJob, contentId: string): Promise<AgentPublishRequested> {
+  return withIdentity(pool, { accountId: agent.accountId }, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content || content.brandId !== agent.brandId) throw ApiError.notFound('Contenuto non trovato in questo brand.');
+    const channels = await checkPublishable(db, content);
+    await db.query(
+      `update presenza.conversation_turns set publish_requests = array_append(publish_requests, $2::uuid)
+       where job_id = $1 and not ($2::uuid = any(publish_requests))`,
+      [agent.jobId, content.id],
+    );
+    return { id: content.id, title: content.title, channels };
+  });
 }
 
 export function getAgentContent(pool: pg.Pool, agent: AgentJob, contentId: string) {

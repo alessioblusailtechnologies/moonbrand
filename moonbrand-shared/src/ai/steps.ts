@@ -163,6 +163,7 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
   mcp__moonbrand__contenuto_aggiorna: 'steps.tools.updateContent',
   mcp__moonbrand__idee_elenca: 'steps.tools.listIdeas',
   mcp__moonbrand__idea_salva: 'steps.tools.saveIdea',
+  mcp__moonbrand__pubblicazione_proponi: 'steps.tools.proposePublish',
   mcp__immagini__genera_immagine: 'steps.tools.image',
   mcp__grafica__renderizza: 'steps.tools.render',
   mcp__audio__cerca_voci: 'steps.tools.chooseVoice',

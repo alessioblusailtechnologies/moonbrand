@@ -11,7 +11,15 @@ import { sceneSchema } from '../contents/routes';
 import { channelsSchema, daySchema, slotCreateSchema, slotPatchSchema } from '../plan/routes';
 import { createAgentSlots, listAgentPlan, patchAgentSlot, proposeAgentPlan, removeAgentSlot } from './plan';
 import { findAgentJob, type AgentJob } from './repository';
-import { createAgentContent, createAgentIdea, getAgentContent, listAgentContents, listAgentIdeas, updateAgentContent } from './service';
+import {
+  createAgentContent,
+  createAgentIdea,
+  getAgentContent,
+  listAgentContents,
+  listAgentIdeas,
+  requestAgentPublish,
+  updateAgentContent,
+} from './service';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -100,6 +108,10 @@ export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, f
 
   app.put('/v1/agent/contents/:contentId', (request) =>
     updateAgentContent(pool, files, request.agent, contentParams.parse(request.params).contentId, parse(contentSchema, request.body)),
+  );
+
+  app.post('/v1/agent/contents/:contentId/publish-request', (request) =>
+    requestAgentPublish(pool, request.agent, contentParams.parse(request.params).contentId),
   );
 
   app.get('/v1/agent/plan', (request) => listAgentPlan(pool, files, request.agent, parse(planQuerySchema, request.query)));

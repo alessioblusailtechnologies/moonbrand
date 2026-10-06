@@ -6,6 +6,7 @@ import type { ContentChannelRequest, ContentEditRequest, ContentScriptRequest, C
 import type { VideoScene } from '@moonbrand/shared/domain/content';
 
 import type { BrandFiles } from '../brand-files/files';
+import { publishNow } from '../social/publish-now';
 import { channelId, MAX_CHANNELS } from '../brands/schemas';
 import {
   addContentChannel,
@@ -109,4 +110,7 @@ export function registerContentRoutes(app: FastifyInstance, pool: pg.Pool, files
   app.post('/v1/contents/:contentId/reopen', (request) =>
     changeContentStatus(pool, files, request.identity, contentParams.parse(request.params).contentId, 'draft'),
   );
+
+  // Pubblicare adesso, dal pulsante sotto la risposta dell'assistente: chi preme è l'utente, che ha visto il contenuto.
+  app.post('/v1/contents/:contentId/publish', (request) => publishNow(pool, files, request.identity, contentParams.parse(request.params).contentId));
 }

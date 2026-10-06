@@ -210,19 +210,34 @@ async function recheck(pool: pg.Pool, client: Zernio, log: FastifyBaseLogger): P
   }
 }
 
+// Il giro del pubblicatore di questo processo, per farlo partire subito (publishSoon) invece di aspettare il minuto.
+let wake: (() => void) | null = null;
+
+export function publishSoon(): void {
+  wake?.();
+}
+
 export function schedulePublishing(pool: pg.Pool, files: BrandFiles, apiKey: string | undefined, log: FastifyBaseLogger): () => void {
   if (!apiKey) {
     log.warn('pubblicazione spenta: manca ZERNIO_API_KEY');
     return () => undefined;
   }
   const client = zernio(apiKey);
+  // again: qualcuno ha chiesto un giro mentre ne girava già uno, che allora ricomincia appena finito.
   let running = false;
+  let again = false;
   const round = async () => {
-    if (running) return;
+    if (running) {
+      again = true;
+      return;
+    }
     running = true;
     try {
-      for (const claimed of await claimDue(pool)) await publishOne(pool, files, client, claimed, log);
-      await recheck(pool, client, log);
+      do {
+        again = false;
+        for (const claimed of await claimDue(pool)) await publishOne(pool, files, client, claimed, log);
+        await recheck(pool, client, log);
+      } while (again);
     } catch (error) {
       log.warn({ err: error }, 'giro di pubblicazione non riuscito');
     } finally {
@@ -230,6 +245,10 @@ export function schedulePublishing(pool: pg.Pool, files: BrandFiles, apiKey: str
     }
   };
   const timer = setInterval(() => void round(), CHECK_MS);
+  wake = () => void round();
   void round();
-  return () => clearInterval(timer);
+  return () => {
+    clearInterval(timer);
+    wake = null;
+  };
 }

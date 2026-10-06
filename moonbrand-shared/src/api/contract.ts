@@ -368,6 +368,14 @@ export interface ConversationTurn {
   slot: Pick<ChatSlot, 'id' | 'date' | 'time' | 'channels'> | null;
   createdAt: string;
   job: AiJob<ChatReply>;
+  // I contenuti che l'assistente ha proposto di pubblicare in questo turno: sotto la risposta, il pulsante per farlo.
+  publishRequests: string[];
+}
+
+// Un contenuto proposto per la pubblicazione, con com'è andata canale per canale (vuoto finché non si pubblica).
+export interface PublishProposal {
+  content: Content;
+  publications: Publication[];
 }
 
 export interface ConversationResponse {
@@ -375,6 +383,8 @@ export interface ConversationResponse {
   turns: ConversationTurn[];
   // I contenuti nati in questa conversazione, completi: la chat li mostra interi, con i link alle immagini.
   contents: Content[];
+  // I contenuti proposti per la pubblicazione nei turni, anche se nati altrove.
+  proposals: PublishProposal[];
 }
 
 // La dettatura: il testo di quello che si è detto al microfono, da rileggere nella casella.
@@ -496,6 +506,13 @@ export interface AgentContentSaved {
   id: string;
   title: string;
   files: string[];
+}
+
+// La pubblicazione proposta dalla chat: esce solo quando l'utente preme il pulsante sotto la risposta.
+export interface AgentPublishRequested {
+  id: string;
+  title: string;
+  channels: ChannelId[];
 }
 
 export interface AgentIdeaRequest {

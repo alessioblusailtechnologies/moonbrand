@@ -9,6 +9,7 @@ import type {
   ChatTurnCreated,
   ConversationResponse,
   ConversationSummary,
+  PublishProposal,
   TranscriptionResponse,
   WelcomeResponse,
 } from '@moonbrand/shared/api/contract';
@@ -60,6 +61,11 @@ export class ChatService {
 
   send(conversationId: string, request: ChatMessageRequest): Promise<ChatTurnCreated> {
     return firstValueFrom(this.http.post<ChatTurnCreated>(`/v1/conversations/${conversationId}/messages`, request));
+  }
+
+  // Pubblica adesso il contenuto che l'assistente ha proposto: si approva ed esce sui suoi canali.
+  publish(contentId: string): Promise<PublishProposal> {
+    return firstValueFrom(this.http.post<PublishProposal>(`/v1/contents/${contentId}/publish`, {}));
   }
 
   async stop(conversationId: string): Promise<void> {

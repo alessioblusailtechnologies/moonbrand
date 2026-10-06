@@ -76,8 +76,9 @@ export async function listTurns(db: Queryable, conversationId: string): Promise<
     steps: ConversationTurn['job']['steps'];
     result: ConversationTurn['job']['result'];
     error: string | null;
+    publish_requests: string[];
   }>(
-    `select t.id, t.message, t.attachments, t.created_at, j.id as job_id,
+    `select t.id, t.message, t.attachments, t.created_at, t.publish_requests, j.id as job_id,
        case when jsonb_typeof(j.input->'idea') = 'object'
          then jsonb_build_object('id', j.input->'idea'->>'id', 'title', j.input->'idea'->>'title') end as idea,
        case when jsonb_typeof(j.input->'slot') = 'object'
@@ -95,6 +96,7 @@ export async function listTurns(db: Queryable, conversationId: string): Promise<
     slot: row.slot,
     createdAt: row.created_at.toISOString(),
     job: { id: row.job_id, kind: row.kind, status: row.status, steps: row.steps, result: row.result, error: row.error },
+    publishRequests: row.publish_requests,
   }));
 }
 

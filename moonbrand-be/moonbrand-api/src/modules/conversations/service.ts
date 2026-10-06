@@ -29,12 +29,13 @@ import { insertJob } from '../ai/repository';
 import { findAccount } from '../auth/accounts';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
 import { ensureStyleJob } from '../brands/style';
-import { listConversationContents } from '../contents/repository';
+import { findContent, listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
 import { normalizeVideo } from '../media/video';
 import { findSlot } from '../plan/repository';
+import { listPublications } from '../social/publications';
 import {
   activeJob,
   deleteConversation,
@@ -164,10 +165,19 @@ export function getConversation(pool: pg.Pool, files: BrandFiles, identity: Iden
     const conversation = await findConversation(db, conversationId);
     if (!conversation) throw ApiError.notFound('Conversazione non trovata.');
     const [turns, contents] = await Promise.all([listTurns(db, conversationId), listConversationContents(db, conversationId)]);
+    // I contenuti proposti per la pubblicazione, con com'è andata: anche quelli nati fuori da questa conversazione.
+    const requested = [...new Set(turns.flatMap((turn) => turn.publishRequests))];
+    const [proposed, publications] = await Promise.all([
+      Promise.all(requested.map((id) => contents.find((content) => content.id === id) ?? findContent(db, id))),
+      listPublications(db, requested),
+    ]);
     return {
       conversation,
       turns: turns.map((turn) => ({ ...turn, attachments: turn.attachments.map((file) => attachment(files, conversation.brandId, file)) })),
       contents: contents.map((content) => withUrls(content, files)),
+      proposals: proposed
+        .filter((content) => content !== null)
+        .map((content) => ({ content: withUrls(content, files), publications: publications.get(content.id) ?? [] })),
     };
   });
 }
