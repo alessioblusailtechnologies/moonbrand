@@ -1,0 +1,39 @@
+---
+// Privacy e termini: il testo arriva da iubenda e lo script lo mostra dentro la pagina; senza JavaScript resta il link.
+import { iubendaUrl, IUBENDA_POLICY_ID } from '../data/iubenda';
+import { CONTACT_EMAIL, getCopy, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+  kind: 'privacy' | 'terms';
+}
+
+const { lang, kind } = Astro.props;
+const { legal } = getCopy(lang);
+const id = IUBENDA_POLICY_ID[lang];
+const privacy = kind === 'privacy';
+---
+
+<PageShell
+  lang={lang}
+  page={kind}
+  title={privacy ? legal.privacyTitle : legal.termsTitle}
+  description={privacy ? legal.privacyDescription : legal.termsDescription}
+  heading={privacy ? legal.privacyHeading : legal.termsHeading}
+  noindex={!id}
+>
+  {id ? (
+    <>
+      <a href={iubendaUrl(kind, id)} class="iubenda-nostyle no-brand iubenda-noiframe iubenda-embed iub-body-embed" title={privacy ? legal.privacyHeading : legal.termsHeading}>{legal.open}</a>
+      <script is:inline src="https://cdn.iubenda.com/iubenda.js" async></script>
+    </>
+  ) : (
+    <p class="soon">{legal.soon} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+  )}
+</PageShell>
+
+<style>
+  .soon { margin: 0; font-size: 17px; line-height: 1.55; color: var(--text); }
+  .soon a { color: var(--accent-dark); text-decoration: underline; }
+</style>

@@ -1,11 +1,11 @@
 ---
 import '../styles/global.css';
-import { getCopy, LANGS, pagePath, type Lang } from '../i18n';
+import { getCopy, LANGS, pagePath, type Lang, type Page } from '../i18n';
 
 interface Props {
   lang: Lang;
-  /** Lo slug della pagina, uguale in tutte le lingue ('' per la home): da qui canonical e hreflang. */
-  slug?: string;
+  /** La pagina: da qui canonical e hreflang verso le sue versioni nelle altre lingue. */
+  page?: Page;
   /** Senza, titolo e descrizione sono quelli della home. */
   title?: string;
   description?: string;
@@ -15,16 +15,16 @@ interface Props {
   noindex?: boolean;
 }
 
-const { lang, slug = '', noindex = false } = Astro.props;
+const { lang, page = 'home', noindex = false } = Astro.props;
 const { meta } = getCopy(lang);
 const title = Astro.props.title ?? meta.title;
 const description = Astro.props.description ?? meta.description;
 const site = Astro.site ?? new URL('https://moonbrand.app');
-const url = new URL(pagePath(lang, slug), site);
+const url = new URL(pagePath(lang, page), site);
 const image = new URL(Astro.props.image ?? `/og/${lang}.png`, site);
 
 // Sulla home i dati strutturati dicono a Google chi è Moonbrand e cos'è.
-const jsonLd = slug === '' && !noindex && {
+const jsonLd = page === 'home' && !noindex && {
   '@context': 'https://schema.org',
   '@graph': [
     {
@@ -66,8 +66,8 @@ const jsonLd = slug === '' && !noindex && {
     {noindex ? <meta name="robots" content="noindex" /> : (
       <>
         <link rel="canonical" href={url} />
-        {LANGS.map((other) => <link rel="alternate" hreflang={other} href={new URL(pagePath(other, slug), site)} />)}
-        <link rel="alternate" hreflang="x-default" href={new URL(pagePath('en', slug), site)} />
+        {LANGS.map((other) => <link rel="alternate" hreflang={other} href={new URL(pagePath(other, page), site)} />)}
+        <link rel="alternate" hreflang="x-default" href={new URL(pagePath('en', page), site)} />
       </>
     )}
     <meta property="og:type" content="website" />

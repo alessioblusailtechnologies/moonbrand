@@ -1,0 +1,33 @@
+---
+import { CONTACT_EMAIL, getCopy, STUDIO_URL, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { contact } = getCopy(lang);
+---
+
+<PageShell lang={lang} page="contact" title={contact.title} description={contact.description} eyebrow={contact.eyebrow} heading={contact.heading} lead={contact.lead}>
+  <div class="cards">
+    <a class="card" href={`mailto:${CONTACT_EMAIL}`}>
+      <span class="label">{contact.emailLabel}</span>
+      <span class="value">{CONTACT_EMAIL}</span>
+    </a>
+    <a class="card" href={`${STUDIO_URL}/login`}>
+      <span class="label">{contact.studioLabel}</span>
+      <span class="value">{contact.studioLink} <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+</PageShell>
+
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { display: flex; flex-direction: column; gap: 10px; padding: 28px; border: 1px solid var(--line); border-radius: 16px; background: #FAFAF8; }
+  .card:hover { border-color: var(--accent); color: inherit; }
+  .label { font-size: 14px; color: var(--muted); }
+  .value { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+  .card:hover .value { color: var(--accent-dark); }
+</style>

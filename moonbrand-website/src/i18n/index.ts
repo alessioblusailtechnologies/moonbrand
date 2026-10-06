@@ -21,10 +21,23 @@ export function homePath(lang: Lang): string {
   return lang === 'it' ? '/' : `/${lang}/`;
 }
 
-/** Una pagina in una lingua: lo slug è lo stesso in tutte ('' per la home), cambia solo il prefisso. */
-export function pagePath(lang: Lang, slug: string): string {
+/** Le pagine del sito con il loro indirizzo in ogni lingua: per Google conta che sia nella lingua della pagina. */
+export const PAGES = {
+  home: { it: '', en: '', fr: '' },
+  contact: { it: 'contatti', en: 'contact', fr: 'contact' },
+  privacy: { it: 'privacy', en: 'privacy', fr: 'confidentialite' },
+  terms: { it: 'termini', en: 'terms', fr: 'conditions' },
+} satisfies Record<string, Record<Lang, string>>;
+export type Page = keyof typeof PAGES;
+
+/** Una pagina in una lingua: il prefisso della lingua più l'indirizzo della pagina in quella lingua. */
+export function pagePath(lang: Lang, page: Page = 'home'): string {
+  const slug = PAGES[page][lang];
   return slug ? `${homePath(lang)}${slug}/` : homePath(lang);
 }
+
+/** L'email per chi vuole scriverci. */
+export const CONTACT_EMAIL = 'info@moonbrand.app';
 
 /** Lo studio, dove si accede e ci si registra. */
 export const STUDIO_URL = 'https://studio.moonbrand.app';

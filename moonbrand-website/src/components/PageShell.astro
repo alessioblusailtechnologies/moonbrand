@@ -1,0 +1,44 @@
+---
+// Il guscio delle pagine interne: intestazione, titolo e piede, con il contenuto della pagina in mezzo.
+import type { Lang, Page } from '../i18n';
+import Base from '../layouts/Base.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+
+interface Props {
+  lang: Lang;
+  page: Page;
+  title: string;
+  description: string;
+  eyebrow?: string;
+  heading: string;
+  lead?: string;
+  noindex?: boolean;
+}
+
+const { lang, page, title, description, eyebrow, heading, lead, noindex } = Astro.props;
+---
+
+<Base lang={lang} page={page} title={title} description={description} noindex={noindex}>
+  <Header lang={lang} page={page} />
+  <main class="page">
+    <div class="intro">
+      {eyebrow && <p class="mono eyebrow">{eyebrow}</p>}
+      <h1 class="display">{heading}</h1>
+      {lead && <p class="lead">{lead}</p>}
+    </div>
+    <slot />
+  </main>
+  <Footer lang={lang} />
+</Base>
+
+<style>
+  .page { max-width: 880px; margin: 0 auto; padding: 96px 24px 120px; }
+  .intro { display: flex; flex-direction: column; gap: 20px; margin-bottom: 56px; }
+  .eyebrow { margin: 0; font-size: 13px; color: var(--accent-dark); letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { font-size: clamp(44px, 6.4vw, 76px); }
+  .lead { margin: 0; max-width: 640px; font-size: 18px; line-height: 1.55; color: var(--text); }
+  @media (max-width: 600px) {
+    .page { padding: 64px 16px 88px; }
+  }
+</style>

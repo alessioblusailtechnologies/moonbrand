@@ -1,5 +1,5 @@
 ---
-import { getCopy, type Lang } from '../i18n';
+import { getCopy, homePath, pagePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -11,12 +11,16 @@ const { footer } = getCopy(lang);
 
 <footer>
   <div class="inner">
-    {footer.links.map((f) => (
-      <a href="#" class="big-link">{f}<span aria-hidden="true">→</span></a>
+    {footer.links.map((f, i) => (
+      <a href={i === 0 ? `${homePath(lang)}#piattaforma` : '#'} class="big-link">{f}<span aria-hidden="true">→</span></a>
     ))}
     <div class="bottom">
       <span>{footer.copyright}</span>
-      <div class="legal"><a href="#">{footer.privacy}</a><a href="#">{footer.terms}</a><a href="#">{footer.contact}</a></div>
+      <div class="legal">
+        <a href={pagePath(lang, 'privacy')}>{footer.privacy}</a>
+        <a href={pagePath(lang, 'terms')}>{footer.terms}</a>
+        <a href={pagePath(lang, 'contact')}>{footer.contact}</a>
+      </div>
     </div>
   </div>
 </footer>
