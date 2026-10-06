@@ -1,10 +1,16 @@
+// Come lo studio: la cornice blu notte e il modulo in un pannello chiaro staccato di --frame dai bordi.
 :host {
+  --frame: 8px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--surface-sidebar);
 }
 
 .main {
+  margin: var(--frame) var(--frame) var(--frame) 0;
+  border-radius: var(--radius-lg);
+  background: var(--surface-app);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,6 +61,11 @@ form {
 
   mb-auth-side {
     display: none;
+  }
+
+  .main {
+    margin: 0;
+    border-radius: 0;
   }
 
   .mobile-logo {
