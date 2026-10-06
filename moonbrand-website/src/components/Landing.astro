@@ -1,70 +1,51 @@
 ---
-// Le pagine per tipo di cliente, per categoria di attività, per social e per funzionalità: il problema, come lo risolve
-// Moonbrand, i post di esempio, il prezzo di partenza e l'invito a iniziare. Stessa forma per tutte, cambiano testi e post.
-// "Per attività" in più ha i riquadri delle categorie; ogni categoria le occasioni da pubblicare durante l'anno,
-// ogni social i formati che Moonbrand prepara per quel canale.
+// Le pagine per tipo di cliente, per social e per funzionalità: il problema, come lo risolve Moonbrand, i post di
+// esempio, il prezzo di partenza e l'invito a iniziare. Stessa forma per tutte, cambiano testi e post.
+// Ogni social in più ha i formati che Moonbrand prepara per quel canale.
 import { AUDIENCES, LANDING_POSTS, siblings, type Landing } from '../data/landings';
 import { getPosts } from '../data/home';
-import { CATEGORY_IDS, getCopy, isCategory, isPlatform, pagePath, PLATFORM_IDS, signupUrl, type Category, type Lang, type Platform } from '../i18n';
-import Cards from './Cards.astro';
+import { getCopy, isPlatform, pagePath, PLATFORM_IDS, signupUrl, type Lang, type Platform } from '../i18n';
 import Closing from './Closing.astro';
 import PageShell from './PageShell.astro';
 import PostPreview from './PostPreview.astro';
 
 interface Props {
   lang: Lang;
-  page: Landing | Category | Platform;
+  page: Landing | Platform;
 }
 
 const { lang, page } = Astro.props;
-const { landing: l, landings, categories, platforms, hubs, channels } = getCopy(lang);
-const c = isCategory(page) ? categories[page] : isPlatform(page) ? platforms[page] : landings[page];
+const { landing: l, landings, platforms, hubs, channels } = getCopy(lang);
+const c = isPlatform(page) ? platforms[page] : landings[page];
 const all = getPosts(lang);
 const posts = LANDING_POSTS[page].map((id) => all.find((post) => post.id === id)!);
 const signup = signupUrl(lang);
 const site = Astro.site ?? new URL('https://moonbrand.app');
 
-// La lista in più: le occasioni dell'anno per una categoria, i formati per un social.
-const list = isCategory(page)
-  ? { title: l.momentsTitle, items: categories[page].moments.map((m) => ({ k: m.when, v: m.what })) }
-  : isPlatform(page)
-    ? { title: l.formatsTitle, items: platforms[page].formats.map((f) => ({ k: f.t, v: f.d })) }
-    : null;
+// I formati che Moonbrand prepara per un social.
+const formats = isPlatform(page) ? platforms[page].formats : null;
 
-// In fondo: le altre pagine dello stesso gruppo e, per categorie e social, la loro pagina indice.
-const more = isCategory(page)
+// In fondo: le altre pagine dello stesso gruppo e, per i social, la pagina indice.
+const more = isPlatform(page)
   ? {
-      label: l.otherBusinesses,
+      label: l.otherPlatforms,
       links: [
-        ...CATEGORY_IDS.filter((other) => other !== page).map((other) => ({ href: pagePath(lang, other), name: categories[other].name })),
-        { href: pagePath(lang, 'businesses'), name: l.allBusinesses },
+        ...PLATFORM_IDS.filter((other) => other !== page).map((other) => ({ href: pagePath(lang, other), name: platforms[other].name })),
+        { href: pagePath(lang, 'social'), name: l.allPlatforms },
       ],
     }
-  : isPlatform(page)
-    ? {
-        label: l.otherPlatforms,
-        links: [
-          ...PLATFORM_IDS.filter((other) => other !== page).map((other) => ({ href: pagePath(lang, other), name: platforms[other].name })),
-          { href: pagePath(lang, 'social'), name: l.allPlatforms },
-        ],
-      }
-    : {
-        label: (AUDIENCES as readonly Landing[]).includes(page) ? l.moreAudiences : l.moreFeatures,
-        links: siblings(page).map((other) => ({ href: pagePath(lang, other), name: landings[other].name })),
-      };
+  : {
+      label: (AUDIENCES as readonly Landing[]).includes(page) ? l.moreAudiences : l.moreFeatures,
+      links: siblings(page).map((other) => ({ href: pagePath(lang, other), name: landings[other].name })),
+    };
 
-// Per Google: la categoria sta dentro "Per attività", il social dentro "Social".
-const parent = isCategory(page)
-  ? { name: landings.businesses.name, page: 'businesses' as const }
-  : isPlatform(page)
-    ? { name: hubs.social.eyebrow, page: 'social' as const }
-    : null;
-const breadcrumb = parent && {
+// Per Google: il social sta dentro "Social".
+const breadcrumb = isPlatform(page) && {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Moonbrand', item: new URL(pagePath(lang), site).href },
-    { '@type': 'ListItem', position: 2, name: parent.name, item: new URL(pagePath(lang, parent.page), site).href },
+    { '@type': 'ListItem', position: 2, name: hubs.social.eyebrow, item: new URL(pagePath(lang, 'social'), site).href },
     { '@type': 'ListItem', position: 3, name: c.name, item: new URL(pagePath(lang, page), site).href },
   ],
 };
@@ -76,14 +57,6 @@ const breadcrumb = parent && {
     <a href={signup} class="btn btn-dark">{l.start}</a>
     <a href={pagePath(lang, 'pricing')} class="btn btn-outline">{l.seePricing}</a>
   </div>
-
-  {page === 'businesses' && (
-    <section>
-      <h2 class="display">{l.categoriesTitle}</h2>
-      <Cards items={CATEGORY_IDS.map((id) => ({ href: pagePath(lang, id), name: categories[id].name, card: categories[id].card }))} />
-      <p class="categories-more">{l.categoriesMore}</p>
-    </section>
-  )}
 
   <section>
     <h2 class="display">{c.problemTitle}</h2>
@@ -109,14 +82,14 @@ const breadcrumb = parent && {
     </ol>
   </section>
 
-  {list && (
+  {formats && (
     <section>
-      <h2 class="display">{list.title}</h2>
+      <h2 class="display">{l.formatsTitle}</h2>
       <ul class="list">
-        {list.items.map((item) => (
+        {formats.map((format) => (
           <li>
-            <span class="key mono">{item.k}</span>
-            <span>{item.v}</span>
+            <span class="key mono">{format.t}</span>
+            <span>{format.d}</span>
           </li>
         ))}
       </ul>
@@ -166,14 +139,12 @@ const breadcrumb = parent && {
   .how li { counter-increment: step; display: grid; grid-template-columns: 56px 1fr; gap: 6px 0; padding: 22px 0; border-top: 1px solid var(--line); }
   .how li::before { content: counter(step, decimal-leading-zero); grid-row: span 2; font-family: var(--mono); font-size: 13px; color: var(--accent-dark); padding-top: 3px; }
 
-  /* Categorie e social hanno anche uno o due post soli: le colonne restano larghe un terzo. */
+  /* I social hanno anche un post solo: le colonne restano larghe un terzo. */
   .posts { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
   figure { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; flex: 0 1 calc((100% - 40px) / 3); }
   figcaption { display: flex; justify-content: space-between; gap: 10px; padding: 0 4px; font-size: 12px; }
   .channel { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .tone { color: var(--faint); text-align: right; }
-
-  .categories-more { margin: 20px 0 0; font-size: 14.5px; color: var(--muted); }
 
   .list { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px; }
   .list li { display: flex; flex-direction: column; gap: 4px; padding: 16px 0; border-top: 1px solid var(--line); font-size: 15.5px; line-height: 1.5; color: var(--ink); }

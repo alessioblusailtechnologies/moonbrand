@@ -1,6 +1,6 @@
 ---
 import { AUDIENCES, FEATURES } from '../data/landings';
-import { CATEGORY_IDS, getCopy, LANGS, pagePath, PLATFORM_IDS, signupUrl, STUDIO_URL, type Lang, type Page } from '../i18n';
+import { getCopy, LANGS, pagePath, PLATFORM_IDS, signupUrl, STUDIO_URL, type Lang, type Page } from '../i18n';
 import Logo from './Logo.astro';
 
 interface Props {
@@ -15,7 +15,7 @@ const { nav } = getCopy(lang);
 const sections: { page: Page; label: string; children: readonly Page[] }[] = [
   { page: 'features', label: nav.features, children: FEATURES },
   { page: 'social', label: nav.social, children: PLATFORM_IDS },
-  { page: 'audiences', label: nav.audiences, children: [...AUDIENCES, ...CATEGORY_IDS] },
+  { page: 'audiences', label: nav.audiences, children: AUDIENCES },
   { page: 'pricing', label: nav.pricing, children: [] },
 ];
 const current = (section: (typeof sections)[number]) => section.page === page || section.children.includes(page);

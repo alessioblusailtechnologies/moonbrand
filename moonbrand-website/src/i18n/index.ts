@@ -21,20 +21,6 @@ export function homePath(lang: Lang): string {
   return lang === 'it' ? '/' : `/${lang}/`;
 }
 
-/**
- * Le categorie di attività, ognuna con la sua pagina sotto "Per attività" (/per-attivita/ristoranti/ e simili).
- * Per aggiungerne una: l'indirizzo qui, i testi in copy.categories, i post di esempio in data/landings.ts.
- * Pagina, riquadro nella pagina "Per attività" e sitemap seguono da soli.
- */
-export const CATEGORIES = {
-  restaurants: { it: 'ristoranti', en: 'restaurants', fr: 'restaurants' },
-  bakeries: { it: 'pasticcerie', en: 'bakeries', fr: 'patisseries' },
-  gyms: { it: 'palestre', en: 'gyms', fr: 'salles-de-sport' },
-  shops: { it: 'negozi', en: 'shops', fr: 'boutiques' },
-} satisfies Record<string, Record<Lang, string>>;
-export type Category = keyof typeof CATEGORIES;
-export const CATEGORY_IDS = Object.keys(CATEGORIES) as Category[];
-
 const BUSINESSES = { it: 'per-attivita', en: 'for-businesses', fr: 'pour-les-commerces' };
 
 /** I social, ognuno con la sua pagina sotto "Social" (/social/instagram/ e simili). I testi in copy.platforms. */
@@ -75,13 +61,11 @@ export const PAGES = {
   video: { it: 'video-social', en: 'social-videos', fr: 'videos-reseaux-sociaux' },
   publishing: { it: 'pubblicazione-social', en: 'social-publishing', fr: 'publication-reseaux-sociaux' },
   brandKit: { it: 'brand-kit', en: 'brand-kit', fr: 'kit-de-marque' },
-  // Categorie e social stanno dentro la loro pagina indice: /per-attivita/ristoranti/, /social/instagram/.
-  ...nested(BUSINESSES, CATEGORIES),
+  // I social stanno dentro la loro pagina indice: /social/instagram/.
   ...nested(SOCIAL, PLATFORMS),
 } satisfies Record<string, Record<Lang, string>>;
 export type Page = keyof typeof PAGES;
 
-export const isCategory = (page: Page): page is Category => page in CATEGORIES;
 export const isPlatform = (page: Page): page is Platform => page in PLATFORMS;
 
 /** Una pagina in una lingua: il prefisso della lingua più l'indirizzo della pagina in quella lingua. */

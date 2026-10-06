@@ -1,23 +1,20 @@
 ---
 // Il piede: una colonna per ogni pagina indice del menù, con le sue pagine, più prezzi, contatti e accesso.
 import { AUDIENCES, FEATURES } from '../data/landings';
-import { CATEGORY_IDS, getCopy, pagePath, PLATFORM_IDS, STUDIO_URL, type Lang, type Page } from '../i18n';
+import { getCopy, pagePath, PLATFORM_IDS, STUDIO_URL, type Lang, type Page } from '../i18n';
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const { footer, nav, landings, categories, platforms } = getCopy(lang);
+const { footer, nav, landings, platforms } = getCopy(lang);
 const link = (page: Page, name: string) => ({ href: pagePath(lang, page), name });
 
 const columns = [
   { title: link('features', nav.features), links: FEATURES.map((id) => link(id, landings[id].name)) },
   { title: link('social', nav.social), links: PLATFORM_IDS.map((id) => link(id, platforms[id].name)) },
-  {
-    title: link('audiences', nav.audiences),
-    links: [...AUDIENCES.map((id) => link(id, landings[id].name)), ...CATEGORY_IDS.map((id) => link(id, categories[id].name))],
-  },
+  { title: link('audiences', nav.audiences), links: AUDIENCES.map((id) => link(id, landings[id].name)) },
   {
     title: link('home', 'Moonbrand'),
     links: [link('pricing', nav.pricing), link('contact', footer.contact), { href: `${STUDIO_URL}/login`, name: nav.login }],
