@@ -210,8 +210,25 @@ studio.moonbrand.app {
     }
     handle {
         root * /srv/moonbrand/studio
-        try_files {path} /index.html
-        file_server
+        # I file con l hash nel nome non cambiano mai: in cache per un anno.
+        @hashed path_regexp hashed ^/(main|chunk|styles|polyfills)-[A-Za-z0-9_-]+\.(js|css)$
+        header @hashed Cache-Control "public, max-age=31536000, immutable"
+        # I file statici che mancano sono un 404, non la pagina dello studio (un JS che riceve HTML lascia la pagina bianca).
+        @static path *.js *.css *.map *.json *.png *.jpg *.jpeg *.webp *.svg *.ico *.woff *.woff2
+        handle @static {
+            file_server
+        }
+        # Le pagine (index.html) si ricontrollano sempre: dopo un deploy puntano subito ai file nuovi.
+        handle {
+            header Cache-Control "no-cache"
+            try_files {path} /index.html
+            file_server
+        }
+    }
+    # Un file che manca non si mette in cache: al prossimo deploy potrebbe esserci.
+    handle_errors {
+        header Cache-Control "no-store"
+        respond "{err.status_code} {err.status_text}" {err.status_code}
     }
 }
 ```
