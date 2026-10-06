@@ -70,6 +70,7 @@ export const PAGES = {
   businesses: BUSINESSES,
   agencies: { it: 'per-agenzie', en: 'for-agencies', fr: 'pour-les-agences' },
   assistant: { it: 'assistente-ai', en: 'ai-assistant', fr: 'assistant-ia' },
+  media: { it: 'immagini-video-ai', en: 'ai-images-videos', fr: 'images-videos-ia' },
   plan: { it: 'piano-editoriale', en: 'content-calendar', fr: 'calendrier-editorial' },
   video: { it: 'video-social', en: 'social-videos', fr: 'videos-reseaux-sociaux' },
   publishing: { it: 'pubblicazione-social', en: 'social-publishing', fr: 'publication-reseaux-sociaux' },

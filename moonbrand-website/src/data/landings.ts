@@ -4,7 +4,7 @@ import type { Category, Platform } from '../i18n';
 import type { PostId } from './home';
 
 export const AUDIENCES = ['businesses', 'agencies'] as const;
-export const FEATURES = ['assistant', 'plan', 'video', 'publishing', 'brandKit'] as const;
+export const FEATURES = ['assistant', 'media', 'video', 'plan', 'publishing', 'brandKit'] as const;
 
 export type Audience = (typeof AUDIENCES)[number];
 export type Feature = (typeof FEATURES)[number];
@@ -18,6 +18,7 @@ export const LANDING_POSTS: Record<Landing | Category | Platform, PostId[]> = {
   businesses: ['aurora-torta', 'osteria-reel', 'libreria-slide'],
   agencies: ['riva-case', 'forma-slide', 'aurora-laboratorio'],
   assistant: ['solco-post', 'aurora-torta', 'forma-slide'],
+  media: ['aurora-laboratorio', 'osteria-reel', 'libreria-slide'],
   plan: ['libreria-slide', 'solco-story', 'aurora-laboratorio'],
   video: ['osteria-reel', 'forma-tiktok', 'solco-story'],
   publishing: ['aurora-torta', 'riva-case', 'forma-tiktok'],

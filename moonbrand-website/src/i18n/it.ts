@@ -379,7 +379,7 @@ export const it = {
     },
     assistant: {
       name: 'Assistente AI',
-      card: 'Gli chiedi un post in chat e lo prepara nel tuo tono, con la grafica e il formato giusti.',
+      card: 'Gli chiedi un post in chat e lo prepara nel tuo tono: testo, immagini e formato giusto.',
       title: 'Assistente AI per i social · Moonbrand',
       description: 'Un assistente in chat che conosce il tuo brand: tono, colori e storico dei post. Gli chiedi un post, un carosello o un video e lo prepara nel tuo stile.',
       eyebrow: 'Assistente AI',
@@ -395,8 +395,30 @@ export const it = {
       how: [
         { t: 'Ricorda il tuo brand', d: 'Tono di voce, parole da evitare, colori, font e post già pubblicati entrano in ogni risposta.' },
         { t: 'Guarda quello che gli mandi', d: 'Foto, video, il link a un post che ti è piaciuto: li usa come materiale o come riferimento.' },
-        { t: 'Prepara il contenuto intero', d: 'Testo, grafica, carosello o video: la bozza finisce direttamente in Contenuti.' },
+        { t: 'Prepara il contenuto intero', d: 'Testo, immagini (le tue o generate dall’AI), carosello o video: la bozza finisce direttamente in Contenuti.' },
         { t: 'Lo correggi parlando', d: '“Più corto”, “togli l’emoji”, “cambia la foto”: ritocchi in chat finché non ti convince.' },
+      ],
+    },
+    media: {
+      name: 'Immagini e video con l’AI',
+      card: 'Niente foto? L’AI genera immagini, clip video, musica e voce nello stile del tuo brand.',
+      title: 'Immagini, video, musica e voce generati con l’AI per i social · Moonbrand',
+      description: 'Con Moonbrand l’AI genera anche i media: foto e illustrazioni, clip video, musica e voce fuori campo, nello stile del tuo brand e pronti per i tuoi post.',
+      eyebrow: 'Immagini e video con l’AI',
+      heading: 'Non hai la foto giusta? La crea l’AI.',
+      lead: 'Moonbrand non scrive solo i testi: genera foto e illustrazioni, clip video, musica e voce fuori campo, e li compone con la grafica del tuo brand. Usa le tue foto quando ci sono e crea quello che manca.',
+      problemTitle: 'Il problema',
+      problems: [
+        { t: 'Le foto non bastano mai', d: 'Per pubblicare ogni settimana servono immagini nuove, e il servizio fotografico si fa una volta l’anno.' },
+        { t: 'Le foto di repertorio si riconoscono', d: 'Le stesse immagini stock le usano tutti: il tuo post sembra quello di chiunque.' },
+        { t: 'Video, musica e voce costano', d: 'Una clip girata, una musica con i diritti, una voce professionale: ognuna è un fornitore in più.' },
+      ],
+      howTitle: 'Come funziona',
+      how: [
+        { t: 'Foto e illustrazioni', d: 'Descrivi la scena o lascia fare all’assistente: l’immagine arriva nello stile del brand, anche partendo da una tua foto come riferimento.' },
+        { t: 'Clip video', d: 'Da una foto o da una descrizione nasce una clip di qualche secondo, da montare nei Reel e nei TikTok insieme alle tue riprese.' },
+        { t: 'Musica e voce', d: 'Una musica composta per il video, anche cantata, effetti sonori e una voce fuori campo scelta tra tante.' },
+        { t: 'Tutto dentro il contenuto', d: 'I media generati entrano nel post, nel carosello o nel video con i tuoi colori, font e logo, pronti da approvare.' },
       ],
     },
     plan: {
@@ -423,12 +445,12 @@ export const it = {
     },
     video: {
       name: 'Video per i social',
-      card: 'Reel e TikTok montati dalle tue riprese, con copione, musica e scritte.',
+      card: 'Reel e TikTok montati dalle tue riprese o da clip generate dall’AI, con musica e voce.',
       title: 'Video per Reel e TikTok con l’AI · Moonbrand',
       description: 'Reel, TikTok e video per LinkedIn montati con le tue foto e i tuoi video, con musica e scritte nel tuo stile. Prima approvi il copione, poi Moonbrand monta.',
       eyebrow: 'Video',
       heading: 'Reel e TikTok, senza aprire un programma di montaggio.',
-      lead: 'Mandi le tue foto e i tuoi video, Moonbrand scrive il copione scena per scena. Lo approvi e il video arriva montato, con musica e scritte, nei formati giusti per ogni canale.',
+      lead: 'Mandi le tue foto e i tuoi video, oppure lasci che l’AI generi le clip. Moonbrand scrive il copione scena per scena; lo approvi e il video arriva montato, con musica, voce e scritte, nei formati giusti per ogni canale.',
       problemTitle: 'Il problema',
       problems: [
         { t: 'I video sono quelli che funzionano', d: 'Reel e TikTok raggiungono più persone di quasi ogni altro formato. Ma richiedono tempo che non hai.' },
@@ -438,8 +460,8 @@ export const it = {
       howTitle: 'Come funziona',
       how: [
         { t: 'Prima il copione', d: 'Scene, secondi, cosa si vede e cosa si legge: lo correggi prima che il video esista.' },
-        { t: 'Le tue riprese, al centro', d: 'Il video si costruisce sulle tue foto e sulle tue clip; dove mancano, grafiche nel tuo stile o clip generate.' },
-        { t: 'Musica e scritte comprese', d: 'Una musica composta per il video, scritte con i tuoi font e colori, voce se serve.' },
+        { t: 'Le tue riprese, o quelle dell’AI', d: 'Il video si costruisce sulle tue foto e sulle tue clip; dove mancano, l’AI genera immagini e clip video nel tuo stile.' },
+        { t: 'Musica e voce generate', d: 'Una musica composta dall’AI per il video, una voce fuori campo se serve, scritte con i tuoi font e colori.' },
         { t: 'Nativo su ogni canale', d: 'Un TikTok che sembra un TikTok, un Reel con la grafica del brand: stessa idea, confezione diversa.' },
       ],
     },
@@ -623,10 +645,10 @@ export const it = {
   hubs: {
     features: {
       title: 'Funzionalità · Moonbrand',
-      description: 'Assistente AI, piano editoriale, video, pubblicazione sui social e brand kit: tutto quello che fa Moonbrand per i tuoi contenuti social.',
+      description: 'Assistente AI, immagini e video generati con l’AI, piano editoriale, pubblicazione sui social e brand kit: tutto quello che fa Moonbrand per i tuoi contenuti social.',
       eyebrow: 'Funzionalità',
       heading: 'Tutto quello che serve ai tuoi social, in un posto solo.',
-      lead: 'Dall’idea al post pubblicato: un assistente che conosce il tuo brand, il piano editoriale, i video e la pubblicazione, con il brand kit sotto ogni cosa.',
+      lead: 'Dall’idea al post pubblicato: un assistente che conosce il tuo brand, immagini, video, musica e voce generati dall’AI, il piano editoriale e la pubblicazione, con il brand kit sotto ogni cosa.',
     },
     social: {
       title: 'Contenuti per Instagram, TikTok, Facebook e LinkedIn · Moonbrand',

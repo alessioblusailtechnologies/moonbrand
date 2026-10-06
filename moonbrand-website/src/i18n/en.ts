@@ -373,7 +373,7 @@ export const en: Copy = {
     },
     assistant: {
       name: 'AI assistant',
-      card: 'Ask for a post in the chat and it prepares it in your tone, with the right graphics and format.',
+      card: 'Ask for a post in the chat and it prepares it in your tone: copy, images and the right format.',
       title: 'AI assistant for social media · Moonbrand',
       description: 'A chat assistant that knows your brand: tone, colours and post history. Ask for a post, a carousel or a video and it prepares it in your style.',
       eyebrow: 'AI assistant',
@@ -389,8 +389,30 @@ export const en: Copy = {
       how: [
         { t: 'It remembers your brand', d: 'Tone of voice, words to avoid, colours, fonts and past posts go into every reply.' },
         { t: 'It looks at what you send', d: 'Photos, videos, the link to a post you liked: it uses them as material or as a reference.' },
-        { t: 'It prepares the whole piece', d: 'Text, graphics, carousel or video: the draft lands straight in Content.' },
+        { t: 'It prepares the whole piece', d: 'Text, images (yours or AI-generated), carousel or video: the draft lands straight in Content.' },
         { t: 'You edit by talking', d: '“Shorter”, “drop the emoji”, “change the photo”: refine it in the chat until you’re happy.' },
+      ],
+    },
+    media: {
+      name: 'AI images and videos',
+      card: 'No photos? The AI generates images, video clips, music and voice in your brand’s style.',
+      title: 'AI-generated images, videos, music and voice for social media · Moonbrand',
+      description: 'With Moonbrand the AI generates the media too: photos and illustrations, video clips, music and voice-overs, in your brand’s style and ready for your posts.',
+      eyebrow: 'AI images and videos',
+      heading: 'Don’t have the right photo? The AI makes it.',
+      lead: 'Moonbrand doesn’t just write the copy: it generates photos and illustrations, video clips, music and voice-overs, and combines them with your brand’s graphics. It uses your photos when you have them and creates what’s missing.',
+      problemTitle: 'The problem',
+      problems: [
+        { t: 'There are never enough photos', d: 'Posting every week needs new images, and the photo shoot happens once a year.' },
+        { t: 'Stock photos are recognisable', d: 'Everyone uses the same stock images: your post looks like anyone’s.' },
+        { t: 'Video, music and voice cost money', d: 'A filmed clip, licensed music, a professional voice: each one is another supplier.' },
+      ],
+      howTitle: 'How it works',
+      how: [
+        { t: 'Photos and illustrations', d: 'Describe the scene or let the assistant decide: the image arrives in your brand’s style, even using one of your photos as a reference.' },
+        { t: 'Video clips', d: 'A photo or a description becomes a clip a few seconds long, to edit into Reels and TikToks alongside your own footage.' },
+        { t: 'Music and voice', d: 'Music composed for the video, with lyrics if you like, sound effects and a voice-over chosen from many.' },
+        { t: 'All inside the content', d: 'Generated media go into the post, carousel or video with your colours, fonts and logo, ready to approve.' },
       ],
     },
     plan: {
@@ -417,12 +439,12 @@ export const en: Copy = {
     },
     video: {
       name: 'Social videos',
-      card: 'Reels and TikToks edited from your footage, with script, music and captions.',
+      card: 'Reels and TikToks edited from your footage or AI-generated clips, with music and voice.',
       title: 'AI videos for Reels and TikTok · Moonbrand',
       description: 'Reels, TikToks and LinkedIn videos edited from your photos and clips, with music and captions in your style. You approve the script first, then Moonbrand edits.',
       eyebrow: 'Video',
       heading: 'Reels and TikToks, without opening an editing app.',
-      lead: 'Send your photos and clips and Moonbrand writes the script scene by scene. Approve it and the video arrives edited, with music and captions, in the right format for each channel.',
+      lead: 'Send your photos and clips, or let the AI generate them. Moonbrand writes the script scene by scene; approve it and the video arrives edited, with music, voice and captions, in the right format for each channel.',
       problemTitle: 'The problem',
       problems: [
         { t: 'Video is what works', d: 'Reels and TikToks reach more people than almost any other format. But they take time you don’t have.' },
@@ -432,8 +454,8 @@ export const en: Copy = {
       howTitle: 'How it works',
       how: [
         { t: 'Script first', d: 'Scenes, seconds, what you see and what you read: you fix it before the video exists.' },
-        { t: 'Your footage at the centre', d: 'The video is built on your photos and clips; where they’re missing, graphics in your style or generated clips.' },
-        { t: 'Music and captions included', d: 'Music composed for the video, captions in your fonts and colours, a voice-over if needed.' },
+        { t: 'Your footage, or the AI’s', d: 'The video is built on your photos and clips; where they’re missing, the AI generates images and video clips in your style.' },
+        { t: 'Generated music and voice', d: 'Music composed by the AI for the video, a voice-over if needed, captions in your fonts and colours.' },
         { t: 'Native on every channel', d: 'A TikTok that looks like a TikTok, a Reel with your brand’s graphics: same idea, different packaging.' },
       ],
     },
@@ -615,10 +637,10 @@ export const en: Copy = {
   hubs: {
     features: {
       title: 'Features · Moonbrand',
-      description: 'AI assistant, content calendar, videos, social publishing and brand kit: everything Moonbrand does for your social media content.',
+      description: 'AI assistant, AI-generated images and videos, content calendar, social publishing and brand kit: everything Moonbrand does for your social media content.',
       eyebrow: 'Features',
       heading: 'Everything your social media needs, in one place.',
-      lead: 'From idea to published post: an assistant that knows your brand, the content calendar, videos and publishing, with the brand kit underneath it all.',
+      lead: 'From idea to published post: an assistant that knows your brand, AI-generated images, videos, music and voice, the content calendar and publishing, with the brand kit underneath it all.',
     },
     social: {
       title: 'Content for Instagram, TikTok, Facebook and LinkedIn · Moonbrand',
