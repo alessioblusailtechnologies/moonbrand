@@ -11,6 +11,7 @@ import { accountExists } from './modules/auth/accounts';
 import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
+import type { Mailer } from './modules/email/mailer';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
@@ -32,7 +33,20 @@ export interface AppOptions {
   auth: AuthGateway;
   storage: MediaStorage;
   files: BrandFiles;
-  settings: Pick<Config, 'CORS_ORIGINS' | 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'MISTRAL_API_KEY' | 'TRANSCRIPTION_MODEL' | 'ZERNIO_API_KEY' | 'STUDIO_ORIGINS'>;
+  mailer: Mailer;
+  settings: Pick<
+    Config,
+    | 'CORS_ORIGINS'
+    | 'COOKIE_SECURE'
+    | 'COOKIE_SAME_SITE'
+    | 'MISTRAL_API_KEY'
+    | 'TRANSCRIPTION_MODEL'
+    | 'ZERNIO_API_KEY'
+    | 'STUDIO_ORIGINS'
+    | 'STUDIO_URL'
+    | 'EMAIL_SECRET'
+    | 'SUPABASE_SERVICE_ROLE_KEY'
+  >;
 }
 
 export function buildApp(options: AppOptions) {
@@ -51,7 +65,7 @@ export function buildApp(options: AppOptions) {
   registerAuth(app, options.verifyToken, (id) => accountExists(options.pool, id));
 
   app.get('/v1/health', () => ({ ok: true }));
-  registerAuthRoutes(app, options.pool, options.auth, options.settings);
+  registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
   registerBrandRoutes(app, options.pool, options.files, options.storage);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);

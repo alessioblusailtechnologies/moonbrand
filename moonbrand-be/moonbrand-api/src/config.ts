@@ -35,6 +35,13 @@ const schema = z.object({
   ZERNIO_API_KEY: optional,
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
+  // Le email (benvenuto, conferma, nuova password) con Resend: senza chiave non partono e il link finisce nel log.
+  RESEND_API_KEY: optional,
+  EMAIL_FROM: z.string().min(1).default('Moonbrand <ciao@moonbrand.app>'),
+  // Dove portano i link delle email.
+  STUDIO_URL: z.url().default('http://localhost:4200'),
+  // La firma dei link di conferma; vuoto: la service role, come per i link dei file.
+  EMAIL_SECRET: optional,
 });
 
 export type Config = z.infer<typeof schema>;

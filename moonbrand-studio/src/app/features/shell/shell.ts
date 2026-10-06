@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, type ElementRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -21,6 +21,7 @@ import { Logo } from '../../ui/logo';
 import { ToastService } from '../../ui/toast';
 import { BrandPicker, BrandPickerService } from './brand-picker';
 import { BrandSwitcher } from './brand-switcher';
+import { EmailBanner } from './email-banner';
 
 // Le sezioni dell'app, nell'ordine della sidebar; le impostazioni stanno in fondo, sopra l'account.
 // Sotto le sezioni, le ultime conversazioni divise per giorno; le altre in /conversazioni.
@@ -37,10 +38,11 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, EmailBanner, TranslatePipe],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
   host: {
     '[style.--topbar-height.px]': 'topbarHeight()',
+    '[style.--banner-height.px]': 'bannerHeight()',
     '(document:keydown.escape)': 'menuOpen.set(false); languageOpen.set(false)',
     '(document:keydown)': 'shortcut($event)',
   },
@@ -166,6 +168,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
       </div>
     </aside>
     <div class="main">
+      <mb-email-banner #banner />
       <header class="topbar" #topbar>
         <button class="icon-btn burger" type="button" [attr.aria-label]="'shell.openMenu' | t" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
           <mb-icon name="menu" [size]="20" />
@@ -677,7 +680,10 @@ export class Shell {
   // Il menu sul telefono: si chiude cambiando pagina.
   protected readonly menuOpen = signal(false);
   protected readonly topbarHeight = signal<number | null>(null);
+  // Il promemoria dell'email sopra la barra: le pagine a tutto schermo tolgono anche la sua altezza.
+  protected readonly bannerHeight = signal(0);
   private readonly topbar = viewChild.required<ElementRef<HTMLElement>>('topbar');
+  private readonly banner = viewChild.required('banner', { read: ElementRef<HTMLElement> });
   private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
 
   // Compressa con il pulsante, e la scelta resta tra una visita e l'altra; sul tablet sempre, sul telefono mai (è un menu).
@@ -710,8 +716,13 @@ export class Shell {
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       const element = this.topbar().nativeElement;
-      const observer = new ResizeObserver(() => this.topbarHeight.set(element.offsetHeight));
+      const banner = this.banner().nativeElement;
+      const observer = new ResizeObserver(() => {
+        this.topbarHeight.set(element.offsetHeight);
+        this.bannerHeight.set(banner.offsetHeight);
+      });
       observer.observe(element);
+      observer.observe(banner);
       destroyRef.onDestroy(() => observer.disconnect());
     });
   }

@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { Account, Me, Session, SignInRequest, SignUpRequest } from '@moonbrand/shared/api/contract';
+import type { Account, Me, ResetPasswordRequest, Session, SignInRequest, SignUpRequest } from '@moonbrand/shared/api/contract';
+import type { Locale } from '@moonbrand/shared/i18n/locales';
 
 type Status = 'unknown' | 'signed-in' | 'signed-out';
 
@@ -41,6 +42,35 @@ export class AuthService {
 
   async signUp(request: SignUpRequest): Promise<void> {
     await this.start(await firstValueFrom(this.http.post<Session>('/v1/auth/sign-up', request, { withCredentials: true })));
+  }
+
+  // L'accesso con Google: la pagina va su /v1/auth/google e torna su /accesso-google con il codice da scambiare.
+  startGoogle(): void {
+    window.location.assign('/v1/auth/google');
+  }
+
+  async signInWithGoogle(code: string, locale: Locale): Promise<void> {
+    await this.start(await firstValueFrom(this.http.post<Session>('/v1/auth/google/callback', { code, locale }, { withCredentials: true })));
+  }
+
+  // Chi ha perso la password: il link arriva per email e porta a /nuova-password, dove si entra con quella nuova.
+  async forgotPassword(email: string): Promise<void> {
+    await firstValueFrom(this.http.post('/v1/auth/password/forgot', { email }));
+  }
+
+  async resetPassword(request: ResetPasswordRequest): Promise<void> {
+    await this.start(await firstValueFrom(this.http.post<Session>('/v1/auth/password/reset', request, { withCredentials: true })));
+  }
+
+  // Il link dell'email di benvenuto; se è aperto nello studio dove si è già dentro, toglie subito il promemoria.
+  async confirmEmail(token: string): Promise<void> {
+    await firstValueFrom(this.http.post('/v1/auth/email/confirm', { token }));
+    const account = this.account();
+    if (account) this.account.set({ ...account, emailConfirmed: true });
+  }
+
+  async resendConfirmation(): Promise<void> {
+    await firstValueFrom(this.http.post('/v1/auth/email/resend', null));
   }
 
   async signOut(): Promise<void> {

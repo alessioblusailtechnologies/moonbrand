@@ -12,6 +12,15 @@ export const routes: Routes = [
   { path: 'login', canActivate: [guestGuard], loadComponent: () => import('./features/auth/login').then((m) => m.Login) },
   { path: 'register', canActivate: [guestGuard], loadComponent: () => import('./features/auth/register').then((m) => m.Register) },
   {
+    path: 'password-dimenticata',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/forgot-password').then((m) => m.ForgotPassword),
+  },
+  // I link delle email: si aprono dentro o fuori dallo studio.
+  { path: 'nuova-password', loadComponent: () => import('./features/auth/reset-password').then((m) => m.ResetPassword) },
+  { path: 'accesso-google', loadComponent: () => import('./features/auth/google-callback').then((m) => m.GoogleCallback) },
+  { path: 'conferma-email', loadComponent: () => import('./features/auth/confirm-email').then((m) => m.ConfirmEmail) },
+  {
     path: '',
     canActivate: [authGuard],
     loadComponent: () => import('./features/shell/shell').then((m) => m.Shell),

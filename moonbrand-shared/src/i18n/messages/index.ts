@@ -5,6 +5,7 @@ import { chat } from './chat';
 import { common } from './common';
 import { contents } from './contents';
 import { days } from './days';
+import { email } from './email';
 import { errors } from './errors';
 import { ideas } from './ideas';
 import { language } from './language';
@@ -26,6 +27,7 @@ export const NAMESPACES = {
   common,
   contents,
   days,
+  email,
   errors,
   ideas,
   language,

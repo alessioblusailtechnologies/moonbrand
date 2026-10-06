@@ -9,11 +9,12 @@ import { errorMessage } from '../../core/errors';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Logo } from '../../ui/logo';
 import { AuthSide } from './auth-side';
+import { GoogleButton } from './google-button';
 
 @Component({
   selector: 'mb-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, AuthSide, Logo, TranslatePipe],
+  imports: [RouterLink, AuthSide, GoogleButton, Logo, TranslatePipe],
   styleUrl: './auth-layout.scss',
   template: `
     <mb-auth-side />
@@ -24,6 +25,7 @@ import { AuthSide } from './auth-side';
           <h1 class="title">{{ 'auth.register.title' | t }}</h1>
           <p class="body">{{ 'auth.register.subtitle' | t }}</p>
         </div>
+        <mb-google-button />
         <div class="field">
           <label for="name">{{ 'auth.fields.name' | t }}</label>
           <input id="name" type="text" autocomplete="name" [placeholder]="'auth.register.namePlaceholder' | t" [value]="name()"

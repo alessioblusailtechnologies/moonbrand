@@ -19,7 +19,18 @@ export type AccountExists = (accountId: string) => Promise<boolean>;
 const PUBLIC_FILES = '/v1/files/';
 // Le rotte dei tool della chat hanno il loro accesso, con il token del job (modules/agent).
 const AGENT_ROUTES = '/v1/agent/';
-const PUBLIC_ROUTES = new Set(['/v1/health', '/v1/auth/sign-up', '/v1/auth/sign-in', '/v1/auth/refresh', '/v1/auth/sign-out']);
+const PUBLIC_ROUTES = new Set([
+  '/v1/health',
+  '/v1/auth/sign-up',
+  '/v1/auth/sign-in',
+  '/v1/auth/refresh',
+  '/v1/auth/sign-out',
+  '/v1/auth/email/confirm',
+  '/v1/auth/password/forgot',
+  '/v1/auth/password/reset',
+  '/v1/auth/google',
+  '/v1/auth/google/callback',
+]);
 
 export function supabaseVerifier(config: Pick<Config, 'SUPABASE_URL' | 'SUPABASE_JWT_SECRET'>): VerifyToken {
   if (config.SUPABASE_JWT_SECRET) {

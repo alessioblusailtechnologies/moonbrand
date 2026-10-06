@@ -2,7 +2,7 @@
 .chat {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 2 * var(--content-padding, 32px));
+  height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - var(--banner-height, 0px) - 2 * var(--content-padding, 32px));
   min-height: 480px;
   margin: 0 auto;
   animation: fade-up 240ms var(--ease);

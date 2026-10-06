@@ -7,11 +7,12 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Logo } from '../../ui/logo';
 import { AuthSide } from './auth-side';
+import { GoogleButton } from './google-button';
 
 @Component({
   selector: 'mb-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, AuthSide, Logo, TranslatePipe],
+  imports: [RouterLink, AuthSide, GoogleButton, Logo, TranslatePipe],
   styleUrl: './auth-layout.scss',
   template: `
     <mb-auth-side />
@@ -22,13 +23,17 @@ import { AuthSide } from './auth-side';
           <h1 class="title">{{ 'auth.login.title' | t }}</h1>
           <p class="body">{{ 'auth.login.subtitle' | t }}</p>
         </div>
+        <mb-google-button />
         <div class="field">
           <label for="email">{{ 'auth.fields.email' | t }}</label>
           <input id="email" type="email" autocomplete="email" [placeholder]="'auth.fields.emailPlaceholder' | t" [value]="email()"
             (input)="email.set($any($event.target).value)" />
         </div>
         <div class="field">
-          <label for="password">{{ 'auth.fields.password' | t }}</label>
+          <div class="label-row">
+            <label for="password">{{ 'auth.fields.password' | t }}</label>
+            <a routerLink="/password-dimenticata">{{ 'auth.login.forgot' | t }}</a>
+          </div>
           <input id="password" type="password" autocomplete="current-password" [placeholder]="'auth.login.passwordPlaceholder' | t"
             [value]="password()" (input)="password.set($any($event.target).value)" />
         </div>

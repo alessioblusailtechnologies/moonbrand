@@ -23,7 +23,8 @@
   display: none;
 }
 
-form {
+form,
+.form {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -43,6 +44,28 @@ form {
   background: rgba(214, 69, 40, 0.1);
   color: var(--danger);
   font-size: 13px;
+}
+
+.notice {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(47, 158, 106, 0.1);
+  color: var(--success);
+  font-size: 13px;
+}
+
+// "Password dimenticata?" sulla riga dell'etichetta, a destra.
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  a {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--primary-soft);
+  }
 }
 
 .submit {

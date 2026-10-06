@@ -8,11 +8,13 @@ import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 import type { Locale } from '../i18n/locales';
 
 // locale: la lingua dell'interfaccia e di tutto quello che il motore dice a chi usa moonbrand.
+// emailConfirmed: se ha aperto il link dell'email di benvenuto; finché no, lo studio glielo ricorda.
 export interface Account {
   id: string;
   email: string;
   name: string;
   locale: Locale;
+  emailConfirmed: boolean;
 }
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.
@@ -29,6 +31,21 @@ export interface UpdateMeRequest {
 
 export interface SignInRequest {
   email: string;
+  password: string;
+}
+
+// I token arrivano dai link delle email: /conferma-email?token=… e /nuova-password?token=….
+export interface ConfirmEmailRequest {
+  token: string;
+}
+
+// L'email per la nuova password parte nella lingua dell'account; a un indirizzo senza account non parte niente.
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
   password: string;
 }
 

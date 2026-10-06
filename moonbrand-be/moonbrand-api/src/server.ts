@@ -6,6 +6,7 @@ import { createPool } from './db/pool';
 import { supabaseAuthGateway } from './modules/auth/gateway';
 import { localBrandFiles } from './modules/brand-files/files';
 import { ensureBrandsBucket, s3BrandFiles } from './modules/brand-files/s3';
+import { resendMailer } from './modules/email/mailer';
 import { supabaseStorage } from './modules/media/storage';
 import { schedulePublishing } from './modules/social/publisher';
 import { scheduleMorningWelcome } from './modules/welcome/service';
@@ -23,6 +24,7 @@ const app = buildApp({
   auth: supabaseAuthGateway(settings),
   storage: supabaseStorage(settings),
   files,
+  mailer: resendMailer(settings),
   settings,
 });
 
