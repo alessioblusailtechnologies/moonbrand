@@ -60,6 +60,25 @@
       </div>
     }
 
+    @case ('pinterest') {
+      <div class="pin-media">
+        <ng-container [ngTemplateOutlet]="media" />
+      </div>
+      <div class="pin-bar" aria-hidden="true">
+        <span class="more-dots">•••</span>
+        <mb-icon name="share" [size]="18" />
+        <span class="grow"></span>
+        <span class="pin-save">{{ 'onboarding.post.pinterest.save' | t }}</span>
+      </div>
+      <div class="pin-text">
+        <ng-container [ngTemplateOutlet]="captionText" />
+      </div>
+      <div class="pin-author">
+        <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 28 }" />
+        <p class="who-name">{{ who.name }}</p>
+      </div>
+    }
+
     @default {
       <!-- LinkedIn e Facebook: chi pubblica, il testo sopra, l'immagine a tutta larghezza, le azioni con le parole. -->
       <header class="post-head">

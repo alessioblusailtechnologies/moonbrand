@@ -16,8 +16,18 @@ export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSumm
   return withIdentity(pool, identity, (db) => listBrandSummaries(db, identity.accountId));
 }
 
-export function createBrand(pool: pg.Pool, identity: Identity, { id, referenceExamples: _examples, ...draft }: CreateBrandRequest): Promise<BrandSummary> {
-  const stored: BrandDraft = { ...draft, channels: connectionsFrom(draft.channels, null), visual: storableVisual(identity.accountId, draft.visual) };
+// connected: i canali collegati nell'onboarding, già verificati su Zernio.
+export function createBrand(
+  pool: pg.Pool,
+  identity: Identity,
+  { id, referenceExamples: _examples, ...draft }: CreateBrandRequest,
+  connected: Partial<Channels> = {},
+): Promise<BrandSummary> {
+  const stored: BrandDraft = {
+    ...draft,
+    channels: { ...connectionsFrom(draft.channels, null), ...connected },
+    visual: storableVisual(identity.accountId, draft.visual),
+  };
   return withIdentity(pool, identity, async (db) => {
     const brand = await insertBrand(db, identity.accountId, id, stored);
     await setActiveBrand(db, identity.accountId, brand.id);
@@ -79,7 +89,12 @@ function connectionsFrom(channels: Channels, saved: Channels | null): Channels {
   const result = { ...channels };
   for (const id of Object.keys(result) as (keyof Channels)[]) {
     const connected = saved?.[id]?.accountId ? saved[id] : null;
-    result[id] = { selected: channels[id].selected, handle: connected?.handle ?? null, accountId: connected?.accountId ?? null };
+    result[id] = {
+      selected: channels[id].selected,
+      handle: connected?.handle ?? null,
+      accountId: connected?.accountId ?? null,
+      board: connected?.board ?? null,
+    };
   }
   return result;
 }

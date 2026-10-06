@@ -84,3 +84,7 @@
     </footer>
   }
 </div>
+@if (connection.choosing(); as pending) {
+  <mb-channel-choice [channel]="pending.channel" [choices]="pending.choices" [busy]="connection.selecting()"
+    (chosen)="connection.select($event, connected)" (cancelled)="connection.cancel()" />
+}

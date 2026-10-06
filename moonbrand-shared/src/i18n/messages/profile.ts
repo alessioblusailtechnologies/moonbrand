@@ -48,6 +48,7 @@ export const profile = defineMessages({
       accounts: 'Account {channel}',
       linkedinHint: 'Scegli se pubblicare come te o come una pagina aziendale che gestisci.',
       facebookHint: 'Scegli la Pagina su cui pubblicare: moonbrand pubblica solo lì.',
+      pinterestHint: 'Scegli la bacheca dove escono i pin: la cambi ricollegando Pinterest.',
       connect: 'Collega',
     },
     picker: {
@@ -110,6 +111,7 @@ export const profile = defineMessages({
       accounts: '{channel} accounts',
       linkedinHint: 'Choose whether to post as yourself or as a company page you manage.',
       facebookHint: 'Choose the Page to post on: moonbrand only posts there.',
+      pinterestHint: 'Choose the board where the pins go: you can change it by reconnecting Pinterest.',
       connect: 'Connect',
     },
     picker: {
@@ -173,6 +175,7 @@ export const profile = defineMessages({
       accounts: 'Comptes {channel}',
       linkedinHint: 'Choisissez de publier en votre nom ou au nom d’une page entreprise que vous gérez.',
       facebookHint: 'Choisissez la Page sur laquelle publier : moonbrand ne publie que là.',
+      pinterestHint: 'Choisissez le tableau où vont les épingles : vous le changez en reconnectant Pinterest.',
       connect: 'Connecter',
     },
     picker: {

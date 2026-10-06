@@ -6,7 +6,7 @@ import type { AgentContentRequest, AgentIdeaRequest } from '@moonbrand/shared/ap
 
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
-import { channelId } from '../brands/schemas';
+import { channelId, MAX_CHANNELS } from '../brands/schemas';
 import { sceneSchema } from '../contents/routes';
 import { channelsSchema, daySchema, slotCreateSchema, slotPatchSchema } from '../plan/routes';
 import { createAgentSlots, listAgentPlan, patchAgentSlot, proposeAgentPlan, removeAgentSlot } from './plan';
@@ -37,7 +37,7 @@ const contentSchema = z.object({
   slotId: z.uuid('Uscita non valida: usa l’id di piano_leggi.').optional(),
   title: z.string().trim().min(1).max(300),
   format: z.enum(['post', 'carousel', 'article', 'video']),
-  channels: z.array(channelId).min(1).max(5),
+  channels: z.array(channelId).min(1).max(MAX_CHANNELS),
   variants: z
     .array(z.object({ channel: channelId, text: z.string().trim().min(1).max(5000), hashtags: z.array(z.string().max(100)).max(30) }))
     .min(1),
@@ -53,7 +53,7 @@ const contentSchema = z.object({
         file: z.string().min(1).max(300),
         role: z.enum(['cover', 'slide', 'video', 'document']),
         index: z.number().int().min(0).max(20),
-        aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
+        aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']),
         channel: channelId.optional(),
       }),
     )

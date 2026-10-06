@@ -23,6 +23,7 @@ export const CHANNELS: { id: ChannelId; name: string }[] = [
   { id: 'facebook', name: 'Facebook' },
   { id: 'tiktok', name: 'TikTok' },
   { id: 'x', name: 'X' },
+  { id: 'pinterest', name: 'Pinterest' },
 ];
 
 // Gli esempi di post dell'onboarding: al massimo MAX_EXAMPLES, uno per canale sui primi canali scelti; con un canale

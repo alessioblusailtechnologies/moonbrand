@@ -6,7 +6,7 @@ import type { ContentChannelRequest, ContentEditRequest, ContentScriptRequest, C
 import type { VideoScene } from '@moonbrand/shared/domain/content';
 
 import type { BrandFiles } from '../brand-files/files';
-import { channelId } from '../brands/schemas';
+import { channelId, MAX_CHANNELS } from '../brands/schemas';
 import {
   addContentChannel,
   changeContentStatus,
@@ -28,7 +28,7 @@ const channelParams = contentParams.extend({ channel: channelId });
 
 const createSchema = z.object({
   format: z.enum(['post', 'carousel', 'article', 'video']),
-  channels: z.array(channelId).min(1, 'Scegli almeno un canale.').max(5),
+  channels: z.array(channelId).min(1, 'Scegli almeno un canale.').max(MAX_CHANNELS),
 }) satisfies z.ZodType<CreateContentRequest>;
 
 const editSchema = z.object({

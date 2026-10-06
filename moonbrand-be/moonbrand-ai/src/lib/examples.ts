@@ -32,6 +32,9 @@ const LOOK: Record<ChannelId, string> = {
     'e lontano dai bordi che l’app copre in basso e a destra; il brand si riconosce dai colori e dal tono',
   linkedin: 'sobrio e leggibile: un titolo chiaro, un concetto o un dato in primo piano, poca decorazione, il logo discreto',
   x: 'un messaggio solo, leggibile anche piccolo',
+  pinterest:
+    'un pin verticale da salvare: una foto bella e luminosa che occupa quasi tutto, un titolo grande e chiaro che dice cosa si ' +
+    'trova (un\'idea, una guida, un prodotto), leggibile anche come miniatura, e il nome o il logo del brand piccolo in basso',
 };
 
 // Una riga per canale: proporzione del post e confezione.

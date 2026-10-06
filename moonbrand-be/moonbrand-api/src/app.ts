@@ -66,7 +66,7 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
-  registerBrandRoutes(app, options.pool, options.files, options.storage);
+  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
@@ -75,7 +75,7 @@ export function buildApp(options: AppOptions) {
   registerConversationRoutes(app, options.pool, options.files);
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
-  registerSocialRoutes(app, options.pool, options.settings);
+  registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));

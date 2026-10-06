@@ -24,6 +24,7 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 | Facebook (facebook) | tono vicino e discorsivo, da 300 a 1.000 caratteri | — | 2 |
 | TikTok (tiktok) | didascalia cortissima, una o due righe sotto i 150 caratteri: sta sopra l’immagine | 4.000 | 4 |
 | X (x) | una sola idea: testo e hashtag insieme al massimo 280 caratteri | 280 | 2 |
+| Pinterest (pinterest) | la descrizione del pin, da 150 a 400 caratteri: dice cosa si trova e perché salvarlo, con le parole che la gente cerca (Pinterest è un motore di ricerca); il titolo del pin è headline, fino a 100 caratteri | 500 | 3 |
 
 Si scrive solo per i canali del contenuto. L’utente può correggere a mano i testi: quando riprendi un contenuto, parti dai testi com’è salvato.
 
@@ -31,12 +32,12 @@ Si scrive solo per i canali del contenuto. L’utente può correggere a mano i t
 
 Ogni canale ha le sue proporzioni, e non tutti reggono tutti i formati:
 
-| Formato | LinkedIn | Instagram | Facebook | TikTok | X |
-| --- | --- | --- | --- | --- | --- |
-| Post: la copertina | 1:1 | 4:5 | 4:5 | 9:16 | 16:9 |
-| Carosello: le slide | 4:5, e moonbrand ne fa il documento PDF | 4:5 | 4:5 | 9:16 (photo mode) | non c’è |
-| Articolo: la copertina | 16:9 | 4:5 | 4:5 | non c’è | 16:9 |
-| Video | 4:5 | 9:16 | 9:16 | 9:16 | 16:9 |
+| Formato | LinkedIn | Instagram | Facebook | TikTok | X | Pinterest |
+| --- | --- | --- | --- | --- | --- | --- |
+| Post: la copertina | 1:1 | 4:5 | 4:5 | 9:16 | 16:9 | 2:3 |
+| Carosello: le slide | 4:5, e moonbrand ne fa il documento PDF | 4:5 | 4:5 | 9:16 (photo mode) | non c’è | non c’è |
+| Articolo: la copertina | 16:9 | 4:5 | 4:5 | non c’è | 16:9 | 2:3 |
+| Video | 4:5 | 9:16 | 9:16 | 9:16 | 16:9 | 9:16 |
 
 Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, nella confezione dei suoi canali (vedi sotto): non si ritaglia, si reimpagina. Due canali nella stessa proporzione ma con confezioni diverse hanno ciascuno i suoi file: quelli fatti apposta per un canale si salvano con channel, quelli senza channel valgono per gli altri canali di quella proporzione.
 
@@ -45,7 +46,7 @@ Si fa un’uscita per ogni proporzione diversa tra i canali del contenuto, nella
 - **Carosello**: da 5 a 7 slide. La prima è l’aggancio, le centrali sviluppano un punto ciascuna, l’ultima chiude con un’azione; titoli fino a 40 caratteri, testi fino a 160. headline è il titolo della prima slide.
   Immagini: un giro di slide per proporzione, con le stesse slide e gli stessi index: role «slide», index da 0. In 9:16 (TikTok) tieni i testi lontani dai bordi, che l’app copre in basso e a destra. Su LinkedIn il carosello si pubblica come documento: il PDF lo fa moonbrand dalle slide 4:5, tu non devi farlo.
 - **Articolo**: su LinkedIn il testo lungo, con un’apertura forte e tre o quattro paragrafi; sugli altri canali un testo breve che lo presenta. headline è il titolo dell’articolo; slides resta vuoto.
-  Immagini: la copertina, una per proporzione (16:9 per LinkedIn e X, 4:5 per Instagram e Facebook): role «cover», index da 0.
+  Immagini: la copertina, una per proporzione (16:9 per LinkedIn e X, 4:5 per Instagram e Facebook, 2:3 per Pinterest): role «cover», index da 0. Su Pinterest il pin porta al sito del brand.
 - **Video**: si fa con la skill moonbrand:video; i testi per canale seguono le regole di questa skill, come didascalie del video. headline è il titolo del video, se ne ha uno; slides resta vuoto; script e scenes sono il copione.
   File: per ogni proporzione il video in MP4 con role «video» e la sua copertina con role «cover», stessa proporzione e stesso index, da 0.
 
@@ -62,9 +63,10 @@ L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. 
 | TikTok | nativa, come la fa chi usa l’app: foto o clip a tutto schermo e poche grafiche, il brand si riconosce dai colori e dal tono più che dal logo. Il testo a schermo è quello dell’app, in TikTok Sans: frasi brevi, una riga per riquadro bianco arrotondato con testo nero, oppure testo bianco con il contorno nero, nel terzo centrale o basso e fuori dalle zone che l’app copre. L’aggancio sta nel primo secondo, spesso in prima persona o con «POV:». Niente schermata finale con il logo: l’invito sta nell’ultima frase a schermo o nella didascalia. La copertina è un fotogramma con l’aggancio scritto sopra nello stesso modo. |
 | LinkedIn | sobria e leggibile: titoli chiari, dati e concetti in primo piano, poca decorazione, il logo discreto. |
 | X | un’immagine sola con un messaggio solo, leggibile anche piccola. |
+| Pinterest | un pin verticale da salvare: una foto bella e luminosa che occupa quasi tutto, un titolo grande e chiaro sull’immagine che dice cosa si trova (un’idea, una guida, una ricetta, un prodotto), leggibile anche come miniatura nella griglia; il nome o il logo del brand piccolo in basso. Contenuti che durano nel tempo più che notizie del giorno. |
 
 - Sotto «Lo stile», in CLAUDE.md, la voce «Per canale» dice come si presenta il brand su ciascun canale nei suoi riferimenti: seguila per palette, font e quanta grafica usare. La confezione del canale (dove sta il testo, come si aggancia, come si chiude) resta quella di questa tabella.
-- Instagram e Facebook condividono i file. TikTok ha i suoi anche quando la proporzione è la stessa, come il video 9:16 accanto al Reel: salvali con channel «tiktok».
+- Instagram e Facebook condividono i file. TikTok ha i suoi anche quando la proporzione è la stessa, come il video 9:16 accanto al Reel: salvali con channel «tiktok». Pinterest ha i suoi in 2:3; il suo video 9:16 è lo stesso del Reel.
 - Se l’utente chiede la stessa confezione per tutti i canali, fai come chiede.
 
 ## Immagini

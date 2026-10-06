@@ -6,7 +6,7 @@ import { hasDocument } from '@moonbrand/shared/domain/content';
 import { putBrandFiles } from '../lib/brand-sync';
 import { carouselDocument } from '../lib/document';
 
-const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
+const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x', 'pinterest']);
 
 const content = {
   slotId: z
@@ -55,7 +55,7 @@ const content = {
         file: z.string().describe('Il file finale, percorso relativo alla cartella del brand, es. chat/<id>/cover-4x5.png o chat/<id>/video-9x16.mp4'),
         role: z.enum(['cover', 'slide', 'video']).describe('video: l’MP4 di un video, che vuole una copertina (cover) nella stessa proporzione'),
         index: z.number().int().min(0).describe('L’ordine: 0 per la prima copertina o la prima slide'),
-        aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1']),
+        aspect: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']),
         channel: channel
           .optional()
           .describe(

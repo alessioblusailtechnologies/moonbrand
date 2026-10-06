@@ -22,6 +22,7 @@ export const SIZES = {
   '9:16': { width: 1080, height: 1920 },
   '16:9': { width: 1600, height: 900 },
   '1.91:1': { width: 1200, height: 628 },
+  '2:3': { width: 1000, height: 1500 },
 } as const;
 type Aspect = keyof typeof SIZES;
 
@@ -106,7 +107,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
           z.object({
             html: z.string().describe('Il file HTML, relativo alla cartella del brand; percorsi di immagini e CSS relativi a lui'),
             file: z.string().describe('L’immagine da scrivere, .png o .jpg, relativa alla cartella del brand'),
-            formato: z.enum(Object.keys(SIZES) as [Aspect, ...Aspect[]]).describe('4:5 1080×1350, 1:1 1080×1080, 9:16 1080×1920, 16:9 1600×900, 1.91:1 1200×628'),
+            formato: z.enum(Object.keys(SIZES) as [Aspect, ...Aspect[]]).describe('4:5 1080×1350, 1:1 1080×1080, 9:16 1080×1920, 16:9 1600×900, 1.91:1 1200×628, 2:3 1000×1500 (pin di Pinterest)'),
           }),
         )
         .min(1)

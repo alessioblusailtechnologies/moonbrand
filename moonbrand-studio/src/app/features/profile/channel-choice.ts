@@ -171,11 +171,12 @@ export class ChannelChoiceDialog {
 
   protected readonly picked = signal<string | null>(null);
   protected readonly name = computed(() => channelName(this.channel()));
-  protected readonly hint = computed(() =>
-    this.channel() === 'linkedin'
-      ? this.i18n.t('profile.channelChoice.linkedinHint')
-      : this.i18n.t('profile.channelChoice.facebookHint'),
-  );
+  protected readonly hint = computed(() => {
+    const channel = this.channel();
+    if (channel === 'linkedin') return this.i18n.t('profile.channelChoice.linkedinHint');
+    if (channel === 'pinterest') return this.i18n.t('profile.channelChoice.pinterestHint');
+    return this.i18n.t('profile.channelChoice.facebookHint');
+  });
 
   constructor() {
     lockPageScroll();

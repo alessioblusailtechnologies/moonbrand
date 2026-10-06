@@ -3,9 +3,11 @@ import type pg from 'pg';
 
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
 
+import type { Config } from '../../config';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
+import { onboardingConnections } from '../social/onboarding';
 import { activeBrandSchema, brandParams, createBrandSchema, updateBrandSchema } from './schemas';
 import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, queueVideoSetup, restyleBrand, saveBrand } from './service';
 
@@ -29,13 +31,20 @@ async function adoptExamples(files: BrandFiles, brandId: string, examples: strin
   }
 }
 
-export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles, storage: MediaStorage): void {
+export function registerBrandRoutes(
+  app: FastifyInstance,
+  pool: pg.Pool,
+  files: BrandFiles,
+  storage: MediaStorage,
+  settings: Pick<Config, 'ZERNIO_API_KEY'>,
+): void {
   app.get('/v1/brands', (request) => listBrands(pool, request.identity));
 
   app.post('/v1/brands', async (request, reply) => {
     const body = createBrandSchema.parse(request.body);
     await files.claim(body.id, request.identity.accountId);
-    const brand = await createBrand(pool, request.identity, body);
+    const connected = await onboardingConnections(settings.ZERNIO_API_KEY, body.id, body.channels);
+    const brand = await createBrand(pool, request.identity, body, connected);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
     // Lo stile dai riferimenti, le prime idee e il progetto video partono subito, lato server, e insieme: si preparano
     // anche se chi ha creato il brand chiude la pagina. L'onboarding li segue fino alla fine. Fanno parte

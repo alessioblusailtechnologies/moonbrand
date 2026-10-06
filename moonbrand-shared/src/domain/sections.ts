@@ -21,7 +21,8 @@ export function sectionCopy(key: SectionKey, kind: BrandKind, locale: Locale = D
   return { name: copy.name[kind], title: copy.title[kind], subtitle: copy.subtitle[kind] };
 }
 
-export function sectionError(key: SectionKey, draft: BrandDraft, locale: Locale = DEFAULT_LOCALE): string | null {
+// canConnect: chi mostra la sezione sa collegare i canali (studio); l'app non ancora, e lì basta sceglierli.
+export function sectionError(key: SectionKey, draft: BrandDraft, locale: Locale = DEFAULT_LOCALE, canConnect = true): string | null {
   const { identity, positioning, channels, themes } = draft;
   const errors = sections[locale].errors;
   switch (key) {
@@ -34,8 +35,10 @@ export function sectionError(key: SectionKey, draft: BrandDraft, locale: Locale 
       if (positioning.goals.length === 0) return errors.goal;
       if (positioning.audiences.length === 0) return errors.audience;
       return null;
+    // Si usano i canali collegati: senza almeno uno non si va avanti, perché moonbrand non avrebbe dove pubblicare.
     case 'channels':
-      return CHANNELS.some(({ id }) => channels[id].selected) ? null : errors.channel;
+      if (!canConnect) return CHANNELS.some(({ id }) => channels[id]?.selected) ? null : errors.chooseChannel;
+      return CHANNELS.some(({ id }) => channels[id] && isConnected(channels[id])) ? null : errors.channel;
     case 'themes':
       if (themes.length === 0) return errors.theme;
       if (themes.some((theme) => !theme.name.trim())) return errors.themeName;
@@ -52,11 +55,8 @@ export function sectionStatus(key: SectionKey, draft: BrandDraft): SectionStatus
     case 'positioning':
     case 'themes':
       return sectionError(key, draft) ? 'missing' : 'complete';
-    case 'channels': {
-      const selected = CHANNELS.filter(({ id }) => draft.channels[id].selected);
-      if (selected.length === 0) return 'missing';
-      return selected.some(({ id }) => isConnected(draft.channels[id])) ? 'complete' : 'partial';
-    }
+    case 'channels':
+      return sectionError(key, draft) ? 'missing' : 'complete';
     case 'voice':
       return draft.voice.cards.length > 0 ? 'complete' : 'missing';
     case 'visual':
@@ -89,9 +89,9 @@ export function sectionSummary(key: SectionKey, draft: BrandDraft, locale: Local
       return parts.filter(Boolean).join(' · ');
     }
     case 'channels': {
-      const selected = CHANNELS.filter(({ id }) => draft.channels[id].selected);
-      if (selected.length === 0) return summary.noChannels;
-      return selected.map(({ id, name }) => t(isConnected(draft.channels[id]) ? 'connected' : 'toConnect', { channel: name })).join(' · ');
+      const connected = CHANNELS.filter(({ id }) => draft.channels[id] && isConnected(draft.channels[id]));
+      if (connected.length === 0) return summary.noChannels;
+      return connected.map(({ name }) => t('connected', { channel: name })).join(' · ');
     }
     case 'themes':
       return draft.themes.length

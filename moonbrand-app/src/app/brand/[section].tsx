@@ -40,7 +40,7 @@ export default function BrandSectionScreen() {
 
   const save = async () => {
     if (!draft || saving) return;
-    const error = sectionError(key, draft);
+    const error = sectionError(key, draft, undefined, false);
     if (error) return toast(error);
     setSaving(true);
     try {

@@ -72,7 +72,7 @@ export default function Onboarding() {
   const step = STEPS[state.step];
   const draft = state.draft;
   const copy = copyFor(state);
-  const error = draft && step !== 'kind' && step !== 'summary' ? sectionError(step, draft) : null;
+  const error = draft && step !== 'kind' && step !== 'summary' ? sectionError(step, draft, undefined, false) : null;
   const patchDraft = (patch: Partial<BrandDraft>, themesEdited = state.themesEdited) => draft && update({ ...state, draft: { ...draft, ...patch }, themesEdited });
 
   const go = (index: number) => {

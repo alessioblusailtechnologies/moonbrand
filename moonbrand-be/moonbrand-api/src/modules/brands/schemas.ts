@@ -20,7 +20,10 @@ import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
 const text = (max: number) => z.string().max(max);
 
-export const channelId = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x']);
+export const channelId = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x', 'pinterest']);
+
+// Quanti canali si possono chiedere insieme: tutti.
+export const MAX_CHANNELS = channelId.options.length;
 
 export const identity = z.object({
   kind: z.enum(['person', 'company', 'client']),
@@ -39,8 +42,13 @@ export const positioning = z.object({
   postsPerWeek: z.number().int().min(0).max(21),
 }) satisfies z.ZodType<Positioning>;
 
-// handle e accountId li scrive solo il collegamento (modulo social): qui si accettano e poi il salvataggio li ignora.
-const channelState = z.object({ selected: z.boolean(), handle: text(200).nullable(), accountId: text(100).nullable().optional() });
+// handle, accountId e board li scrive solo il collegamento (modulo social): qui si accettano e poi il salvataggio li ignora.
+const channelState = z.object({
+  selected: z.boolean(),
+  handle: text(200).nullable(),
+  accountId: text(100).nullable().optional(),
+  board: z.object({ id: text(100), name: text(200) }).nullable().optional(),
+});
 
 const channels = z.object({
   linkedin: channelState,
@@ -48,6 +56,8 @@ const channels = z.object({
   facebook: channelState,
   tiktok: channelState,
   x: channelState,
+  // Una bozza di prima che ci fosse Pinterest (studio aperto da prima, app non aggiornata) arriva senza.
+  pinterest: channelState.default({ selected: false, handle: null }),
 }) satisfies z.ZodType<Channels>;
 
 const themes = z
@@ -90,7 +100,7 @@ const cardText = z.object({
 
 const example = z.object({
   channel: channelId,
-  aspect: z.enum(['4:5', '1:1', '9:16', '1.91:1']),
+  aspect: z.enum(['4:5', '1:1', '9:16', '1.91:1', '2:3']),
   page: z.object({ templateId: text(60), custom: text(60).optional(), text: cardText }),
   file: mediaFile.nullable(),
   photo: mediaFile.nullable().optional(),

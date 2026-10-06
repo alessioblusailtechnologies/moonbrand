@@ -14,7 +14,7 @@ import type { SlotDraft } from '@moonbrand/shared/domain/plan';
 import { addDays, isDay, isTime } from '@moonbrand/shared/lib/dates';
 
 import type { BrandFiles } from '../brand-files/files';
-import { channelId } from '../brands/schemas';
+import { channelId, MAX_CHANNELS } from '../brands/schemas';
 import {
   addIdeaToPlan,
   confirmPlan,
@@ -33,7 +33,7 @@ const contentParams = z.object({ contentId: z.uuid('Contenuto non trovato.') });
 
 export const daySchema = z.string().refine(isDay, 'Data non valida: serve AAAA-MM-GG.');
 export const timeSchema = z.string().refine(isTime, 'Ora non valida: serve HH:mm.');
-export const channelsSchema = z.array(channelId).min(1, 'Scegli almeno un canale.').max(5);
+export const channelsSchema = z.array(channelId).min(1, 'Scegli almeno un canale.').max(MAX_CHANNELS);
 
 // Al massimo tre mesi per volta: il calendario ne mostra uno, con i bordi delle settimane.
 const rangeSchema = z
@@ -44,7 +44,7 @@ export const planRequestSchema = z.object({
   startDate: daySchema,
   weeks: z.number().int().min(1).max(12),
   perWeek: z.number().int().min(1).max(7),
-  channels: z.array(channelId).max(5).default([]),
+  channels: z.array(channelId).max(MAX_CHANNELS).default([]),
 }) satisfies z.ZodType<PlanProposalRequest, unknown>;
 
 export const slotDraftSchema = z.object({

@@ -84,7 +84,27 @@ function fromOutcome(outcome: PostOutcome) {
 }
 
 // Il post di un contenuto su un canale: il testo della sua variante e i file nella proporzione del canale, caricati su Zernio.
-async function buildPost(client: Zernio, files: BrandFiles, content: Content, channel: ChannelId, accountId: string): Promise<PostRequest> {
+// Dove esce il post: l'account collegato e, per Pinterest, la bacheca e il sito a cui porta il pin.
+interface Target {
+  accountId: string;
+  board: { id: string; name: string } | null;
+  site: string;
+}
+
+// Il link del pin: il sito del brand, in https (Pinterest non accetta altro); niente link se il sito non è un indirizzo.
+function pinLink(site: string): string | null {
+  const value = site.trim();
+  if (!value) return null;
+  try {
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    url.protocol = 'https:';
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+async function buildPost(client: Zernio, files: BrandFiles, content: Content, channel: ChannelId, target: Target): Promise<PostRequest> {
   const variant = content.variants.find((item) => item.channel === channel);
   if (!variant?.text.trim()) throw ApiError.invalid(`Manca il testo per ${channelName(channel)}.`);
   const all = content.visual.files ?? [];
@@ -119,13 +139,24 @@ async function buildPost(client: Zernio, files: BrandFiles, content: Content, ch
   } else {
     const cover = mine.find((file) => file.role === 'cover');
     if (cover) mediaItems = [{ type: 'image', url: await upload(cover) }];
-    else if (channel === 'instagram' || channel === 'tiktok') throw ApiError.invalid(`Su ${channelName(channel)} serve un’immagine.`);
+    else if (channel === 'instagram' || channel === 'tiktok' || channel === 'pinterest') {
+      throw ApiError.invalid(`Su ${channelName(channel)} serve un’immagine.`);
+    }
+  }
+
+  // Ogni pin va su una bacheca, con un titolo (al massimo 100 caratteri) e, se c'è, il link al sito.
+  if (channel === 'pinterest') {
+    if (!target.board) throw ApiError.invalid('Manca la bacheca di Pinterest: ricollega Pinterest dalle Impostazioni brand.');
+    specific.boardId = target.board.id;
+    specific.title = content.title.slice(0, 100);
+    const link = pinLink(target.site);
+    if (link) specific.link = link;
   }
 
   return {
     content: postText(variant),
     mediaItems,
-    platform: { platform: platformOf(channel), accountId, ...(Object.keys(specific).length > 0 && { platformSpecificData: specific }) },
+    platform: { platform: platformOf(channel), accountId: target.accountId, ...(Object.keys(specific).length > 0 && { platformSpecificData: specific }) },
     // TikTok vuole il consenso esplicito: chi approva il contenuto in moonbrand l'ha visto e ne ha deciso l'uscita.
     ...(channel === 'tiktok' && {
       tiktokSettings: {
@@ -142,15 +173,16 @@ async function buildPost(client: Zernio, files: BrandFiles, content: Content, ch
 
 async function publishOne(pool: pg.Pool, files: BrandFiles, client: Zernio, claimed: Claimed, log: FastifyBaseLogger): Promise<void> {
   try {
-    const { rows } = await pool.query<{ state: ChannelState | null }>('select channels -> $2 as state from presenza.brands where id = $1', [
-      claimed.brand_id,
-      claimed.channel,
-    ]);
+    const { rows } = await pool.query<{ state: ChannelState | null; site: string | null }>(
+      "select channels -> $2 as state, identity ->> 'site' as site from presenza.brands where id = $1",
+      [claimed.brand_id, claimed.channel],
+    );
     const accountId = rows[0]?.state?.accountId;
     if (!accountId) throw ApiError.invalid(`${channelName(claimed.channel)} non è collegato: collegalo dalle Impostazioni brand.`);
     const content = await findContent(pool, claimed.content_id);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    const post = await buildPost(client, files, content, claimed.channel, accountId);
+    const target: Target = { accountId, board: rows[0]?.state?.board ?? null, site: rows[0]?.site ?? '' };
+    const post = await buildPost(client, files, content, claimed.channel, target);
     await settle(pool, claimed.id, fromOutcome(await client.publish(post, claimed.id)));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

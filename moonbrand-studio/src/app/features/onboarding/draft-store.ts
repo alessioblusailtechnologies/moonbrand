@@ -55,16 +55,16 @@ function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: W
 export abstract class DraftStore<S extends DraftState = DraftState> {
   protected abstract readonly state: WritableSignal<S>;
 
-  // I canali si collegano solo a un brand che esiste già: dalle Impostazioni brand, non nell'onboarding.
-  readonly connectable: boolean = false;
+  // Dove si torna dalla pagina di accesso del social, a collegamento fatto.
+  readonly connectReturn: string = '/impostazioni';
 
   // Se ci sono modifiche non salvate, che uscendo dalla pagina (per collegare un canale) andrebbero perse.
   unsaved(): boolean {
     return false;
   }
 
-  // Un canale collegato o scollegato dal server: nell'onboarding non succede.
-  applyChannel(_id: ChannelId, _channel: ChannelState): void {}
+  // Un canale collegato o scollegato dal server.
+  abstract applyChannel(id: ChannelId, channel: ChannelState): void;
 
   readonly draft = computed(() => this.state().draft);
   readonly insights = computed(() => this.state().insights);

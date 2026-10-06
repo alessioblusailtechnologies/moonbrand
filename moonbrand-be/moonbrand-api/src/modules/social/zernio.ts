@@ -6,7 +6,8 @@ import { ApiError } from '../../errors';
 // Zernio collega i social dei brand e pubblica al loro posto (docs.zernio.com). Ogni brand ha il suo profilo Zernio,
 // che si chiama con l'id del brand: si ritrova per nome, senza salvarne l'id. Gli account collegati stanno nel profilo.
 // Il collegamento è headless: dove il social chiede di scegliere (la Pagina di Facebook, il profilo o la pagina
-// aziendale di LinkedIn) la scelta la mostra studio, non Zernio; gli altri social tornano già collegati.
+// aziendale di LinkedIn, la bacheca di Pinterest) la scelta la mostra studio, non Zernio; gli altri social tornano
+// già collegati.
 
 const API = 'https://zernio.com/api/v1';
 const TIMEOUT_MS = 20_000;
@@ -21,6 +22,7 @@ const PLATFORMS: Record<ChannelId, string> = {
   facebook: 'facebook',
   tiktok: 'tiktok',
   x: 'twitter',
+  pinterest: 'pinterest',
 };
 
 export interface ZernioAccount {
@@ -29,10 +31,12 @@ export interface ZernioAccount {
   username?: string;
   displayName?: string;
   isActive: boolean;
+  // Pinterest: la bacheca scelta collegando, dove escono i pin.
+  board?: { id: string; name: string };
 }
 
 // I canali dove si sceglie dove pubblicare, dopo l'accesso al social.
-export const CHOOSING: Partial<Record<ChannelId, true>> = { facebook: true, linkedin: true };
+export const CHOOSING: Partial<Record<ChannelId, true>> = { facebook: true, linkedin: true, pinterest: true };
 
 interface LinkedInOrganization {
   id: string;
@@ -103,6 +107,8 @@ export interface Zernio {
   choices(brandId: string, channel: ChannelId, request: ChannelChoicesRequest): Promise<ChannelChoice[]>;
   select(brandId: string, channel: ChannelId, request: ChannelChoicesRequest, choiceId: string): Promise<ZernioAccount>;
   account(brandId: string, channel: ChannelId, accountId: string): Promise<ZernioAccount | null>;
+  // Gli account collegati nel profilo del brand per questo canale (anche prima che il brand sia creato).
+  accounts(brandId: string, channel: ChannelId): Promise<ZernioAccount[]>;
   disconnect(accountId: string): Promise<void>;
 }
 
@@ -138,6 +144,15 @@ export function zernio(apiKey: string): Zernio {
     const id = created.profile?._id ?? created._id;
     if (!id) throw new ApiError(502, 'SOCIAL_FAILED', 'Il collegamento dei social non è riuscito: profilo non creato.');
     return id;
+  };
+
+  // Le bacheche di Pinterest dove l'account può pubblicare, durante il collegamento.
+  const boards = async (profile: string, request: ChannelChoicesRequest) => {
+    const query = new URLSearchParams({ profileId: profile, tempToken: request.tempToken });
+    const { boards: list } = await call<{ boards: { id: string; name: string; privacy?: string }[] }>(`/connect/pinterest/select-board?${query}`, {
+      headers: { 'x-connect-token': request.connectToken },
+    });
+    return list.map((board) => ({ id: board.id, name: board.name, detail: board.privacy === 'PRIVATE' ? 'Bacheca segreta' : 'Bacheca' }));
   };
 
   return {
@@ -198,6 +213,7 @@ export function zernio(apiKey: string): Zernio {
         const { pages } = await call<{ pages: { id: string; name: string; category?: string }[] }>(`/connect/facebook/select-page?${query}`, { headers });
         return pages.map((page) => ({ id: page.id, name: page.name, detail: page.category ?? 'Pagina Facebook', picture: null }));
       }
+      if (channel === 'pinterest') return (await boards(profile, request)).map((board) => ({ ...board, picture: null }));
       const user = parsed<{ displayName?: string; username?: string; profilePicture?: string }>(request.userProfile, {});
       const organizations = parsed<LinkedInOrganization[]>(request.organizations, []);
       // I loghi delle pagine aziendali: se non arrivano, le pagine si mostrano senza.
@@ -220,7 +236,17 @@ export function zernio(apiKey: string): Zernio {
       const headers = { 'x-connect-token': request.connectToken };
       const userProfile = parsed<Record<string, unknown>>(request.userProfile, {});
       let account: SelectedAccount | undefined;
-      if (channel === 'facebook') {
+      let board: { id: string; name: string } | undefined;
+      if (channel === 'pinterest') {
+        const chosen = (await boards(profile, request)).find((item) => item.id === choiceId);
+        if (!chosen) throw ApiError.invalid('Bacheca non trovata: ricomincia il collegamento.');
+        board = { id: chosen.id, name: chosen.name };
+        ({ account } = await call<{ account?: SelectedAccount }>('/connect/pinterest/select-board', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ profileId: profile, boardId: chosen.id, boardName: chosen.name, tempToken: request.tempToken, userProfile }),
+        }));
+      } else if (channel === 'facebook') {
         ({ account } = await call<{ account?: SelectedAccount }>('/connect/facebook/select-page', {
           method: 'POST',
           headers,
@@ -242,7 +268,14 @@ export function zernio(apiKey: string): Zernio {
         }));
       }
       if (!account) throw new ApiError(502, 'SOCIAL_FAILED', 'Il collegamento dei social non è riuscito: riprova.');
-      return { _id: account.accountId, platform: PLATFORMS[channel], username: account.username, displayName: account.displayName, isActive: account.isActive };
+      return {
+        _id: account.accountId,
+        platform: PLATFORMS[channel],
+        username: account.username,
+        displayName: account.displayName,
+        isActive: account.isActive,
+        ...(board && { board }),
+      };
     },
 
     // L'account tornato dalla redirezione, solo se è davvero nel profilo del brand e della piattaforma giusta.
@@ -252,6 +285,14 @@ export function zernio(apiKey: string): Zernio {
       const query = new URLSearchParams({ profileId: profile, platform: PLATFORMS[channel] });
       const { accounts } = await call<{ accounts: ZernioAccount[] }>(`/accounts?${query}`);
       return accounts.find((account) => account._id === accountId) ?? null;
+    },
+
+    async accounts(brandId, channel) {
+      const profile = await profileId(brandId, false);
+      if (!profile) return [];
+      const query = new URLSearchParams({ profileId: profile, platform: PLATFORMS[channel] });
+      const { accounts } = await call<{ accounts: ZernioAccount[] }>(`/accounts?${query}`);
+      return accounts.filter((account) => account.isActive);
     },
 
     // Un account già tolto da Zernio va bene lo stesso: il canale si scollega comunque.

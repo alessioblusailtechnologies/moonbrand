@@ -24,7 +24,7 @@ export function unsupportedLine(format: ContentFormat, channels: string[], local
 }
 
 // Quanti caratteri del testo si vedono nel feed prima di «…altro»: l'anteprima taglia lì, come il canale. X mostra tutto.
-export const FOLD: Record<ChannelId, number | null> = { linkedin: 210, instagram: 125, facebook: 250, tiktok: 80, x: null };
+export const FOLD: Record<ChannelId, number | null> = { linkedin: 210, instagram: 125, facebook: 250, tiktok: 80, x: null, pinterest: 100 };
 
 export function cssAspect(aspect: string): string {
   return aspect.replace(':', ' / ');

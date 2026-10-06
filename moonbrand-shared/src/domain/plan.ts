@@ -82,6 +82,7 @@ export const BEST_TIMES: Record<ChannelId, { days: number[]; time: string }> = {
   facebook: { days: [2, 4, 6], time: '13:00' },
   tiktok: { days: [2, 4, 6, 7], time: '19:00' },
   x: { days: [1, 2, 3, 4, 5], time: '09:00' },
+  pinterest: { days: [5, 6, 7], time: '20:30' },
 };
 
 // In quali giorni della settimana uscire, dato il ritmo.

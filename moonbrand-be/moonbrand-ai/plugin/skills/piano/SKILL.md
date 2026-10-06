@@ -21,7 +21,7 @@ Un contenuto sta in una sola uscita; un’uscita ha al massimo un contenuto.
 
 - Il ritmo è quello del brand (uscite a settimana, in CLAUDE.md): conta i contenuti, non i canali. Un post su LinkedIn e Instagram insieme è un’uscita.
 - Non mettere due uscite nello stesso giorno se non te lo chiedono.
-- Giorni e ore che funzionano, finché non avremo le statistiche dei canali: LinkedIn martedì-giovedì alle 8:30, Instagram lunedì, mercoledì, venerdì e sabato alle 18:30, Facebook martedì, giovedì e sabato alle 13:00, TikTok martedì, giovedì, sabato e domenica alle 19:00, X da lunedì a venerdì alle 9:00. Un’uscita su più canali prende l’ora del canale principale.
+- Giorni e ore che funzionano, finché non avremo le statistiche dei canali: LinkedIn martedì-giovedì alle 8:30, Instagram lunedì, mercoledì, venerdì e sabato alle 18:30, Facebook martedì, giovedì e sabato alle 13:00, TikTok martedì, giovedì, sabato e domenica alle 19:00, X da lunedì a venerdì alle 9:00, Pinterest venerdì, sabato e domenica alle 20:30. Un’uscita su più canali prende l’ora del canale principale.
 - Tieni conto di ricorrenze, eventi e milestone del brand: un contenuto legato a una data esce prima della data, non dopo.
 
 ## L’equilibrio

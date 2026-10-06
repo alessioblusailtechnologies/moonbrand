@@ -1,6 +1,6 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 
-import type { BrandKind, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
+import type { BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
 
@@ -45,6 +45,7 @@ export class OnboardingStore extends DraftStore<State> {
   readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : 0));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
   readonly direction = computed(() => this.state().direction);
+  override readonly connectReturn = '/onboarding';
 
   constructor() {
     super();
@@ -86,6 +87,11 @@ export class OnboardingStore extends DraftStore<State> {
     this.withoutReference(file);
   }
 
+  // Collegato o scollegato nel profilo Zernio del brand che sta nascendo: lo ricorda la bozza, fino alla creazione.
+  applyChannel(id: ChannelId, channel: ChannelState): void {
+    this.state.update((state) => (state.draft ? { ...state, draft: { ...state.draft, channels: { ...state.draft.channels, [id]: channel } } } : state));
+  }
+
   reset(): void {
     this.state.set(INITIAL);
   }
@@ -94,7 +100,10 @@ export class OnboardingStore extends DraftStore<State> {
     try {
       const raw = localStorage.getItem(key);
       const state: State = raw ? { ...INITIAL, ...(JSON.parse(raw) as Partial<State>) } : INITIAL;
-      return state.draft && !state.brandId ? { ...state, brandId: newBrandId() } : state;
+      if (!state.draft) return state;
+      // Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato.
+      const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
+      return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
     } catch {
       return INITIAL;
     }

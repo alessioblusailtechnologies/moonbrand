@@ -398,10 +398,10 @@ export interface ConfirmChannelRequest {
   accountId: string;
 }
 
-// Facebook e LinkedIn chiedono dove pubblicare (una Pagina, il profilo o una pagina aziendale): la scelta la fa studio,
-// al posto della pagina di Zernio. Al ritorno dal social l'indirizzo porta step (select_page o select_organization)
-// e questi dati, che servono a elencare le scelte e a completare il collegamento. userProfile e organizations
-// arrivano come JSON codificato nell'indirizzo: si passano così come sono.
+// Facebook, LinkedIn e Pinterest chiedono dove pubblicare (una Pagina, il profilo o una pagina aziendale, la bacheca): la
+// scelta la fa studio, al posto della pagina di Zernio. Al ritorno l'indirizzo porta step (select_page, select_organization
+// o select_board) e questi dati, che servono a elencare le scelte e a completare il collegamento. userProfile e
+// organizations arrivano come JSON codificato nell'indirizzo: si passano così come sono.
 export interface ChannelChoicesRequest {
   tempToken: string;
   connectToken: string;

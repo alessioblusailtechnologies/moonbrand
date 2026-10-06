@@ -38,7 +38,7 @@ Quando fai il video, segui il copione approvato: se mentre lo fai serve cambiare
 
 | Proporzione | Misure | Dove |
 | --- | --- | --- |
-| 9:16 | 1080×1920 | Reels di Instagram e Facebook, TikTok, YouTube Shorts |
+| 9:16 | 1080×1920 | Reels di Instagram e Facebook, TikTok, YouTube Shorts, pin video di Pinterest |
 | 4:5 | 1080×1350 | feed di Instagram, Facebook e LinkedIn |
 | 1:1 | 1080×1080 | feed di tutti i canali |
 | 16:9 | 1920×1080 | X, LinkedIn, YouTube |

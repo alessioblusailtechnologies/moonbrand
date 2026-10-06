@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { VisualEditJobRequest, VisualJobRequest, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
 
-import { channelId, identity, positioning, voiceCard } from '../brands/schemas';
+import { channelId, identity, MAX_CHANNELS, positioning, voiceCard } from '../brands/schemas';
 
 export const websiteJobSchema = z.object({
   site: z.string().trim().min(3, 'Scrivi l’indirizzo del sito.').max(300),
@@ -14,7 +14,7 @@ export const visualJobSchema = z.object({
   brand: z.object({
     identity,
     positioning,
-    channels: z.array(channelId).min(1, 'Scegli almeno un canale.').max(5),
+    channels: z.array(channelId).min(1, 'Scegli almeno un canale.').max(MAX_CHANNELS),
     themes: z.array(z.string().max(200)).max(20),
     voice: voiceCard.nullable(),
     palette: z.array(z.string().max(20)).max(8),

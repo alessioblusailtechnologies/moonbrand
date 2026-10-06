@@ -215,7 +215,7 @@ export function ChannelsEditor({ draft, onChange }: { draft: BrandDraft; onChang
   return (
     <View style={{ gap: 10 }}>
       {CHANNELS.map(({ id, name }) => {
-        const state = draft.channels[id];
+        const state = draft.channels[id] ?? { selected: false, handle: null };
         return (
           <Pressable
             key={id}

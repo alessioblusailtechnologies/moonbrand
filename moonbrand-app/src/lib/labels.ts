@@ -44,7 +44,7 @@ export const FORMAT_REQUEST: Record<ContentFormat, string> = { post: 'un post', 
 export const FORMAT_NAMES: Record<ContentFormat, string> = { post: 'il post', carousel: 'il carosello', article: 'l’articolo', video: 'il video' };
 
 // Quanti caratteri del testo si vedono nel feed prima di «…altro». X mostra tutto.
-export const FOLD: Record<ChannelId, number | null> = { linkedin: 210, instagram: 125, facebook: 250, tiktok: 80, x: null };
+export const FOLD: Record<ChannelId, number | null> = { linkedin: 210, instagram: 125, facebook: 250, tiktok: 80, x: null, pinterest: 100 };
 
 // «16:9» → larghezza / altezza.
 export function aspectRatio(aspect: string | null | undefined): number {

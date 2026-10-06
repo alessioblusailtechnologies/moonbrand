@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import type { BrandProfile, ChannelChoice, ChannelChoicesRequest } from '@moonbrand/shared/api/contract';
-import type { ChannelId, SectionKey } from '@moonbrand/shared/domain/brand';
-import { CHANNELS, channelName, kindLabel } from '@moonbrand/shared/domain/catalog';
+import type { BrandProfile } from '@moonbrand/shared/api/contract';
+import type { SectionKey } from '@moonbrand/shared/domain/brand';
+import { kindLabel } from '@moonbrand/shared/domain/catalog';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { BrandsService } from '../../core/brands/brands.service';
+import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -79,9 +80,9 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
         }
       }
     }
-    @if (choosing(); as pending) {
-      <mb-channel-choice [channel]="pending.channel" [choices]="pending.choices" [busy]="selecting()" (chosen)="select($event)"
-        (cancelled)="cancelChoice()" />
+    @if (connection.choosing(); as pending) {
+      <mb-channel-choice [channel]="pending.channel" [choices]="pending.choices" [busy]="connection.selecting()"
+        (chosen)="connection.select($event, connected)" (cancelled)="connection.cancel()" />
     }
   `,
   styles: `
@@ -178,9 +179,7 @@ export class ProfilePage {
   protected readonly profile = signal<BrandProfile | null>(null);
   protected readonly loading = signal(true);
   protected readonly editing = signal<SectionKey | null>(null);
-  // Facebook e LinkedIn al ritorno dal social: le scelte di dove pubblicare, con i dati per completare il collegamento.
-  protected readonly choosing = signal<{ brandId: string; channel: ChannelId; choices: ChannelChoice[]; request: ChannelChoicesRequest } | null>(null);
-  protected readonly selecting = signal(false);
+  protected readonly connection = inject(ChannelConnectionService);
   // Solo l'id: dopo un salvataggio nome e logo cambiano, ma il profilo non va riletto.
   private readonly activeId = computed(() => this.brands.activeBrand()?.id ?? null);
 
@@ -202,78 +201,22 @@ export class ProfilePage {
 
   constructor() {
     pageHeader(() => [{ label: this.i18n.t('profile.title') }]);
-    void this.finishConnection();
+    this.finishConnection();
     effect(() => {
       const brandId = this.activeId();
       if (brandId) untracked(() => void this.load(brandId));
     });
   }
 
-  // Il ritorno dalla pagina di accesso del social (Collega nei Canali): Zernio ha aggiunto all'indirizzo l'account
-  // collegato, l'errore o, per Facebook e LinkedIn, i dati per scegliere dove pubblicare. Ci sono token temporanei:
-  // l'indirizzo torna subito pulito e i dati restano solo in memoria, fino al server.
-  private async finishConnection(): Promise<void> {
-    const params = this.route.snapshot.queryParamMap;
-    const channel = params.get('canale') as ChannelId | null;
-    const brandId = params.get('brand');
-    if (!channel || !brandId || !CHANNELS.some(({ id }) => id === channel)) return;
-    const accountId = params.get('accountId');
-    const failed = params.get('error');
-    const step = params.get('step');
-    const request: ChannelChoicesRequest = {
-      tempToken: params.get('tempToken') ?? '',
-      connectToken: params.get('connect_token') ?? '',
-      userProfile: params.get('userProfile') ?? '',
-      ...(params.get('organizations') && { organizations: params.get('organizations')! }),
-    };
-    void this.router.navigate([], { queryParams: {}, replaceUrl: true });
-    if (!failed && (step === 'select_page' || step === 'select_organization') && request.tempToken) {
-      try {
-        const choices = await this.brands.channelChoices(brandId, channel, request);
-        this.choosing.set({ brandId, channel, choices, request });
-      } catch (error) {
-        this.toast.show(errorMessage(error, this.failed(channel)));
-      }
-      return;
-    }
-    if (failed || !accountId) {
-      this.toast.show(params.get('error_message') ?? this.failed(channel));
-      return;
-    }
-    try {
-      const { state } = await this.brands.confirmChannel(brandId, channel, accountId);
-      this.toast.show(this.i18n.t('profile.connection.connected', { channel: channelName(channel), handle: state.handle ?? '' }));
-      if (this.activeId() === brandId) await this.load(brandId);
-    } catch (error) {
-      this.toast.show(errorMessage(error, this.failed(channel)));
-    }
+  // Il ritorno dalla pagina di accesso del social (Collega nei Canali): il collegamento si finisce qui.
+  private finishConnection(): void {
+    const back = this.connection.finish(this.route.snapshot.queryParamMap, this.connected);
+    if (back) void this.router.navigate([], { queryParams: {}, replaceUrl: true });
   }
 
-  protected async select(choiceId: string): Promise<void> {
-    const pending = this.choosing();
-    if (!pending || this.selecting()) return;
-    this.selecting.set(true);
-    try {
-      const { state } = await this.brands.selectChannel(pending.brandId, pending.channel, { ...pending.request, choiceId });
-      this.choosing.set(null);
-      this.toast.show(this.i18n.t('profile.connection.connected', { channel: channelName(pending.channel), handle: state.handle ?? '' }));
-      if (this.activeId() === pending.brandId) await this.load(pending.brandId);
-    } catch (error) {
-      this.toast.show(errorMessage(error, this.failed(pending.channel)));
-    } finally {
-      this.selecting.set(false);
-    }
-  }
-
-  protected cancelChoice(): void {
-    const pending = this.choosing();
-    this.choosing.set(null);
-    if (pending) this.toast.show(this.i18n.t('profile.connection.cancelled', { channel: channelName(pending.channel) }));
-  }
-
-  private failed(channel: ChannelId): string {
-    return this.i18n.t('profile.connection.failed', { channel: channelName(channel) });
-  }
+  protected readonly connected = async (brandId: string) => {
+    if (this.activeId() === brandId) await this.load(brandId);
+  };
 
   protected async load(brandId: string): Promise<void> {
     this.editing.set(null);

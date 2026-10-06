@@ -17,8 +17,6 @@ export class ProfileDraftStore extends DraftStore {
   readonly dirty = computed(() => this.state().draft !== this.saved());
   // Il brand com'è salvato: cambia anche senza Salva quando si collega o scollega un canale.
   readonly savedDraft = this.saved.asReadonly();
-  override readonly connectable = true;
-
   override unsaved(): boolean {
     return this.dirty();
   }

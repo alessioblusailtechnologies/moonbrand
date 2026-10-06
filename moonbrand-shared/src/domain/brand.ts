@@ -2,7 +2,7 @@ import type { Locale } from '../i18n/locales';
 
 export type BrandKind = 'person' | 'company' | 'client';
 
-export type ChannelId = 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'x';
+export type ChannelId = 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'x' | 'pinterest';
 
 export interface MediaFile {
   path: string | null;
@@ -33,6 +33,8 @@ export interface ChannelState {
   handle: string | null;
   // L'account collegato su Zernio, che pubblica al posto del brand: lo scrive solo il server, quando il collegamento riesce.
   accountId?: string | null;
+  // Pinterest: la bacheca dove escono i pin, scelta quando si collega.
+  board?: { id: string; name: string } | null;
 }
 
 export type Channels = Record<ChannelId, ChannelState>;
@@ -129,7 +131,7 @@ export interface BrandLine {
   copy: string[];
 }
 
-export type Aspect = '4:5' | '1:1' | '9:16' | '1.91:1';
+export type Aspect = '4:5' | '1:1' | '9:16' | '1.91:1' | '2:3';
 
 export interface CardText {
   kicker: string;

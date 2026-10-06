@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { BrandKind, SectionKey } from '@moonbrand/shared/domain/brand';
+import type { BrandKind, ChannelId, ChannelState, SectionKey } from '@moonbrand/shared/domain/brand';
 import { isSkippable, sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../core/brands/brands.service';
+import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -18,6 +19,7 @@ import { Logo } from '../../ui/logo';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
+import { ChannelChoiceDialog } from '../profile/channel-choice';
 import { DraftStore } from './draft-store';
 import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
 import { ChannelsStep } from './steps/channels-step';
@@ -62,6 +64,7 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
     VoiceStep,
     VisualStep,
     SummaryStep,
+    ChannelChoiceDialog,
   ],
   // I passi scrivono nella bozza del brand nuovo.
   providers: [{ provide: DraftStore, useExisting: OnboardingStore }],
@@ -76,6 +79,7 @@ export class Onboarding {
   private readonly i18n = inject(I18nService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
+  protected readonly connection = inject(ChannelConnectionService);
 
   protected readonly creating = signal(false);
   // Dopo la creazione: i passaggi di stile e prime idee, finché non sono finiti.
@@ -116,9 +120,17 @@ export class Onboarding {
   constructor() {
     lockPageScroll();
     void this.brands.ensureLoaded();
+    // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali.
+    if (this.connection.finish(inject(ActivatedRoute).snapshot.queryParamMap, this.connected)) {
+      void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
     const fromNewBrand = this.router.currentNavigation()?.extras.state?.['newBrand'] === true;
     if (fromNewBrand && this.store.draft()) void this.askRestart();
   }
+
+  protected readonly connected = (brandId: string, channel: ChannelId, state: ChannelState) => {
+    if (brandId === this.store.brandId()) this.store.applyChannel(channel, state);
+  };
 
   protected primaryLabel(): string {
     const step = this.store.step();
