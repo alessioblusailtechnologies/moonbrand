@@ -51,8 +51,10 @@ export async function publishNow(pool: pg.Pool, files: BrandFiles, identity: Ide
     const found = await findContent(db, contentId);
     if (!found) throw ApiError.notFound('Contenuto non trovato.');
     await checkPublishable(db, found);
-    // Un canale dove non era uscito si riprova: il pubblicatore prende solo i canali senza una pubblicazione.
-    await db.query(`delete from presenza.publications where content_id = $1 and status = 'failed'`, [found.id]);
+    // Un canale dove non era uscito si riprova: il pubblicatore prende solo i canali senza una pubblicazione. Le
+    // pubblicazioni le scrive il pubblicatore, con la connessione del server: chi usa moonbrand le legge soltanto, quindi
+    // anche questa riga passa da lì, ora che si sa che il contenuto è suo.
+    await pool.query(`delete from presenza.publications where content_id = $1 and status = 'failed'`, [found.id]);
     const content = (await setContentStatus(db, found.id, 'approved')) ?? found;
     const now = planNow();
     const slot = content.slotId ? await findSlot(db, content.slotId) : null;
