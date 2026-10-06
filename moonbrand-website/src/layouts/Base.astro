@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { getCopy, LANGS, pagePath, type Lang, type Page } from '../i18n';
+import { CONTACT_EMAIL, getCopy, LANGS, pagePath, type Lang, type Page } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -33,6 +33,8 @@ const jsonLd = page === 'home' && !noindex && {
       name: 'Moonbrand',
       url: site.origin,
       logo: new URL('/icon-512.png', site).href,
+      email: CONTACT_EMAIL,
+      parentOrganization: { '@type': 'Organization', name: 'Blusail Technologies' },
     },
     {
       '@type': 'WebSite',
@@ -89,6 +91,7 @@ const jsonLd = page === 'home' && !noindex && {
     <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <slot name="head" />
   </head>
   <body>
     <slot />

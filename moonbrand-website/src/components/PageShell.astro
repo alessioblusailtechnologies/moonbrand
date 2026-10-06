@@ -20,6 +20,7 @@ const { lang, page, title, description, eyebrow, heading, lead, noindex } = Astr
 ---
 
 <Base lang={lang} page={page} title={title} description={description} noindex={noindex}>
+  <slot name="head" slot="head" />
   <Header lang={lang} page={page} />
   <main class="page">
     <div class="intro">

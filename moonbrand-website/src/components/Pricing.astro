@@ -1,0 +1,127 @@
+---
+// I prezzi: piani e crediti vengono da moonbrand-shared, gli stessi che usa lo studio per contare i crediti.
+import { CREDIT_TOPUP, SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '../../../moonbrand-shared/src/domain/subscription';
+import { getCopy, STUDIO_URL, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { pricing, meta } = getCopy(lang);
+const locale = meta.ogLocale.replace('_', '-');
+const eur = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+// 'always': in italiano anche 2.500 col punto, come 15.000 (di suo Intl lo mette solo da 5 cifre).
+const num = (n: number) => new Intl.NumberFormat(locale, { useGrouping: 'always' }).format(n);
+
+const ids = Object.keys(SUBSCRIPTION_PLANS) as SubscriptionPlanId[];
+const recommended: SubscriptionPlanId = 'pro';
+const cheapest = Math.min(...ids.map((id) => SUBSCRIPTION_PLANS[id].priceEur));
+const fill = (text: string) =>
+  text
+    .replace('{from}', eur(cheapest))
+    .replace('{topup}', num(CREDIT_TOPUP.credits))
+    .replace('{topupPrice}', eur(CREDIT_TOPUP.priceEur))
+    .replace('{topupUltra}', eur(CREDIT_TOPUP.ultraPriceEur));
+const signup = `${STUDIO_URL}/register`;
+
+// Per Google: il prodotto con le sue offerte, una per piano.
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Moonbrand',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: ids.map((id) => ({
+    '@type': 'Offer',
+    name: SUBSCRIPTION_PLANS[id].name,
+    price: SUBSCRIPTION_PLANS[id].priceEur,
+    priceCurrency: 'EUR',
+    url: signup,
+  })),
+};
+---
+
+<PageShell lang={lang} page="pricing" title={pricing.title} description={fill(pricing.description)} eyebrow={pricing.eyebrow} heading={pricing.heading} lead={pricing.lead}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <div class="plans">
+    {ids.map((id) => {
+      const plan = SUBSCRIPTION_PLANS[id];
+      const highlight = id === recommended;
+      return (
+        <article class:list={['plan', { highlight }]}>
+          <div class="plan-head">
+            <h2>{plan.name}</h2>
+            {highlight && <span class="badge">{pricing.recommended}</span>}
+          </div>
+          <p class="tagline">{pricing.plans[id].tagline}</p>
+          <p class="price">
+            <span class="amount">{eur(plan.priceEur)}</span>
+            <span class="per">{pricing.perMonth}</span>
+          </p>
+          <p class="terms">{pricing.terms}</p>
+          <p class="credits mono">{pricing.credits.replace('{n}', num(plan.monthlyCredits))}</p>
+          <p class="example">{pricing.plans[id].example}</p>
+          <a href={signup} class:list={['btn', highlight ? 'btn-dark' : 'btn-outline']}>{pricing.cta}</a>
+        </article>
+      );
+    })}
+  </div>
+
+  <section class="included">
+    <h2 class="display">{pricing.includedTitle}</h2>
+    <ul>
+      {pricing.included.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="faq">
+    <h2 class="display">{pricing.faqTitle}</h2>
+    {pricing.faq.map(({ q, a }) => (
+      <details>
+        <summary>{q}</summary>
+        <p>{fill(a)}</p>
+      </details>
+    ))}
+  </section>
+</PageShell>
+
+<style>
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .plan { display: flex; flex-direction: column; padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: #FAFAF8; }
+  .plan.highlight { background: #fff; border-color: var(--ink); box-shadow: 0 18px 40px rgba(11, 19, 36, 0.1); }
+  .plan-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .badge { padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; font-weight: 600; }
+  .tagline { margin: 10px 0 24px; min-height: 3em; font-size: 15px; line-height: 1.5; color: var(--text); }
+  .price { margin: 0; display: flex; align-items: baseline; gap: 6px; }
+  .amount { font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 54px; line-height: 1; letter-spacing: -0.02em; }
+  .per { font-size: 15px; color: var(--muted); }
+  .terms { margin: 6px 0 20px; font-size: 13px; color: var(--muted); }
+  .credits { margin: 0; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--accent-dark); }
+  .example { margin: 0 0 24px; flex: 1; font-size: 14.5px; line-height: 1.5; color: var(--text); }
+  .plan .btn { padding: 12px 16px; }
+  .btn-outline { border: 1px solid var(--ink); color: var(--ink); }
+  .btn-outline:hover { background: var(--ink); color: #fff; }
+
+  .included, .faq { margin-top: 88px; }
+  .included h2, .faq h2 { font-size: clamp(34px, 4.4vw, 48px); font-weight: 800; margin-bottom: 28px; }
+  .included ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 32px; }
+  .included li { display: flex; gap: 12px; font-size: 16px; line-height: 1.5; color: var(--ink); }
+  .included li::before { content: '✓'; color: var(--accent-dark); font-weight: 700; }
+
+  details { border-bottom: 1px solid var(--line); }
+  summary { padding: 20px 0; font-size: 17px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; color: var(--muted); font-weight: 400; font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: '–'; }
+  details p { margin: 0 0 22px; max-width: 680px; font-size: 16px; line-height: 1.6; color: var(--text); }
+
+  @media (max-width: 820px) {
+    .plans { grid-template-columns: 1fr; }
+    .tagline { min-height: 0; }
+    .included ul { grid-template-columns: 1fr; }
+  }
+</style>

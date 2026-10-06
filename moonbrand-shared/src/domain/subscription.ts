@@ -8,5 +8,8 @@ export const SUBSCRIPTION_PLANS = {
 
 export type SubscriptionPlanId = keyof typeof SUBSCRIPTION_PLANS;
 
+// La ricarica quando i crediti del mese finiscono: con Ultra costa meno.
+export const CREDIT_TOPUP = { credits: 1_000, priceEur: 50, ultraPriceEur: 40 } as const;
+
 // Finché non ci sono i pagamenti, ogni account conta i crediti come se avesse il piano medio.
 export const DEFAULT_SUBSCRIPTION_PLAN: SubscriptionPlanId = 'pro';

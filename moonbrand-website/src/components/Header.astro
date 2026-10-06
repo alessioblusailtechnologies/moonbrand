@@ -21,6 +21,7 @@ const home = homePath(lang);
       <a href={`${home}#piattaforma`}>{nav.platform}</a>
       <a href={`${home}#risultato`}>{nav.why}</a>
       <a href={`${home}#sistema`}>{nav.features}</a>
+      <a href={pagePath(lang, 'pricing')} aria-current={page === 'pricing' ? 'page' : undefined}>{nav.pricing}</a>
       <a href={`${home}#prova`}>{nav.trial}</a>
     </nav>
     <div class="actions">

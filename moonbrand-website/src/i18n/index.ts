@@ -24,6 +24,7 @@ export function homePath(lang: Lang): string {
 /** Le pagine del sito con il loro indirizzo in ogni lingua: per Google conta che sia nella lingua della pagina. */
 export const PAGES = {
   home: { it: '', en: '', fr: '' },
+  pricing: { it: 'prezzi', en: 'pricing', fr: 'tarifs' },
   contact: { it: 'contatti', en: 'contact', fr: 'contact' },
   privacy: { it: 'privacy', en: 'privacy', fr: 'confidentialite' },
   terms: { it: 'termini', en: 'terms', fr: 'conditions' },
