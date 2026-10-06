@@ -11,7 +11,8 @@
             <mb-icon name="chevron-left" />
           </button>
         } @else if (!canClose()) {
-          <mb-logo />
+          <mb-logo class="logo-full" />
+          <mb-logo class="logo-compact" [compact]="true" />
         }
       }
     </div>
