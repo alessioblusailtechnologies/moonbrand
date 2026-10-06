@@ -154,3 +154,9 @@
     width: 100%;
   }
 }
+
+.loading {
+  display: grid;
+  place-items: center;
+  padding: 64px 16px;
+}

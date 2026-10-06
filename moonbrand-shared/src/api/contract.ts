@@ -68,6 +68,17 @@ export interface BrandSummary {
   color: string;
 }
 
+// La bozza dell'onboarding sul server, una per account: la stessa in ogni scheda e dispositivo. Lo stato è quello dello
+// studio, il server lo tiene com'è. revision cresce a ogni salvataggio; 0 vuol dire nessuna bozza.
+export interface OnboardingDraft {
+  state: unknown;
+  revision: number;
+}
+
+// Si salva dicendo da quale revisione si parte: se un'altra scheda ha salvato nel frattempo, o il brand della bozza è
+// già nato, il server risponde 409 e la scheda rilegge.
+export type OnboardingDraftSave = OnboardingDraft;
+
 // referenceExamples: gli esempi scelti nell'onboarding, che diventano i riferimenti da seguire del brand.
 export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[] };
 

@@ -110,6 +110,7 @@ export class ChannelsStep {
     }
     this.busy.set(id);
     try {
+      await this.store.persist();
       await this.connection.start(brandId, id, this.store.connectReturn);
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('onboarding.channels.connectFailed', { channel: channelName(id) })));

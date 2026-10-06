@@ -7,6 +7,7 @@ import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
 import { REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
+import { deleteOnboardingDraft } from '../onboarding/drafts';
 import { setActiveBrand } from '../auth/accounts';
 import type { MediaStorage } from '../media/storage';
 import { brandExists, findBrandDraft, insertBrand, listBrandSummaries, updateBrand } from './repository';
@@ -31,6 +32,8 @@ export function createBrand(
   return withIdentity(pool, identity, async (db) => {
     const brand = await insertBrand(db, identity.accountId, id, stored);
     await setActiveBrand(db, identity.accountId, brand.id);
+    // Il brand è nato: la bozza dell'onboarding non serve più, in nessuna scheda.
+    await deleteOnboardingDraft(db, identity.accountId);
     return brand;
   });
 }

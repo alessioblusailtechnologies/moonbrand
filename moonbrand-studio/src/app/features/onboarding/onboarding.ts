@@ -120,10 +120,11 @@ export class Onboarding {
   constructor() {
     lockPageScroll();
     void this.brands.ensureLoaded();
-    // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali.
-    if (this.connection.finish(inject(ActivatedRoute).snapshot.queryParamMap, this.connected)) {
-      void this.router.navigate([], { queryParams: {}, replaceUrl: true });
-    }
+    // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali: l'indirizzo (con i token) si
+    // ripulisce subito, il canale entra nella bozza quando la bozza è arrivata dal server.
+    const params = inject(ActivatedRoute).snapshot.queryParamMap;
+    if (params.has('canale')) void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    void this.store.whenReady().then(() => this.connection.finish(params, this.connected));
   }
 
   protected readonly connected = (brandId: string, channel: ChannelId, state: ChannelState) => {

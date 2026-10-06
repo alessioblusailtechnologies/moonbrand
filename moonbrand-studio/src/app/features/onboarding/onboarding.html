@@ -50,6 +50,9 @@
         </div>
         <mb-step-list [steps]="steps()" [waiting]="'onboarding.preparing.waiting' | t" />
       </div>
+    } @else if (!store.ready()) {
+      <!-- La bozza arriva dal server: si aspetta, per non mostrare l'inizio e poi saltare al passo dove si era. -->
+      <div class="loading"><span class="spinner"></span></div>
     } @else {
       @for (key of [step]; track key) {
         <div class="step" [class.back]="store.direction() === -1">

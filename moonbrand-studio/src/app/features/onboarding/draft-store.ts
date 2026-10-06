@@ -58,6 +58,11 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
   // Dove si torna dalla pagina di accesso del social, a collegamento fatto.
   readonly connectReturn: string = '/impostazioni';
 
+  // Prima di lasciare la pagina (la pagina di accesso di un social): quello che va salvato è salvato.
+  persist(): Promise<void> {
+    return Promise.resolve();
+  }
+
   // Se ci sono modifiche non salvate, che uscendo dalla pagina (per collegare un canale) andrebbero perse.
   unsaved(): boolean {
     return false;

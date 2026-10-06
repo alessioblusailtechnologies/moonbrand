@@ -1,4 +1,8 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
+import type { OnboardingDraft, OnboardingDraftSave } from '@moonbrand/shared/api/contract';
 
 import type { BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
@@ -34,15 +38,30 @@ function newBrandId(): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-// La bozza del brand nuovo, passo dopo passo; resta nel browser finché il brand non è creato.
+// Dopo quanto un cambiamento della bozza va sul server: i passi si scrivono a mano, non serve un salvataggio a ogni tasto.
+const SAVE_DELAY_MS = 600;
+
+// La bozza del brand nuovo, passo dopo passo. Sta sul server (una per account), così ogni scheda e ogni dispositivo
+// vedono la stessa, e quando il brand nasce sparisce ovunque. Ogni salvataggio parte dalla revisione che la scheda
+// conosce: se un'altra scheda ha salvato nel frattempo, o il brand è già nato, il server dice di no e si rilegge.
 @Injectable({ providedIn: 'root' })
 export class OnboardingStore extends DraftStore<State> {
+  private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
   private readonly brands = inject(BrandsService);
   private readonly i18n = inject(I18nService);
   private readonly confirm = inject(ConfirmService);
-  private readonly storageKey = computed(() => `moonbrand/onboarding/v1/${this.auth.account()?.id ?? 'anon'}`);
-  protected readonly state = signal<State>(this.read(this.storageKey()));
+  private readonly accountId = computed(() => this.auth.account()?.id ?? null);
+  protected readonly state = signal<State>(INITIAL);
+
+  // La bozza è arrivata dal server: prima i passi non si mostrano, per non partire dall'inizio e poi saltare avanti.
+  readonly ready = signal(false);
+  private loaded: Promise<void> = Promise.resolve();
+  // Lo stato com'è sul server e la sua revisione (0: nessuna bozza). Quando lo stato in memoria è un altro, si salva.
+  private synced: State = INITIAL;
+  private revision = 0;
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
+  private saving: Promise<void> = Promise.resolve();
 
   readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : 0));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
@@ -52,14 +71,17 @@ export class OnboardingStore extends DraftStore<State> {
   constructor() {
     super();
     effect(() => {
-      const key = this.storageKey();
-      this.state.set(this.read(key));
+      const accountId = this.accountId();
+      untracked(() => (this.loaded = this.load(accountId)));
     });
+    // Ogni cambiamento va sul server poco dopo.
     effect(() => {
-      const value = this.state();
-      try {
-        localStorage.setItem(this.storageKey(), JSON.stringify(value));
-      } catch {}
+      const state = this.state();
+      if (this.ready() && state !== this.synced) untracked(() => this.scheduleSave());
+    });
+    // Tornando su questa scheda si rilegge: un'altra può aver cambiato la bozza, o creato il brand.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.ready() && this.state() === this.synced) void this.reload();
     });
     // Una bozza il cui brand esiste già è rimasta da un onboarding finito altrove (un'altra scheda, un altro passaggio):
     // il brand c'è, la bozza non serve più.
@@ -72,6 +94,7 @@ export class OnboardingStore extends DraftStore<State> {
   // Prima di un brand nuovo, se ce n'è uno a metà: si riprende o si ricomincia. Lo chiede chi apre l'onboarding, prima
   // di aprirlo, così la domanda non dipende da come ci si arriva.
   async offerRestart(): Promise<void> {
+    await this.loaded;
     const draft = this.draft();
     if (!draft) return;
     const name = draft.identity.name.trim();
@@ -119,20 +142,105 @@ export class OnboardingStore extends DraftStore<State> {
     this.state.update((state) => (state.draft ? { ...state, draft: { ...state.draft, channels: { ...state.draft.channels, [id]: channel } } } : state));
   }
 
+  // Ricomincia, o brand creato: la bozza si butta, anche sul server.
   reset(): void {
-    this.state.set(INITIAL);
+    clearTimeout(this.saveTimer);
+    this.adopt(INITIAL, 0);
+    this.saving = this.saving.then(() =>
+      firstValueFrom(this.http.delete('/v1/onboarding/draft')).then(
+        () => undefined,
+        () => undefined,
+      ),
+    );
   }
 
-  private read(key: string): State {
+  // Quando la bozza è arrivata dal server.
+  whenReady(): Promise<void> {
+    return this.loaded;
+  }
+
+  // Subito sul server, per esempio prima di andare alla pagina di accesso di un social.
+  override persist(): Promise<void> {
+    clearTimeout(this.saveTimer);
+    this.saving = this.saving.then(() => this.push());
+    return this.saving;
+  }
+
+  private scheduleSave(): void {
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => void this.persist(), SAVE_DELAY_MS);
+  }
+
+  private async push(): Promise<void> {
+    const state = this.state();
+    if (state === this.synced || !this.accountId()) return;
     try {
-      const raw = localStorage.getItem(key);
-      const state: State = raw ? { ...INITIAL, ...(JSON.parse(raw) as Partial<State>) } : INITIAL;
-      if (!state.draft) return state;
-      // Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato.
-      const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
-      return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
-    } catch {
-      return INITIAL;
+      const saved = await firstValueFrom(
+        this.http.put<OnboardingDraft>('/v1/onboarding/draft', { state, revision: this.revision } satisfies OnboardingDraftSave),
+      );
+      this.revision = saved.revision;
+      this.synced = state;
+    } catch (error) {
+      // Un'altra scheda ha salvato, o il brand è già nato: vale quello che c'è sul server.
+      if (error instanceof HttpErrorResponse && error.status === 409) await this.reload();
     }
+  }
+
+  private async load(accountId: string | null): Promise<void> {
+    this.ready.set(false);
+    clearTimeout(this.saveTimer);
+    try {
+      if (!accountId) {
+        this.adopt(INITIAL, 0);
+        return;
+      }
+      const server = await firstValueFrom(this.http.get<OnboardingDraft>('/v1/onboarding/draft'));
+      if (this.accountId() !== accountId) return;
+      this.adopt(normalize(server.state), server.revision);
+      // La bozza di prima, rimasta nel browser: se sul server non c'è niente, ci va lei.
+      const legacy = readLegacy(accountId);
+      if (legacy && server.revision === 0) this.state.set(legacy);
+    } catch {
+      this.adopt(INITIAL, 0);
+    } finally {
+      if (this.accountId() === accountId) this.ready.set(true);
+    }
+  }
+
+  private async reload(): Promise<void> {
+    try {
+      const server = await firstValueFrom(this.http.get<OnboardingDraft>('/v1/onboarding/draft'));
+      this.adopt(normalize(server.state), server.revision);
+    } catch {
+      // Resta quella in memoria: il prossimo salvataggio riprova.
+    }
+  }
+
+  private adopt(state: State, revision: number): void {
+    this.synced = state;
+    this.revision = revision;
+    this.state.set(state);
+  }
+}
+
+// Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato.
+function normalize(raw: unknown): State {
+  if (!raw || typeof raw !== 'object') return INITIAL;
+  const state: State = { ...INITIAL, ...(raw as Partial<State>) };
+  if (!state.draft) return state;
+  const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
+  return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
+}
+
+// Prima la bozza stava nel browser: la si legge una volta, per portarla sul server, e si toglie.
+function readLegacy(accountId: string): State | null {
+  const key = `moonbrand/onboarding/v1/${accountId}`;
+  try {
+    const raw = localStorage.getItem(key);
+    localStorage.removeItem(key);
+    const state = raw ? normalize(JSON.parse(raw)) : null;
+    return state?.draft ? state : null;
+  } catch {
+    return null;
   }
 }
