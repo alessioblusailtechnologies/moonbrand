@@ -26,8 +26,11 @@ export const unconfirmedGuard: CanActivateFn = () => {
   return auth.account()?.emailConfirmed === false || inject(Router).createUrlTree(['/']);
 };
 
+// inject() solo prima dell'await: dopo non c'è più il contesto, e il Router chiesto lì fa fallire la navigazione
+// (pagina bianca per chi non ha ancora brand).
 export const hasBrandsGuard: CanActivateFn = async () => {
   const brands = inject(BrandsService);
+  const router = inject(Router);
   await brands.ensureLoaded();
-  return brands.brands().length > 0 || inject(Router).createUrlTree(['/onboarding']);
+  return brands.brands().length > 0 || router.createUrlTree(['/onboarding']);
 };
