@@ -45,7 +45,7 @@ L'accesso SSH è solo a chiave. Se la chiave si perde: console del pannello Hetz
 | `…/moonbrand-be/moonbrand-ai/.env`, `.env.lambda` | `.env` del worker e chiavi AWS di Remotion Lambda (600) |
 | `/srv/moonbrand/studio` | lo studio compilato, servito da Caddy |
 | `/srv/moonbrand/brands`, `/srv/moonbrand/claude` | copie di lavoro dei brand e configurazione di Claude Code del worker |
-| `/etc/caddy/Caddyfile` | dominio, `/v1/*` → API su `localhost:3012`, il resto → studio |
+| `/etc/caddy/Caddyfile` | dominio, `/v1/*` → API su `localhost:3012`, il resto → studio (`index.html` sempre ricontrollato, file con l'hash in cache un anno, file mancanti in 404) |
 | `/etc/systemd/system/moonbrand-{api,worker}.service` | i due servizi |
 
 ## Aggiornare
@@ -57,7 +57,7 @@ Si rifà solo quello che è cambiato:
 |---|---|
 | `moonbrand-be/moonbrand-api` | `npm ci && npm run build`, riavvio di `moonbrand-api` |
 | `moonbrand-be/moonbrand-ai` | `npm ci`, riavvio di `moonbrand-worker` |
-| `moonbrand-studio` | `npm ci && npm run build`, la cartella dello studio svuotata e ricopiata |
+| `moonbrand-studio` | `npm ci && npm run build`, i file nuovi copiati sopra i vecchi |
 | `moonbrand-shared` | tutti e tre: lo usano API, worker e studio |
 | `moonbrand-be/moonbrand-api/migrations` | la migration sul DB **prima** del riavvio (vedi sotto) |
 
@@ -71,14 +71,15 @@ cd ~/moonbrand && git pull -q && git log --oneline -1
 cd moonbrand-be/moonbrand-api && npm ci --no-audit --no-fund >/tmp/api-ci.log 2>&1 && npm run build >/tmp/api-build.log 2>&1 && echo api_ok
 cd ../moonbrand-ai && npm ci --no-audit --no-fund >/tmp/ai-ci.log 2>&1 && echo worker_ok
 cd ~/moonbrand/moonbrand-studio && npm ci --no-audit --no-fund >/tmp/st-ci.log 2>&1 && npm run build >/tmp/st-build.log 2>&1
-rm -rf /srv/moonbrand/studio/* && cp -r dist/moonbrand-studio/browser/* /srv/moonbrand/studio/ && echo studio_ok"'
+cp -r dist/moonbrand-studio/browser/* /srv/moonbrand/studio/ && find /srv/moonbrand/studio -type f -mtime +7 -delete && echo studio_ok"'
 ssh moonbrand 'systemctl restart moonbrand-api moonbrand-worker'
 ```
 
 Se un passo fallisce, il log è in `/tmp/*.log` sul server (`ssh moonbrand 'tail -30 /tmp/st-build.log'`).
 
 Solo lo studio (per esempio una modifica grafica) non tocca i servizi: niente riavvio, la pagina nuova arriva al
-prossimo caricamento. Lo studio va svuotato prima di ricopiarlo, così non restano file delle versioni vecchie.
+prossimo caricamento. I file nuovi si copiano sopra i vecchi senza svuotare la cartella: una scheda aperta da prima
+del deploy trova ancora i pezzi della sua versione. Quelli che nessun deploy ha più ricopiato da 7 giorni si cancellano.
 
 Il riavvio del worker manda SIGTERM: i job in corso tornano in coda e li riprende appena riparte. Durante un
 riavvio dell'API (un paio di secondi) lo studio può mostrare un errore di rete e riprova da solo.
