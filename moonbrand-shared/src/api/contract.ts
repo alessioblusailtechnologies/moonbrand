@@ -639,7 +639,8 @@ export interface WelcomeJobInput {
 }
 
 // I crediti del mese: ogni interazione costa quanto è costata davvero, 1 credito per centesimo di dollaro, e si
-// scala dai crediti del piano. Per ora si contano soltanto: finiti i crediti non si blocca niente.
+// scala dai crediti del piano. Piani e crediti sono di un brand: ognuno ha i suoi. Per ora si contano soltanto: finiti i
+// crediti non si blocca niente.
 export interface CreditsResponse {
   plan: SubscriptionPlanId;
   monthlyCredits: number;
