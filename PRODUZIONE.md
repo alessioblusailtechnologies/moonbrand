@@ -74,7 +74,7 @@ vCPU dedicate (CCX) costano di più per meno RAM; la RAM è il limite dei job in
 
 1. Ordine da https://www.hetzner.com/dedicated-rootserver/ax42/ :
    - **Server type**: AX42-2-LTD se c'è (ECC, prezzo ridotto, a quantità limitata), altrimenti AX42-2.
-   - **Operating system**: Ubuntu 24.04 preinstallato; i due dischi in **RAID 1** (software).
+   - **Operating system**: Ubuntu 26.04 preinstallato; i due dischi in **RAID 1** (software).
    - **Location**: Germania (Falkenstein o Norimberga), vicino a Supabase.
    - **Primary IPv4**: attivo.
    - La tua chiave SSH pubblica, se il form la chiede.
@@ -120,6 +120,16 @@ chown -R moonbrand:moonbrand /srv/moonbrand
 
 Le librerie servono a Chrome headless (grafica, controlli dei video); Chrome lo scarica Remotion al primo uso.
 `pnpm` serve ai progetti video dei brand.
+
+Ubuntu nega i namespace utente ai programmi senza un profilo AppArmor, e senza namespace la sandbox di Chrome non parte:
+l'export della grafica si ferma con «No usable sandbox». Il profilo dà i namespace solo al Chrome che Remotion scarica
+in `node_modules` (il glob regge gli aggiornamenti di Remotion), così la grafica gira con la sandbox. Dopo aver
+scaricato il repo (più sotto, in questa sezione), da root:
+
+```bash
+cp /home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai/apparmor/moonbrand-chrome /etc/apparmor.d/
+apparmor_parser -r /etc/apparmor.d/moonbrand-chrome
+```
 
 Da utente `moonbrand` (`su - moonbrand`). Il repo è privato: il server lo scarica con una **deploy key**, una chiave
 che può solo leggere questo repo.

@@ -1,0 +1,10 @@
+# Il Chrome headless che Remotion scarica in node_modules (grafica e documenti del worker): senza profilo AppArmor
+# Ubuntu gli nega i namespace utente e la sandbox non parte («No usable sandbox»). Va in /etc/apparmor.d/.
+
+abi <abi/5.0>,
+include <tunables/global>
+
+profile moonbrand-chrome /home/moonbrand/**/.remotion/**/chrome-headless-shell flags=(unconfined) {
+  userns,
+  @{exec_path} mr,
+}
