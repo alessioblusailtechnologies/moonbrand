@@ -13,7 +13,7 @@ export const IUBENDA_POLICY_ID: Record<Lang, string> = {
 };
 
 /** I documenti già generati su iubenda. */
-const READY: Record<LegalKind, boolean> = { privacy: true, terms: false };
+const READY: Record<LegalKind, boolean> = { privacy: true, terms: true };
 
 /** L'ID da mostrare per un documento in una lingua, o null se il documento non è ancora pronto. */
 export function iubendaId(kind: LegalKind, lang: Lang): string | null {
