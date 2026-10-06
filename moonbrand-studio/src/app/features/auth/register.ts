@@ -76,7 +76,7 @@ export class Register {
     this.error.set('');
     try {
       await this.auth.signUp({ name: this.name().trim(), email: this.email().trim(), password: this.password(), locale: this.i18n.locale() });
-      await this.router.navigateByUrl('/onboarding');
+      await this.router.navigateByUrl('/verifica-email');
     } catch (error) {
       this.error.set(errorMessage(error, this.i18n.t('auth.register.failed')));
     } finally {

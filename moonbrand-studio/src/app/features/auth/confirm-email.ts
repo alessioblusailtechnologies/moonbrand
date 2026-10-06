@@ -88,7 +88,7 @@ export class ConfirmEmail {
       this.resent.set(true);
       this.notice.set(this.i18n.t('auth.confirm.resent'));
     } catch (error) {
-      this.notice.set(errorMessage(error, this.i18n.t('shell.emailBanner.failed')));
+      this.notice.set(errorMessage(error, this.i18n.t('auth.verify.resendFailed')));
     } finally {
       this.busy.set(false);
     }

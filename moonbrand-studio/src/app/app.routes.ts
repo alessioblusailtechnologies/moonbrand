@@ -1,6 +1,6 @@
 import type { Routes, UrlMatcher } from '@angular/router';
 
-import { authGuard, guestGuard, hasBrandsGuard } from './core/auth/auth.guards';
+import { authGuard, confirmedGuard, guestGuard, hasBrandsGuard, unconfirmedGuard } from './core/auth/auth.guards';
 
 const assistantMatcher: UrlMatcher = (segments) => {
   const [section, conversationId] = segments;
@@ -18,11 +18,16 @@ export const routes: Routes = [
   },
   // I link delle email: si aprono dentro o fuori dallo studio.
   { path: 'nuova-password', loadComponent: () => import('./features/auth/reset-password').then((m) => m.ResetPassword) },
+  {
+    path: 'verifica-email',
+    canActivate: [unconfirmedGuard],
+    loadComponent: () => import('./features/auth/verify-email').then((m) => m.VerifyEmail),
+  },
   { path: 'accesso-google', loadComponent: () => import('./features/auth/google-callback').then((m) => m.GoogleCallback) },
   { path: 'conferma-email', loadComponent: () => import('./features/auth/confirm-email').then((m) => m.ConfirmEmail) },
   {
     path: '',
-    canActivate: [authGuard],
+    canActivate: [authGuard, confirmedGuard],
     loadComponent: () => import('./features/shell/shell').then((m) => m.Shell),
     children: [
       {

@@ -69,6 +69,12 @@ export class AuthService {
     if (account) this.account.set({ ...account, emailConfirmed: true });
   }
 
+  // "Ho verificato": si rilegge l'account per sapere se il link è stato aperto (magari in un'altra scheda).
+  async reloadAccount(): Promise<Account | null> {
+    await this.loadMe();
+    return this.account();
+  }
+
   async resendConfirmation(): Promise<void> {
     await firstValueFrom(this.http.post('/v1/auth/email/resend', null));
   }

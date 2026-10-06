@@ -301,7 +301,7 @@
   position: sticky;
   top: 16px;
   gap: 12px;
-  max-height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - var(--banner-height, 0px) - 32px);
+  max-height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 32px);
   padding: 16px;
 
   .segmented {
