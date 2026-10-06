@@ -35,6 +35,8 @@ aggiungono macchine worker, senza cambiare codice (vedi [Secondo worker](#13-sec
 | Atlas Cloud | chiave (clip video) | worker `ATLASCLOUD_API_KEY` |
 | Mistral | chiave (dettatura) | API `MISTRAL_API_KEY` |
 | Zernio | piano a pagamento, chiave | API e worker `ZERNIO_API_KEY` |
+| Google Cloud | progetto, *OAuth consent screen* (esterno, nome Moonbrand, logo, dominio `moonbrand.app`) e un *OAuth client ID* di tipo Web | Supabase → Authentication → Providers → Google |
+| Resend | account, dominio `moonbrand.app` verificato (vedi [Dominio](#4-dominio)), API key con permesso *Sending* | API `RESEND_API_KEY` |
 | AWS | le chiavi Remotion di oggi (`.env.lambda`) | worker `.env.lambda` |
 | Hetzner | account (lo stesso per cloud e server dedicati), con ragione sociale e partita IVA | — |
 
@@ -55,8 +57,14 @@ Su Anthropic, Gemini e Atlas Cloud imposta un limite di spesa mensile.
 5. **Storage → New bucket**: `presenza-media`, privato. Il bucket `presenza-brands` lo crea l'API al primo avvio.
 6. **Storage → S3 Connection**: crea una access key (id e secret).
 7. Annota: `SUPABASE_URL`, anon key, service role key, JWT secret (Project Settings → API).
+8. **Authentication → Providers → Google**: attivo, con client ID e secret di Google Cloud. In Google Cloud, tra gli
+   *Authorized redirect URIs* del client va `https://<id progetto>.supabase.co/auth/v1/callback`.
+9. **Authentication → URL Configuration**: *Site URL* `https://studio.moonbrand.app`, e tra i *Redirect URLs*
+   `https://studio.moonbrand.app/accesso-google` (in sviluppo anche quello dello studio locale).
 
-L'autenticazione non ha bisogno di email: la registrazione crea l'utente già confermato.
+Le email dell'accesso (benvenuto con la conferma, nuova password) le manda l'API con Resend, non Supabase: in
+Supabase non serve configurare SMTP né template. La registrazione crea l'utente già confermato per Supabase;
+la conferma dell'email è nostra (`presenza.accounts.email_confirmed_at`).
 
 ## 3. Macchina
 
@@ -91,6 +99,9 @@ Il DNS di `moonbrand.app` è su Cloudflare.
 1. Record **A** `studio` → IP della macchina, **proxy spento** (nuvola grigia): Caddy prende il certificato da solo e
    gli upload grandi non incontrano il limite di 100 MB del proxy Cloudflare.
 2. Il sito su `moonbrand.app` resta com'è: `npm run deploy` in `moonbrand-website`.
+3. **Resend → Domains → Add domain** `moonbrand.app`: i record che chiede (SPF e DKIM, più il MX del sottodominio di
+   ritorno) vanno su Cloudflare, tutti con la nuvola grigia. Finché il dominio non risulta *Verified* le email non
+   partono. Utile anche un record DMARC (`_dmarc` TXT `v=DMARC1; p=none;`).
 
 ## 5. Preparare la macchina
 
@@ -151,7 +162,13 @@ S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
 MISTRAL_API_KEY=
 ZERNIO_API_KEY=
+RESEND_API_KEY=
+EMAIL_FROM=Moonbrand <ciao@moonbrand.app>
+STUDIO_URL=https://studio.moonbrand.app
+EMAIL_SECRET=            # openssl rand -base64 48
 ```
+
+Senza `RESEND_API_KEY` le email non partono: il testo, con il link, finisce nel log dell'API.
 
 ## 7. `.env` del worker
 
@@ -253,6 +270,9 @@ curl https://studio.moonbrand.app/v1/health    # {"ok":true}
 ## 10. Verifiche prima di aprire
 
 - [ ] Registrazione e accesso su `https://studio.moonbrand.app`
+- [ ] Arriva l'email di benvenuto (non in spam), il link conferma e il promemoria nello studio sparisce
+- [ ] Continua con Google: si entra, e con la stessa email di un account con password si ritrova lo stesso account
+- [ ] Password dimenticata: arriva il link, la nuova password funziona e la vecchia no
 - [ ] Onboarding di un brand con file di riferimento ed esempi grafici
 - [ ] In chat, un post con immagine: l'immagine compare mentre il job lavora (lo storage risponde)
 - [ ] Un video breve: export con Lambda e riproduzione nello studio
@@ -263,6 +283,8 @@ curl https://studio.moonbrand.app/v1/health    # {"ok":true}
 - [ ] App mobile collegata a `https://studio.moonbrand.app`
 
 ## 11. Aggiornare
+
+Il dettaglio (cosa rifare per ogni parte, migration, chiavi, controlli) è in [OPERAZIONI.md](OPERAZIONI.md).
 
 ```bash
 su - moonbrand
