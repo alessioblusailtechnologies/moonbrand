@@ -8,7 +8,7 @@ const COLUMNS = [
   ['solco-buds', 'osteria-pescato', 'forma-slide'],
   ['aurora-torta', 'solco-colori', 'libreria-libri'],
   ['forma-stacco', 'aurora-laboratorio', 'solco-buds'],
-].map((column) => [...column, ...column].map((name) => `login/${name}.jpg`));
+].map((column) => [...column, ...column].map((name) => `showcase/${name}.jpg`));
 
 @Component({
   selector: 'mb-auth-side',
