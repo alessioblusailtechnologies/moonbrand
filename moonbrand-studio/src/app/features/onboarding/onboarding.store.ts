@@ -4,11 +4,12 @@ import { firstValueFrom } from 'rxjs';
 
 import type { OnboardingDraft, OnboardingDraftSave } from '@moonbrand/shared/api/contract';
 
-import type { BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { takeSignupBrand } from '../../core/auth/signup-prefill';
 import { BrandsService } from '../../core/brands/brands.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { ConfirmService } from '../../ui/confirm';
@@ -127,7 +128,7 @@ export class OnboardingStore extends DraftStore<State> {
     this.state.update((state) => ({
       ...state,
       brandId: state.brandId ?? newBrandId(),
-      draft: state.draft ? changeDraftKind(state.draft, kind) : createEmptyDraft(kind, this.i18n.locale()),
+      draft: state.draft ? changeDraftKind(state.draft, kind) : withSignupBrand(createEmptyDraft(kind, this.i18n.locale())),
     }));
   }
 
@@ -230,6 +231,11 @@ function normalize(raw: unknown): State {
   if (!state.draft) return state;
   const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
   return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
+}
+
+// Il primo brand parte con il nome scritto nel form del sito, se c'era.
+function withSignupBrand(draft: BrandDraft): BrandDraft {
+  return { ...draft, identity: takeSignupBrand(draft.identity) };
 }
 
 // Prima la bozza stava nel browser: la si legge una volta, per portarla sul server, e si toglie.

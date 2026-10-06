@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 
 import { PASSWORD_MIN } from '@moonbrand/shared/api/contract';
+import { matchLocale } from '@moonbrand/shared/i18n/locales';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { readSignupPrefill } from '../../core/auth/signup-prefill';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { errorMessage } from '../../core/errors';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -57,12 +59,20 @@ export class Register {
   private readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
 
+  // Arrivando dal form del sito, nome, email e lingua sono già scritti nell'indirizzo.
+  private readonly prefill = readSignupPrefill(new URLSearchParams(location.search));
+
   protected readonly passwordMin = PASSWORD_MIN;
-  protected readonly name = signal('');
-  protected readonly email = signal('');
+  protected readonly name = signal(this.prefill.name);
+  protected readonly email = signal(this.prefill.email);
   protected readonly password = signal('');
   protected readonly busy = signal(false);
   protected readonly error = signal('');
+
+  constructor() {
+    const locale = matchLocale(this.prefill.lang);
+    if (locale) void this.i18n.use(locale);
+  }
 
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();
