@@ -53,7 +53,7 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
     <div class="studio" inert>
       <aside class="sidebar">
         <div class="head">
-          <span class="logo"><span class="moon"></span><span class="word">Moonbrand <span class="studio-word">Studio</span></span></span>
+          <span class="logo"><svg class="moon" viewBox="10 10 80 80" aria-hidden="true"><circle cx="38.5" cy="50" r="24" fill="none" stroke="currentColor" stroke-width="6" /><path d="M54.46 75.4A26.5 26.5 0 1 0 54.46 24.6A30 30 0 0 1 54.46 75.4Z" fill="var(--accent)" /></svg><span class="word">Moonbrand <span class="studio-word">Studio</span></span></span>
           <span class="side-btn"><StudioIcon name="panel-left" stroke={1.8} /></span>
         </div>
 
@@ -330,9 +330,8 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
     color: var(--sidebar-text);
   }
   .head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 4px 6px 10px; }
-  .logo { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
-  .moon { position: relative; flex: none; width: 26px; height: 26px; overflow: hidden; border-radius: 50%; background: var(--accent); }
-  .moon::after { content: ''; position: absolute; top: -3px; left: -7px; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); }
+  .logo { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 16px; font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; }
+  .moon { flex: none; width: 28px; height: 28px; }
   .studio-word { font-weight: 500; opacity: 0.55; }
   .side-btn { display: grid; flex: none; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: var(--sidebar-muted); }
   .switcher {

@@ -1,12 +1,16 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-// La luna e il nome; compact lascia solo la luna (la sidebar compressa).
-// La parte in ombra della luna è blu notte: sulla sidebar, dello stesso blu, resta solo la falce.
+// Il marchio, Transito, e il nome; compact lascia solo il marchio (la sidebar compressa).
+// L'anello prende il colore del testo, così va bene sulla sidebar blu e sulle pagine chiare; la falce è arancio.
+// La falce è il disco (62, 50, r 26.5) meno il cerchio (38.5, 50, r 30), concentrico all'anello: lo stacco resta costante.
 @Component({
   selector: 'mb-logo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span class="moon"></span>
+    <svg class="mark" viewBox="10 10 80 80" aria-hidden="true">
+      <circle cx="38.5" cy="50" r="24" fill="none" stroke="currentColor" stroke-width="6" />
+      <path d="M54.46 75.4A26.5 26.5 0 1 0 54.46 24.6A30 30 0 0 1 54.46 75.4Z" fill="var(--accent)" />
+    </svg>
     @if (!compact()) {
       <span class="word">Moonbrand <span class="studio">Studio</span></span>
     }
@@ -15,30 +19,16 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     :host {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-size: 16px;
       font-weight: 600;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.03em;
       white-space: nowrap;
     }
-    .moon {
-      position: relative;
+    .mark {
       flex: none;
-      width: 26px;
-      height: 26px;
-      overflow: hidden;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-    .moon::after {
-      position: absolute;
-      top: -3px;
-      left: -7px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--primary);
-      content: '';
+      width: 30px;
+      height: 30px;
     }
     .studio {
       font-weight: 500;

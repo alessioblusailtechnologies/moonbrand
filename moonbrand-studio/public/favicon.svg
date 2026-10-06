@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
-  <mask id="shadow"><rect width="26" height="26" fill="#fff"/><circle cx="4" cy="8" r="11" fill="#000"/></mask>
-  <circle cx="13" cy="13" r="13" fill="#F29A2E" mask="url(#shadow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80">
+  <style>circle{stroke:#0B1324}@media (prefers-color-scheme:dark){circle{stroke:#FFFFFF}}</style>
+  <circle cx="38.5" cy="50" r="23.5" fill="none" stroke-width="8"/>
+  <path d="M56.44 75.28A26 26 0 1 0 56.44 24.72A31 31 0 0 1 56.44 75.28Z" fill="#F29A2E"/>
 </svg>

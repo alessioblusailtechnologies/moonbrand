@@ -8,16 +8,18 @@ interface Props {
 const { lang } = Astro.props;
 ---
 
+<!-- Transito: l'anello del colore del testo e la falce arancio che lo abbraccia, staccata da un filo vuoto.
+     La falce è il disco (62, 50, r 26.5) meno il cerchio (38.5, 50, r 30), concentrico all'anello: lo stacco resta costante. -->
 <a href={homePath(lang)} class="logo">
-  <span class="mark" aria-hidden="true"><span class="sun"></span><span class="shadow"></span></span>
+  <svg class="mark" viewBox="10 10 80 80" aria-hidden="true">
+    <circle cx="38.5" cy="50" r="24" fill="none" stroke="currentColor" stroke-width="6" />
+    <path d="M54.46 75.4A26.5 26.5 0 1 0 54.46 24.6A30 30 0 0 1 54.46 75.4Z" fill="var(--accent)" />
+  </svg>
   <span class="name">Moonbrand</span>
 </a>
 
 <style>
-  .logo { display: flex; align-items: center; gap: 8px; }
-  .mark { position: relative; width: 24px; height: 24px; border-radius: 6px; overflow: hidden; background: var(--ink); }
-  .sun, .shadow { position: absolute; border-radius: 50%; }
-  .sun { width: 14px; height: 14px; top: 5px; left: 5px; background: var(--accent); }
-  .shadow { width: 12px; height: 12px; top: 3px; left: 2px; background: var(--ink); }
-  .name { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+  .logo { display: flex; align-items: center; gap: 7px; }
+  .mark { flex: none; width: 28px; height: 28px; }
+  .name { font-size: 16px; font-weight: 600; letter-spacing: -0.03em; }
 </style>

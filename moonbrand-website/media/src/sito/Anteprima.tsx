@@ -17,12 +17,15 @@ for (const file of ['geist-latin', 'geist-latin-ext']) {
   loadFont({ family: 'Geist', url: staticFile(`fonts/${file}.woff2`), weight: '100 900' });
 }
 
-/** Il marchio: la luna arancione mangiata dal blu, come nel favicon. */
-const Marchio: React.FC<{ size: number; radius?: number }> = ({ size, radius = 0.24 }) => (
-  <div style={{ position: 'relative', width: size, height: size, borderRadius: size * radius, overflow: 'hidden', background: INK }}>
-    <div style={{ position: 'absolute', width: size * 0.56, height: size * 0.56, left: size * 0.22, top: size * 0.22, borderRadius: '50%', background: ACCENT }} />
-    <div style={{ position: 'absolute', width: size * 0.5, height: size * 0.5, left: size * 0.13, top: size * 0.15, borderRadius: '50%', background: INK }} />
-  </div>
+/**
+ * Il marchio, Transito: l'anello e la falce arancio che lo abbraccia, staccata da un filo vuoto. Come in Logo.astro del sito.
+ * `anello` e `falce` cambiano i colori (l'icona monocromatica di Android li vuole bianchi tutti e due).
+ */
+const Marchio: React.FC<{ size: number; anello?: string; falce?: string }> = ({ size, anello = '#fff', falce = ACCENT }) => (
+  <svg width={size} height={size} viewBox="10 10 80 80">
+    <circle cx={38.5} cy={50} r={24} fill="none" stroke={anello} strokeWidth={6} />
+    <path d="M54.46 75.4A26.5 26.5 0 1 0 54.46 24.6A30 30 0 0 1 54.46 75.4Z" fill={falce} />
+  </svg>
 );
 
 /** Un post di esempio rimpicciolito, con la sua misura vera. */
@@ -39,7 +42,7 @@ export const Anteprima: React.FC<{ lingua?: Lingua }> = ({ lingua = 'it' }) => {
   return (
     <AbsoluteFill style={{ background: INK, color: '#fff', fontFamily: 'Geist', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', left: 72, top: 64, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <Marchio size={52} radius={0.26} />
+        <Marchio size={56} />
         <span style={{ fontSize: 34, fontWeight: 600, letterSpacing: '-0.02em' }}>Moonbrand</span>
       </div>
       <div style={{ position: 'absolute', left: 72, top: lungo ? 170 : 190, width: 620, display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -62,9 +65,27 @@ export const Anteprima: React.FC<{ lingua?: Lingua }> = ({ lingua = 'it' }) => {
   );
 };
 
-/** L'icona quadrata piena (apple-touch-icon, logo per Google): gli angoli li arrotonda chi la mostra. */
+/** L'icona quadrata piena (apple-touch-icon, logo per Google, icona dell'app): gli angoli li arrotonda chi la mostra. */
 export const Icona: React.FC = () => (
   <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', background: INK }}>
-    <Marchio size={512} radius={0} />
+    <Marchio size={320} />
   </AbsoluteFill>
+);
+
+/**
+ * Il marchio su fondo trasparente, per l'app: il primo piano dell'icona adattiva di Android (il fondo blu lo mette app.json),
+ * la sua versione monocromatica e l'immagine dello splash. Il primo piano sta nel cerchio sicuro, il 61% centrale.
+ */
+export const MarchioApp: React.FC<{ size: number; mono?: boolean }> = ({ size, mono = false }) => (
+  <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <Marchio size={size} falce={mono ? '#fff' : ACCENT} />
+  </AbsoluteFill>
+);
+
+/** Il favicon in PNG, per favicon.ico: gli spessori delle misure piccole, come in public/favicon.svg, su fondo trasparente. */
+export const Favicon: React.FC = () => (
+  <svg width="100%" height="100%" viewBox="10 10 80 80">
+    <circle cx={38.5} cy={50} r={23.5} fill="none" stroke={INK} strokeWidth={8} />
+    <path d="M56.44 75.28A26 26 0 1 0 56.44 24.72A31 31 0 0 1 56.44 75.28Z" fill={ACCENT} />
+  </svg>
 );

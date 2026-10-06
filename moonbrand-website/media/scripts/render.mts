@@ -1,6 +1,7 @@
 // Esporta ogni Still di src/Root.tsx in ../public/images, alla larghezza che serve al sito (circa 720px, il doppio della card).
 // Le immagini con del testo escono una volta per lingua, in images/<lingua>/; le foto senza testo una volta sola.
 // L'anteprima per i social e le icone vanno fuori da images, in PNG: il percorso lo dà `file`, relativo a ../public.
+// Le icone dello studio e dell'app escono da qui anche loro, nelle cartelle di quei progetti.
 // Uso: npx tsx scripts/render.mts [id...]
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
@@ -36,6 +37,11 @@ const stills: { id: string; out: string; scale: number; testo: boolean; file?: (
   { id: 'anteprima', out: 'og.png', scale: 1, testo: true, file: (lingua) => `og/${lingua}.png` },
   { id: 'icona', out: 'icon-512.png', scale: 1, testo: false, file: () => 'icon-512.png' },
   { id: 'icona', out: 'apple-touch-icon.png', scale: 180 / 512, testo: false, file: () => 'apple-touch-icon.png' },
+  { id: 'icona', out: 'studio apple-touch-icon.png', scale: 180 / 512, testo: false, file: () => '../../moonbrand-studio/public/apple-touch-icon.png' },
+  { id: 'icona', out: 'app icon.png', scale: 2, testo: false, file: () => '../../moonbrand-app/assets/icon.png' },
+  { id: 'app-primo-piano', out: 'app primo piano', scale: 1, testo: false, file: () => '../../moonbrand-app/assets/android-icon-foreground.png' },
+  { id: 'app-monocromo', out: 'app monocromo', scale: 1, testo: false, file: () => '../../moonbrand-app/assets/android-icon-monochrome.png' },
+  { id: 'app-splash', out: 'app splash', scale: 1, testo: false, file: () => '../../moonbrand-app/assets/splash-icon.png' },
 ];
 
 const temp = mkdtempSync(path.join(tmpdir(), 'moonbrand-render-'));
