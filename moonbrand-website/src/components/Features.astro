@@ -1,5 +1,5 @@
 ---
-import { getCopy, type Lang } from '../i18n';
+import { getCopy, pagePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -28,7 +28,7 @@ const { features: f } = getCopy(lang);
       <div class="assistant">
         <span class="assistant-title">{f.assistantTitle}</span>
         <span class="assistant-text">{f.assistantText}</span>
-        <a href="#piattaforma" class="btn btn-dark btn-small">{f.assistantCta}</a>
+        <a href={pagePath(lang, 'assistant')} class="btn btn-dark btn-small">{f.assistantCta}</a>
         <div class="chat">
           <div class="msg me">{f.chatMe}</div>
           <div class="msg ai">{f.chatAi}</div>

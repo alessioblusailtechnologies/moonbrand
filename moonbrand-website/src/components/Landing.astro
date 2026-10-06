@@ -1,0 +1,212 @@
+---
+// Le pagine per tipo di cliente, per categoria di attività e per funzionalità: il problema, come lo risolve Moonbrand,
+// i post di esempio, il prezzo di partenza e l'invito a iniziare. Stessa forma per tutte, cambiano testi e post.
+// "Per attività" in più ha i riquadri delle categorie; ogni categoria le occasioni da pubblicare durante l'anno.
+import { SUBSCRIPTION_PLANS } from '../../../moonbrand-shared/src/domain/subscription';
+import { AUDIENCES, LANDING_POSTS, siblings, type Landing } from '../data/landings';
+import { getPosts } from '../data/home';
+import { CATEGORY_IDS, getCopy, isCategory, pagePath, STUDIO_URL, type Category, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+import PostPreview from './PostPreview.astro';
+
+interface Props {
+  lang: Lang;
+  page: Landing | Category;
+}
+
+const { lang, page } = Astro.props;
+const { landing: l, landings, categories, channels, meta } = getCopy(lang);
+const c = isCategory(page) ? categories[page] : landings[page];
+const moments = isCategory(page) ? categories[page].moments : null;
+const all = getPosts(lang);
+const posts = LANDING_POSTS[page].map((id) => all.find((post) => post.id === id)!);
+const from = new Intl.NumberFormat(meta.ogLocale.replace('_', '-'), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+  Math.min(...Object.values(SUBSCRIPTION_PLANS).map((plan) => plan.priceEur)),
+);
+const signup = `${STUDIO_URL}/register?lang=${lang}`;
+const site = Astro.site ?? new URL('https://moonbrand.app');
+
+// In fondo: le altre categorie e la pagina "Per attività", oppure le altre pagine dello stesso gruppo.
+const more = isCategory(page)
+  ? {
+      label: l.otherBusinesses,
+      links: [
+        ...CATEGORY_IDS.filter((other) => other !== page).map((other) => ({ href: pagePath(lang, other), name: categories[other].name })),
+        { href: pagePath(lang, 'businesses'), name: l.allBusinesses },
+      ],
+    }
+  : {
+      label: (AUDIENCES as readonly Landing[]).includes(page) ? l.moreAudiences : l.moreFeatures,
+      links: siblings(page).map((other) => ({ href: pagePath(lang, other), name: landings[other].name })),
+    };
+
+// Per Google: la categoria sta dentro "Per attività".
+const breadcrumb = isCategory(page) && {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Moonbrand', item: new URL(pagePath(lang), site).href },
+    { '@type': 'ListItem', position: 2, name: landings.businesses.name, item: new URL(pagePath(lang, 'businesses'), site).href },
+    { '@type': 'ListItem', position: 3, name: c.name, item: new URL(pagePath(lang, page), site).href },
+  ],
+};
+---
+
+<PageShell lang={lang} page={page} title={c.title} description={c.description} eyebrow={c.eyebrow} heading={c.heading} lead={c.lead}>
+  {breadcrumb && <script slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />}
+  <div class="ctas">
+    <a href={signup} class="btn btn-dark">{l.start}</a>
+    <a href={pagePath(lang, 'pricing')} class="btn btn-outline">{l.seePricing}</a>
+  </div>
+
+  {page === 'businesses' && (
+    <section>
+      <h2 class="display">{l.categoriesTitle}</h2>
+      <div class="categories">
+        {CATEGORY_IDS.map((id) => (
+          <a class="category" href={pagePath(lang, id)}>
+            <span class="category-name">{categories[id].name}<span aria-hidden="true">→</span></span>
+            <span class="category-card">{categories[id].card}</span>
+          </a>
+        ))}
+      </div>
+      <p class="categories-more">{l.categoriesMore}</p>
+    </section>
+  )}
+
+  <section>
+    <h2 class="display">{c.problemTitle}</h2>
+    <div class="problems">
+      {c.problems.map((p) => (
+        <div class="problem">
+          <h3>{p.t}</h3>
+          <p>{p.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="display">{c.howTitle}</h2>
+    <ol class="how">
+      {c.how.map((h) => (
+        <li>
+          <h3>{h.t}</h3>
+          <p>{h.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {moments && (
+    <section>
+      <h2 class="display">{l.momentsTitle}</h2>
+      <ul class="moments">
+        {moments.map((m) => (
+          <li>
+            <span class="when mono">{m.when}</span>
+            <span>{m.what}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <section>
+    <h2 class="display">{l.examplesTitle}</h2>
+    <div class="posts">
+      {posts.map((post) => (
+        <figure>
+          <PostPreview post={post} lang={lang} />
+          <figcaption>
+            <span class="channel mono">{channels[post.channel]}</span>
+            <span class="tone">{post.tone}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <section class="band">
+    <div>
+      <p class="band-title">{l.pricingTitle.replace('{from}', from)}</p>
+      <p class="band-text">{l.pricingText}</p>
+    </div>
+    <a href={pagePath(lang, 'pricing')} class="band-link">{l.pricingLink} <span aria-hidden="true">→</span></a>
+  </section>
+
+  <section class="final">
+    <h2 class="display">{l.ctaTitle}</h2>
+    <p>{l.ctaText}</p>
+    <a href={signup} class="btn btn-dark">{l.start}</a>
+  </section>
+
+  <nav class="more" aria-label={more.label}>
+    <p class="mono">{more.label}</p>
+    {more.links.map((link) => (
+      <a href={link.href}>{link.name}<span aria-hidden="true">→</span></a>
+    ))}
+  </nav>
+</PageShell>
+
+<style>
+  .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: -24px; }
+  .ctas .btn, .final .btn { padding: 14px 22px; }
+  .btn-outline { border: 1px solid var(--ink); color: var(--ink); }
+  .btn-outline:hover { background: var(--ink); color: #fff; }
+
+  section { margin-top: 96px; }
+  h2 { font-size: clamp(34px, 4.4vw, 48px); margin-bottom: 32px; }
+  h3 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+
+  .problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .problem { display: flex; flex-direction: column; gap: 10px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: #FAFAF8; }
+  .problem p, .how p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--text); }
+
+  .how { margin: 0; padding: 0; list-style: none; counter-reset: step; display: flex; flex-direction: column; }
+  .how li { counter-increment: step; display: grid; grid-template-columns: 56px 1fr; gap: 6px 0; padding: 22px 0; border-top: 1px solid var(--line); }
+  .how li::before { content: counter(step, decimal-leading-zero); grid-row: span 2; font-family: var(--mono); font-size: 13px; color: var(--accent-dark); padding-top: 3px; }
+
+  /* Le categorie hanno anche uno o due post soli: le colonne restano larghe un terzo. */
+  .posts { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; flex: 0 1 calc((100% - 40px) / 3); }
+  figcaption { display: flex; justify-content: space-between; gap: 10px; padding: 0 4px; font-size: 12px; }
+  .channel { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .tone { color: var(--faint); text-align: right; }
+
+  .categories { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .category { display: flex; flex-direction: column; gap: 8px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: #FAFAF8; }
+  .category:hover { border-color: var(--accent); color: inherit; }
+  .category-name { display: flex; justify-content: space-between; gap: 12px; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .category-name span { color: var(--faint); }
+  .category:hover .category-name { color: var(--accent-dark); }
+  .category-card { font-size: 15px; line-height: 1.5; color: var(--text); }
+  .categories-more { margin: 20px 0 0; font-size: 14.5px; color: var(--muted); }
+
+  .moments { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px; }
+  .moments li { display: flex; flex-direction: column; gap: 4px; padding: 16px 0; border-top: 1px solid var(--line); font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+  .when { font-size: 12px; color: var(--accent-dark); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .band { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 32px; border-radius: 18px; background: var(--ink); color: #fff; }
+  .band-title { margin: 0 0 6px; font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 32px; line-height: 1; letter-spacing: -0.02em; }
+  .band-text { margin: 0; font-size: 15px; color: #A9B3C6; }
+  .band-link { font-weight: 600; color: var(--accent); }
+  .band-link:hover { color: #fff; }
+
+  .final { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+  .final h2 { margin: 0; }
+  .final p { margin: 0 0 8px; max-width: 520px; font-size: 17px; line-height: 1.55; color: var(--text); }
+
+  .more { margin-top: 96px; display: flex; flex-direction: column; }
+  .more p { margin: 0 0 8px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .more a { display: flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: 17px; font-weight: 500; }
+  .more a span { color: var(--faint); }
+
+  @media (max-width: 760px) {
+    .problems, .categories, .moments { grid-template-columns: 1fr; }
+    .posts { max-width: 360px; margin: 0 auto; }
+    figure { flex-basis: 100%; }
+    .ctas { margin-top: -16px; }
+    section, .more { margin-top: 72px; }
+  }
+</style>

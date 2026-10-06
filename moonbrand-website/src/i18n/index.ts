@@ -21,6 +21,22 @@ export function homePath(lang: Lang): string {
   return lang === 'it' ? '/' : `/${lang}/`;
 }
 
+/**
+ * Le categorie di attività, ognuna con la sua pagina sotto "Per attività" (/per-attivita/ristoranti/ e simili).
+ * Per aggiungerne una: l'indirizzo qui, i testi in copy.categories, i post di esempio in data/landings.ts.
+ * Pagina, riquadro nella pagina "Per attività" e sitemap seguono da soli.
+ */
+export const CATEGORIES = {
+  restaurants: { it: 'ristoranti', en: 'restaurants', fr: 'restaurants' },
+  bakeries: { it: 'pasticcerie', en: 'bakeries', fr: 'patisseries' },
+  gyms: { it: 'palestre', en: 'gyms', fr: 'salles-de-sport' },
+  shops: { it: 'negozi', en: 'shops', fr: 'boutiques' },
+} satisfies Record<string, Record<Lang, string>>;
+export type Category = keyof typeof CATEGORIES;
+export const CATEGORY_IDS = Object.keys(CATEGORIES) as Category[];
+
+const BUSINESSES = { it: 'per-attivita', en: 'for-businesses', fr: 'pour-les-commerces' };
+
 /** Le pagine del sito con il loro indirizzo in ogni lingua: per Google conta che sia nella lingua della pagina. */
 export const PAGES = {
   home: { it: '', en: '', fr: '' },
@@ -28,8 +44,22 @@ export const PAGES = {
   contact: { it: 'contatti', en: 'contact', fr: 'contact' },
   privacy: { it: 'privacy', en: 'privacy', fr: 'confidentialite' },
   terms: { it: 'termini', en: 'terms', fr: 'conditions' },
+  // Una pagina per tipo di cliente e una per funzionalità: i testi in copy.landings, la struttura in data/landings.ts.
+  businesses: BUSINESSES,
+  agencies: { it: 'per-agenzie', en: 'for-agencies', fr: 'pour-les-agences' },
+  assistant: { it: 'assistente-ai', en: 'ai-assistant', fr: 'assistant-ia' },
+  plan: { it: 'piano-editoriale', en: 'content-calendar', fr: 'calendrier-editorial' },
+  video: { it: 'video-social', en: 'social-videos', fr: 'videos-reseaux-sociaux' },
+  publishing: { it: 'pubblicazione-social', en: 'social-publishing', fr: 'publication-reseaux-sociaux' },
+  brandKit: { it: 'brand-kit', en: 'brand-kit', fr: 'kit-de-marque' },
+  // Le categorie stanno dentro "Per attività": /per-attivita/ristoranti/, /en/for-businesses/restaurants/.
+  ...(Object.fromEntries(
+    CATEGORY_IDS.map((id) => [id, Object.fromEntries(LANGS.map((lang) => [lang, `${BUSINESSES[lang]}/${CATEGORIES[id][lang]}`]))]),
+  ) as Record<Category, Record<Lang, string>>),
 } satisfies Record<string, Record<Lang, string>>;
 export type Page = keyof typeof PAGES;
+
+export const isCategory = (page: Page): page is Category => page in CATEGORIES;
 
 /** Una pagina in una lingua: il prefisso della lingua più l'indirizzo della pagina in quella lingua. */
 export function pagePath(lang: Lang, page: Page = 'home'): string {
