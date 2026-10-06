@@ -1,5 +1,6 @@
 ---
-import { getCopy, homePath, LANGS, pagePath, STUDIO_URL, type Lang, type Page } from '../i18n';
+import { AUDIENCES, FEATURES } from '../data/landings';
+import { CATEGORY_IDS, getCopy, LANGS, pagePath, PLATFORM_IDS, signupUrl, STUDIO_URL, type Lang, type Page } from '../i18n';
 import Logo from './Logo.astro';
 
 interface Props {
@@ -10,19 +11,23 @@ interface Props {
 
 const { lang, page = 'home' } = Astro.props;
 const { nav } = getCopy(lang);
-// Le sezioni stanno nella home: dalla home scorrono e basta, dalle altre pagine ci tornano.
-const home = homePath(lang);
+// Ogni voce del menù è una pagina indice: resta segnata anche sulle pagine che ci stanno dentro.
+const sections: { page: Page; label: string; children: readonly Page[] }[] = [
+  { page: 'features', label: nav.features, children: FEATURES },
+  { page: 'social', label: nav.social, children: PLATFORM_IDS },
+  { page: 'audiences', label: nav.audiences, children: [...AUDIENCES, ...CATEGORY_IDS] },
+  { page: 'pricing', label: nav.pricing, children: [] },
+];
+const current = (section: (typeof sections)[number]) => section.page === page || section.children.includes(page);
 ---
 
 <header>
   <div class="bar">
     <Logo lang={lang} />
-    <nav>
-      <a href={`${home}#piattaforma`}>{nav.platform}</a>
-      <a href={`${home}#risultato`}>{nav.why}</a>
-      <a href={`${home}#sistema`}>{nav.features}</a>
-      <a href={pagePath(lang, 'pricing')} aria-current={page === 'pricing' ? 'page' : undefined}>{nav.pricing}</a>
-      <a href={`${home}#prova`}>{nav.trial}</a>
+    <nav class="sections">
+      {sections.map((section) => (
+        <a href={pagePath(lang, section.page)} aria-current={current(section) ? 'page' : undefined}>{section.label}</a>
+      ))}
     </nav>
     <div class="actions">
       <nav class="langs" aria-label={nav.language}>
@@ -33,10 +38,57 @@ const home = homePath(lang);
         ))}
       </nav>
       <a href={`${STUDIO_URL}/login`} class="login">{nav.login}</a>
-      <a href={`${home}#prova`} class="btn btn-dark cta">{nav.start}</a>
+      <a href={signupUrl(lang)} class="btn btn-dark cta">{nav.start}</a>
+      <button class="toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label={nav.menu} data-open={nav.menu} data-close={nav.close}>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sul telefono le voci del menù, le lingue e l'accesso stanno qui, sotto la barra. -->
+  <div class="panel" id="menu" hidden>
+    <nav aria-label={nav.menu}>
+      {sections.map((section) => (
+        <a href={pagePath(lang, section.page)} class="item" aria-current={current(section) ? 'page' : undefined}>
+          {section.label}<span aria-hidden="true">→</span>
+        </a>
+      ))}
+    </nav>
+    <div class="panel-foot">
+      <nav class="langs" aria-label={nav.language}>
+        {LANGS.map((other) => (
+          <a href={pagePath(other, page)} hreflang={other} lang={other} aria-current={other === lang ? 'page' : undefined}>
+            {other.toUpperCase()}
+          </a>
+        ))}
+      </nav>
+      <a href={`${STUDIO_URL}/login`} class="panel-login">{nav.login}</a>
     </div>
   </div>
 </header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('header .toggle')!;
+  const panel = document.getElementById('menu')!;
+
+  const setOpen = (open: boolean) => {
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', (open ? toggle.dataset.close : toggle.dataset.open) ?? '');
+  };
+
+  toggle.addEventListener('click', () => setOpen(panel.hidden));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  // Tornando largo (telefono girato, finestra allargata) il menù a scomparsa non serve più.
+  matchMedia('(min-width: 761px)').addEventListener('change', (e) => e.matches && setOpen(false));
+  // Un link a un punto della stessa pagina chiude il menù.
+  panel.addEventListener('click', (e) => (e.target as Element).closest('a') && setOpen(false));
+</script>
 
 <style>
   header {
@@ -57,17 +109,45 @@ const home = homePath(lang);
     gap: 20px;
     flex-wrap: wrap;
   }
-  nav { display: flex; gap: 26px; font-size: 14.5px; color: var(--text); flex-wrap: wrap; }
+  .sections a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+  .sections { display: flex; gap: 26px; font-size: 14.5px; color: var(--text); flex-wrap: wrap; }
   .actions { display: flex; gap: 8px; align-items: center; font-size: 14.5px; }
   .langs { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: #F2F1EE; font-size: 12px; font-weight: 600; }
   .langs a { padding: 4px 8px; border-radius: 999px; color: var(--muted); }
   .langs a[aria-current='page'] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(11, 19, 36, 0.12); }
   .login { padding: 8px 12px; }
   .cta { padding: 9px 16px; border-radius: 8px; }
+
+  .toggle { display: none; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 8px; background: transparent; cursor: pointer; position: relative; }
+  .toggle span,
+  .toggle span::before,
+  .toggle span::after { position: absolute; left: 11px; width: 18px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform 0.2s, opacity 0.2s; }
+  .toggle span { top: 19px; }
+  .toggle span::before,
+  .toggle span::after { content: ''; left: 0; }
+  .toggle span::before { top: -6px; }
+  .toggle span::after { top: 6px; }
+  .toggle[aria-expanded='true'] span { background: transparent; }
+  .toggle[aria-expanded='true'] span::before { transform: translateY(6px) rotate(45deg); background: var(--ink); }
+  .toggle[aria-expanded='true'] span::after { transform: translateY(-6px) rotate(-45deg); background: var(--ink); }
+  .toggle:focus-visible { outline: 2px solid var(--accent); }
+
+  .panel { border-top: 1px solid var(--line); background: #fff; padding: 8px 16px 24px; max-height: calc(100dvh - 65px); overflow-y: auto; }
+  .panel > nav { display: flex; flex-direction: column; }
+  .item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .item span { color: var(--faint); font-weight: 400; }
+  .item[aria-current='page'] { color: var(--accent-dark); }
+  .panel-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 20px; font-size: 15px; }
+  .panel-login { font-weight: 500; }
+
   @media (max-width: 760px) {
-    .bar > nav { display: none; }
-  }
-  @media (max-width: 420px) {
+    .bar { padding: 10px 16px; gap: 12px; flex-wrap: nowrap; }
+    .sections,
+    .actions > .langs,
     .login { display: none; }
+    .toggle { display: block; }
+  }
+  @media (min-width: 761px) {
+    .panel { display: none; }
   }
 </style>

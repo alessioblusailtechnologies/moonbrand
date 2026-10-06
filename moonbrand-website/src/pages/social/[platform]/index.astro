@@ -1,0 +1,13 @@
+---
+// Una pagina per ogni social, dentro la pagina indice Social.
+import Landing from '../../../components/Landing.astro';
+import { PLATFORM_IDS, PLATFORMS, type Platform } from '../../../i18n';
+
+export function getStaticPaths() {
+  return PLATFORM_IDS.map((page) => ({ params: { platform: PLATFORMS[page].it }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Platform };
+---
+
+<Landing lang="it" page={page} />

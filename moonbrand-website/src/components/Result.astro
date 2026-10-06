@@ -1,5 +1,5 @@
 ---
-import { getCopy, type Lang } from '../i18n';
+import { getCopy, pagePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -39,7 +39,7 @@ const { result: r } = getCopy(lang);
         ))}
         <div class="inside-ctas">
           <a href="#prova" class="btn btn-dark">{r.ctaTrial}</a>
-          <a href="#sistema" class="btn btn-line">{r.ctaFeatures}</a>
+          <a href={pagePath(lang, 'features')} class="btn btn-line">{r.ctaFeatures}</a>
         </div>
       </div>
     </div>

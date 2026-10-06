@@ -1,44 +1,60 @@
 ---
+// Il piede: una colonna per ogni pagina indice del menù, con le sue pagine, più prezzi, contatti e accesso.
 import { AUDIENCES, FEATURES } from '../data/landings';
-import { getCopy, homePath, pagePath, type Lang } from '../i18n';
+import { CATEGORY_IDS, getCopy, pagePath, PLATFORM_IDS, STUDIO_URL, type Lang, type Page } from '../i18n';
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const { footer, landings } = getCopy(lang);
-// La piattaforma sta nella home, gli altri link portano alle pagine per tipo di cliente, nell'ordine di footer.links.
-const bigLinks = [`${homePath(lang)}#piattaforma`, ...AUDIENCES.map((page) => pagePath(lang, page))];
+const { footer, nav, landings, categories, platforms } = getCopy(lang);
+const link = (page: Page, name: string) => ({ href: pagePath(lang, page), name });
+
+const columns = [
+  { title: link('features', nav.features), links: FEATURES.map((id) => link(id, landings[id].name)) },
+  { title: link('social', nav.social), links: PLATFORM_IDS.map((id) => link(id, platforms[id].name)) },
+  {
+    title: link('audiences', nav.audiences),
+    links: [...AUDIENCES.map((id) => link(id, landings[id].name)), ...CATEGORY_IDS.map((id) => link(id, categories[id].name))],
+  },
+  {
+    title: link('home', 'Moonbrand'),
+    links: [link('pricing', nav.pricing), link('contact', footer.contact), { href: `${STUDIO_URL}/login`, name: nav.login }],
+  },
+];
 ---
 
 <footer>
   <div class="inner">
-    {footer.links.map((f, i) => (
-      <a href={bigLinks[i]} class="big-link">{f}<span aria-hidden="true">→</span></a>
-    ))}
-    <nav class="features" aria-label={footer.features}>
-      <span>{footer.features}</span>
-      {FEATURES.map((page) => <a href={pagePath(lang, page)}>{landings[page].name}</a>)}
-    </nav>
+    <div class="columns">
+      {columns.map((column) => (
+        <nav aria-label={column.title.name}>
+          <a href={column.title.href} class="title">{column.title.name}</a>
+          {column.links.map((item) => <a href={item.href}>{item.name}</a>)}
+        </nav>
+      ))}
+    </div>
     <div class="bottom">
       <span>{footer.copyright}</span>
       <div class="legal">
         <a href={pagePath(lang, 'privacy')}>{footer.privacy}</a>
         <a href={pagePath(lang, 'terms')}>{footer.terms}</a>
-        <a href={pagePath(lang, 'contact')}>{footer.contact}</a>
       </div>
     </div>
   </div>
 </footer>
 
 <style>
-  footer { background: var(--ink); color: #fff; padding: 24px 24px 40px; }
-  .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; }
-  .big-link { display: flex; justify-content: space-between; align-items: center; padding: 26px 0; border-bottom: 1px solid #1C2640; font-size: 17px; font-weight: 500; }
-  .big-link span { color: #5E6A82; }
-  .features { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 24px 0 4px; font-size: 14px; color: #A9B3C6; }
-  .features span { color: #5E6A82; }
-  .bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 28px; font-size: 13px; color: #7E8AA3; }
+  footer { background: var(--ink); color: #fff; padding: 64px 24px 40px; }
+  .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  .columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  nav { display: flex; flex-direction: column; gap: 12px; font-size: 14.5px; color: #A9B3C6; }
+  .title { margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #fff; }
+  nav a:hover { color: var(--accent); }
+  .bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 28px; border-top: 1px solid #1C2640; font-size: 13px; color: #7E8AA3; }
   .legal { display: flex; gap: 20px; }
+  @media (max-width: 760px) {
+    .columns { grid-template-columns: repeat(2, 1fr); gap: 40px 24px; }
+  }
 </style>

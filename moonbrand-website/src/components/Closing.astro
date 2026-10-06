@@ -1,0 +1,47 @@
+---
+// La chiusura delle pagine interne: il prezzo di partenza, letto dagli stessi piani dello studio, e l'invito a iniziare.
+import { SUBSCRIPTION_PLANS } from '../../../moonbrand-shared/src/domain/subscription';
+import { getCopy, pagePath, signupUrl, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { landing: l, meta } = getCopy(lang);
+const from = new Intl.NumberFormat(meta.ogLocale.replace('_', '-'), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+  Math.min(...Object.values(SUBSCRIPTION_PLANS).map((plan) => plan.priceEur)),
+);
+---
+
+<section class="band">
+  <div>
+    <p class="band-title">{l.pricingTitle.replace('{from}', from)}</p>
+    <p class="band-text">{l.pricingText}</p>
+  </div>
+  <a href={pagePath(lang, 'pricing')} class="band-link">{l.pricingLink} <span aria-hidden="true">→</span></a>
+</section>
+
+<section class="final">
+  <h2 class="display">{l.ctaTitle}</h2>
+  <p>{l.ctaText}</p>
+  <a href={signupUrl(lang)} class="btn btn-dark">{l.start}</a>
+</section>
+
+<style>
+  section { margin-top: 96px; }
+  .band { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 32px; border-radius: 18px; background: var(--ink); color: #fff; }
+  .band-title { margin: 0 0 6px; font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 32px; line-height: 1; letter-spacing: -0.02em; }
+  .band-text { margin: 0; font-size: 15px; color: #A9B3C6; }
+  .band-link { font-weight: 600; color: var(--accent); }
+  .band-link:hover { color: #fff; }
+
+  .final { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+  .final h2 { margin: 0; font-size: clamp(34px, 4.4vw, 48px); }
+  .final p { margin: 0 0 8px; max-width: 520px; font-size: 17px; line-height: 1.55; color: var(--text); }
+  .final .btn { padding: 14px 22px; }
+
+  @media (max-width: 760px) {
+    section { margin-top: 72px; }
+  }
+</style>

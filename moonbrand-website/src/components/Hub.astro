@@ -1,0 +1,43 @@
+---
+// Le pagine indice del menù: funzionalità, social e per chi. Un'introduzione, i riquadri delle pagine del gruppo,
+// il prezzo di partenza e l'invito a iniziare.
+import { AUDIENCES, FEATURES } from '../data/landings';
+import { CATEGORY_IDS, getCopy, pagePath, PLATFORM_IDS, type Lang } from '../i18n';
+import Cards from './Cards.astro';
+import Closing from './Closing.astro';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+  page: 'features' | 'social' | 'audiences';
+}
+
+const { lang, page } = Astro.props;
+const { hubs, landing: l, landings, categories, platforms } = getCopy(lang);
+const c = hubs[page];
+
+const groups: { title?: string; items: { href: string; name: string; card: string }[] }[] =
+  page === 'features'
+    ? [{ items: FEATURES.map((id) => ({ href: pagePath(lang, id), name: landings[id].name, card: landings[id].card })) }]
+    : page === 'social'
+      ? [{ items: PLATFORM_IDS.map((id) => ({ href: pagePath(lang, id), name: platforms[id].name, card: platforms[id].card })) }]
+      : [
+          { items: AUDIENCES.map((id) => ({ href: pagePath(lang, id), name: landings[id].name, card: landings[id].card })) },
+          { title: l.categoriesTitle, items: CATEGORY_IDS.map((id) => ({ href: pagePath(lang, id), name: categories[id].name, card: categories[id].card })) },
+        ];
+---
+
+<PageShell lang={lang} page={page} title={c.title} description={c.description} eyebrow={c.eyebrow} heading={c.heading} lead={c.lead}>
+  {groups.map((group) => (
+    <section>
+      {group.title && <h2 class="display">{group.title}</h2>}
+      <Cards items={group.items} />
+    </section>
+  ))}
+  <Closing lang={lang} />
+</PageShell>
+
+<style>
+  section + section { margin-top: 72px; }
+  h2 { font-size: clamp(30px, 3.6vw, 40px); margin-bottom: 24px; }
+</style>

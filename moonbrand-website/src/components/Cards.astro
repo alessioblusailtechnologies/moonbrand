@@ -1,0 +1,30 @@
+---
+// I riquadri che portano alle pagine di un gruppo: categorie, funzionalità, social, tipi di cliente.
+interface Props {
+  items: { href: string; name: string; card: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="cards">
+  {items.map((item) => (
+    <a class="card" href={item.href}>
+      <span class="name">{item.name}<span aria-hidden="true">→</span></span>
+      <span class="text">{item.card}</span>
+    </a>
+  ))}
+</div>
+
+<style>
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .card { display: flex; flex-direction: column; gap: 8px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: #FAFAF8; }
+  .card:hover { border-color: var(--accent); color: inherit; }
+  .name { display: flex; justify-content: space-between; gap: 12px; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .name span { color: var(--faint); }
+  .card:hover .name { color: var(--accent-dark); }
+  .text { font-size: 15px; line-height: 1.5; color: var(--text); }
+  @media (max-width: 760px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>

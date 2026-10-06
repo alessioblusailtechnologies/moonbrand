@@ -1,0 +1,12 @@
+---
+import Landing from '../../../../components/Landing.astro';
+import { PLATFORM_IDS, PLATFORMS, type Platform } from '../../../../i18n';
+
+export function getStaticPaths() {
+  return PLATFORM_IDS.map((page) => ({ params: { platform: PLATFORMS[page].fr }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Platform };
+---
+
+<Landing lang="fr" page={page} />

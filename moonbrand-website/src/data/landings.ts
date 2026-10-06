@@ -1,6 +1,6 @@
 // Le pagine per tipo di cliente e per funzionalità: quali post di esempio mostrano e in che gruppo stanno.
 // I testi sono in copy.landings di ogni lingua, gli indirizzi in PAGES.
-import type { Category } from '../i18n';
+import type { Category, Platform } from '../i18n';
 import type { PostId } from './home';
 
 export const AUDIENCES = ['businesses', 'agencies'] as const;
@@ -11,10 +11,10 @@ export type Feature = (typeof FEATURES)[number];
 export type Landing = Audience | Feature;
 
 /**
- * I post di esempio di ogni pagina, scelti tra quelli della home. Per le categorie, finché non ci sono post fatti
- * apposta (da un brand di prova nello studio), quelli della home che fanno quel mestiere.
+ * I post di esempio di ogni pagina, scelti tra quelli della home. Per categorie e social, finché non ci sono post
+ * fatti apposta (da un brand di prova nello studio), quelli della home di quel mestiere o di quel canale.
  */
-export const LANDING_POSTS: Record<Landing | Category, PostId[]> = {
+export const LANDING_POSTS: Record<Landing | Category | Platform, PostId[]> = {
   businesses: ['aurora-torta', 'osteria-reel', 'libreria-slide'],
   agencies: ['riva-case', 'forma-slide', 'aurora-laboratorio'],
   assistant: ['solco-post', 'aurora-torta', 'forma-slide'],
@@ -26,6 +26,10 @@ export const LANDING_POSTS: Record<Landing | Category, PostId[]> = {
   bakeries: ['aurora-torta', 'aurora-laboratorio'],
   gyms: ['forma-slide', 'forma-tiktok'],
   shops: ['libreria-slide'],
+  instagram: ['solco-post', 'forma-slide', 'osteria-reel'],
+  tiktok: ['forma-tiktok'],
+  facebook: ['aurora-torta'],
+  linkedin: ['riva-case'],
 };
 
 /** Le altre pagine dello stesso gruppo, per i link in fondo. */
