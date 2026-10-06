@@ -46,7 +46,7 @@ export function getIdeas(pool: pg.Pool, identity: Identity, brandId: string): Pr
 }
 
 // Se sta già preparando idee per questo brand, restituisce quel lavoro invece di aprirne un altro.
-export function queueIdeasJob(pool: pg.Pool, identity: Identity, brandId: string, count: number): Promise<AiJobCreated> {
+export function queueIdeasJob(pool: pg.Pool, identity: Identity, brandId: string, count: number, free = false): Promise<AiJobCreated> {
   return withIdentity(pool, identity, async (db) => {
     const brand = await findBrandForIdeas(db, brandId);
     if (!brand) throw ApiError.notFound('Brand non trovato.');
@@ -62,7 +62,7 @@ export function queueIdeasJob(pool: pg.Pool, identity: Identity, brandId: string
         .map((idea) => ({ title: idea.title, status: idea.status, themeId: idea.themeId, signal: idea.signal.kind })),
       preferences: preferencesOf(ideas),
     };
-    return { id: await insertJob(db, identity.accountId, 'ideas', input) };
+    return { id: await insertJob(db, identity.accountId, 'ideas', input, { free }) };
   });
 }
 

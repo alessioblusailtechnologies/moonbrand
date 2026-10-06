@@ -94,6 +94,8 @@ export interface AiJobCreated {
 
 export interface WebsiteJobRequest {
   site: string;
+  // Il brand per cui si legge il sito: se è ancora in bozza (onboarding) il lavoro non scala crediti.
+  brandId?: string;
 }
 
 export interface WebsiteReading {

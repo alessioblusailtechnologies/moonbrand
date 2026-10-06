@@ -115,7 +115,7 @@ export async function brandsToWelcome(db: Queryable, day: string, activeDays: nu
        and (w.generated_at > now() - make_interval(days => $2) or a.last_sign_in_at > now() - make_interval(days => $2))
        and not exists (
          select 1 from presenza.ai_jobs j
-         where j.kind = 'welcome' and j.input->>'brandId' = b.id::text and j.input->>'day' = $1 and j.status = 'failed'
+         where j.kind = 'welcome' and j.input->>'brandId' = b.id::text and j.input->>'day' = $1::text and j.status = 'failed'
        )`,
     [day, activeDays],
   );

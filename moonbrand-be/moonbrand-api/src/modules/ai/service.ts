@@ -12,26 +12,40 @@ import type {
 import { exampleChannels } from '@moonbrand/shared/domain/catalog';
 
 import { withIdentity, type Identity } from '../../db/identity';
+import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
-import { findExamplesJob, findJob, insertJob } from './repository';
+import { findExamplesJob, findJob, insertJob, isDraftBrand } from './repository';
 
-export function queueWebsiteJob(pool: pg.Pool, identity: Identity, request: WebsiteJobRequest): Promise<AiJobCreated> {
-  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'website', request) }));
+// Quello che si fa su un brand ancora in bozza è l'onboarding, e non scala crediti. La bozza dev'essere dell'account:
+// lo controlla claim prima, così un brand di altri non passa per una bozza.
+async function onboarding(files: BrandFiles, identity: Identity, db: Queryable, brandId: string | undefined): Promise<boolean> {
+  if (!brandId) return false;
+  await files.claim(brandId, identity.accountId);
+  return isDraftBrand(db, brandId);
+}
+
+export function queueWebsiteJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: WebsiteJobRequest): Promise<AiJobCreated> {
+  const { brandId, ...input } = request;
+  return withIdentity(pool, identity, async (db) => {
+    const free = await onboarding(files, identity, db, brandId);
+    return { id: await insertJob(db, identity.accountId, 'website', input, { free }) };
+  });
 }
 
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
-  await files.claim(request.brandId, identity.accountId);
   // Gli esempi sono solo per i primi canali scelti: il job ricorda quelli, e una modifica lavora sugli stessi.
   const input: VisualJobRequest = { ...request, brand: { ...request.brand, channels: exampleChannels(request.brand.channels) } };
-  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual', input) }));
+  return withIdentity(pool, identity, async (db) => {
+    const free = await onboarding(files, identity, db, request.brandId);
+    return { id: await insertJob(db, identity.accountId, 'visual', input, { free }) };
+  });
 }
 
 export async function queueVisualEditJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualEditJobRequest): Promise<AiJobCreated> {
   const previous = await withIdentity(pool, identity, (db) => findExamplesJob(db, request.jobId));
   if (!previous?.brandId || !previous.channels) throw ApiError.notFound('Esempi non trovati.');
   if (previous.status !== 'done' || !previous.sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Questi esempi non sono ancora pronti da modificare.');
-  await files.claim(previous.brandId, identity.accountId);
   const input: VisualEditJobInput = {
     brandId: previous.brandId,
     dir: previous.dir,
@@ -40,7 +54,10 @@ export async function queueVisualEditJob(pool: pg.Pool, files: BrandFiles, ident
     instruction: request.instruction,
     fromJobId: request.jobId,
   };
-  return withIdentity(pool, identity, async (db) => ({ id: await insertJob(db, identity.accountId, 'visual-edit', input) }));
+  return withIdentity(pool, identity, async (db) => {
+    const free = await onboarding(files, identity, db, input.brandId);
+    return { id: await insertJob(db, identity.accountId, 'visual-edit', input, { free }) };
+  });
 }
 
 export function getJob(pool: pg.Pool, files: BrandFiles, identity: Identity, jobId: string): Promise<AiJob> {

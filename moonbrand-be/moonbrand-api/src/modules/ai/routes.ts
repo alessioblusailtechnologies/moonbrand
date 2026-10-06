@@ -7,7 +7,7 @@ import { getJob, queueVisualEditJob, queueVisualJob, queueWebsiteJob } from './s
 
 export function registerAiRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): void {
   app.post('/v1/ai/website', async (request, reply) => {
-    const job = await queueWebsiteJob(pool, request.identity, websiteJobSchema.parse(request.body));
+    const job = await queueWebsiteJob(pool, files, request.identity, websiteJobSchema.parse(request.body));
     return reply.code(202).send(job);
   });
 

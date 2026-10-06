@@ -36,9 +36,10 @@ export class AiJobsService {
   private readonly http = inject(HttpClient);
   private readonly credits = inject(CreditsService);
 
-  async readWebsite(site: string, onSteps?: OnAiSteps): Promise<WebsiteInsights> {
+  async readWebsite(site: string, brandId: string | null, onSteps?: OnAiSteps): Promise<WebsiteInsights> {
     const host = normalizeSite(site);
-    const reading = await this.run<WebsiteReading>('/v1/ai/website', { site } satisfies WebsiteJobRequest, onSteps);
+    const request: WebsiteJobRequest = brandId ? { site, brandId } : { site };
+    const reading = await this.run<WebsiteReading>('/v1/ai/website', request, onSteps);
     return {
       site: host,
       name: reading.name,

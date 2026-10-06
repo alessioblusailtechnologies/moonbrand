@@ -6,6 +6,7 @@ import { channelId, identity, positioning, voiceCard } from '../brands/schemas';
 
 export const websiteJobSchema = z.object({
   site: z.string().trim().min(3, 'Scrivi l’indirizzo del sito.').max(300),
+  brandId: z.uuid().optional(),
 }) satisfies z.ZodType<WebsiteJobRequest>;
 
 export const visualJobSchema = z.object({

@@ -57,13 +57,13 @@ export async function saveBrand(
 }
 
 // Lo stile si rilegge dopo che i riferimenti sono al loro posto (vedi queueStyleJob).
-export function restyleBrand(pool: pg.Pool, identity: Identity, brandId: string): Promise<string> {
-  return withIdentity(pool, identity, (db) => queueStyleJob(db, identity.accountId, brandId));
+export function restyleBrand(pool: pg.Pool, identity: Identity, brandId: string, free = false): Promise<string> {
+  return withIdentity(pool, identity, (db) => queueStyleJob(db, identity.accountId, brandId, free));
 }
 
 // Il progetto video del brand nuovo si prepara subito, insieme a stile e prime idee: il primo messaggio in chat non lo aspetta.
 export function queueVideoSetup(pool: pg.Pool, identity: Identity, brandId: string): Promise<string> {
-  return withIdentity(pool, identity, (db) => insertJob(db, identity.accountId, 'video-setup', { brandId } satisfies VideoSetupJobInput));
+  return withIdentity(pool, identity, (db) => insertJob(db, identity.accountId, 'video-setup', { brandId } satisfies VideoSetupJobInput, { free: true }));
 }
 
 export function chooseActiveBrand(pool: pg.Pool, identity: Identity, brandId: string): Promise<void> {

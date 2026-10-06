@@ -4,12 +4,25 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import type { Queryable } from '../../db/pool';
 
 // agentToken: il token con cui i tool del job chiamano l'API (solo per i job della chat).
-export async function insertJob(db: Queryable, accountId: string, kind: string, input: unknown, agentToken?: string): Promise<string> {
+// free: il job non scala crediti (onboarding, creazione del brand, saluti del mattino); i trigger dei crediti lo saltano.
+export async function insertJob(
+  db: Queryable,
+  accountId: string,
+  kind: string,
+  input: unknown,
+  { agentToken, free = false }: { agentToken?: string; free?: boolean } = {},
+): Promise<string> {
   const { rows } = await db.query<{ id: string }>(
-    'insert into presenza.ai_jobs (account_id, kind, input, agent_token) values ($1, $2, $3::jsonb, $4) returning id',
-    [accountId, kind, JSON.stringify(input), agentToken ?? null],
+    'insert into presenza.ai_jobs (account_id, kind, input, agent_token, free) values ($1, $2, $3::jsonb, $4, $5) returning id',
+    [accountId, kind, JSON.stringify(input), agentToken ?? null, free],
   );
   return rows[0].id;
+}
+
+// Un brand ancora in bozza (l'onboarding): la cartella c'è, la riga in brands arriva solo alla fine.
+export async function isDraftBrand(db: Queryable, brandId: string): Promise<boolean> {
+  const { rows } = await db.query('select 1 from presenza.brands where id = $1', [brandId]);
+  return rows.length === 0;
 }
 
 export async function findJob(db: Queryable, jobId: string): Promise<{ job: AiJob; brandId: string | null } | null> {

@@ -17,8 +17,8 @@ async function activeStyleJob(db: Queryable, brandId: string): Promise<string | 
 }
 
 // Riferimenti appena cambiati: un job già in coda potrebbe leggere quelli di prima, quindi se ne mette un altro.
-export function queueStyleJob(db: Queryable, accountId: string, brandId: string): Promise<string> {
-  return insertJob(db, accountId, 'style', { brandId } satisfies StyleJobInput);
+export function queueStyleJob(db: Queryable, accountId: string, brandId: string, free = false): Promise<string> {
+  return insertJob(db, accountId, 'style', { brandId } satisfies StyleJobInput, { free });
 }
 
 // Per un brand che non ha ancora lo stile (null): il job parte una volta e chi lo ha chiesto va avanti senza aspettarlo.

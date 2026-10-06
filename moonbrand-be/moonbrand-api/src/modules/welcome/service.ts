@@ -52,7 +52,8 @@ async function welcome(db: Queryable, accountId: string, brandId: string): Promi
   const changed = fresh && fresh.fingerprint !== fingerprint && Date.now() - fresh.generatedAt.getTime() > REFRESH_MINUTES * 60_000;
   if (!jobId && (!fresh || changed)) {
     const input: WelcomeJobInput = { brandId, day, fingerprint, name: account?.name ?? '', brand: brand.context, signals };
-    jobId = await insertJob(db, accountId, 'welcome', input);
+    // Saluti e spunti nessuno li chiede: non scalano crediti.
+    jobId = await insertJob(db, accountId, 'welcome', input, { free: true });
   }
   return { greetings: fresh?.greetings ?? [], suggestions: fresh?.suggestions ?? [], jobId };
 }

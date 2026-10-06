@@ -132,7 +132,7 @@ async function queueTurn(
     idea,
     slot,
   };
-  const jobId = await insertJob(db, identity.accountId, 'chat', input, randomBytes(32).toString('base64url'));
+  const jobId = await insertJob(db, identity.accountId, 'chat', input, { agentToken: randomBytes(32).toString('base64url') });
   const turnId = await insertTurn(db, { conversationId: conversation.id, accountId: identity.accountId, message, attachments, jobId });
   return { conversationId: conversation.id, turnId, jobId };
 }

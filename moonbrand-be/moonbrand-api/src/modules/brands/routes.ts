@@ -38,13 +38,14 @@ export function registerBrandRoutes(app: FastifyInstance, pool: pg.Pool, files: 
     const brand = await createBrand(pool, request.identity, body);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
     // Lo stile dai riferimenti, le prime idee e il progetto video partono subito, lato server, e insieme: si preparano
-    // anche se chi ha creato il brand chiude la pagina. L'onboarding li segue fino alla fine.
+    // anche se chi ha creato il brand chiude la pagina. L'onboarding li segue fino alla fine. Fanno parte
+    // dell'onboarding, quindi non scalano crediti.
     const queued = await Promise.all([
-      restyleBrand(pool, request.identity, body.id).catch((error: unknown) => {
+      restyleBrand(pool, request.identity, body.id, true).catch((error: unknown) => {
         request.log.warn({ err: error }, 'stile non messo in coda');
         return null;
       }),
-      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).then(
+      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS, true).then(
         (job) => job.id,
         (error: unknown) => {
           request.log.warn({ err: error }, 'prime idee non messe in coda');

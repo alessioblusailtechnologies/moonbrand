@@ -146,7 +146,7 @@ export class IdentityStep {
     this.reading.set(true);
     this.steps.set([]);
     try {
-      const insights = await this.ai.readWebsite(this.identity().site, (steps) => this.steps.set(steps));
+      const insights = await this.ai.readWebsite(this.identity().site, this.store.brandId(), (steps) => this.steps.set(steps));
       this.store.applyInsights(insights);
       this.toast.show(this.i18n.t('onboarding.identity.readDone'));
     } catch {
