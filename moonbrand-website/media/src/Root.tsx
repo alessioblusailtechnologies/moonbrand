@@ -1,6 +1,6 @@
 import { Still } from 'remotion';
 
-import { Anteprima, Favicon, Icona, MarchioApp } from './sito/Anteprima';
+import { Anteprima, CopertinaFacebook, CopertinaLinkedin, CopertinaLinkedinProfilo, Favicon, Icona, MarchioApp } from './sito/Anteprima';
 import {
   FormaSlide,
   FormaTikTok,
@@ -35,6 +35,9 @@ export const RemotionRoot: React.FC = () => {
       <Still id="social-manager" component={SoloFoto} defaultProps={{ nome: 'social-manager' }} width={900} height={1200} />
       <Still id="anteprima" component={Anteprima} width={1200} height={630} />
       <Still id="icona" component={Icona} width={512} height={512} />
+      <Still id="copertina-facebook" component={CopertinaFacebook} width={820} height={312} />
+      <Still id="copertina-linkedin" component={CopertinaLinkedin} width={1200} height={200} />
+      <Still id="copertina-linkedin-profilo" component={CopertinaLinkedinProfilo} width={1584} height={396} />
       <Still id="favicon" component={Favicon} width={48} height={48} />
       <Still id="app-primo-piano" component={MarchioApp} defaultProps={{ size: 540 }} width={1024} height={1024} />
       <Still id="app-monocromo" component={MarchioApp} defaultProps={{ size: 540, mono: true }} width={1024} height={1024} />

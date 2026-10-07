@@ -89,3 +89,90 @@ export const Favicon: React.FC = () => (
     <path d="M56.44 75.28A26 26 0 1 0 56.44 24.72A31 31 0 0 1 56.44 75.28Z" fill={ACCENT} />
   </svg>
 );
+
+/**
+ * Le copertine dei profili social. Facebook (820×312, esportata al doppio): su telefono si vede solo il centro, quindi
+ * marchio e titolo stanno in mezzo e i post di esempio ai lati, dove il taglio non fa danni.
+ */
+export const CopertinaFacebook: React.FC<{ lingua?: Lingua }> = ({ lingua = 'it' }) => {
+  const t = TESTI[lingua];
+  return (
+    <AbsoluteFill style={{ background: INK, color: '#fff', fontFamily: 'Geist', overflow: 'hidden' }}>
+      <Carta w={1080} h={1350} scala={0.17} style={{ left: 34, top: 40, transform: 'rotate(-6deg)' }}>
+        <SolcoPost lingua={lingua} />
+      </Carta>
+      <Carta w={1080} h={1080} scala={0.15} style={{ left: 618, top: 30, transform: 'rotate(5deg)' }}>
+        <FormaSlide lingua={lingua} />
+      </Carta>
+      <Carta w={1080} h={1350} scala={0.13} style={{ left: 668, top: 168, transform: 'rotate(-4deg)' }}>
+        <LibreriaSlide lingua={lingua} />
+      </Carta>
+      <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', gap: 16, paddingBottom: 30 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Marchio size={34} />
+          <span style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>Moonbrand</span>
+        </div>
+        <h1 style={{ margin: 0, textAlign: 'center', fontFamily: 'Archivo', fontStretch: '68%', fontWeight: 800, fontSize: 46, lineHeight: 0.95, letterSpacing: '-0.02em' }}>
+          {t.anteprima[0]}
+          <br />
+          <span style={{ color: ACCENT }}>{t.anteprima[1]}</span>
+        </h1>
+        <div style={{ fontSize: 13, color: '#7E8AA3', letterSpacing: '0.02em' }}>moonbrand.app</div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+/** La copertina della pagina LinkedIn (6:1, esportata a 4200×700 come chiede LinkedIn): a sinistra c'è il logo della pagina, il testo sta a destra. */
+export const CopertinaLinkedin: React.FC<{ lingua?: Lingua }> = ({ lingua = 'it' }) => {
+  const t = TESTI[lingua];
+  return (
+    <AbsoluteFill style={{ background: INK, color: '#fff', fontFamily: 'Geist', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 320, top: 0, bottom: 0, width: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+        <h1 style={{ margin: 0, fontFamily: 'Archivo', fontStretch: '68%', fontWeight: 800, fontSize: 34, lineHeight: 0.95, letterSpacing: '-0.02em' }}>
+          {t.anteprima[0]}
+          <br />
+          <span style={{ color: ACCENT }}>{t.anteprima[1]}</span>
+        </h1>
+        <p style={{ margin: 0, fontSize: 13, lineHeight: 1.4, color: '#A9B3C6' }}>
+          {t.anteprimaSub} <span style={{ color: '#7E8AA3' }}>moonbrand.app</span>
+        </p>
+      </div>
+      <Carta w={1080} h={1080} scala={0.12} style={{ left: 960, top: 42, transform: 'rotate(-6deg)' }}>
+        <FormaSlide lingua={lingua} />
+      </Carta>
+      <Carta w={1080} h={1350} scala={0.11} style={{ left: 1060, top: 26, transform: 'rotate(4deg)' }}>
+        <SolcoPost lingua={lingua} />
+      </Carta>
+    </AbsoluteFill>
+  );
+};
+
+/** La copertina del profilo personale LinkedIn (1584×396): la foto profilo copre il basso a sinistra, il testo sta a destra. */
+export const CopertinaLinkedinProfilo: React.FC<{ lingua?: Lingua }> = ({ lingua = 'it' }) => {
+  const t = TESTI[lingua];
+  return (
+    <AbsoluteFill style={{ background: INK, color: '#fff', fontFamily: 'Geist', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 520, top: 0, bottom: 0, width: 660, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Marchio size={40} />
+          <span style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em' }}>Moonbrand</span>
+        </div>
+        <h1 style={{ margin: 0, fontFamily: 'Archivo', fontStretch: '68%', fontWeight: 800, fontSize: 64, lineHeight: 0.95, letterSpacing: '-0.02em' }}>
+          {t.anteprima[0]}
+          <br />
+          <span style={{ color: ACCENT }}>{t.anteprima[1]}</span>
+        </h1>
+        <p style={{ margin: 0, fontSize: 20, lineHeight: 1.4, color: '#A9B3C6' }}>
+          {t.anteprimaSub} <span style={{ color: '#7E8AA3' }}>moonbrand.app</span>
+        </p>
+      </div>
+      <Carta w={1080} h={1080} scala={0.24} style={{ left: 1230, top: 92, transform: 'rotate(-6deg)' }}>
+        <FormaSlide lingua={lingua} />
+      </Carta>
+      <Carta w={1080} h={1350} scala={0.22} style={{ left: 1370, top: 40, transform: 'rotate(4deg)' }}>
+        <SolcoPost lingua={lingua} />
+      </Carta>
+    </AbsoluteFill>
+  );
+};
