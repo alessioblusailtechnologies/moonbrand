@@ -27,6 +27,10 @@ export const SIZES = {
 type Aspect = keyof typeof SIZES;
 
 const LOAD_TIMEOUT_MS = 30_000;
+const ASSETS_TIMEOUT_MS = 10_000;
+const PROTOCOL_TIMEOUT_MS = 45_000;
+
+const secondsOf = (ms: number) => `${(ms / 1000).toFixed(1).replace('.', ',')} s`;
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
 
 // I controlli sul DOM girano nella pagina: stanno in un file JavaScript a parte, letto come testo.
@@ -38,7 +42,14 @@ const CHECKS = readFileSync(new URL('./grafica-controlli.js', import.meta.url), 
 export async function launchChrome(): Promise<Browser> {
   const status = await ensureBrowser();
   if (status.type !== 'local-puppeteer-browser' && status.type !== 'user-defined-path') throw new Error('Chrome headless non disponibile');
-  return puppeteer.launch({ executablePath: status.path, headless: true, args: ['--hide-scrollbars', '--font-render-hinting=none'] });
+  // protocolTimeout: una pagina che tiene occupato Chrome (uno script che non finisce) non risponde più a niente, neanche
+  // allo scatto; senza limite Puppeteer aspetta 180 s per comando.
+  return puppeteer.launch({
+    executablePath: status.path,
+    headless: true,
+    protocolTimeout: PROTOCOL_TIMEOUT_MS,
+    args: ['--hide-scrollbars', '--font-render-hinting=none'],
+  });
 }
 
 // Il render da solo, senza tool: lo usa renderizza (e chi lo vuole provare da fuori).
@@ -68,15 +79,31 @@ export function createRenderer(folder: string) {
       const started = Date.now();
       await page.setViewport({ width, height, deviceScaleFactor: 1 });
       await page.goto(pathToFileURL(source).href, { waitUntil: 'networkidle0', timeout: LOAD_TIMEOUT_MS });
-      await page.evaluate('Promise.all([document.fonts.ready, ...[...document.images].map((image) => image.decode().catch(() => undefined))])');
+      const loaded = Date.now();
+      // Un font o un'immagine che non arriva non deve tenere fermo il render: dopo ASSETS_TIMEOUT_MS si scatta lo stesso
+      // e i controlli dicono cosa manca.
+      const assets = await Promise.race([
+        page
+          .evaluate('Promise.all([document.fonts.ready, ...[...document.images].map((image) => image.decode().catch(() => undefined))])')
+          .then(() => true),
+        new Promise<false>((resolve) => setTimeout(() => resolve(false), ASSETS_TIMEOUT_MS)),
+      ]);
+      // Una pagina che non risponde neanche a questo è bloccata da uno script: lo scatto aspetterebbe fino al protocolTimeout.
+      if (!assets && !(await Promise.race([page.evaluate('true'), new Promise<false>((resolve) => setTimeout(() => resolve(false), 3_000))]))) {
+        throw new Error('la pagina non risponde: uno script tiene occupato il browser (un ciclo che non finisce, un’animazione in JavaScript). Togli gli script: l’immagine è statica.');
+      }
       await page.screenshot({ path: target, type: extension === '.png' ? 'png' : 'jpeg', ...(extension !== '.png' && { quality: 92 }), clip: { x: 0, y: 0, width, height } });
       const found = (await page.evaluate(`(${CHECKS})(${aspect === '9:16'})`)) as { fix: string[]; check: string[] };
-      const fix = [...found.fix, ...failed.map((request) => `richiesta non riuscita: ${request}`)];
-      const seconds = ((Date.now() - started) / 1000).toFixed(1).replace('.', ',');
+      const fix = [
+        ...(assets ? [] : [`font o immagini non pronti dopo ${ASSETS_TIMEOUT_MS / 1000} s: usa file locali nella cartella del brand`]),
+        ...found.fix,
+        ...failed.map((request) => `richiesta non riuscita: ${request}`),
+      ];
+      const seconds = `${secondsOf(Date.now() - started)} (caricamento ${secondsOf(loaded - started)})`;
       const list = (title: string, items: string[]) => (items.length > 0 ? [`${title}:`, ...items.map((item) => `- ${item}`)] : []);
       const checks =
         fix.length + found.check.length === 0 ? ['Controlli: tutto a posto.'] : [...list('Da correggere', fix), ...list('Da valutare, se non sono scelte', found.check)];
-      return [`Salvata ${file} (${width}×${height}, ${aspect}) in ${seconds} s.`, ...checks].join('\n');
+      return [`Salvata ${file} (${width}×${height}, ${aspect}) in ${seconds}.`, ...checks].join('\n');
     } finally {
       await page.close().catch(() => undefined);
     }
