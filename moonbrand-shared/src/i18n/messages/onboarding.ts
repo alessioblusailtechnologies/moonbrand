@@ -120,6 +120,9 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Collega',
+      simulate: 'Simula connessione',
+      simulateFailed: 'Connessione simulata di {channel} non riuscita.',
+      simulated: 'Collegamento di prova: i post risultano pubblicati ma non escono davvero',
       reconnect: 'Ricollega',
       lost: '{handle} · da ricollegare: il social ha chiuso l’accesso e i post qui sono in attesa',
       connecting: 'Collego…',
@@ -408,6 +411,9 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Connect',
+      simulate: 'Simulate connection',
+      simulateFailed: 'Simulated connection of {channel} failed.',
+      simulated: 'Test connection: posts show as published but are not actually sent',
       reconnect: 'Reconnect',
       lost: '{handle} · needs reconnecting: the network closed access and posts here are waiting',
       connecting: 'Connecting…',
@@ -696,6 +702,9 @@ export const onboarding = defineMessages({
     },
     channels: {
       connect: 'Connecter',
+      simulate: 'Simuler la connexion',
+      simulateFailed: 'La connexion simulée de {channel} a échoué.',
+      simulated: 'Connexion de test : les posts apparaissent publiés mais ne sortent pas vraiment',
       reconnect: 'Reconnecter',
       lost: '{handle} · à reconnecter : le réseau a fermé l’accès et les publications sont en attente',
       connecting: 'Je connecte…',

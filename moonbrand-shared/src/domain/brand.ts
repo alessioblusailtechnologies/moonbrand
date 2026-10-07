@@ -233,6 +233,14 @@ export function isConnected(channel: ChannelState): boolean {
   return Boolean(channel.accountId);
 }
 
+// Il collegamento finto degli ambienti di prova (SIMULATE_SOCIAL nell'API): vale come collegato, ma i post non escono
+// davvero, risultano pubblicati e basta. In produzione non si può creare.
+export const SIMULATED_ACCOUNT = 'sim_';
+
+export function isSimulated(channel: ChannelState): boolean {
+  return channel.accountId?.startsWith(SIMULATED_ACCOUNT) ?? false;
+}
+
 // Collegato, ma il social ha chiuso l'accesso: va ricollegato.
 export function needsReconnect(channel: ChannelState): boolean {
   return isConnected(channel) && channel.lost === true;

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 
-import { isConnected, needsReconnect, type BrandDraft, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
+import { isConnected, isSimulated, needsReconnect, type BrandDraft, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName } from '@moonbrand/shared/domain/catalog';
 
 import { ChannelMark } from '../../../ui/channel-mark';
@@ -41,6 +41,11 @@ const DISCONNECTED: ChannelState = { selected: false, handle: null, accountId: n
             {{ (busy() === channel.id ? 'onboarding.channels.disconnecting' : 'onboarding.channels.disconnect') | t }}
           </button>
         } @else {
+          @if (canSimulate()) {
+            <button class="btn btn-ghost btn-sm" type="button" [disabled]="busy() !== null" (click)="simulate(channel.id)">
+              {{ 'onboarding.channels.simulate' | t }}
+            </button>
+          }
           <button class="btn btn-primary btn-sm" type="button" [disabled]="busy() !== null" (click)="connect(channel.id)">
             {{ (busy() === channel.id ? 'onboarding.channels.connecting' : 'onboarding.channels.connect') | t }}
           </button>
@@ -97,11 +102,18 @@ export class ChannelsStep {
   protected readonly needsReconnect = needsReconnect;
   protected readonly disconnected = DISCONNECTED;
   protected readonly busy = signal<ChannelId | null>(null);
+  // Il pulsante «Simula connessione» c'è solo negli ambienti di prova.
+  protected readonly canSimulate = signal(false);
+
+  constructor() {
+    void this.brands.simulationEnabled().then((enabled) => this.canSimulate.set(enabled));
+  }
 
   protected status(id: ChannelId, state: ChannelState): string {
     if (this.busy() === id && (!isConnected(state) || needsReconnect(state))) return this.i18n.t('onboarding.channels.redirecting');
     if (needsReconnect(state)) return this.i18n.t('onboarding.channels.lost', { handle: state.handle ?? '' });
     if (!isConnected(state)) return this.i18n.t('onboarding.channels.notConnected');
+    if (isSimulated(state)) return this.i18n.t('onboarding.channels.simulated');
     const handle = state.handle ?? '';
     return state.board
       ? this.i18n.t('onboarding.channels.onBoard', { handle, board: state.board.name })
@@ -128,6 +140,21 @@ export class ChannelsStep {
       await this.connection.start(brandId, id, this.store.connectReturn);
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('onboarding.channels.connectFailed', { channel: channelName(id) })));
+      this.busy.set(null);
+    }
+  }
+
+  // Ambienti di prova: il canale risulta collegato senza passare dal social.
+  protected async simulate(id: ChannelId): Promise<void> {
+    const brandId = this.store.brandId();
+    if (!brandId) return;
+    this.busy.set(id);
+    try {
+      const { state } = await this.brands.simulateChannel(brandId, id);
+      this.store.applyChannel(id, state);
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.channels.simulateFailed', { channel: channelName(id) })));
+    } finally {
       this.busy.set(null);
     }
   }

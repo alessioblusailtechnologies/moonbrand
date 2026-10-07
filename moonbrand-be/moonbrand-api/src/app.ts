@@ -46,6 +46,7 @@ export interface AppOptions {
     | 'ZERNIO_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
     | 'STUDIO_ORIGINS'
+    | 'SIMULATE_SOCIAL'
     | 'STUDIO_URL'
     | 'EMAIL_SECRET'
     | 'SUPABASE_SERVICE_ROLE_KEY'

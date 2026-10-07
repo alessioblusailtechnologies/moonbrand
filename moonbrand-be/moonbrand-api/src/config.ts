@@ -38,6 +38,9 @@ const schema = z.object({
   ZERNIO_WEBHOOK_SECRET: optional,
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
+  // Solo negli ambienti di prova, mai in produzione: i canali si possono «collegare» per finta e i loro post risultano
+  // pubblicati senza passare da Zernio.
+  SIMULATE_SOCIAL: flag.default(false),
   // Le email (benvenuto, conferma, nuova password) con Resend: senza chiave non partono e il link finisce nel log.
   RESEND_API_KEY: optional,
   EMAIL_FROM: z.string().min(1).default('Moonbrand <ciao@moonbrand.app>'),

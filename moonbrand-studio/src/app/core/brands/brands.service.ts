@@ -15,6 +15,7 @@ import type {
   CreateBrandResponse,
   ReferenceUploadResponse,
   SelectChannelRequest,
+  SocialSimulationResponse,
   UpdateBrandRequest,
 } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, ChannelId } from '@moonbrand/shared/domain/brand';
@@ -115,6 +116,21 @@ export class BrandsService {
 
   selectChannel(brandId: string, channel: ChannelId, request: SelectChannelRequest): Promise<ChannelConnectionResponse> {
     return firstValueFrom(this.http.post<ChannelConnectionResponse>(`/v1/brands/${brandId}/channels/${channel}/select`, request));
+  }
+
+  // Solo negli ambienti di prova (SIMULATE_SOCIAL nell'API): si chiede una volta.
+  private simulation: Promise<boolean> | null = null;
+
+  simulationEnabled(): Promise<boolean> {
+    this.simulation ??= firstValueFrom(this.http.get<SocialSimulationResponse>('/v1/social/simulation')).then(
+      ({ enabled }) => enabled,
+      () => false,
+    );
+    return this.simulation;
+  }
+
+  simulateChannel(brandId: string, channel: ChannelId): Promise<ChannelConnectionResponse> {
+    return firstValueFrom(this.http.post<ChannelConnectionResponse>(`/v1/brands/${brandId}/channels/${channel}/simulate`, {}));
   }
 
   disconnectChannel(brandId: string, channel: ChannelId): Promise<ChannelConnectionResponse> {

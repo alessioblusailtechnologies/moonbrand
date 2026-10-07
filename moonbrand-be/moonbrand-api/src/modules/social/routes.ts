@@ -2,8 +2,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import type { ChannelChoicesResponse, ChannelConnectionResponse, ConnectChannelResponse } from '@moonbrand/shared/api/contract';
-import type { ChannelId, ChannelState } from '@moonbrand/shared/domain/brand';
+import type { ChannelChoicesResponse, ChannelConnectionResponse, ConnectChannelResponse, SocialSimulationResponse } from '@moonbrand/shared/api/contract';
+import { isSimulated, SIMULATED_ACCOUNT, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 
 import type { Config } from '../../config';
@@ -45,7 +45,7 @@ export function registerSocialRoutes(
   app: FastifyInstance,
   pool: pg.Pool,
   files: BrandFiles,
-  settings: Pick<Config, 'ZERNIO_API_KEY' | 'STUDIO_ORIGINS'>,
+  settings: Pick<Config, 'ZERNIO_API_KEY' | 'STUDIO_ORIGINS' | 'SIMULATE_SOCIAL'>,
 ): void {
   const client = () => {
     if (!settings.ZERNIO_API_KEY) throw new ApiError(503, 'SOCIAL_NOT_CONFIGURED', 'Il collegamento dei social non è configurato: manca ZERNIO_API_KEY.');
@@ -67,11 +67,29 @@ export function registerSocialRoutes(
     if (!pending) await withIdentity(pool, identity, (db) => storeChannel(db, brandId, channel, state));
   };
   // Gli account del canale nel profilo Zernio: per un brand creato quello salvato, per uno in onboarding tutti quelli
-  // che ci sono (di solito uno solo).
+  // che ci sono (di solito uno solo). Quelli simulati su Zernio non ci sono.
   const linked = async (brandId: string, channel: ChannelId, before: { state: ChannelState; pending: boolean }) => {
-    if (!before.pending) return before.state.accountId ? [before.state.accountId] : [];
+    if (!before.pending) return before.state.accountId && !isSimulated(before.state) ? [before.state.accountId] : [];
+    if (!settings.ZERNIO_API_KEY) return [];
     return (await client().accounts(brandId, channel)).map((account) => account._id);
   };
+
+  app.get('/v1/social/simulation', (): SocialSimulationResponse => ({ enabled: settings.SIMULATE_SOCIAL }));
+
+  // Il collegamento finto degli ambienti di prova: niente Zernio, il canale risulta collegato a un account di prova.
+  app.post('/v1/brands/:brandId/channels/:channel/simulate', async (request): Promise<ChannelConnectionResponse> => {
+    if (!settings.SIMULATE_SOCIAL) throw ApiError.notFound('Il collegamento simulato non è attivo in questo ambiente.');
+    const { brandId, channel } = channelParams.parse(request.params);
+    const before = await channelOf(request.identity, brandId, channel);
+    const state: ChannelState = {
+      selected: true,
+      handle: channel === 'facebook' || channel === 'linkedin' ? 'Account di prova' : '@account.di.prova',
+      accountId: `${SIMULATED_ACCOUNT}${channel}`,
+      ...(channel === 'pinterest' && { board: { id: `${SIMULATED_ACCOUNT}board`, name: 'Bacheca di prova' } }),
+    };
+    await save(request.identity, brandId, channel, state, before.pending);
+    return { channel, state };
+  });
 
   app.post('/v1/brands/:brandId/channels/:channel/connect', async (request): Promise<ConnectChannelResponse> => {
     const { brandId, channel } = channelParams.parse(request.params);

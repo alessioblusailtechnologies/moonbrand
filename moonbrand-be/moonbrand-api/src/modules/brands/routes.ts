@@ -36,14 +36,14 @@ export function registerBrandRoutes(
   pool: pg.Pool,
   files: BrandFiles,
   storage: MediaStorage,
-  settings: Pick<Config, 'ZERNIO_API_KEY'>,
+  settings: Pick<Config, 'ZERNIO_API_KEY' | 'SIMULATE_SOCIAL'>,
 ): void {
   app.get('/v1/brands', (request) => listBrands(pool, request.identity));
 
   app.post('/v1/brands', async (request, reply) => {
     const body = createBrandSchema.parse(request.body);
     await files.claim(body.id, request.identity.accountId);
-    const connected = await onboardingConnections(settings.ZERNIO_API_KEY, body.id, body.channels);
+    const connected = await onboardingConnections(settings.ZERNIO_API_KEY, body.id, body.channels, settings.SIMULATE_SOCIAL);
     const brand = await createBrand(pool, request.identity, body, connected);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
     // Lo stile dai riferimenti, le prime idee e il progetto video partono subito, lato server, e insieme: si preparano

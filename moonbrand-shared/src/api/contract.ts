@@ -451,6 +451,11 @@ export interface SelectChannelRequest extends ChannelChoicesRequest {
 }
 
 // Il canale com'è dopo il collegamento o lo scollegamento.
+// Se l'ambiente permette il collegamento finto dei canali (solo fuori produzione).
+export interface SocialSimulationResponse {
+  enabled: boolean;
+}
+
 export interface ChannelConnectionResponse {
   channel: ChannelId;
   state: ChannelState;

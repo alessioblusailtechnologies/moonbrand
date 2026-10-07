@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { FastifyBaseLogger } from 'fastify';
 import type pg from 'pg';
 
-import type { ChannelId, ChannelState } from '@moonbrand/shared/domain/brand';
+import { isSimulated, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import { channelFiles, postText, sortFiles, type Content, type ContentFile } from '@moonbrand/shared/domain/content';
 
@@ -182,6 +182,12 @@ async function publishOne(pool: pg.Pool, files: BrandFiles, client: Zernio, clai
     );
     const accountId = rows[0]?.state?.accountId;
     if (!accountId) throw ApiError.invalid(`${channelName(claimed.channel)} non è collegato: collegalo dalle Impostazioni brand.`);
+    // Un canale simulato (ambienti di prova): il post risulta uscito, senza passare dal social.
+    if (isSimulated(rows[0]!.state!)) {
+      await settle(pool, claimed.id, { status: 'published' });
+      await markSlotPublished(pool, claimed.content_id);
+      return;
+    }
     const content = await findContent(pool, claimed.content_id);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     const target: Target = { accountId, board: rows[0]?.state?.board ?? null, site: rows[0]?.site ?? '' };
