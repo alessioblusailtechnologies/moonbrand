@@ -14,17 +14,22 @@ import {
   type ChannelVariant,
   type Content,
   type ContentFile,
+  type ContentStatus,
   type ContentVisual,
 } from '@moonbrand/shared/domain/content';
 import type { Idea } from '@moonbrand/shared/domain/idea';
+import { publicationProblem, type Publication } from '@moonbrand/shared/domain/plan';
 
 import { withIdentity } from '../../db/identity';
+import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
-import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent } from '../contents/repository';
+import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent, setContentStatus } from '../contents/repository';
 import { requireNotOut } from '../contents/service';
 import { findBrandForIdeas, insertIdea, listIdeas } from '../ideas/repository';
+import { findSlot, listSlots } from '../plan/repository';
 import { attachContentIn, syncContentSlot } from '../plan/service';
+import { listPublications } from '../social/publications';
 import { checkPublishable } from '../social/publish-now';
 import type { AgentJob } from './repository';
 
@@ -57,13 +62,56 @@ function describe(content: Content, agent: AgentJob) {
   };
 }
 
+// Com'è andata su un canale, per Claude: con il motivo in parole quando non è uscito, e quando moonbrand riprova.
+export function describePublication(item: Publication) {
+  return {
+    channel: item.channel,
+    status: item.status,
+    url: item.url,
+    problem: item.status === 'failed' ? publicationProblem(item) : null,
+    retryAt: item.retryAt,
+    publishedAt: item.publishedAt,
+  };
+}
+
+// Dov'è nel piano e com'è andata sui canali.
+async function planOf(db: Queryable, content: Content) {
+  const [slot, publications] = await Promise.all([content.slotId ? findSlot(db, content.slotId) : null, listPublications(db, [content.id])]);
+  return {
+    slot: slot ? { id: slot.id, date: slot.date, time: slot.time } : null,
+    publications: (publications.get(content.id) ?? []).map(describePublication),
+  };
+}
+
+function summarize(content: Content, agent: AgentJob) {
+  const { variants: _variants, slides: _slides, ...summary } = describe(content, agent);
+  return summary;
+}
+
 export function listAgentContents(pool: pg.Pool, agent: AgentJob) {
-  return withIdentity(pool, { accountId: agent.accountId }, async (db) =>
-    (await listContents(db, agent.brandId)).map((content) => {
-      const { variants: _variants, slides: _slides, ...summary } = describe(content, agent);
-      return summary;
-    }),
-  );
+  return withIdentity(pool, { accountId: agent.accountId }, async (db) => {
+    const contents = await listContents(db, agent.brandId);
+    const [slots, publications] = await Promise.all([listSlots(db, agent.brandId), listPublications(db, contents.map((content) => content.id))]);
+    const when = new Map(slots.map((slot) => [slot.id, { id: slot.id, date: slot.date, time: slot.time }]));
+    return contents.map((content) => ({
+      ...summarize(content, agent),
+      slot: (content.slotId && when.get(content.slotId)) || null,
+      publications: (publications.get(content.id) ?? []).map(describePublication),
+    }));
+  });
+}
+
+// Approvare o rimettere in bozza, quando l'utente lo chiede in chat: come dalla pagina del contenuto. Un contenuto
+// uscito, o che sta uscendo, resta com'è.
+export function changeAgentContentStatus(pool: pg.Pool, agent: AgentJob, contentId: string, status: ContentStatus) {
+  return withIdentity(pool, { accountId: agent.accountId }, async (db) => {
+    const found = await findContent(db, contentId);
+    if (!found || found.brandId !== agent.brandId) throw ApiError.notFound('Contenuto non trovato in questo brand.');
+    await requireNotOut(db, found);
+    const content = (await setContentStatus(db, found.id, status)) ?? found;
+    await syncContentSlot(db, content);
+    return { ...summarize(content, agent), ...(await planOf(db, content)) };
+  });
 }
 
 // Pubblicare non lo fa Claude: propone, e sotto la sua risposta compare il pulsante che l'utente preme se vuole.
@@ -86,7 +134,7 @@ export function getAgentContent(pool: pg.Pool, agent: AgentJob, contentId: strin
   return withIdentity(pool, { accountId: agent.accountId }, async (db) => {
     const content = await findContent(db, contentId);
     if (!content || content.brandId !== agent.brandId) throw ApiError.notFound('Contenuto non trovato in questo brand.');
-    return describe(content, agent);
+    return { ...describe(content, agent), ...(await planOf(db, content)) };
   });
 }
 

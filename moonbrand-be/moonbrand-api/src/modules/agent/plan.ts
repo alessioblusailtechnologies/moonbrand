@@ -12,6 +12,7 @@ import { findBrandForIdeas, listIdeas } from '../ideas/repository';
 import { findSlot, listSlots } from '../plan/repository';
 import { createSlotIn, patchSlotIn, proposeIn, removeSlotIn, slotViews, type PlanScope } from '../plan/service';
 import type { AgentJob } from './repository';
+import { describePublication } from './service';
 
 // Il piano per i tool della chat: le stesse regole della sezione Piano, sul brand del job.
 
@@ -24,7 +25,7 @@ async function themeNames(db: Queryable, brandId: string): Promise<Map<string, s
   return new Map((brand?.themes ?? []).map((theme) => [theme.id, theme.name]));
 }
 
-// Quello che Claude vede di un'uscita: quando, dove, a che punto è e cosa ha.
+// Quello che Claude vede di un'uscita: quando, dove, a che punto è, cosa ha e com'è andata canale per canale.
 function describe(slot: SlotView, themes: Map<string, string>) {
   return {
     id: slot.id,
@@ -37,6 +38,7 @@ function describe(slot: SlotView, themes: Map<string, string>) {
     theme: slot.themeId ? (themes.get(slot.themeId) ?? null) : null,
     idea: slot.idea,
     content: slot.content && { id: slot.content.id, title: slot.content.title, format: slot.content.format, status: slot.content.status },
+    publications: slot.publications.map(describePublication),
   };
 }
 

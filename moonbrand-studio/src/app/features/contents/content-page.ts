@@ -6,7 +6,7 @@ import type { ContentScriptRequest, SlotView } from '@moonbrand/shared/api/contr
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import { formatAspects, hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
-import { contentState, isOut, type Publication } from '@moonbrand/shared/domain/plan';
+import { contentState, isOut, publicationProblem, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey, MessageParams } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
@@ -202,6 +202,11 @@ export class ContentPage {
 
   protected outcomeOf(channel: ChannelId): Publication | undefined {
     return this.publications().find((item) => item.channel === channel);
+  }
+
+  // Perché non è uscito, e quando moonbrand riprova da solo.
+  protected problem(item: Publication): string {
+    return publicationProblem(item, this.i18n.locale());
   }
 
   protected channelList(channels: readonly ChannelId[]): string {

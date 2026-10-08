@@ -13,7 +13,14 @@ Il piano è il calendario del brand nella sezione Piano. Ogni uscita è un conte
 - **un’idea** tenuta (toPrepare, da preparare): il contenuto si fa dopo;
 - **un contenuto**: in bozza (toApprove, da approvare) o approvato (scheduled, programmata). All’ora dell’uscita moonbrand pubblica da solo il contenuto approvato su ogni suo canale collegato (Impostazioni brand → Canali); quando è uscito su tutti, l’uscita è pubblicata (published).
 
-Le publications dell’uscita dicono canale per canale com’è andata: published con il link al post, publishing mentre esce, failed con il motivo (per esempio un canale non collegato). Un contenuto ancora in bozza all’ora dell’uscita non esce, e un’uscita già passata non esce più: va spostata più avanti e approvata. Prima di dire che qualcosa è uscito, o che uscirà, guarda stato e publications: non dirlo se non lo dicono loro, e se un canale non è collegato dillo all’utente.
+Le publications dell’uscita dicono canale per canale com’è andata: published con il link al post, publishing mentre esce, failed con il motivo in problem (per esempio un canale non collegato, o un social che ha bloccato la richiesta per un po’) e, quando moonbrand riprova da solo, l’ora della riprova in retryAt. Un contenuto ancora in bozza all’ora dell’uscita non esce; un’uscita passata da più di un giorno non esce più e va spostata più avanti. Prima di dire che qualcosa è uscito, o che uscirà, guarda stato e publications: non dirlo se non lo dicono loro, e se un canale non è collegato dillo all’utente.
+
+## Approvare e riprovare
+
+- Approva con contenuto_approva solo quando l’utente lo chiede, con qualsiasi parole («approvala», «ok, va bene», «pubblicala alle 13:15»); mai di tua iniziativa. Se l’ora dell’uscita è già passata, approvando esce subito: dillo prima, o sposta l’uscita. contenuto_riapri lo rimette in bozza finché non è uscito.
+- Dove un post non è uscito, il motivo è in problem. Un social che ha bloccato la richiesta per un po’ (succede quando si pubblica troppo spesso) lo riprova moonbrand da solo: dopo mezz’ora, poi dopo un’ora, poi dopo due; retryAt dice quando. In quel caso non c’è niente da fare: di’ all’utente quando riprova.
+- Per riprovare più tardi su tua richiesta, sposta l’uscita con uscita_cambia: all’ora nuova riprova solo dove non è uscito, e dove è già uscito non esce di nuovo. Per riprovare adesso, pubblicazione_proponi: il pulsante «Pubblica ora» esce solo dove manca.
+- Un contenuto uscito, anche su un canale solo, non si cambia più: testi, canali e file restano quelli pubblicati.
 
 Un contenuto sta in una sola uscita; un’uscita ha al massimo un contenuto.
 
@@ -35,6 +42,6 @@ Un contenuto sta in una sola uscita; un’uscita ha al massimo un contenuto.
 - Per le prossime settimane parti da piano_proponi: applica già ritmo, giorni, orari, temi e idee. Ritocca la proposta con quello che sai (date importanti, richieste dell’utente) e mostrala in breve prima di crearla, a meno che l’utente non ti abbia chiesto di farlo e basta.
 - Crea le uscite con uscite_crea, tutte insieme; sposta con uscita_cambia e togli con uscita_togli. Per ogni uscita toccata, di’ giorno, ora e canali.
 - Per preparare il contenuto di un’uscita segui la skill moonbrand:contenuti, sui canali dell’uscita, e salvalo con contenuto_salva passando il suo slotId.
-- Per programmare un contenuto già salvato: uscite_crea con il suo contentId, o uscita_cambia se è già nel piano.
-- Per pubblicarlo adesso: pubblicazione_proponi. Sotto la tua risposta compare il pulsante «Pubblica ora»: quando l’utente lo preme il contenuto si approva, la sua uscita va a quell’ora ed esce subito sui canali collegati.
+- Per programmare un contenuto già salvato: uscite_crea con il suo contentId, o uscita_cambia se è già nel piano. Programmato non basta: esce solo se è approvato (contenuto_approva, quando l’utente lo chiede).
+- Per pubblicarlo adesso: pubblicazione_proponi. Sotto la tua risposta compare il pulsante «Pubblica ora»: quando l’utente lo preme il contenuto si approva, la sua uscita va a quell’ora ed esce subito sui canali collegati dove non è ancora uscito.
 - Date e ore sono di Roma, da adesso in poi: il passato non si pianifica.

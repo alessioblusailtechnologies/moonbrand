@@ -86,7 +86,7 @@
                 }
               }
               @case ('publishing') { {{ 'plan.drawer.publishing' | t: { channel: name(item.channel) } }} }
-              @case ('failed') { {{ 'plan.drawer.failed' | t: { channel: name(item.channel), error: item.error ?? '' } }} }
+              @case ('failed') { {{ 'plan.drawer.failed' | t: { channel: name(item.channel), error: problem(item) } }} }
             }
           </p>
         }

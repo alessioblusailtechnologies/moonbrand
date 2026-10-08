@@ -33,7 +33,7 @@
                           <span class="caption publishing"><span class="spinner"></span> {{ 'contents.schedule.publishing' | t }}</span>
                         }
                         @case ('failed') {
-                          <span class="caption failed">{{ 'contents.schedule.failed' | t: { error: outcome?.error || ('contents.schedule.unknownError' | t) } }}</span>
+                          <span class="caption failed">{{ 'contents.schedule.failed' | t: { error: problem(outcome!) } }}</span>
                         }
                         @default {
                           <span class="caption">{{ 'contents.schedule.notYet' | t }}</span>

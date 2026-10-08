@@ -29,7 +29,7 @@ import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
-import { listPublications } from '../social/publications';
+import { listPublications, retryFailedAt } from '../social/publications';
 import { activeContentJobs, findContent, listContents } from '../contents/repository';
 import { summarize } from '../contents/service';
 import { findBrandForIdeas, findIdea, listIdeas, updateIdeaStatus } from '../ideas/repository';
@@ -192,6 +192,8 @@ export async function patchSlotIn(scope: PlanScope, slot: PlanSlot, request: Slo
   const next = { ...slot, date, time, channels, ideaId, themeId: request.themeId === undefined ? slot.themeId : request.themeId };
   const saved = await updateSlot(scope.db, slot.id, { ...next, status: slotStatus({ ...next, status: 'empty' }, content) });
   if (!saved) throw ApiError.notFound('Uscita non trovata.');
+  // Spostata più avanti, dove il contenuto non era uscito riprova all'ora nuova; dove è uscito non esce di nuovo.
+  if (content && (date !== slot.date || time !== slot.time)) await retryFailedAt(scope.db, content.id, date, time);
   return viewOf(scope, saved);
 }
 

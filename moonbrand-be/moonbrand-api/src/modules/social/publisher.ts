@@ -6,6 +6,7 @@ import type pg from 'pg';
 import { isSimulated, type ChannelId, type ChannelState } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import { channelFiles, postText, sortFiles, type Content, type ContentFile } from '@moonbrand/shared/domain/content';
+import type { PublicationReason } from '@moonbrand/shared/domain/plan';
 
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
@@ -17,11 +18,18 @@ import { platformOf, zernio, type PostOutcome, type PostRequest, type Zernio } f
 // così due processi dell'API non pubblicano due volte. Si guarda indietro solo WINDOW: un'uscita passata da prima
 // (per esempio programmata e approvata quando la pubblicazione non c'era) non esce più. Un canale dove il social ha
 // chiuso l'accesso aspetta: se si ricollega entro WINDOW il post esce lo stesso, in ritardo.
+// Una pubblicazione non riuscita si riprende quando ha un'ora di riprova (retry_at): se l'ha data il pubblicatore
+// stesso, dopo un blocco temporaneo del social, o chi ha spostato l'uscita più avanti.
 const CHECK_MS = 60_000;
 const WINDOW = '24 hours';
 // I post ancora in elaborazione (soprattutto i video) si ricontrollano finché il social non dice com'è andata.
 const RECHECK_AFTER = '30 seconds';
 const GIVE_UP_AFTER = '1 day';
+// Un social che blocca la richiesta per un po' (l'antispam di Instagram, quando si pubblica troppo spesso): si riprova
+// da soli dopo mezz'ora, poi dopo un'ora, poi dopo due; poi si lascia riprovare all'utente.
+const RETRY_DELAYS_MIN = [30, 60, 120];
+// Le parole con cui i social dicono che il blocco è temporaneo («Instagram blocked your request», limiti, spam).
+const BLOCKED = /blocked|rate.?limit|limit reached|too many|spam|try again later|temporarily unavailable/i;
 
 const CONTENT_TYPES: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.mp4': 'video/mp4', '.pdf': 'application/pdf' };
 
@@ -30,7 +38,19 @@ interface Claimed {
   content_id: string;
   brand_id: string;
   channel: ChannelId;
+  // Quante volte si è provato, questa compresa.
+  attempts: number;
 }
+
+// Perché non è uscito: il motivo in breve per l'utente, le parole del social per i log, e quando si riprova da soli.
+interface Failure {
+  reason: PublicationReason;
+  error?: string;
+  detail?: string;
+  retryAt?: Date;
+}
+
+type Settled = { status: 'publishing' | 'published'; postId?: string | null; url?: string | null } | { status: 'failed'; postId?: string | null; failure: Failure };
 
 // Prende in carico le pubblicazioni dovute: una riga publishing per ogni canale delle uscite arrivate all'ora.
 async function claimDue(pool: pg.Pool): Promise<Claimed[]> {
@@ -48,18 +68,44 @@ async function claimDue(pool: pg.Pool): Promise<Claimed[]> {
      insert into presenza.publications (account_id, brand_id, content_id, slot_id, channel, status)
      select account_id, brand_id, content_id, slot_id, channel, 'publishing' from due
      on conflict (content_id, channel) do nothing
-     returning id, content_id, brand_id, channel`,
+     returning id, content_id, brand_id, channel, attempts`,
   );
   return rows;
 }
 
-async function settle(pool: pg.Pool, id: string, result: { status: 'publishing' | 'published' | 'failed'; postId?: string | null; url?: string | null; error?: string | null }) {
+// Riprende le pubblicazioni non riuscite la cui ora di riprova è arrivata, se il contenuto è ancora approvato, nel
+// piano e su quel canale, e il canale non ha chiuso l'accesso.
+async function claimRetries(pool: pg.Pool): Promise<Claimed[]> {
+  const { rows } = await pool.query<Claimed>(
+    `update presenza.publications p
+       set status = 'publishing', retry_at = null, attempts = p.attempts + 1, updated_at = now()
+     from presenza.contents c, presenza.brands b
+     where p.status = 'failed' and p.retry_at <= now()
+       and c.id = p.content_id and c.status = 'approved' and c.slot_id is not null and p.channel = any(c.channels)
+       and b.id = p.brand_id and coalesce(b.channels -> p.channel ->> 'lost', 'false') <> 'true'
+     returning p.id, p.content_id, p.brand_id, p.channel, p.attempts`,
+  );
+  return rows;
+}
+
+async function settle(pool: pg.Pool, id: string, result: Settled) {
+  const failure = result.status === 'failed' ? result.failure : null;
   await pool.query(
     `update presenza.publications
-       set status = $2, zernio_post_id = coalesce($3, zernio_post_id), post_url = $4, error = $5, updated_at = now(),
+       set status = $2, zernio_post_id = coalesce($3, zernio_post_id), post_url = $4, updated_at = now(),
+           reason = $5, error = $6, detail = $7, retry_at = $8,
            published_at = case when $2 = 'published' then now() else published_at end
      where id = $1`,
-    [id, result.status, result.postId ?? null, result.url ?? null, result.error ?? null],
+    [
+      id,
+      result.status,
+      result.postId ?? null,
+      result.status === 'failed' ? null : (result.url ?? null),
+      failure?.reason ?? null,
+      failure?.error ?? null,
+      failure?.detail ?? null,
+      failure?.retryAt ?? null,
+    ],
   );
 }
 
@@ -78,12 +124,28 @@ async function markSlotPublished(pool: pg.Pool, contentId: string): Promise<void
 }
 
 // Com'è andato secondo Zernio: published e failed sono definitivi, il resto vuol dire che il social sta ancora elaborando.
-function fromOutcome(outcome: PostOutcome) {
-  if (outcome.status === 'published') return { status: 'published' as const, postId: outcome.postId, url: outcome.url };
+function fromOutcome(outcome: PostOutcome, attempts: number): Settled {
+  if (outcome.status === 'published') return { status: 'published', postId: outcome.postId, url: outcome.url };
   if (outcome.status === 'failed' || outcome.status === 'cancelled') {
-    return { status: 'failed' as const, postId: outcome.postId, error: outcome.error ?? 'Il social ha rifiutato il post.' };
+    return { status: 'failed', postId: outcome.postId, failure: socialFailure(outcome.error ?? outcome.status, attempts) };
   }
-  return { status: 'publishing' as const, postId: outcome.postId };
+  return { status: 'publishing', postId: outcome.postId };
+}
+
+// Il social non ha pubblicato: le sue parole restano nei log, all'utente va il motivo in breve. Un blocco temporaneo
+// si riprova da soli, finché ci sono attese da fare.
+function socialFailure(detail: string, attempts: number): Failure {
+  if (!BLOCKED.test(detail)) return { reason: 'rejected', detail };
+  const delay = RETRY_DELAYS_MIN[attempts - 1];
+  return { reason: 'blocked', detail, ...(delay !== undefined && { retryAt: new Date(Date.now() + delay * 60_000) }) };
+}
+
+// Un errore mentre si prepara o si manda il post: quello che manca al contenuto o al canale lo dice moonbrand, con le
+// sue parole (incomplete); quello che torna dal servizio di pubblicazione si tratta come un rifiuto del social.
+function failureOf(error: unknown, attempts: number): Failure {
+  const message = error instanceof Error ? error.message : String(error);
+  if (error instanceof ApiError && error.code !== 'SOCIAL_FAILED' && error.code !== 'SOCIAL_NOT_FOUND') return { reason: 'incomplete', error: message };
+  return socialFailure(message, attempts);
 }
 
 // Il post di un contenuto su un canale: il testo della sua variante e i file nella proporzione del canale, caricati su Zernio.
@@ -192,26 +254,40 @@ async function publishOne(pool: pg.Pool, files: BrandFiles, client: Zernio, clai
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
     const target: Target = { accountId, board: rows[0]?.state?.board ?? null, site: rows[0]?.site ?? '' };
     const post = await buildPost(client, files, content, claimed.channel, target);
-    await settle(pool, claimed.id, fromOutcome(await client.publish(post, claimed.id)));
+    // Una riprova è un post nuovo per Zernio: la chiave di idempotenza cambia con il tentativo.
+    const key = claimed.attempts > 1 ? `${claimed.id}/${claimed.attempts}` : claimed.id;
+    const result = fromOutcome(await client.publish(post, key), claimed.attempts);
+    if (result.status === 'failed') logFailure(log, claimed, result.failure);
+    await settle(pool, claimed.id, result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    log.warn({ err: error, publication: claimed.id }, 'pubblicazione non riuscita');
-    await settle(pool, claimed.id, { status: 'failed', error: message });
+    const failure = failureOf(error, claimed.attempts);
+    logFailure(log, claimed, failure, error);
+    await settle(pool, claimed.id, { status: 'failed', failure });
   }
   await markSlotPublished(pool, claimed.content_id);
 }
 
+function logFailure(log: FastifyBaseLogger, claimed: Pick<Claimed, 'id' | 'channel' | 'attempts'>, failure: Failure, err?: unknown): void {
+  log.warn(
+    { err, publication: claimed.id, channel: claimed.channel, attempt: claimed.attempts, reason: failure.reason, detail: failure.detail ?? failure.error, retryAt: failure.retryAt },
+    failure.retryAt ? 'pubblicazione non riuscita: si riprova' : 'pubblicazione non riuscita',
+  );
+}
+
 // I post che il social stava ancora elaborando: si chiede a Zernio com'è finita. Dopo un giorno si lascia perdere.
 async function recheck(pool: pg.Pool, client: Zernio, log: FastifyBaseLogger): Promise<void> {
-  const { rows } = await pool.query<{ id: string; content_id: string; zernio_post_id: string; stale: boolean }>(
-    `select id, content_id, zernio_post_id, created_at < now() - interval '${GIVE_UP_AFTER}' as stale from presenza.publications
+  const { rows } = await pool.query<{ id: string; content_id: string; channel: ChannelId; zernio_post_id: string; attempts: number; stale: boolean }>(
+    `select id, content_id, channel, zernio_post_id, attempts, created_at < now() - interval '${GIVE_UP_AFTER}' as stale from presenza.publications
      where status = 'publishing' and zernio_post_id is not null and updated_at < now() - interval '${RECHECK_AFTER}'`,
   );
   for (const row of rows) {
     try {
-      const result = fromOutcome(await client.outcome(row.zernio_post_id));
-      if (result.status === 'publishing' && row.stale) await settle(pool, row.id, { status: 'failed', error: 'Il social non ha confermato la pubblicazione.' });
-      else await settle(pool, row.id, result);
+      const result = fromOutcome(await client.outcome(row.zernio_post_id), row.attempts);
+      if (result.status === 'publishing' && row.stale) await settle(pool, row.id, { status: 'failed', failure: { reason: 'unconfirmed' } });
+      else {
+        if (result.status === 'failed') logFailure(log, row, result.failure);
+        await settle(pool, row.id, result);
+      }
       await markSlotPublished(pool, row.content_id);
     } catch (error) {
       log.warn({ err: error, publication: row.id }, 'stato della pubblicazione non letto');
@@ -245,6 +321,7 @@ export function schedulePublishing(pool: pg.Pool, files: BrandFiles, apiKey: str
       do {
         again = false;
         for (const claimed of await claimDue(pool)) await publishOne(pool, files, client, claimed, log);
+        for (const claimed of await claimRetries(pool)) await publishOne(pool, files, client, claimed, log);
         await recheck(pool, client, log);
       } while (again);
     } catch (error) {

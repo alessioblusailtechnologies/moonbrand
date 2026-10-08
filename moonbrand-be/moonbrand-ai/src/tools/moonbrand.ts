@@ -121,16 +121,36 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
   const tools = [
     tool(
       'contenuti_elenca',
-      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved), impaginazione (layout) e file.',
+      'Elenca i contenuti del brand nella sezione Contenuti: titolo, formato, canali, stato (draft o approved), impaginazione (layout), file, ' +
+        'l’uscita nel piano (slot: giorno e ora, null se non è nel piano) e com’è andata canale per canale (publications).',
       {},
       () => call('GET', '/contents'),
       { alwaysLoad: true },
     ),
     tool(
       'contenuto_leggi',
-      'Legge un contenuto salvato: i testi per canale, le slide, il copione dei video e i percorsi dei file nella cartella del brand.',
+      'Legge un contenuto salvato: i testi per canale, le slide, il copione dei video, i percorsi dei file nella cartella del brand, ' +
+        'l’uscita nel piano (slot) e com’è andata canale per canale (publications: published con il link, publishing, failed con il motivo in problem ' +
+        'e, se moonbrand riprova da solo, quando in retryAt).',
       { id: z.string().describe('L’id del contenuto') },
       ({ id }) => call('GET', `/contents/${encodeURIComponent(id)}`),
+      { alwaysLoad: true },
+    ),
+    tool(
+      'contenuto_approva',
+      'Approva un contenuto salvato, solo quando l’utente lo chiede (anche con parole sue: «approvalo», «va bene così», «pubblicala alle 13»). ' +
+        'Da approvato esce da solo all’ora della sua uscita nel piano, sui canali collegati, senza altri passaggi: se non è nel piano, mettilo con uscite_crea. ' +
+        'Se l’ora della sua uscita è già passata, approvandolo esce subito: dillo prima all’utente, o sposta l’uscita. ' +
+        'Risponde con lo stato, l’uscita e com’è andata sui canali.',
+      { id: z.string().describe('L’id del contenuto') },
+      ({ id }) => call('POST', `/contents/${encodeURIComponent(id)}/approve`),
+      { alwaysLoad: true },
+    ),
+    tool(
+      'contenuto_riapri',
+      'Rimette in bozza un contenuto approvato che non è ancora uscito: non esce finché non viene approvato di nuovo. Un contenuto già uscito su un canale non si riapre.',
+      { id: z.string().describe('L’id del contenuto') },
+      ({ id }) => call('POST', `/contents/${encodeURIComponent(id)}/reopen`),
       { alwaysLoad: true },
     ),
     tool(
@@ -150,9 +170,9 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
     ),
     tool(
       'pubblicazione_proponi',
-      'Quando l’utente chiede di pubblicare adesso un contenuto salvato: sotto la tua risposta compare la card del contenuto con il pulsante «Pubblica ora», ' +
-        'che l’utente preme se vuole. Tu non pubblichi e non approvi: esce solo quando lo preme, su tutti i canali del contenuto. ' +
-        'Dà errore se un canale non è collegato o se il contenuto è già uscito ovunque: in quel caso dillo all’utente.',
+      'Quando l’utente chiede di pubblicare adesso un contenuto salvato, o di riprovare subito dove non è uscito: sotto la tua risposta compare la card del contenuto ' +
+        'con il pulsante «Pubblica ora», che l’utente preme se vuole. Tu non pubblichi: esce solo quando lo preme, e solo sui canali del contenuto dove non è ancora uscito ' +
+        '(dove è già uscito non esce di nuovo). Dà errore se un canale non è collegato o se il contenuto è già uscito ovunque: in quel caso dillo all’utente.',
       { id: z.string().describe('L’id del contenuto') },
       ({ id }) => call('POST', `/contents/${encodeURIComponent(id)}/publish-request`),
       { alwaysLoad: true },
@@ -162,7 +182,7 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
       'Legge il piano: le uscite di un periodo (di default le prossime 4 settimane), con giorno, ora, canali, stato, tema, idea e contenuto. ' +
         'Stati: empty (da riempire), toPrepare (c’è l’idea), toApprove (c’è la bozza), scheduled (approvato, esce all’ora), ' +
         'published (uscito davvero su tutti i canali). publications dice canale per canale com’è andata: published con il link al post, ' +
-        'publishing mentre esce, failed con il motivo.',
+        'publishing mentre esce, failed con il motivo in problem e, se moonbrand riprova da solo, quando in retryAt.',
       { from: day.optional(), to: day.optional() },
       ({ from, to }) => call('GET', `/plan?${new URLSearchParams({ ...(from && { from }), ...(to && { to }) })}`),
       { alwaysLoad: true },
@@ -195,7 +215,8 @@ export function moonbrandTools(apiUrl: string, token: string, brandDir: string, 
     ),
     tool(
       'uscita_cambia',
-      'Sposta un’uscita (giorno, ora) o ne cambia canali, tema o idea. Con il contenuto, i canali sono i suoi e l’idea non si cambia.',
+      'Sposta un’uscita (giorno, ora) o ne cambia canali, tema o idea. Con il contenuto, i canali sono i suoi e l’idea non si cambia. ' +
+        'Se il contenuto non era uscito su qualche canale, all’ora nuova riprova solo lì: dove è già uscito non esce di nuovo.',
       { id: z.string().describe('L’id dell’uscita'), date: day.optional(), time: time.optional(), ...slotFields },
       ({ id, ...input }) => call('PATCH', `/slots/${encodeURIComponent(id)}`, input),
       { alwaysLoad: true },

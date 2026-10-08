@@ -10,6 +10,15 @@ export const plan = defineMessages({
       missing: 'Manca «{theme}».',
       low: '«{theme}» ha poche uscite rispetto al suo peso.',
     },
+    // Perché un post non è uscito su un canale (domain/plan, publicationProblem), dopo «Non uscito su …:».
+    publication: {
+      blocked: 'il social ha bloccato la richiesta per un po’, come fa quando si pubblica troppo spesso.',
+      rejected: 'il social non ha accettato il post.',
+      unconfirmed: 'il social non ha confermato l’uscita.',
+      retryToday: 'Riprovo da solo alle {time}.',
+      retryOn: 'Riprovo da solo {day} alle {time}.',
+      noMoreRetries: 'Ho riprovato più volte senza riuscirci: riprova tu più tardi.',
+    },
     status: {
       empty: 'Da riempire',
       toPrepare: 'Da preparare',
@@ -118,6 +127,14 @@ export const plan = defineMessages({
       missing: '“{theme}” is missing.',
       low: '“{theme}” has few posts for its weight.',
     },
+    publication: {
+      blocked: 'the network blocked the request for a while, as it does when posting too often.',
+      rejected: 'the network did not accept the post.',
+      unconfirmed: 'the network did not confirm the post went out.',
+      retryToday: 'I’ll try again on my own at {time}.',
+      retryOn: 'I’ll try again on my own on {day} at {time}.',
+      noMoreRetries: 'I tried several times without luck: try again later yourself.',
+    },
     status: {
       empty: 'To fill',
       toPrepare: 'To prepare',
@@ -223,6 +240,14 @@ export const plan = defineMessages({
     balance: {
       missing: '« {theme} » manque.',
       low: '« {theme} » a peu de publications par rapport à son poids.',
+    },
+    publication: {
+      blocked: 'le réseau a bloqué la demande pour un moment, comme il le fait quand on publie trop souvent.',
+      rejected: 'le réseau n’a pas accepté la publication.',
+      unconfirmed: 'le réseau n’a pas confirmé la publication.',
+      retryToday: 'Je réessaie tout seul à {time}.',
+      retryOn: 'Je réessaie tout seul {day} à {time}.',
+      noMoreRetries: 'J’ai réessayé plusieurs fois sans succès : réessayez plus tard.',
     },
     status: {
       empty: 'À remplir',

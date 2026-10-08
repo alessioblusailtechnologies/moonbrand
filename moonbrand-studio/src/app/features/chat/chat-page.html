@@ -130,7 +130,7 @@
                               <span class="caption thinking"><span class="spinner"></span> {{ 'chat.publish.publishing' | t }}</span>
                             }
                             @case ('failed') {
-                              <span class="caption failed">{{ 'chat.publish.failed' | t: { error: item.error || ('chat.page.unknownError' | t) } }}</span>
+                              <span class="caption failed">{{ 'chat.publish.failed' | t: { error: problem(item) } }}</span>
                             }
                           }
                         </li>

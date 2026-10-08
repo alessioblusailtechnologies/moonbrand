@@ -5,7 +5,7 @@ import type { PlanResponse, SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { ContentFormat } from '@moonbrand/shared/domain/content';
-import { bestChannelFor, slotStatusLabels } from '@moonbrand/shared/domain/plan';
+import { bestChannelFor, publicationProblem, slotStatusLabels, type Publication } from '@moonbrand/shared/domain/plan';
 import { formatWeekdayLong, isDay, isPast, isTime, planNow } from '@moonbrand/shared/lib/dates';
 
 import { BrandsService } from '../../core/brands/brands.service';
@@ -75,6 +75,11 @@ export class SlotDrawer implements OnInit {
   protected readonly creating = computed(() => this.slot() === null);
   // Com'è andata sui social, canale per canale, quando è passata l'ora.
   protected readonly publications = computed(() => this.slot()?.publications ?? []);
+
+  // Perché non è uscito su un canale, e quando moonbrand riprova da solo.
+  protected problem(item: Publication): string {
+    return publicationProblem(item, this.i18n.locale());
+  }
   // Un'uscita passata (pubblicata) si guarda soltanto.
   protected readonly locked = computed(() => {
     const slot = this.slot();

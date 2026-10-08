@@ -12,6 +12,7 @@ import { channelsSchema, daySchema, slotCreateSchema, slotPatchSchema } from '..
 import { createAgentSlots, listAgentPlan, patchAgentSlot, proposeAgentPlan, removeAgentSlot } from './plan';
 import { findAgentJob, type AgentJob } from './repository';
 import {
+  changeAgentContentStatus,
   createAgentContent,
   createAgentIdea,
   getAgentContent,
@@ -108,6 +109,15 @@ export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, f
 
   app.put('/v1/agent/contents/:contentId', (request) =>
     updateAgentContent(pool, files, request.agent, contentParams.parse(request.params).contentId, parse(contentSchema, request.body)),
+  );
+
+  // Approvare e rimettere in bozza dalla chat: Claude lo fa quando l'utente glielo chiede.
+  app.post('/v1/agent/contents/:contentId/approve', (request) =>
+    changeAgentContentStatus(pool, request.agent, contentParams.parse(request.params).contentId, 'approved'),
+  );
+
+  app.post('/v1/agent/contents/:contentId/reopen', (request) =>
+    changeAgentContentStatus(pool, request.agent, contentParams.parse(request.params).contentId, 'draft'),
   );
 
   app.post('/v1/agent/contents/:contentId/publish-request', (request) =>

@@ -118,7 +118,7 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
     status: publishedStatus(
       slotStatus({ status: slot.status, date: slot.date, time: slot.time, ideaId: slot.idea_id }, slot.content_status ? { status: slot.content_status } : null, now),
       slot.channels,
-      (slot.published ?? []).map((channel) => ({ channel, status: 'published' as const, url: null, error: null, publishedAt: null })),
+      (slot.published ?? []).map((channel) => ({ channel, status: 'published' as const, url: null, reason: null, error: null, retryAt: null, publishedAt: null })),
     ),
     theme: row.themes.find((theme) => theme.id === slot.theme_id)?.name ?? null,
     title: slot.title,

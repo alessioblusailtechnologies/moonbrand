@@ -19,7 +19,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
-import { contentState, type ContentState } from '@moonbrand/shared/domain/plan';
+import { contentState, publicationProblem, type ContentState, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import type { ConversationSummary, ConversationTurn, PublishProposal, WelcomeResponse } from '@moonbrand/shared/api/contract';
@@ -431,6 +431,11 @@ export class ChatPage {
 
   protected channelLabel(channel: ChannelId): string {
     return channelName(channel);
+  }
+
+  // Perché non è uscito su un canale, e quando moonbrand riprova da solo.
+  protected problem(item: Publication): string {
+    return publicationProblem(item, this.i18n.locale());
   }
 
   // La conferma è dell'utente: il pulsante chiede ancora una volta, poi il contenuto si approva ed esce subito.

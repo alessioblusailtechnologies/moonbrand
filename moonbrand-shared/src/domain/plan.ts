@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
 import { plan } from '../i18n/messages/plan';
 import { translate } from '../i18n/translate';
-import { addDays, isPast, planNow, weekdayIndex } from '../lib/dates';
+import { addDays, formatWeekdayShort, isPast, planNow, today, weekdayIndex } from '../lib/dates';
 import type { ChannelId, Theme } from './brand';
 import type { ContentStatus } from './content';
 import type { Idea } from './idea';
@@ -44,14 +44,40 @@ export const SLOT_STATUS_LABELS: Record<SlotStatus, string> = slotStatusLabels()
 // Come è andata la pubblicazione di un contenuto su un canale (presenza.publications), con Zernio.
 export type PublicationStatus = 'publishing' | 'published' | 'failed';
 
+// Perché non è uscito, in breve: chi legge lo racconta nella sua lingua (publicationProblem). Le parole del social
+// restano nei log, non arrivano all'utente.
+// blocked: il social ha bloccato la richiesta per un po', come fa quando si pubblica troppo spesso; moonbrand riprova da solo.
+// rejected: il social non ha accettato il post.
+// unconfirmed: il social non ha confermato l'uscita entro un giorno.
+// incomplete: manca qualcosa al contenuto o al canale, e error dice cosa.
+export type PublicationReason = 'blocked' | 'rejected' | 'unconfirmed' | 'incomplete';
+
 export interface Publication {
   channel: ChannelId;
   status: PublicationStatus;
   // Il post sul social, quando è uscito.
   url: string | null;
   // Perché non è uscito.
+  reason: PublicationReason | null;
+  // Cosa manca (incomplete), nelle parole di moonbrand.
   error: string | null;
+  // Quando moonbrand riprova da solo, se riprova: dopo un blocco temporaneo, o all'ora nuova di un'uscita spostata.
+  retryAt: string | null;
   publishedAt: string | null;
+}
+
+// Perché un post non è uscito, come si legge: il motivo e, se moonbrand riprova da solo, quando. Dopo «Non uscito su …:».
+export function publicationProblem(publication: Pick<Publication, 'reason' | 'error' | 'retryAt'>, locale: Locale = DEFAULT_LOCALE): string {
+  const reason = publication.reason ?? (publication.error ? 'incomplete' : 'rejected');
+  const problem =
+    reason === 'incomplete' ? (publication.error ?? translate(locale, 'plan.publication.rejected')) : translate(locale, `plan.publication.${reason}`);
+  if (!publication.retryAt) return reason === 'blocked' ? `${problem} ${translate(locale, 'plan.publication.noMoreRetries')}` : problem;
+  const { date, time } = planNow(new Date(publication.retryAt));
+  const retry =
+    date === today()
+      ? translate(locale, 'plan.publication.retryToday', { time })
+      : translate(locale, 'plan.publication.retryOn', { day: formatWeekdayShort(date, locale), time });
+  return `${problem} ${retry}`;
 }
 
 // Lo stato di un contenuto come lo vede chi lo usa: bozza o approvato finché non esce, poi com'è andata sui social.
