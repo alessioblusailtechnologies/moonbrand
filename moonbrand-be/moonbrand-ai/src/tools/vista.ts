@@ -64,11 +64,11 @@ export function createLooker(folder: string, apiKey: string): (file: string[], d
       let current = await ai.files.upload({ file: full, config: { mimeType, displayName: path.basename(file) } });
       const started = Date.now();
       while (current.state === 'PROCESSING') {
-        if (Date.now() - started > PROCESSING_MAX_MS) throw new Error(`Gemini non ha finito di elaborare ${file} in 5 minuti`);
+        if (Date.now() - started > PROCESSING_MAX_MS) throw new Error(`Il motore di visione non ha finito di elaborare ${file} in 5 minuti`);
         await new Promise((resolve) => setTimeout(resolve, PROCESSING_POLL_MS));
         current = await ai.files.get({ name: current.name! });
       }
-      if (current.state !== 'ACTIVE' || !current.uri) throw new Error(`Gemini non riesce a leggere ${file}`);
+      if (current.state !== 'ACTIVE' || !current.uri) throw new Error(`Il motore di visione non riesce a leggere ${file}`);
       remote = { uri: current.uri, mimeType };
       uploaded.set(key, remote);
     }
@@ -96,7 +96,7 @@ export function createLooker(folder: string, apiKey: string): (file: string[], d
         () => ai.models.generateContent({ model: VISION_MODEL, contents: [{ role: 'user', parts }], config: { systemInstruction: VISION_INSTRUCTION } }),
       );
       const answer = response.text?.trim();
-      return answer ? { text: answer } : { text: 'Gemini non ha risposto: riprova, magari con una domanda diversa.', isError: true };
+      return answer ? { text: answer } : { text: 'Il motore di visione non ha risposto: riprova, magari con una domanda diversa.', isError: true };
     } catch (error) {
       return { text: `Non riuscito: ${error instanceof Error ? error.message : String(error)}`, isError: true };
     }
@@ -108,7 +108,7 @@ export function visionTools(folder: string, apiKey: string) {
   const lookAt = createLooker(folder, apiKey);
   const look = tool(
     'guarda',
-    'Fa guardare a Gemini immagini e video della cartella del brand e ti risponde a parole: usalo ogni volta che devi vedere una foto, ' +
+    'Fa guardare al motore di visione immagini e video della cartella del brand e ti risponde a parole: usalo ogni volta che devi vedere una foto, ' +
       'un riferimento, un allegato, una clip, un fotogramma o un video montato, invece di aprirli tu. I video li guarda interi, con l’audio: ' +
       'passali così come sono, senza estrarre fotogrammi. Fai una domanda precisa e completa, perché la risposta è tutto quello che saprai di quei file: ' +
       'per capire un materiale chiedi cosa si vede e si sente e con quali tempi; per un controllo elenca cosa verificare.',

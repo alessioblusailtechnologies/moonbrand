@@ -41,7 +41,7 @@ const CHECKS = readFileSync(new URL('./grafica-controlli.js', import.meta.url), 
 // Il Chrome headless che Remotion ha già scaricato: serve al render e al documento PDF dei caroselli.
 export async function launchChrome(): Promise<Browser> {
   const status = await ensureBrowser();
-  if (status.type !== 'local-puppeteer-browser' && status.type !== 'user-defined-path') throw new Error('Chrome headless non disponibile');
+  if (status.type !== 'local-puppeteer-browser' && status.type !== 'user-defined-path') throw new Error('il browser per le grafiche non è disponibile');
   // protocolTimeout: una pagina che tiene occupato Chrome (uno script che non finisce) non risponde più a niente, neanche
   // allo scatto; senza limite Puppeteer aspetta 180 s per comando.
   return puppeteer.launch({
@@ -126,7 +126,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
     'renderizza',
     'Esporta in PNG o JPEG l’HTML di un’immagine, con il browser già pronto e le misure giuste per il formato; aspetta font e immagini prima dello scatto. ' +
       'Poi misura sul DOM testi tagliati o fuori bordo, font non caricati, immagini rotte, testi sovrapposti e corpo troppo piccolo, e te lo dice. ' +
-      'Con domanda, fa anche guardare le immagini a Gemini e ti riporta la risposta: usala per il giudizio che il DOM non dà (cosa copre cosa, equilibrio, colori). ' +
+      'Con domanda, fa anche guardare le immagini al motore di visione e ti riporta la risposta: usala per il giudizio che il DOM non dà (cosa copre cosa, equilibrio, colori). ' +
       'Più uscite in una chiamata si fanno in parallelo.',
     {
       uscite: z
@@ -139,7 +139,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
         )
         .min(1)
         .max(16),
-      domanda: z.string().min(10).optional().describe('Cosa far controllare a Gemini sulle immagini appena fatte'),
+      domanda: z.string().min(10).optional().describe('Cosa far controllare al motore di visione sulle immagini appena fatte'),
     },
     async ({ uscite, domanda }) => {
       const results = await Promise.all(

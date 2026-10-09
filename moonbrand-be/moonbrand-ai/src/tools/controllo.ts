@@ -76,7 +76,7 @@ export function checkVideoTool(folder: string, lookAt: Look) {
   return tool(
     'controlla_video',
     'Controlla il video mentre lo fai, in una sola chiamata: controlla i tipi del progetto (come pnpm check), esporta in PNG a metà ' +
-      'risoluzione i fotogrammi che chiedi di tutte le composizioni e li fa guardare a Gemini con la tua lista di controlli. ' +
+      'risoluzione i fotogrammi che chiedi di tutte le composizioni e li fa guardare al motore di visione con la tua lista di controlli. ' +
       'Se i tipi o l’export non vanno, ti dice solo l’errore e non guarda niente. Usalo al posto di pnpm check, npx remotion render/still ' +
       'e guarda per i fotogrammi di controllo; per i video finali usa esporta_video e poi guarda.',
     {

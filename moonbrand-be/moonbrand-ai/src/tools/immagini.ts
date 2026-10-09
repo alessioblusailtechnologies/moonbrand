@@ -28,7 +28,7 @@ export function imageTools(folder: string, apiKey: string) {
 
   const generate = tool(
     'genera_immagine',
-    'Genera un’immagine vera (foto o illustrazione) con Gemini e la salva in JPEG nella cartella del brand. ' +
+    'Genera un’immagine vera (foto o illustrazione) con il motore immagini e la salva in JPEG nella cartella del brand. ' +
       'Descrivi soggetto, inquadratura, luce e stile. Puoi passare immagini della cartella come riferimento di soggetto o di stile. ' +
       'L’immagine si può usare così com’è o comporre con testi e grafica.',
     {

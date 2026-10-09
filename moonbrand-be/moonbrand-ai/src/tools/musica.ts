@@ -79,7 +79,7 @@ export function musicTools(folder: string, apiKey: string) {
       }
       break;
     }
-    if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
+    if (!response.ok) throw new Error(`Il motore musica ha risposto ${response.status}: ${await response.text()}`);
     const target = inside(file);
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, Buffer.from(await response.arrayBuffer()));
@@ -121,7 +121,7 @@ export function musicTools(folder: string, apiKey: string) {
 
   const instrumental = tool(
     'genera_musica',
-    'Avvia una musica strumentale originale con ElevenLabs, che la salva nella cartella del brand: risponde subito e il brano arriva in pochi secondi (poi attendi_musica). ' +
+    'Avvia una musica strumentale originale con il motore musica, che la salva nella cartella del brand: risponde subito e il brano arriva in pochi secondi (poi attendi_musica). ' +
       'Descrivi in inglese genere, atmosfera, strumenti, tempo (BPM) e andamento, compreso come finisce. La durata la scegli tu: chiedi quella che ti serve.',
     {
       descrizione: z.string().min(10).describe('Com’è la musica, in inglese: genere, atmosfera, strumenti, tempo, andamento'),
@@ -135,7 +135,7 @@ export function musicTools(folder: string, apiKey: string) {
 
   const song = tool(
     'genera_canzone',
-    'Avvia una canzone cantata con ElevenLabs, sul testo che scrivi tu, che la salva nella cartella del brand: risponde subito e il brano arriva in qualche decina di secondi (poi attendi_musica). ' +
+    'Avvia una canzone cantata con il motore musica, sul testo che scrivi tu, che la salva nella cartella del brand: risponde subito e il brano arriva in qualche decina di secondi (poi attendi_musica). ' +
       'Il testo va diviso in sezioni con i tag [Verse], [Chorus], [Bridge], [Outro]; una sezione senza righe, come [Intro], resta strumentale. ' +
       'La durata si divide tra le sezioni in base alle righe. Lo stile si descrive in inglese (genere, atmosfera, voce maschile o femminile, tempo).',
     {

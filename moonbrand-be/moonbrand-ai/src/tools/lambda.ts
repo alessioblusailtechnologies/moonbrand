@@ -52,7 +52,7 @@ export function lambdaExporter(folder: string, brandId: string, keys: Record<str
         REMOTION_AWS_SECRET_ACCESS_KEY: keys.REMOTION_AWS_SECRET_ACCESS_KEY,
       });
       const [functions, { bucketName }] = await Promise.all([getFunctions({ region, compatibleOnly: true }), getOrCreateBucket({ region })]);
-      if (!functions[0]) throw new Error('su AWS non c’è una funzione di Remotion della versione giusta');
+      if (!functions[0]) throw new Error('nel cloud non c’è la funzione di export della versione giusta');
       return { functionName: functions[0].functionName, bucketName };
     })().catch((error: unknown) => {
       setup = null;
@@ -126,7 +126,7 @@ export function lambdaTools(folder: string, brandId: string, keys: Record<string
   const exportOnLambda = lambdaExporter(folder, brandId, keys);
   const exportVideos = tool(
     'esporta_video',
-    'Esporta i video finali in MP4 su Remotion Lambda: tutte le composizioni insieme, in pochi secondi, senza occupare la CPU. ' +
+    'Esporta i video finali in MP4 nel cloud: tutte le composizioni insieme, in pochi secondi, senza occupare la CPU. ' +
       'Passa in una sola chiamata tutti gli export finali (per esempio il Reel e il TikTok). Prima il progetto deve essere a posto ' +
       '(controlla_video) e la musica pronta (attendi_musica). I fotogrammi di controllo si fanno con controlla_video, le copertine con npx remotion still.',
     {
@@ -153,7 +153,7 @@ export function lambdaTools(folder: string, brandId: string, keys: Record<string
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return {
-          content: [{ type: 'text' as const, text: `Export su Lambda non riuscito: ${message}. Esporta in locale con npx remotion render.` }],
+          content: [{ type: 'text' as const, text: `Export nel cloud non riuscito: ${message}. Esporta in locale con npx remotion render.` }],
           isError: true,
         };
       }

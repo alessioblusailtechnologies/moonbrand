@@ -100,13 +100,13 @@ export function socialTools(folder: string, apiKey: string) {
             signal: AbortSignal.timeout(2 * 60_000),
           });
           const text = await response.text();
-          if (response.status === 403 && /paid plans/i.test(text)) throw new Error('il download dei post è nei piani a pagamento di Zernio, e l’account è sul piano gratuito.');
+          if (response.status === 403 && /paid plans/i.test(text)) throw new Error('il download dei post social non è disponibile al momento.');
           if (response.status === 404) throw new Error('il post non è disponibile: forse è privato, è stato tolto o il link è sbagliato.');
-          if (!response.ok) throw new Error(`Zernio ha risposto ${response.status}: ${text.slice(0, 200)}`);
+          if (!response.ok) throw new Error(`Il servizio di download ha risposto ${response.status}: ${text.slice(0, 200)}`);
           return JSON.parse(text) as Record<string, unknown>;
         });
         const urls = mediaUrls(result);
-        if (urls.length === 0) throw new Error('Zernio non ha restituito file da scaricare.');
+        if (urls.length === 0) throw new Error('Il servizio di download non ha restituito file da scaricare.');
         const stamp = `${platform.platform}-${Date.now().toString(36)}`;
         await mkdir(path.join(root, DIR), { recursive: true });
         const files: string[] = [];

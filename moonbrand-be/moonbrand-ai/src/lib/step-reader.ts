@@ -31,9 +31,10 @@ const MAX_INPUT = 600;
 const MAX_LABEL = 60;
 const MAX_DETAIL = 60;
 const CACHE_SIZE = 500;
-// Se nella risposta resta qualcosa di tecnico (percorsi, file, nomi di tool, misure, id) la lettura si butta.
+// Se nella risposta resta qualcosa di tecnico (percorsi, file e cartelle, nomi di tool, di servizi e di modelli, misure,
+// id) la lettura si butta: senza label lo step prende quella di riserva, senza detail resta la sola label.
 const TECHNICAL =
-  /[\\/]|\.(md|json|ts|js|mjs|tsx|html|css|png|jpe?g|webp|mp4|mp3|wav|txt|sh)\b|mcp__|_[a-z]|\d+x\d+|\w-\d|\b[a-f0-9]{8,}\b|\b(bash|grep|glob|npm|npx|node|curl|ffmpeg|remotion|json|tool)\b/i;
+  /[\\/]|\.(md|json|ts|js|mjs|tsx|html|css|png|jpe?g|webp|mp4|mp3|wav|txt|sh)\b|mcp__|_[a-z]|\d+x\d+|\w-\d|\b[a-f0-9]{8,}\b|\b(bash|grep|glob|npm|npx|node|curl|ffmpeg|remotion|json|tool|lambda|aws|gemini|elevenlabs|atlas|kling|omni|zernio|mureka|claude|anthropic|haiku|sonnet|opus|chrome|cartell[ae]|file|folder)\b/i;
 
 const PROMPT = `Traduci i passaggi di un agente che prepara i social di un brand in righe per il cliente, che le vede scorrere mentre aspetta.
 
@@ -42,7 +43,7 @@ Rispondi solo con un array JSON, un oggetto per ogni id, senza altro testo: {"id
 
 - label: cosa sta facendo, in prima persona singolare, al presente, al massimo 7 parole, senza punto finale. Per esempio: «Rileggo la voce del brand», «Guardo le foto che mi hai mandato», «Cerco i colori nel codice del sito», «Ripasso come si scrive un carosello», «Monto il video», «Controllo le immagini finali».
 - detail: quasi sempre assente. Solo se aggiunge qualcosa che il cliente capisce (il nome di una pagina, cosa sta cercando, quante slide), al massimo 60 caratteri; mai sigle, codici, formati, misure o nomi di file.
-- Mai percorsi, nomi di file, estensioni, comandi, codice, nomi di strumenti, di modelli o di servizi, termini tecnici inglesi.
+- Mai percorsi, cartelle, file, estensioni, comandi, codice, nomi di strumenti, di modelli o di servizi (anche quelli che leggi nei comandi, come Lambda, Gemini o Remotion), termini tecnici inglesi. Il lavoro si dice con parole da cliente: «Esporto i video finali», non dove o con cosa.
 - hide: true per i passaggi che al cliente non dicono niente: creare cartelle, installare, controllare che un file ci sia, organizzarsi il lavoro, riprovare la stessa cosa, e il testo che non dice cosa sta per fare (saluti, resoconti, conferme).
 - Per il testo dell'agente la label è quello che sta per fare, detto in breve («Scrivo il post»).
 - I passaggi arrivano in ordine: usa quelli già visti per capire il filo. Se un passaggio continua lo stesso lavoro del precedente con la stessa label, hide.
@@ -150,7 +151,10 @@ export function createStepReader(brandsDir: string, locale: Locale): StepReader 
       for await (const message of query({
         prompt: messages(),
         options: {
-          model: 'haiku',
+          // Il nome esatto: l'alias «haiku» porta ancora a Haiku 4.5, dieci volte più caro. Misurato il 9/10 su 20 passaggi
+          // veri: con effort low risponde in circa un secondo, senza letture scartate.
+          model: 'claude-haiku-5-5',
+          effort: 'low',
           tools: [],
           systemPrompt: promptFor(locale),
           settingSources: [],

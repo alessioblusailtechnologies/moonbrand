@@ -96,13 +96,13 @@ export function audioTools(folder: string, apiKey: string) {
       headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
       ...(init && { body: JSON.stringify(init.body) }),
     });
-    if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
+    if (!response.ok) throw new Error(`Il motore audio ha risposto ${response.status}: ${await response.text()}`);
     return response;
   };
   // Le chiamate con un file: il content-type lo mette FormData.
   const upload = async (endpoint: string, form: FormData) => {
     const response = await fetch(`${API}${endpoint}`, { method: 'POST', headers: { 'xi-api-key': apiKey }, body: form });
-    if (!response.ok) throw new Error(`ElevenLabs ha risposto ${response.status}: ${await response.text()}`);
+    if (!response.ok) throw new Error(`Il motore audio ha risposto ${response.status}: ${await response.text()}`);
     return response;
   };
   const text = (value: string) => ({ content: [{ type: 'text' as const, text: value }] });
@@ -118,7 +118,7 @@ export function audioTools(folder: string, apiKey: string) {
 
   const voices = tool(
     'cerca_voci',
-    'Cerca voci per la voce fuori campo nella libreria di ElevenLabs e restituisce id e descrizione di ciascuna. ' +
+    'Cerca voci per la voce fuori campo nella libreria del motore voce e restituisce id e descrizione di ciascuna. ' +
       'Non puoi ascoltarle: scegli dalla descrizione quella che somiglia di più alla voce del brand.',
     {
       lingua: z.string().optional().describe(`Codice della lingua, es. en; di base ${contentLanguage}, la lingua dei post del brand`),
@@ -154,7 +154,7 @@ export function audioTools(folder: string, apiKey: string) {
 
   const voiceOver = tool(
     'genera_voce',
-    'Legge un testo con una voce di ElevenLabs (eleven_v3) e salva l’audio in MP3. Accanto salva, con lo stesso nome e .json, ' +
+    'Legge un testo con il motore voce e salva l’audio in MP3. Accanto salva, con lo stesso nome e .json, ' +
       'i tempi di ogni parola nel formato Caption di @remotion/captions, per i sottotitoli e per mettere a tempo le scene. ' +
       'Il testo può contenere tag di intonazione in inglese tra parentesi quadre, es. [whispers], [excited], [pause]: non finiscono nei sottotitoli.',
     {
@@ -287,11 +287,11 @@ export function audioTools(folder: string, apiKey: string) {
 
   const effect = tool(
     'genera_effetto',
-    'Crea un effetto sonoro con ElevenLabs e lo salva in MP3: transizioni, colpi, fruscii, ambienti, rumori di oggetti. ' +
+    'Crea un effetto sonoro con il motore audio e lo salva in MP3: transizioni, colpi, fruscii, ambienti, rumori di oggetti. ' +
       'Descrivi il suono in inglese e con precisione, es. "soft whoosh transition, airy, short tail".',
     {
       descrizione: z.string().min(3).describe('Il suono, in inglese'),
-      secondi: z.number().min(0.5).max(30).optional().describe('Durata in secondi; se manca la sceglie ElevenLabs'),
+      secondi: z.number().min(0.5).max(30).optional().describe('Durata in secondi; se manca la sceglie il motore audio'),
       loop: z.boolean().optional().describe('true per un suono che si ripete senza stacchi, es. un ambiente di fondo'),
       file: mp3('whoosh.mp3'),
     },
