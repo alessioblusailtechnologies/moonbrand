@@ -6,7 +6,7 @@
   <header class="bar">
     <div class="bar-side">
       @if (!creating()) {
-        @if (store.stepIndex() > 0 && draft) {
+        @if (store.stepIndex() > 0) {
           <button class="icon-btn" type="button" [attr.aria-label]="'onboarding.previousStep' | t" (click)="store.back()">
             <mb-icon name="chevron-left" />
           </button>
@@ -20,7 +20,7 @@
       <span class="label">{{ barLabel() }}</span>
       <div class="progress" aria-hidden="true">
         @for (segment of segments; track segment) {
-          <span [class.on]="preparing() || (draft && segment <= store.stepIndex())"></span>
+          <span [class.on]="preparing() || (draft && segment <= stepNumber())"></span>
         }
       </div>
     </div>
@@ -61,7 +61,9 @@
             <p class="body">{{ copy().subtitle }}</p>
           </div>
 
-          @if (key === 'intro') {
+          @if (key === 'plan') {
+            <mb-plan-step />
+          } @else if (key === 'intro') {
             <mb-intro-step />
           } @else if (draft) {
             @switch (key) {
@@ -71,7 +73,6 @@
               @case ('themes') { <mb-themes-step [draft]="draft" /> }
               @case ('voice') { <mb-voice-step [draft]="draft" /> }
               @case ('visual') { <mb-visual-step [draft]="draft" /> }
-              @case ('plan') { <mb-plan-step /> }
               @case ('summary') { <mb-summary-step [draft]="draft" /> }
             }
           }

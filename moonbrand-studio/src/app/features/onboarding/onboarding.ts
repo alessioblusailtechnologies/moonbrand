@@ -21,7 +21,7 @@ import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { ChannelChoiceDialog } from '../profile/channel-choice';
 import { DraftStore } from './draft-store';
-import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
+import { COUNTED_STEPS, INTRO_INDEX, ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
 import { ChannelsStep } from './steps/channels-step';
 import { IdentityStep } from './steps/identity-step';
 import { IntroStep } from './steps/intro-step';
@@ -90,8 +90,10 @@ export class Onboarding {
   // Dopo la creazione: i passaggi di stile e prime idee, finché non sono finiti.
   protected readonly preparing = signal(false);
   protected readonly steps = signal<AiStep[]>([]);
-  protected readonly total = ONBOARDING_STEPS.length - 1;
-  protected readonly segments = ONBOARDING_STEPS.slice(1).map((_, i) => i + 1);
+  protected readonly total = COUNTED_STEPS;
+  protected readonly segments = ONBOARDING_STEPS.slice(INTRO_INDEX + 1).map((_, i) => i + 1);
+  // Il numero del passo: piano e tipo di brand non si contano.
+  protected readonly stepNumber = computed(() => this.store.stepIndex() - INTRO_INDEX);
 
   protected readonly copy = computed(() => {
     const draft = this.store.draft();
@@ -100,8 +102,8 @@ export class Onboarding {
 
   protected readonly barLabel = computed(() => {
     if (this.preparing()) return this.i18n.t('onboarding.almostReady');
-    if (this.store.step() === 'intro') return this.i18n.t('onboarding.setup');
-    return this.i18n.t('onboarding.stepOf', { n: this.store.stepIndex(), total: this.total });
+    if (this.store.step() === 'intro' || this.store.step() === 'plan') return this.i18n.t('onboarding.setup');
+    return this.i18n.t('onboarding.stepOf', { n: this.stepNumber(), total: this.total });
   });
 
   protected readonly sectionStep = computed<SectionKey | null>(() => {
@@ -145,6 +147,10 @@ export class Onboarding {
 
   protected primary(): void {
     const step = this.store.step();
+    if (step === 'plan') {
+      this.store.next();
+      return;
+    }
     if (step === 'intro') {
       if (!this.store.draft()) {
         this.toast.show(this.i18n.t('onboarding.chooseKind'));

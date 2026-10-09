@@ -18,7 +18,10 @@ import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
 export type OnboardingStep = 'intro' | SectionKey | 'plan' | 'summary';
 
-export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'plan', 'summary'];
+// Prima il piano, poi il tipo di brand (intro): questi due non si contano nei passi, gli altri sì.
+export const ONBOARDING_STEPS: OnboardingStep[] = ['plan', 'intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
+export const INTRO_INDEX = ONBOARDING_STEPS.indexOf('intro');
+export const COUNTED_STEPS = ONBOARDING_STEPS.length - INTRO_INDEX - 1;
 
 // plan: il piano del brand che sta nascendo, che va con lui alla creazione.
 interface State extends DraftState {
@@ -67,7 +70,8 @@ export class OnboardingStore extends DraftStore<State> {
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
   private saving: Promise<void> = Promise.resolve();
 
-  readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : 0));
+  // Senza bozza si arriva al massimo alla scelta del tipo di brand, che la crea.
+  readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : Math.min(this.state().stepIndex, INTRO_INDEX)));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
   readonly direction = computed(() => this.state().direction);
   readonly plan = computed(() => this.state().plan);
@@ -104,8 +108,10 @@ export class OnboardingStore extends DraftStore<State> {
     if (!draft) return;
     const name = draft.identity.name.trim();
     const index = this.stepIndex();
-    const total = ONBOARDING_STEPS.length - 1;
-    const where = index === 0 ? this.i18n.t('onboarding.restart.atStart') : this.i18n.t('onboarding.restart.atStep', { n: index, total });
+    const where =
+      index <= INTRO_INDEX
+        ? this.i18n.t('onboarding.restart.atStart')
+        : this.i18n.t('onboarding.restart.atStep', { n: index - INTRO_INDEX, total: COUNTED_STEPS });
     const restart = await this.confirm.ask({
       title: this.i18n.t('onboarding.restart.title'),
       message: name ? this.i18n.t('onboarding.restart.messageNamed', { name, where }) : this.i18n.t('onboarding.restart.message', { where }),
@@ -235,7 +241,10 @@ export class OnboardingStore extends DraftStore<State> {
 // Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato.
 function normalize(raw: unknown): State {
   if (!raw || typeof raw !== 'object') return INITIAL;
-  const state: State = { ...INITIAL, ...(raw as Partial<State>) };
+  const saved = raw as Partial<State>;
+  const state: State = { ...INITIAL, ...saved };
+  // Una bozza di prima della scelta del piano: i passi dopo il piano sono avanti di uno.
+  if (saved.plan === undefined && saved.draft) state.stepIndex = (saved.stepIndex ?? 0) + 1;
   if (!state.draft) return state;
   const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
   return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
