@@ -42,18 +42,35 @@ import { ToastService } from '../../ui/toast';
       @if (loading()) {
         <div class="empty"><span class="spinner"></span></div>
       } @else if (usage(); as data) {
-        <div class="panel summary">
-          <div class="grow texts">
-            <span class="label">{{ 'credits.used' | t }}</span>
-            <span class="display">{{ number(data.used) }}</span>
-          </div>
-          @if (plan(); as current) {
-            <div class="texts right">
-              <span class="strong-sm">{{ 'credits.plan' | t: { plan: current.name } }}</span>
-              <span class="caption">{{ 'credits.left' | t: current.hint }}</span>
+        @if (summary(); as card) {
+          <div class="panel summary">
+            <div class="gauge" [class.low]="card.low">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="track" cx="60" cy="60" r="52" />
+                <circle class="fill" cx="60" cy="60" r="52" pathLength="100" transform="rotate(-90 60 60)"
+                  [attr.stroke-dasharray]="card.ring * 100 + ' 100'" />
+              </svg>
+              <span class="center">
+                <span class="heading">{{ card.center }}</span>
+                <span class="caption">{{ (card.current ? 'credits.left' : 'credits.usedCenter') | t }}</span>
+              </span>
             </div>
-          }
-        </div>
+            <div class="grow texts">
+              <span class="heading">{{ 'credits.usedOf' | t: { used: card.used, total: card.total } }}</span>
+              <span class="strong-sm share">{{ 'credits.share' | t: { percent: card.percent, plan: card.plan } }}</span>
+              <span class="meter"><span class="meter-fill" [style.width.%]="card.usedShare * 100"></span></span>
+              <span class="caption">
+                @if (card.over) {
+                  {{ 'credits.over' | t: { n: card.over } }}
+                } @else if (card.current) {
+                  {{ 'credits.renews' | t: { date: card.renews, total: card.total } }}
+                } @else {
+                  {{ 'credits.closed' | t }}
+                }
+              </span>
+            </div>
+          </div>
+        }
 
         @if (data.activities.length === 0) {
           <div class="panel empty"><p class="caption">{{ 'credits.empty' | t }}</p></div>
@@ -134,10 +151,6 @@ import { ToastService } from '../../ui/toast';
       gap: 4px;
       min-width: 0;
     }
-    .right {
-      align-items: flex-end;
-      text-align: right;
-    }
     .month {
       display: flex;
       flex-direction: column;
@@ -147,8 +160,56 @@ import { ToastService } from '../../ui/toast';
     .summary {
       flex-direction: row;
       align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
+      gap: 28px;
+      padding: 24px 28px;
+    }
+    .gauge {
+      position: relative;
+      flex: none;
+      width: 132px;
+      height: 132px;
+    }
+    .gauge svg {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke-width: 10;
+    }
+    .track {
+      stroke: var(--surface-sunken);
+    }
+    .fill {
+      stroke: var(--mint-400);
+      stroke-linecap: round;
+      transition: stroke-dasharray 600ms var(--ease);
+    }
+    .gauge.low .fill {
+      stroke: var(--danger);
+    }
+    .center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .share {
+      color: var(--text-body);
+    }
+    .meter {
+      height: 6px;
+      margin: 6px 0 2px;
+      border-radius: 999px;
+      background: var(--surface-sunken);
+      overflow: hidden;
+    }
+    .meter-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary-soft);
     }
     .empty {
       display: flex;
@@ -246,6 +307,14 @@ import { ToastService } from '../../ui/toast';
       white-space: nowrap;
     }
     @media (max-width: 640px) {
+      .summary {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      .gauge {
+        align-self: center;
+      }
       .bar-row {
         grid-template-columns: 1fr auto;
       }
@@ -278,16 +347,31 @@ export class CreditsPage {
   // Il mese scelto; null è il mese in corso, e cambiando brand si riparte da lì.
   protected readonly month = linkedSignal<string | null, string | null>({ source: this.brandId, computation: () => null });
 
-  // Piano e crediti rimasti valgono per il mese in corso.
-  protected readonly plan = computed(() => {
+  // La card in alto: nel mese in corso il cerchio è quello della barra laterale (i crediti che restano, rosso sotto il
+  // 10%); nei mesi chiusi mostra quanto del piano si è consumato. Il piano è quello di oggi del brand.
+  protected readonly summary = computed(() => {
     const credits = this.credits.credits();
     const usage = this.usage();
-    if (!credits || !usage || usage.month !== usage.months[0]) return null;
+    if (!credits || !usage) return null;
     const intl = this.i18n.intl();
-    const date = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`));
+    const total = credits.monthlyCredits;
+    const used = usage.used;
+    const current = usage.month === usage.months[0];
+    const usedShare = Math.min(used / total, 1);
+    const left = Math.max(total - used, 0);
+    const round = (value: number) => Math.round(value).toLocaleString(intl);
     return {
-      name: SUBSCRIPTION_PLANS[credits.plan].name,
-      hint: { left: Math.max(credits.remaining, 0).toLocaleString(intl), total: credits.monthlyCredits.toLocaleString(intl), date },
+      current,
+      ring: current ? left / total : usedShare,
+      low: current && left / total < 0.1,
+      center: round(current ? left : used),
+      used: round(used),
+      total: total.toLocaleString(intl),
+      usedShare,
+      percent: (used / total).toLocaleString(intl, { style: 'percent', maximumFractionDigits: 0 }),
+      plan: SUBSCRIPTION_PLANS[credits.plan].name,
+      over: used > total ? round(used - total) : null,
+      renews: new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`)),
     };
   });
 
