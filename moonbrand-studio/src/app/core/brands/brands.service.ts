@@ -16,9 +16,11 @@ import type {
   ReferenceUploadResponse,
   SelectChannelRequest,
   SocialSimulationResponse,
+  UpdateBrandPlanRequest,
   UpdateBrandRequest,
 } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, ChannelId } from '@moonbrand/shared/domain/brand';
+import type { SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { AuthService } from '../auth/auth.service';
 
@@ -74,13 +76,18 @@ export class BrandsService {
   }
 
   // setupJobs: i lavori che preparano il brand nuovo (lo stile, le prime idee), da seguire fino alla fine.
-  async create(id: string, draft: BrandDraft, referenceExamples: string[]): Promise<CreateBrandResponse> {
-    const body: CreateBrandRequest = { ...draft, id, referenceExamples };
+  async create(id: string, draft: BrandDraft, referenceExamples: string[], plan: SubscriptionPlanId): Promise<CreateBrandResponse> {
+    const body: CreateBrandRequest = { ...draft, id, referenceExamples, plan };
     const created = await firstValueFrom(this.http.post<CreateBrandResponse>('/v1/brands', body));
     const { setupJobs: _jobs, ...brand } = created;
     this.brands.update((list) => [...list, brand]);
     this.auth.activeBrandId.set(brand.id);
     return created;
+  }
+
+  // Per ora senza pagamento: il piano vale subito.
+  async changePlan(brandId: string, plan: SubscriptionPlanId): Promise<void> {
+    await firstValueFrom(this.http.put<void>(`/v1/brands/${brandId}/plan`, { plan } satisfies UpdateBrandPlanRequest));
   }
 
   profile(brandId: string): Promise<BrandProfile> {

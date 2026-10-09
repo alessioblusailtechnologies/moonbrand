@@ -7,6 +7,7 @@ import type { OnboardingDraft, OnboardingDraftSave } from '@moonbrand/shared/api
 import type { BrandDraft, BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
+import { DEFAULT_SUBSCRIPTION_PLAN, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { takeSignupBrand } from '../../core/auth/signup-prefill';
@@ -15,16 +16,18 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { ConfirmService } from '../../ui/confirm';
 import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
-export type OnboardingStep = 'intro' | SectionKey | 'summary';
+export type OnboardingStep = 'intro' | SectionKey | 'plan' | 'summary';
 
-export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
+export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'plan', 'summary'];
 
+// plan: il piano del brand che sta nascendo, che va con lui alla creazione.
 interface State extends DraftState {
   stepIndex: number;
   direction: 1 | -1;
+  plan: SubscriptionPlanId;
 }
 
-const INITIAL: State = { ...EMPTY_DRAFT_STATE, stepIndex: 0, direction: 1 };
+const INITIAL: State = { ...EMPTY_DRAFT_STATE, stepIndex: 0, direction: 1, plan: DEFAULT_SUBSCRIPTION_PLAN };
 
 const clamp = (index: number) => Math.max(0, Math.min(ONBOARDING_STEPS.length - 1, index));
 
@@ -67,6 +70,7 @@ export class OnboardingStore extends DraftStore<State> {
   readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : 0));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
   readonly direction = computed(() => this.state().direction);
+  readonly plan = computed(() => this.state().plan);
   override readonly connectReturn = '/onboarding';
 
   constructor() {
@@ -130,6 +134,10 @@ export class OnboardingStore extends DraftStore<State> {
       brandId: state.brandId ?? newBrandId(),
       draft: state.draft ? changeDraftKind(state.draft, kind) : withSignupBrand(createEmptyDraft(kind, this.i18n.locale())),
     }));
+  }
+
+  choosePlan(plan: SubscriptionPlanId): void {
+    this.state.update((state) => ({ ...state, plan }));
   }
 
   async removeReference(file: MediaFile): Promise<void> {

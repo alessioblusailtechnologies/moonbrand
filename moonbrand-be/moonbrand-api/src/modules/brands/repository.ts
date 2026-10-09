@@ -1,5 +1,6 @@
 import type { BrandSummary } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, BrandKind, ChannelId } from '@moonbrand/shared/domain/brand';
+import { DEFAULT_SUBSCRIPTION_PLAN, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import type { Queryable } from '../../db/pool';
 
@@ -37,10 +38,17 @@ export async function brandExists(db: Queryable, brandId: string): Promise<boole
   return (rowCount ?? 0) > 0;
 }
 
-export async function insertBrand(db: Queryable, accountId: string, brandId: string, draft: BrandDraft): Promise<BrandSummary> {
+// plan: quello scelto nell'onboarding; senza, vale quello di base della tabella.
+export async function insertBrand(
+  db: Queryable,
+  accountId: string,
+  brandId: string,
+  draft: BrandDraft,
+  plan?: SubscriptionPlanId,
+): Promise<BrandSummary> {
   const { rows } = await db.query<SummaryRow>(
-    `insert into presenza.brands (id, account_id, identity, positioning, channels, themes, voice, visual, refs)
-     values ($9, $1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb)
+    `insert into presenza.brands (id, account_id, identity, positioning, channels, themes, voice, visual, refs, plan)
+     values ($9, $1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb, coalesce($10, $11))
      returning ${SUMMARY}`,
     [
       accountId,
@@ -52,9 +60,16 @@ export async function insertBrand(db: Queryable, accountId: string, brandId: str
       JSON.stringify(draft.visual),
       JSON.stringify(draft.references),
       brandId,
+      plan ?? null,
+      DEFAULT_SUBSCRIPTION_PLAN,
     ],
   );
   return toSummary(rows[0]);
+}
+
+export async function updateBrandPlan(db: Queryable, brandId: string, plan: SubscriptionPlanId): Promise<boolean> {
+  const { rowCount } = await db.query('update presenza.brands set plan = $2 where id = $1', [brandId, plan]);
+  return (rowCount ?? 0) > 0;
 }
 
 export async function findBrandDraft(db: Queryable, brandId: string): Promise<BrandDraft | null> {

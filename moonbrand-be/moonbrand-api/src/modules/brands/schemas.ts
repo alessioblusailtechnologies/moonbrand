@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import type { CreateBrandRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
+import type { CreateBrandRequest, UpdateBrandPlanRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
+import { SUBSCRIPTION_PLAN_IDS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import type {
   BrandDraft,
@@ -212,10 +213,15 @@ const referenceExamples = z
   .max(30)
   .optional();
 
+const plan = z.enum(SUBSCRIPTION_PLAN_IDS as [SubscriptionPlanId, ...SubscriptionPlanId[]], 'Piano non valido.');
+
 export const createBrandSchema = brandDraftSchema.extend({
   id: z.uuid('Brand non valido.'),
   referenceExamples,
+  plan: plan.optional(),
 }) satisfies z.ZodType<CreateBrandRequest>;
+
+export const updateBrandPlanSchema = z.object({ plan }) satisfies z.ZodType<UpdateBrandPlanRequest>;
 
 export const updateBrandSchema = brandDraftSchema.extend({ referenceExamples }) satisfies z.ZodType<UpdateBrandRequest>;
 

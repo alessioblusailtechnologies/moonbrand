@@ -25,6 +25,7 @@ import { ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboar
 import { ChannelsStep } from './steps/channels-step';
 import { IdentityStep } from './steps/identity-step';
 import { IntroStep } from './steps/intro-step';
+import { PlanStep } from './steps/plan-step';
 import { PositioningStep } from './steps/positioning-step';
 import { SummaryStep } from './steps/summary-step';
 import { ThemesStep } from './steps/themes-step';
@@ -34,6 +35,9 @@ import { VoiceStep } from './steps/voice-step';
 function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: Locale) {
   if (step === 'intro') {
     return { title: translate(locale, 'onboarding.intro.title'), subtitle: translate(locale, 'onboarding.intro.subtitle') };
+  }
+  if (step === 'plan') {
+    return { title: translate(locale, 'plans.stepTitle'), subtitle: translate(locale, 'plans.stepSubtitle') };
   }
   if (step === 'summary') {
     const firstName = name.trim().split(/\s+/)[0];
@@ -63,6 +67,7 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
     ThemesStep,
     VoiceStep,
     VisualStep,
+    PlanStep,
     SummaryStep,
     ChannelChoiceDialog,
   ],
@@ -101,7 +106,7 @@ export class Onboarding {
 
   protected readonly sectionStep = computed<SectionKey | null>(() => {
     const step = this.store.step();
-    return step === 'intro' || step === 'summary' ? null : step;
+    return step === 'intro' || step === 'plan' || step === 'summary' ? null : step;
   });
 
   protected readonly error = computed(() => {
@@ -181,7 +186,7 @@ export class Onboarding {
     this.creating.set(true);
     let jobs: string[];
     try {
-      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples())).setupJobs;
+      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), this.store.plan())).setupJobs;
       this.store.reset();
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('onboarding.createFailed')));

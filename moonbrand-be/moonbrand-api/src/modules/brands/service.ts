@@ -2,6 +2,7 @@ import type pg from 'pg';
 
 import type { BrandProfile, BrandSummary, CreateBrandRequest, UpdateBrandRequest, VideoSetupJobInput } from '@moonbrand/shared/api/contract';
 import type { BrandDraft, Channels, MediaFile, Visual } from '@moonbrand/shared/domain/brand';
+import type { SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
@@ -10,7 +11,7 @@ import { REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
 import { deleteOnboardingDraft } from '../onboarding/drafts';
 import { setActiveBrand } from '../auth/accounts';
 import type { MediaStorage } from '../media/storage';
-import { brandExists, findBrandDraft, insertBrand, listBrandSummaries, updateBrand } from './repository';
+import { brandExists, findBrandDraft, insertBrand, listBrandSummaries, updateBrand, updateBrandPlan } from './repository';
 import { queueStyleJob } from './style';
 
 export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSummary[]> {
@@ -21,7 +22,7 @@ export function listBrands(pool: pg.Pool, identity: Identity): Promise<BrandSumm
 export function createBrand(
   pool: pg.Pool,
   identity: Identity,
-  { id, referenceExamples: _examples, ...draft }: CreateBrandRequest,
+  { id, referenceExamples: _examples, plan, ...draft }: CreateBrandRequest,
   connected: Partial<Channels> = {},
 ): Promise<BrandSummary> {
   const stored: BrandDraft = {
@@ -30,12 +31,18 @@ export function createBrand(
     visual: storableVisual(identity.accountId, draft.visual),
   };
   return withIdentity(pool, identity, async (db) => {
-    const brand = await insertBrand(db, identity.accountId, id, stored);
+    const brand = await insertBrand(db, identity.accountId, id, stored, plan);
     await setActiveBrand(db, identity.accountId, brand.id);
     // Il brand è nato: la bozza dell'onboarding non serve più, in nessuna scheda.
     await deleteOnboardingDraft(db, identity.accountId);
     return brand;
   });
+}
+
+// Il piano del brand, per ora senza pagamento: vale da subito, e i crediti del mese diventano quelli del piano nuovo.
+export async function changeBrandPlan(pool: pg.Pool, identity: Identity, brandId: string, plan: SubscriptionPlanId): Promise<void> {
+  const changed = await withIdentity(pool, identity, (db) => updateBrandPlan(db, brandId, plan));
+  if (!changed) throw ApiError.notFound('Brand non trovato.');
 }
 
 export async function getBrandProfile(

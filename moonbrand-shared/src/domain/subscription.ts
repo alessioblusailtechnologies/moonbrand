@@ -8,6 +8,9 @@ export const SUBSCRIPTION_PLANS = {
 
 export type SubscriptionPlanId = keyof typeof SUBSCRIPTION_PLANS;
 
+// I piani come si mostrano, dal più piccolo.
+export const SUBSCRIPTION_PLAN_IDS: SubscriptionPlanId[] = ['start', 'pro', 'ultra'];
+
 // La ricarica quando i crediti del mese finiscono: con Ultra costa meno.
 export const CREDIT_TOPUP = { credits: 1_000, priceEur: 50, ultraPriceEur: 40 } as const;
 

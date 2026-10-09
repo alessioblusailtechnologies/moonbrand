@@ -8,8 +8,8 @@ import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../b
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
 import { onboardingConnections } from '../social/onboarding';
-import { activeBrandSchema, brandParams, createBrandSchema, updateBrandSchema } from './schemas';
-import { chooseActiveBrand, createBrand, getBrandProfile, listBrands, queueVideoSetup, restyleBrand, saveBrand } from './service';
+import { activeBrandSchema, brandParams, createBrandSchema, updateBrandPlanSchema, updateBrandSchema } from './schemas';
+import { changeBrandPlan, chooseActiveBrand, createBrand, getBrandProfile, listBrands, queueVideoSetup, restyleBrand, saveBrand } from './service';
 
 // Gli esempi scelti diventano i riferimenti da seguire, al posto di quelli di prima. Poi le generazioni
 // dell'onboarding e i loro file di lavoro non servono più: lasciati lì, chi scrive i contenuti li troverebbe
@@ -83,6 +83,14 @@ export function registerBrandRoutes(
     if (body.referenceExamples?.length) await adoptExamples(files, brandId, body.referenceExamples, request.log);
     if (referencesChanged || body.referenceExamples?.length) await restyleBrand(pool, request.identity, brandId);
     return brand;
+  });
+
+  // Dalle Impostazioni brand. Per ora senza pagamento: il piano scelto vale subito.
+  app.put('/v1/brands/:brandId/plan', async (request, reply) => {
+    const { brandId } = brandParams.parse(request.params);
+    const { plan } = updateBrandPlanSchema.parse(request.body);
+    await changeBrandPlan(pool, request.identity, brandId, plan);
+    return reply.code(204).send();
   });
 
   app.put('/v1/me/active-brand', async (request, reply) => {

@@ -82,7 +82,13 @@ export interface OnboardingDraft {
 export type OnboardingDraftSave = OnboardingDraft;
 
 // referenceExamples: gli esempi scelti nell'onboarding, che diventano i riferimenti da seguire del brand.
-export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[] };
+// plan: il piano scelto nell'onboarding; senza, il brand parte con quello di base.
+export type CreateBrandRequest = BrandDraft & { id: string; referenceExamples?: string[]; plan?: SubscriptionPlanId };
+
+// Il cambio di piano dalle Impostazioni brand. Per ora senza pagamento: il piano vale subito.
+export interface UpdateBrandPlanRequest {
+  plan: SubscriptionPlanId;
+}
 
 // Il brand nuovo e i lavori che lo preparano (lo stile dai riferimenti, le prime idee): l'onboarding li segue fino alla fine.
 export type CreateBrandResponse = BrandSummary & { setupJobs: string[] };

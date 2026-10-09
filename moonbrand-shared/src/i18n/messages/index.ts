@@ -12,6 +12,7 @@ import { ideas } from './ideas';
 import { language } from './language';
 import { onboarding } from './onboarding';
 import { plan } from './plan';
+import { plans } from './plans';
 import { profile } from './profile';
 import { sections } from './sections';
 import { server } from './server';
@@ -35,6 +36,7 @@ export const NAMESPACES = {
   language,
   onboarding,
   plan,
+  plans,
   profile,
   sections,
   server,

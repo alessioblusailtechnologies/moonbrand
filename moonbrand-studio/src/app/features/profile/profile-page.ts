@@ -4,10 +4,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { BrandProfile } from '@moonbrand/shared/api/contract';
 import type { SectionKey } from '@moonbrand/shared/domain/brand';
 import { kindLabel } from '@moonbrand/shared/domain/catalog';
+import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
 import { BrandsService } from '../../core/brands/brands.service';
+import { CreditsService } from '../../core/credits/credits.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -16,6 +18,7 @@ import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
 import { ToastService } from '../../ui/toast';
+import { PlanDialog } from '../plans/plan-dialog';
 import { ChannelChoiceDialog } from './channel-choice';
 import { SectionEditor } from './section-editor';
 
@@ -28,7 +31,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
 @Component({
   selector: 'mb-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon, RouterLink, SectionEditor, ChannelChoiceDialog, TranslatePipe],
+  imports: [BrandAvatar, Icon, RouterLink, SectionEditor, ChannelChoiceDialog, PlanDialog, TranslatePipe],
   template: `
     @if (brands.activeBrand(); as brand) {
       <section class="profile">
@@ -66,6 +69,17 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
           </div>
           <p class="caption">{{ 'profile.page.note' | t }}</p>
           <div class="panel rows">
+            @if (plan(); as current) {
+              <button class="row-btn" type="button" (click)="changingPlan.set(true)">
+                <mb-icon name="layers" [size]="18" class="row-icon" />
+                <span class="grow texts">
+                  <span class="strong-sm">{{ 'plans.settingsRow' | t }}</span>
+                  <span class="caption summary">{{ current.summary }}</span>
+                </span>
+                <span class="edit caption">{{ 'common.edit' | t }}</span>
+                <mb-icon name="chevron-right" [size]="16" class="chevron" />
+              </button>
+            }
             <a class="row-btn" routerLink="/impostazioni/crediti">
               <mb-icon name="bar-chart" [size]="18" class="row-icon" />
               <span class="grow texts">
@@ -87,6 +101,13 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
         @if (profile(); as current) {
           <mb-section-editor [brandId]="current.id" [draft]="current.draft" [section]="key" (closed)="editing.set(null)"
             (saved)="profile.set({ id: current.id, draft: $event }); editing.set(null)" />
+        }
+      }
+    }
+    @if (changingPlan()) {
+      @if (brands.activeBrand(); as brand) {
+        @if (plan(); as current) {
+          <mb-plan-dialog [brandId]="brand.id" [current]="current.id" (closed)="changingPlan.set(false)" />
         }
       }
     }
@@ -197,6 +218,20 @@ export class ProfilePage {
   protected readonly profile = signal<BrandProfile | null>(null);
   protected readonly loading = signal(true);
   protected readonly editing = signal<SectionKey | null>(null);
+  protected readonly changingPlan = signal(false);
+  private readonly credits = inject(CreditsService);
+
+  // Il piano del brand attivo, come lo dicono i suoi crediti.
+  protected readonly plan = computed(() => {
+    const credits = this.credits.credits();
+    if (!credits) return null;
+    const plan = SUBSCRIPTION_PLANS[credits.plan];
+    const intl = this.i18n.intl();
+    return {
+      id: credits.plan,
+      summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, credits: plan.monthlyCredits.toLocaleString(intl), price: plan.priceEur.toLocaleString(intl) }),
+    };
+  });
   protected readonly connection = inject(ChannelConnectionService);
   // Solo l'id: dopo un salvataggio nome e logo cambiano, ma il profilo non va riletto.
   private readonly activeId = computed(() => this.brands.activeBrand()?.id ?? null);
