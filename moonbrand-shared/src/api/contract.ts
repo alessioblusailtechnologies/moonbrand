@@ -657,3 +657,54 @@ export interface CreditsResponse {
   // Il giorno in cui i crediti si rinnovano, YYYY-MM-DD.
   renewsOn: string;
 }
+
+// Come si sono consumati i crediti di un brand in un mese, attività per attività: chi usa moonbrand deve poterlo
+// sapere. Le voci dicono il tipo di lavoro, mai il servizio o il modello che l'ha fatto.
+export type CreditCategory =
+  | 'assistant'
+  | 'image'
+  | 'clip'
+  | 'music'
+  | 'voice'
+  | 'sound'
+  | 'subtitles'
+  | 'check'
+  | 'export'
+  | 'download'
+  | 'dictation'
+  | 'other';
+
+// Da dove è partita l'attività: una richiesta in chat, un contenuto, le idee, l'impostazione del brand…
+export type CreditActivityKind = 'chat' | 'content' | 'ideas' | 'brand' | 'welcome' | 'dictation' | 'other';
+
+export interface CreditPart {
+  category: CreditCategory;
+  // Crediti con due decimali: un controllo vale una frazione di credito.
+  credits: number;
+  // Quante generazioni di quel tipo; per l'assistente quante volte ha lavorato.
+  count: number;
+  // I secondi generati o ascoltati, per clip, musica, voce e dettatura.
+  seconds?: number;
+}
+
+export interface CreditActivity {
+  id: string;
+  // Quando è partita, ISO.
+  at: string;
+  kind: CreditActivityKind;
+  // Il titolo della conversazione o del contenuto, se c'è.
+  title: string | null;
+  // La richiesta che ha fatto partire il lavoro, accorciata.
+  request: string | null;
+  credits: number;
+  parts: CreditPart[];
+}
+
+export interface CreditUsageResponse {
+  // Il mese mostrato, YYYY-MM (a Roma), e quelli con dei consumi, dal più recente; il mese in corso c'è sempre.
+  month: string;
+  months: string[];
+  used: number;
+  categories: { category: CreditCategory; credits: number }[];
+  activities: CreditActivity[];
+}

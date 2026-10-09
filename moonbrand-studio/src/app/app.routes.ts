@@ -70,6 +70,11 @@ export const routes: Routes = [
         canActivate: [hasBrandsGuard],
         loadComponent: () => import('./features/profile/profile-page').then((m) => m.ProfilePage),
       },
+      {
+        path: 'impostazioni/crediti',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/credits/credits-page').then((m) => m.CreditsPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

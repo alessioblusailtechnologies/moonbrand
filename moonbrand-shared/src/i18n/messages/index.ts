@@ -3,6 +3,7 @@ import { brand } from './brand';
 import { catalog } from './catalog';
 import { chat } from './chat';
 import { common } from './common';
+import { credits } from './credits';
 import { contents } from './contents';
 import { days } from './days';
 import { email } from './email';
@@ -26,6 +27,7 @@ export const NAMESPACES = {
   chat,
   common,
   contents,
+  credits,
   days,
   email,
   errors,

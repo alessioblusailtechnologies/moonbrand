@@ -117,19 +117,19 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
       </div>
 
       <div class="foot">
-        <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" ariaCurrentWhenActive="page" [title]="'shell.brandSettings' | t">
+        <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" [title]="'shell.brandSettings' | t">
           <mb-icon name="settings" [stroke]="1.8" />
           <span class="nav-label">{{ 'shell.brandSettings' | t }}</span>
         </a>
         @if (creditRing(); as ring) {
-          <div class="nav-item credits" [title]="'shell.creditsHint' | t: ring.hint">
+          <a class="nav-item credits" routerLink="/impostazioni/crediti" routerLinkActive="active" ariaCurrentWhenActive="page" [title]="'shell.creditsHint' | t: ring.hint">
             <svg class="ring" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
               <circle class="ring-track" cx="10" cy="10" r="8" />
               <circle class="ring-fill" [class.low]="ring.low" cx="10" cy="10" r="8" pathLength="100" transform="rotate(-90 10 10)"
                 [attr.stroke-dasharray]="ring.share * 100 + ' 100'" />
             </svg>
             <span class="nav-label">{{ 'shell.creditsLeft' | t: { n: ring.left } }}</span>
-          </div>
+          </a>
         }
         <div class="language" (focusout)="closeLanguage($event)">
           @if (languageOpen()) {
@@ -331,10 +331,6 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     .nav-item.active {
       background: var(--surface-sidebar-active);
       color: var(--white);
-    }
-    .nav-item.credits:hover {
-      background: none;
-      color: var(--sidebar-text);
     }
     .ring {
       flex: none;

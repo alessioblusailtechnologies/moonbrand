@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import type { BrandProfile } from '@moonbrand/shared/api/contract';
 import type { SectionKey } from '@moonbrand/shared/domain/brand';
@@ -28,7 +28,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
 @Component({
   selector: 'mb-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon, SectionEditor, ChannelChoiceDialog, TranslatePipe],
+  imports: [BrandAvatar, Icon, RouterLink, SectionEditor, ChannelChoiceDialog, TranslatePipe],
   template: `
     @if (brands.activeBrand(); as brand) {
       <section class="profile">
@@ -65,6 +65,16 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
             }
           </div>
           <p class="caption">{{ 'profile.page.note' | t }}</p>
+          <div class="panel rows">
+            <a class="row-btn" routerLink="/impostazioni/crediti">
+              <mb-icon name="bar-chart" [size]="18" class="row-icon" />
+              <span class="grow texts">
+                <span class="strong-sm">{{ 'credits.settingsRow' | t }}</span>
+                <span class="caption summary">{{ 'credits.settingsRowHint' | t }}</span>
+              </span>
+              <mb-icon name="chevron-right" [size]="16" class="chevron" />
+            </a>
+          </div>
         } @else {
           <div class="empty">
             <p class="strong-sm">{{ 'profile.page.loadFailedTitle' | t }}</p>
@@ -130,6 +140,14 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
       background: none;
       text-align: left;
       cursor: pointer;
+    }
+    a.row-btn {
+      color: inherit;
+      text-decoration: none;
+    }
+    .row-icon {
+      flex: none;
+      color: var(--text-body);
     }
     .row-btn:first-child {
       border-top: 0;
