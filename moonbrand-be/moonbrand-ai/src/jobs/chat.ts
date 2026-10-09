@@ -6,9 +6,11 @@ import { query, type McpServerConfig } from '@anthropic-ai/claude-agent-sdk';
 import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { writeBrandGuide } from '../lib/brand-guide';
+import { CLIENT_VOICE } from '../lib/client-voice';
 import { languageRules } from '../lib/language';
 import { MOONBRAND_PLUGINS } from '../lib/plugin';
 import { prepareVideoProject } from '../lib/video';
+import { videoEstimateFromEnv } from '../lib/video-estimate';
 import { audioTools } from '../tools/audio';
 import { clipTools } from '../tools/clip';
 import { graphicsTools } from '../tools/grafica';
@@ -62,9 +64,12 @@ if (ELEVENLABS_API_KEY) {
 const lambda = lambdaKeys();
 if (lambda) mcpServers.lambda = lambdaTools(brandDir, path.basename(path.resolve(brandDir)), lambda);
 
-// Le clip già girate in questa conversazione, dal worker: il tetto vale per tutta la chat.
-const clipBudget = Number(env.MOONBRAND_CLIP_BUDGET_USD) || 3;
-const clipSpent = Number(env.MOONBRAND_CLIP_SPENT_USD) || 0;
+// Le clip già girate in questa conversazione, dal worker: l'indicazione vale per tutta la chat. In crediti, come li vede
+// l'utente: 1 credito è 1 centesimo di dollaro di costo vero.
+const clipBudget = Math.round((Number(env.MOONBRAND_CLIP_BUDGET_USD) || 3) * 100);
+const clipSpent = Math.round((Number(env.MOONBRAND_CLIP_SPENT_USD) || 0) * 100);
+// Quanto consuma il lavoro di un video, misurato dal worker sui video recenti.
+const videoEstimate = videoEstimateFromEnv(env);
 
 const guide = `# moonbrand
 
@@ -73,8 +78,10 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 - Sii diretto e concreto. Se ti manca qualcosa di importante per fare bene il lavoro, chiedilo invece di inventarlo.
 - La cartella di lavoro di questa conversazione è ${workDir}: lì bozze, HTML, script e immagini. Le cartelle dei contenuti si cambiano solo con i tool di moonbrand.
 - Per scrivere o ritoccare un contenuto segui la skill moonbrand:contenuti; per un video anche la skill moonbrand:video; per proporre idee la skill moonbrand:idee.
-- Un video costa tempo e generazioni: prima proponi in chat il copione, cioè l’idea in breve e le inquadrature con durata, cosa si vede, da dove viene, testo a schermo e voce, più i secondi di clip generate previsti in tutto e quanto costano, e aspetta l’ok.
-- Le clip generate hanno un tetto per tutta questa conversazione: ${clipBudget.toFixed(2)} $, e finora se ne sono spesi ${clipSpent.toFixed(2)} $. Progetta i video per starci dentro (circa 0,13 $ al secondo di clip); se le clip in più servono davvero, o l’utente ne chiede altre, prima di girarle digli quanto costano e a quanto arriva la spesa, e aspetta il suo sì. Vai dritto al video solo se l’utente lo chiede. Nel progetto video il suo id è un nome breve e unico finché non è salvato.
+- Prima di fare un video, o di rifarne uno, proponi sempre in chat il copione con il consumo stimato (skill moonbrand:video, «Il consumo stimato») e aspetta l’ok, anche se l’utente chiede di andare dritto. Proponi la versione migliore per qualità, non la più economica. Per una correzione piccola a un video già fatto basta dire cosa cambi e il consumo stimato. Nel progetto video il suo id è un nome breve e unico finché non è salvato.
+- Il lavoro di un video, senza le clip, consuma di solito ${videoEstimate.new.typical}–${videoEstimate.new.high} crediti per un video nuovo e ${videoEstimate.edit.typical}–${videoEstimate.edit.high} per una correzione: verso l’alto con voce fuori campo, canzone, molte scene o più formati. Le clip generate circa 14 crediti al secondo.
+- Per le clip generate c’è un’indicazione di massima di ${clipBudget} crediti per tutta questa conversazione, e finora se ne sono consumati ${clipSpent}: serve a progettare, non dirla all’utente, e superala se la qualità lo chiede, mettendolo nella stima. Se mentre lavori serve consumare molto più della stima confermata (per esempio rifare delle clip), prima chiedi.
+- Il consumo si dice sempre in crediti, mai in euro o dollari.
 - Se il messaggio menziona un’idea della sezione Idee, il contenuto nasce da quella, nel formato e sui canali chiesti nel messaggio.
 - Se il messaggio menziona un’uscita del piano, il contenuto è per quella: sui suoi canali, e lo salvi con contenuto_salva passando il suo slotId.
 - Il piano (sezione Piano) lo leggi e lo cambi con piano_leggi, piano_proponi, uscite_crea, uscita_cambia e uscita_togli, seguendo la skill moonbrand:piano. Le uscite dei prossimi 14 giorni sono già in CLAUDE.md.
@@ -86,6 +93,8 @@ Sei l’assistente di moonbrand per il brand descritto in CLAUDE.md. Chi ti scri
 - Le foto e i video che l’utente allega al messaggio sono in allegati/: prima di rispondere falli guardare con il tool guarda, i video interi come MP4 (accanto c’è anche la copertina in JPEG). Chiedi subito tutto quello che ti può servire, cosa si vede e si sente e con quali tempi: la risposta resta nella conversazione e ti basta anche per i messaggi dopo.
 - Se l’utente incolla il link di un post social (TikTok, Instagram, Facebook, X, YouTube, LinkedIn), scaricalo con scarica_social e guardalo con guarda prima di rispondere. È un riferimento di altri: prendine l’idea, l’aggancio, il ritmo e il montaggio, ma non usarne pezzi nei contenuti del brand.
 - Dopo un salvataggio di’ all’utente dove lo trova.
+
+${CLIENT_VOICE}
 
 ${languageRules()}`;
 

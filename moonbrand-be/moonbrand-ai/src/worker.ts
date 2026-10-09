@@ -26,9 +26,11 @@ import type {
 
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand, putBrandFiles } from './lib/brand-sync';
+import { technicalLeak } from './lib/client-voice';
 import { examplesDir } from './lib/examples';
 import { createStepReader } from './lib/step-reader';
 import { USAGE_MESSAGE, type ToolUsage } from './lib/usage';
+import { measureVideoEstimate, videoEstimateEnv } from './lib/video-estimate';
 import { saveContent } from './results/content';
 import { saveIdeas } from './results/ideas';
 import { saveWelcome } from './results/welcome';
@@ -262,7 +264,7 @@ async function watchCancellations(): Promise<void> {
   }
 }
 
-// Il tetto delle clip vale per tutta la conversazione, o per il contenuto nei job lanciati dallo studio: lo script riceve
+// L'indicazione per le clip vale per tutta la conversazione, o per il contenuto nei job lanciati dallo studio: lo script riceve
 // quanto si è già speso nei turni e nei job prima di questo (ai_usage), e il tool parte da lì.
 async function clipBudget(job: Job): Promise<Record<string, string>> {
   const input = (job.input ?? {}) as { conversationId?: string; contentId?: string };
@@ -362,9 +364,17 @@ async function run(job: Job): Promise<void> {
     console.error(`[${job.id}] spesa delle clip non letta`, error);
     return {};
   });
+  // Il consumo stimato di un video si dice in chat, prima di partire: la misura è sui video recenti di questo ambiente.
+  const estimate =
+    job.kind === 'chat'
+      ? await measureVideoEstimate(pool).then(videoEstimateEnv, (error: unknown) => {
+          console.error(`[${job.id}] consumo dei video non misurato`, error);
+          return {};
+        })
+      : {};
   const child = spawn(process.execPath, ['--import', 'tsx', script, ...args], {
     cwd: ROOT,
-    env: { ...jobEnv, ...languages, ...budget, ...env },
+    env: { ...jobEnv, ...languages, ...budget, ...estimate, ...env },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   child.stdin.on('error', () => undefined);
@@ -426,6 +436,10 @@ async function run(job: Job): Promise<void> {
           steps.set(id, { id, label: text, status: 'done', kind: 'text', startedAt: steps.get(id)?.startedAt ?? lastEventAt, endedAt: now });
           // Fuori dalla chat il testo è Claude che si parla tra un passaggio e l'altro: si mostra come lo legge Haiku.
           if (!kind.reply) readStep(id, 'testo', text);
+          else {
+            const leak = technicalLeak(text);
+            if (leak) console.warn(`[${job.id}] termine tecnico nella risposta: «${leak}»`);
+          }
         } else if (block.type === 'tool_use') {
           const input = block.input as Record<string, unknown>;
           const known = toolStep(block.name, input, job.locale);
