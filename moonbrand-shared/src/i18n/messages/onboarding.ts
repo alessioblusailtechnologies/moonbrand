@@ -45,13 +45,13 @@ export const onboarding = defineMessages({
     introStep: {
       heading: 'Cinque minuti, una volta sola',
       body:
-        'Ti chiedo chi sei, cosa vuoi ottenere, i canali, i temi, come scrivi e come vuoi apparire. Da lì genero proposte che ' +
+        'Ti chiedo chi sei, cosa vuoi ottenere, i canali, i temi, le tue istruzioni e come vuoi apparire. Da lì genero proposte che ' +
         'sembrano scritte da te. Ogni cosa si cambia anche dopo, dalle Impostazioni brand.',
       list: {
         who: 'Per chi scrivo e cosa fai',
         channels: 'I canali su cui pubblicare',
         themes: 'I temi, ognuno con il suo peso',
-        voice: 'Come scrivi e come vuoi apparire',
+        instructions: 'Le tue istruzioni e come vuoi apparire',
       },
       forWho: 'Per chi costruiamo la presenza',
     },
@@ -160,40 +160,13 @@ export const onboarding = defineMessages({
       max: 'Al massimo {n} temi: togline uno per aggiungerne un altro.',
       suggestFailed: 'Non riesco a proporre i temi: aggiungili a mano.',
     },
-    voice: {
-      rows: { register: 'Registro', rhythm: 'Ritmo', lexicon: 'Lessico ammesso', avoid: 'Da evitare' },
-      sources: {
-        pasteTitle: 'Incolla qualche testo',
-        pasteMeta: 'Il modo più veloce: copia da LinkedIn, dal sito o dalle note',
-        historyTitle: 'Leggi lo storico di un canale',
-        historyTitleChannel: 'Leggi lo storico di {channel}',
-        historyMeta: 'Serve un canale collegato',
-        historyMetaHandle: 'Leggo gli ultimi post pubblicati da {handle}',
-        recordingTitle: 'Registra un minuto di voce',
-        recordingMeta: 'Racconta com’è andata la settimana: trascrivo e ne ricavo il ritmo',
-      },
-      tooShort: 'Incolla almeno qualche riga scritta da te.',
-      restored: 'Ripristinata come v{n}.',
-      ready: 'Scheda voce v{n} pronta.',
-      failed: 'Analisi non riuscita. Riprova.',
-      reading: 'Sto leggendo i tuoi testi',
-      pasteLabel: 'Incolla i tuoi testi',
-      pastePlaceholder: 'Incolla qui i post, separati da una riga vuota.',
-      pasteAria: 'Testi da analizzare',
-      pasteHint: 'Più testi leggo, meno correzioni farai dopo. Con tre ci siamo, con dieci si sente la differenza.',
-      analyze: 'Analizza',
-      recording: 'Registrazione',
-      recordingHint: 'Registrazione simulata. Racconta com’è andata la settimana come lo diresti a un collega: trascrivo e ne ricavo il ritmo.',
-      stopAndAnalyze: 'Ferma e analizza',
-      card: 'Scheda voce v{n}',
-      from: 'da {source}',
-      fix: 'Correggi',
-      addMore: 'Aggiungi altri testi',
-      previous: 'Versioni precedenti',
-      restore: 'Ripristina',
-      replaceHint: 'La nuova scheda prende il posto di quella in uso; le precedenti restano nello storico.',
-      firstHint: 'Più testi reali leggo, meno correzioni farai dopo. Con tre testi ci siamo, con dieci si sente la differenza.',
-      backToCurrent: 'Torna alla scheda in uso',
+    instructions: {
+      label: 'Istruzioni personalizzate',
+      aria: 'Istruzioni personalizzate per l’AI',
+      placeholder:
+        'Per esempio: dai del tu, frasi brevi, niente emoji. Non usare «eccellenza» e «passione». Cita sempre la consegna gratuita ' +
+        'sopra i 30 €. Non parlare mai dei concorrenti.',
+      hint: 'Valgono per tutto: post, video, idee e chat. Puoi lasciarle vuote e scriverle quando vuoi dalle Impostazioni brand.',
     },
     visual: {
       logo: {
@@ -336,13 +309,13 @@ export const onboarding = defineMessages({
     introStep: {
       heading: 'Five minutes, just once',
       body:
-        'I’ll ask who you are, what you want to achieve, your channels, your themes, how you write and how you want to come across. ' +
+        'I’ll ask who you are, what you want to achieve, your channels, your themes, your instructions and how you want to come across. ' +
         'From there I’ll create proposals that sound like you wrote them. You can change everything later in Brand settings.',
       list: {
         who: 'Who I’m writing for and what you do',
         channels: 'The channels to publish on',
         themes: 'The themes, each with its own weight',
-        voice: 'How you write and how you want to come across',
+        instructions: 'Your instructions and how you want to come across',
       },
       forWho: 'Who we’re building the presence for',
     },
@@ -451,40 +424,13 @@ export const onboarding = defineMessages({
       max: 'Up to {n} themes: remove one to add another.',
       suggestFailed: 'I can’t suggest themes: add them by hand.',
     },
-    voice: {
-      rows: { register: 'Register', rhythm: 'Rhythm', lexicon: 'Allowed vocabulary', avoid: 'Avoid' },
-      sources: {
-        pasteTitle: 'Paste some text',
-        pasteMeta: 'The quickest way: copy from LinkedIn, your site or your notes',
-        historyTitle: 'Read a channel’s history',
-        historyTitleChannel: 'Read the {channel} history',
-        historyMeta: 'Needs a connected channel',
-        historyMetaHandle: 'Reading the latest posts published by {handle}',
-        recordingTitle: 'Record a minute of voice',
-        recordingMeta: 'Tell me how your week went: I’ll transcribe it and work out your rhythm',
-      },
-      tooShort: 'Paste at least a few lines you wrote yourself.',
-      restored: 'Restored as v{n}.',
-      ready: 'Voice card v{n} ready.',
-      failed: 'Analysis didn’t work. Try again.',
-      reading: 'Reading your texts',
-      pasteLabel: 'Paste your texts',
-      pastePlaceholder: 'Paste your posts here, separated by a blank line.',
-      pasteAria: 'Texts to analyse',
-      pasteHint: 'The more texts I read, the fewer corrections you’ll make later. Three is enough, ten makes a real difference.',
-      analyze: 'Analyse',
-      recording: 'Recording',
-      recordingHint: 'Simulated recording. Tell me how your week went as you would to a colleague: I’ll transcribe it and work out your rhythm.',
-      stopAndAnalyze: 'Stop and analyse',
-      card: 'Voice card v{n}',
-      from: 'from {source}',
-      fix: 'Correct',
-      addMore: 'Add more texts',
-      previous: 'Previous versions',
-      restore: 'Restore',
-      replaceHint: 'The new card replaces the one in use; the previous ones stay in the history.',
-      firstHint: 'The more real texts I read, the fewer corrections you’ll make later. Three texts is enough, ten makes a real difference.',
-      backToCurrent: 'Back to the card in use',
+    instructions: {
+      label: 'Custom instructions',
+      aria: 'Custom instructions for the AI',
+      placeholder:
+        'For example: be informal, short sentences, no emoji. Don’t use “excellence” or “passion”. Always mention free delivery ' +
+        'over €30. Never talk about competitors.',
+      hint: 'They apply to everything: posts, videos, ideas and chat. You can leave them empty and write them any time from Brand settings.',
     },
     visual: {
       logo: {
@@ -627,13 +573,13 @@ export const onboarding = defineMessages({
     introStep: {
       heading: 'Cinq minutes, une seule fois',
       body:
-        'Je vous demande qui vous êtes, ce que vous voulez obtenir, vos réseaux, vos thèmes, comment vous écrivez et comment vous voulez apparaître. ' +
+        'Je vous demande qui vous êtes, ce que vous voulez obtenir, vos réseaux, vos thèmes, vos instructions et comment vous voulez apparaître. ' +
         'À partir de là, je génère des propositions qui semblent écrites par vous. Tout se modifie aussi plus tard, depuis les Paramètres de la marque.',
       list: {
         who: 'Pour qui j’écris et ce que vous faites',
         channels: 'Les réseaux sur lesquels publier',
         themes: 'Les thèmes, chacun avec son poids',
-        voice: 'Comment vous écrivez et comment vous voulez apparaître',
+        instructions: 'Vos instructions et comment vous voulez apparaître',
       },
       forWho: 'Pour qui construisons-nous la présence',
     },
@@ -742,41 +688,13 @@ export const onboarding = defineMessages({
       max: '{n} thèmes au maximum : retirez-en un pour en ajouter un autre.',
       suggestFailed: 'Je n’arrive pas à proposer les thèmes : ajoutez-les à la main.',
     },
-    voice: {
-      rows: { register: 'Registre', rhythm: 'Rythme', lexicon: 'Vocabulaire admis', avoid: 'À éviter' },
-      sources: {
-        pasteTitle: 'Collez quelques textes',
-        pasteMeta: 'Le plus rapide : copiez depuis LinkedIn, le site ou vos notes',
-        historyTitle: 'Lire l’historique d’un réseau',
-        historyTitleChannel: 'Lire l’historique de {channel}',
-        historyMeta: 'Il faut un réseau connecté',
-        historyMetaHandle: 'Je lis les dernières publications de {handle}',
-        recordingTitle: 'Enregistrez une minute de voix',
-        recordingMeta: 'Racontez comment s’est passée la semaine : je transcris et j’en tire le rythme',
-      },
-      tooShort: 'Collez au moins quelques lignes écrites par vous.',
-      restored: 'Restaurée comme v{n}.',
-      ready: 'Fiche voix v{n} prête.',
-      failed: 'L’analyse n’a pas abouti. Réessayez.',
-      reading: 'Je lis vos textes',
-      pasteLabel: 'Collez vos textes',
-      pastePlaceholder: 'Collez ici les publications, séparées par une ligne vide.',
-      pasteAria: 'Textes à analyser',
-      pasteHint: 'Plus je lis de textes, moins vous aurez de corrections à faire ensuite. Avec trois, ça va ; avec dix, on sent la différence.',
-      analyze: 'Analyser',
-      recording: 'Enregistrement',
-      recordingHint:
-        'Enregistrement simulé. Racontez comment s’est passée la semaine comme vous le diriez à un collègue : je transcris et j’en tire le rythme.',
-      stopAndAnalyze: 'Arrêter et analyser',
-      card: 'Fiche voix v{n}',
-      from: 'à partir de {source}',
-      fix: 'Corriger',
-      addMore: 'Ajouter d’autres textes',
-      previous: 'Versions précédentes',
-      restore: 'Restaurer',
-      replaceHint: 'La nouvelle fiche remplace celle en cours ; les précédentes restent dans l’historique.',
-      firstHint: 'Plus je lis de vrais textes, moins vous aurez de corrections à faire ensuite. Avec trois textes, ça va ; avec dix, on sent la différence.',
-      backToCurrent: 'Revenir à la fiche en cours',
+    instructions: {
+      label: 'Instructions personnalisées',
+      aria: 'Instructions personnalisées pour l’IA',
+      placeholder:
+        'Par exemple : tutoyez, phrases courtes, pas d’emoji. N’utilisez pas « excellence » ni « passion ». Citez toujours la livraison ' +
+        'gratuite dès 30 €. Ne parlez jamais des concurrents.',
+      hint: 'Elles valent pour tout : posts, vidéos, idées et chat. Vous pouvez les laisser vides et les écrire quand vous voulez depuis les Paramètres de la marque.',
     },
     visual: {
       logo: {

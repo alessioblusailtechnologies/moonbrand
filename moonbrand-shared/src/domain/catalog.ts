@@ -224,7 +224,7 @@ export function createEmptyDraft(kind: BrandKind, language: Locale = DEFAULT_LOC
     positioning: { goals: [], audiences: [], postsPerWeek: 3 },
     channels: emptyChannels(),
     themes: [],
-    voice: { cards: [] },
+    instructions: '',
     visual: { logoUri: null, palette: PALETTE_PRESETS[0], imageStyle: 'flat-geometric', typography: 'inter', signature: true },
     references: { profiles: [], sources: DEFAULT_SOURCES[kind].map((source) => ({ ...source })), milestones: [] },
   };

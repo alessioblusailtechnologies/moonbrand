@@ -5,7 +5,7 @@ import { brandLanguage } from '@moonbrand/shared/i18n/locales';
 
 import { languageName } from './language';
 
-// Il brand scritto a parole per i job: chi è, per chi scrive, temi e voce.
+// Il brand scritto a parole per i job: chi è, per chi scrive, temi e le istruzioni di chi lo cura.
 
 const PERSON: Record<BrandKind, string> = {
   person: 'prima persona singolare: è un personal brand',
@@ -17,7 +17,9 @@ const PERSON: Record<BrandKind, string> = {
 const list = (items: readonly string[]) => (items.length > 0 ? items.map((item) => positioningLabel(item)).join(', ') : 'non indicati');
 
 export function describeBrand(brand: BrandContext): string {
-  const { identity, positioning, voice } = brand;
+  const { identity, positioning } = brand;
+  // Manca nei job messi in coda prima che ci fossero.
+  const instructions = brand.instructions?.trim() ?? '';
   const who = [
     `Tipo: ${kindLabel(identity.kind)}`,
     `Nome: ${identity.name || '(non indicato)'}`,
@@ -32,9 +34,6 @@ export function describeBrand(brand: BrandContext): string {
   const themes = [...brand.themes]
     .sort((a, b) => b.weight - a.weight)
     .map((theme) => `- ${theme.name} (id ${theme.id}, peso ${theme.weight}: più è alto, più spesso esce nel piano)`);
-  const voiceLines = voice
-    ? [`Registro: ${voice.register}`, `Ritmo: ${voice.rhythm}`, `Lessico: ${voice.lexicon}`, `Da evitare: ${voice.avoid}`]
-    : ['Non ancora definita: resta sobria e concreta.'];
   return [
     '## Chi è',
     ...who.filter(Boolean),
@@ -48,7 +47,9 @@ export function describeBrand(brand: BrandContext): string {
     '## Temi',
     ...(themes.length > 0 ? themes : ['Nessun tema definito.']),
     '',
-    '## Voce',
-    ...voiceLines,
+    '## Istruzioni del cliente',
+    instructions
+      ? `Scritte da chi cura il brand: seguile in ogni lavoro, anche dove le regole generali dicono altro.\n\n${instructions}`
+      : 'Nessuna: per il tono resta sobrio e concreto.',
   ].join('\n');
 }

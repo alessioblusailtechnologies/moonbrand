@@ -52,23 +52,6 @@ export interface Theme {
   color: string;
 }
 
-export type VoiceSource = 'pasted' | 'history' | 'recording';
-
-export interface VoiceCard {
-  version: number;
-  createdAt: string;
-  source: VoiceSource;
-  sourceLabel: string;
-  register: string;
-  rhythm: string;
-  lexicon: string;
-  avoid: string;
-}
-
-export interface Voice {
-  cards: VoiceCard[];
-}
-
 export type ImageStyle = 'flat-geometric' | 'desaturated-photo' | 'natural-photo' | 'text-only';
 
 export interface Palette {
@@ -209,7 +192,8 @@ export interface BrandSections {
   positioning: Positioning;
   channels: Channels;
   themes: Theme[];
-  voice: Voice;
+  // Le istruzioni personalizzate: testo libero di chi cura il brand, che l'AI segue in ogni lavoro.
+  instructions: string;
   visual: Visual;
   references: References;
 }
@@ -222,10 +206,6 @@ export type SectionPatch = { [K in SectionKey]: { key: K; value: BrandSections[K
 
 export function applyPatch<T extends BrandSections>(target: T, patch: SectionPatch): T {
   return { ...target, [patch.key]: patch.value };
-}
-
-export function currentVoiceCard(voice: Voice): VoiceCard | null {
-  return voice.cards.length > 0 ? voice.cards[voice.cards.length - 1] : null;
 }
 
 // Collegato vuol dire che Zernio può pubblicare: un handle senza account era il collegamento finto di prima.

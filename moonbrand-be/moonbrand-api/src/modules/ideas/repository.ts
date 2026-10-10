@@ -1,12 +1,10 @@
 import type { BrandContext } from '@moonbrand/shared/api/contract';
 import {
-  currentVoiceCard,
   type ChannelId,
   type Channels,
   type Identity,
   type Positioning,
   type Theme,
-  type Voice,
 } from '@moonbrand/shared/domain/brand';
 import type { Idea, IdeaDraft, IdeaStatus } from '@moonbrand/shared/domain/idea';
 import { publishedStatus, slotStatus, type SlotStatus } from '@moonbrand/shared/domain/plan';
@@ -73,8 +71,8 @@ export interface BrandForIdeas {
 }
 
 export async function findBrandForIdeas(db: Queryable, brandId: string): Promise<BrandForIdeas | null> {
-  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; voice: Voice; style_guide: string | null }>(
-    'select identity, positioning, channels, themes, voice, style_guide from presenza.brands where id = $1',
+  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; instructions: string; style_guide: string | null }>(
+    'select identity, positioning, channels, themes, instructions, style_guide from presenza.brands where id = $1',
     [brandId],
   );
   const row = rows[0];
@@ -130,7 +128,7 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
       positioning: row.positioning,
       channels: channels.length > 0 ? channels : ['instagram'],
       themes: row.themes.map(({ id, name, weight }) => ({ id, name, weight })),
-      voice: currentVoiceCard(row.voice),
+      instructions: row.instructions,
       style: row.style_guide,
       layouts: layouts.rows,
       plan,

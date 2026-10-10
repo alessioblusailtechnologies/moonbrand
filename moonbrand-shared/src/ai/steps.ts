@@ -89,11 +89,6 @@ export function positioningSteps(kind: BrandKind, locale: Locale = DEFAULT_LOCAL
 
 export const themesSteps = (locale: Locale = DEFAULT_LOCALE) => onboarding(locale).themes;
 
-export function voiceSteps(locale: Locale = DEFAULT_LOCALE) {
-  const voice = onboarding(locale).voice;
-  return { read: (source: 'pasted' | 'history' | 'recording') => voice[source], rhythm: voice.rhythm, card: voice.card };
-}
-
 export function visualSteps(locale: Locale = DEFAULT_LOCALE) {
   const visual = onboarding(locale).visual;
   return {

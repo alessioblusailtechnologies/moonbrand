@@ -15,7 +15,6 @@ import type {
   Theme,
   Visual,
   VisualExample,
-  Voice,
 } from '@moonbrand/shared/domain/brand';
 import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
@@ -73,20 +72,8 @@ const themes = z
   )
   .max(6) satisfies z.ZodType<Theme[]>;
 
-export const voiceCard = z.object({
-  version: z.number().int().min(0),
-  createdAt: text(40),
-  source: z.enum(['pasted', 'history', 'recording']),
-  sourceLabel: text(200),
-  register: text(2000),
-  rhythm: text(2000),
-  lexicon: text(2000),
-  avoid: text(2000),
-});
-
-const voice = z.object({
-  cards: z.array(voiceCard).max(50),
-}) satisfies z.ZodType<Voice>;
+// Una bozza di prima delle istruzioni (studio aperto da prima, app non aggiornata) arriva senza.
+export const instructions = z.string().default('');
 
 const mediaFile = z.object({ path: text(500).nullable(), url: text(4000) }) satisfies z.ZodType<MediaFile>;
 
@@ -200,7 +187,7 @@ export const brandDraftSchema = z.object({
   positioning,
   channels,
   themes,
-  voice,
+  instructions,
   visual,
   references,
 }) satisfies z.ZodType<BrandDraft>;

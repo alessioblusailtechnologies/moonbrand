@@ -1,5 +1,5 @@
 import type { AiStep } from '../ai/steps';
-import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning, VoiceCard } from '../domain/brand';
+import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
@@ -156,7 +156,8 @@ export interface VisualBrandContext {
   positioning: Positioning;
   channels: ChannelId[];
   themes: string[];
-  voice: VoiceCard | null;
+  // Le istruzioni personalizzate del brand, vuote se non ce ne sono.
+  instructions: string;
   palette: string[];
   notes: string;
 }
@@ -197,7 +198,8 @@ export interface BrandContext {
   positioning: Positioning;
   channels: ChannelId[];
   themes: { id: string; name: string; weight: number }[];
-  voice: VoiceCard | null;
+  // Le istruzioni personalizzate del brand, vuote se non ce ne sono.
+  instructions: string;
   // Lo stile letto dai riferimenti dal job style: null se non è ancora stato letto, vuoto se non ci sono riferimenti.
   style: string | null;
   // Le impaginazioni degli ultimi contenuti, per farne una diversa.

@@ -40,13 +40,13 @@ export const sections = defineMessages({
         client: 'Per ognuno scegli quanto spesso deve uscire: il piano dà più spazio ai temi che escono spesso.',
       },
     },
-    voice: {
-      name: { person: 'Voce', company: 'Voce', client: 'Voce' },
-      title: { person: 'Come scrivi', company: 'Come scrive il brand', client: 'Come scrive il cliente' },
+    instructions: {
+      name: { person: 'Istruzioni', company: 'Istruzioni', client: 'Istruzioni' },
+      title: { person: 'Le tue istruzioni', company: 'Le istruzioni del brand', client: 'Le istruzioni del cliente' },
       subtitle: {
-        person: 'Leggo testi reali e ne ricavo registro, ritmo e lessico. È la parte che fa la differenza.',
-        company: 'Leggo testi reali e ne ricavo registro, ritmo e lessico. È la parte che fa la differenza.',
-        client: 'Leggo testi reali e ne ricavo registro, ritmo e lessico. È la parte che fa la differenza.',
+        person: 'Scrivi come vuoi che l’AI lavori per te: tono, parole da usare o evitare, cosa dire e cosa no. Le segue in ogni contenuto.',
+        company: 'Scrivi come vuoi che l’AI lavori per il brand: tono, parole da usare o evitare, cosa dire e cosa no. Le segue in ogni contenuto.',
+        client: 'Scrivi come vuoi che l’AI lavori per il cliente: tono, parole da usare o evitare, cosa dire e cosa no. Le segue in ogni contenuto.',
       },
     },
     visual: {
@@ -87,8 +87,7 @@ export const sections = defineMessages({
       connected: '{channel} collegato',
       lost: '{channel} da ricollegare',
       noThemes: 'Nessun tema',
-      voiceCard: 'Scheda v{version} da {source}',
-      noVoice: 'Da completare: nessun testo analizzato',
+      noInstructions: 'Nessuna istruzione',
       logo: 'Logo caricato',
       noLogo: 'Nessun logo',
       references: '{n, plural, one {# riferimento} other {# riferimenti}}',
@@ -137,13 +136,13 @@ export const sections = defineMessages({
         client: 'For each one, choose how often it should come up: the plan gives more room to frequent topics.',
       },
     },
-    voice: {
-      name: { person: 'Voice', company: 'Voice', client: 'Voice' },
-      title: { person: 'How you write', company: 'How the brand writes', client: 'How the client writes' },
+    instructions: {
+      name: { person: 'Instructions', company: 'Instructions', client: 'Instructions' },
+      title: { person: 'Your instructions', company: 'The brand’s instructions', client: 'The client’s instructions' },
       subtitle: {
-        person: 'I read real texts and work out register, rhythm and vocabulary. This is the part that makes the difference.',
-        company: 'I read real texts and work out register, rhythm and vocabulary. This is the part that makes the difference.',
-        client: 'I read real texts and work out register, rhythm and vocabulary. This is the part that makes the difference.',
+        person: 'Tell the AI how to work for you: tone, words to use or avoid, what to say and what not to. It follows them in every piece of content.',
+        company: 'Tell the AI how to work for the brand: tone, words to use or avoid, what to say and what not to. It follows them in every piece of content.',
+        client: 'Tell the AI how to work for the client: tone, words to use or avoid, what to say and what not to. It follows them in every piece of content.',
       },
     },
     visual: {
@@ -184,8 +183,7 @@ export const sections = defineMessages({
       connected: '{channel} connected',
       lost: '{channel} needs reconnecting',
       noThemes: 'No topics',
-      voiceCard: 'Card v{version} from {source}',
-      noVoice: 'To complete: no text analysed',
+      noInstructions: 'No instructions',
       logo: 'Logo uploaded',
       noLogo: 'No logo',
       references: '{n, plural, one {# reference} other {# references}}',
@@ -235,13 +233,13 @@ export const sections = defineMessages({
         client: 'Pour chacun, choisissez à quelle fréquence il doit revenir : le planning laisse plus de place aux thèmes fréquents.',
       },
     },
-    voice: {
-      name: { person: 'Voix', company: 'Voix', client: 'Voix' },
-      title: { person: 'Comment vous écrivez', company: 'Comment écrit la marque', client: 'Comment écrit le client' },
+    instructions: {
+      name: { person: 'Instructions', company: 'Instructions', client: 'Instructions' },
+      title: { person: 'Vos instructions', company: 'Les instructions de la marque', client: 'Les instructions du client' },
       subtitle: {
-        person: 'Je lis de vrais textes et j’en tire le registre, le rythme et le vocabulaire. C’est ce qui fait la différence.',
-        company: 'Je lis de vrais textes et j’en tire le registre, le rythme et le vocabulaire. C’est ce qui fait la différence.',
-        client: 'Je lis de vrais textes et j’en tire le registre, le rythme et le vocabulaire. C’est ce qui fait la différence.',
+        person: 'Dites à l’IA comment travailler pour vous : ton, mots à utiliser ou à éviter, ce qu’il faut dire ou non. Elle les suit dans chaque contenu.',
+        company: 'Dites à l’IA comment travailler pour la marque : ton, mots à utiliser ou à éviter, ce qu’il faut dire ou non. Elle les suit dans chaque contenu.',
+        client: 'Dites à l’IA comment travailler pour le client : ton, mots à utiliser ou à éviter, ce qu’il faut dire ou non. Elle les suit dans chaque contenu.',
       },
     },
     visual: {
@@ -282,8 +280,7 @@ export const sections = defineMessages({
       connected: '{channel} connecté',
       lost: '{channel} à reconnecter',
       noThemes: 'Aucun thème',
-      voiceCard: 'Fiche v{version} à partir de {source}',
-      noVoice: 'À compléter : aucun texte analysé',
+      noInstructions: 'Aucune instruction',
       logo: 'Logo importé',
       noLogo: 'Aucun logo',
       references: '{n, plural, one {# référence} other {# références}}',

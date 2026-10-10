@@ -27,7 +27,7 @@ function fingerprintOf(locale: Locale, brand: BrandContext, signals: WelcomeSign
     identity: brand.identity,
     positioning: brand.positioning,
     themes: brand.themes,
-    voice: brand.voice?.register ?? null,
+    instructions: brand.instructions,
     plan: brand.plan.map((slot) => [slot.id, slot.date, slot.time, slot.status, slot.title]),
     ...rest,
   };

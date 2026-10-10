@@ -24,13 +24,13 @@ import { DraftStore } from './draft-store';
 import { COUNTED_STEPS, INTRO_INDEX, ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
 import { ChannelsStep } from './steps/channels-step';
 import { IdentityStep } from './steps/identity-step';
+import { InstructionsStep } from './steps/instructions-step';
 import { IntroStep } from './steps/intro-step';
 import { PlanStep } from './steps/plan-step';
 import { PositioningStep } from './steps/positioning-step';
 import { SummaryStep } from './steps/summary-step';
 import { ThemesStep } from './steps/themes-step';
 import { VisualStep } from './steps/visual-step';
-import { VoiceStep } from './steps/voice-step';
 
 function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: Locale) {
   if (step === 'intro') {
@@ -65,7 +65,7 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
     PositioningStep,
     ChannelsStep,
     ThemesStep,
-    VoiceStep,
+    InstructionsStep,
     VisualStep,
     PlanStep,
     SummaryStep,

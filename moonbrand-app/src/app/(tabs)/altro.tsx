@@ -16,9 +16,9 @@ import { Button, Card, Icon, Spinner, T, type IconName } from '../../ui/kit';
 import { colors, radius } from '../../ui/theme';
 import { confirm, useToast } from '../../ui/toast';
 
-// Le sezioni che si modificano dal telefono; voce, identità visiva e riferimenti si curano dallo studio.
+// Le sezioni che si modificano dal telefono; istruzioni, identità visiva e riferimenti si curano dallo studio.
 const EDITABLE: SectionKey[] = ['identity', 'positioning', 'channels', 'themes'];
-const READ_ONLY: SectionKey[] = ['voice', 'visual', 'references'];
+const READ_ONLY: SectionKey[] = ['instructions', 'visual', 'references'];
 
 export default function MoreScreen() {
   const brand = useBrand();

@@ -13,13 +13,6 @@ export const steps = defineMessages({
       goals: { person: 'Penso a perché pubblichi', company: 'Penso a perché pubblicate', client: 'Penso a perché pubblica' },
       audiences: { person: 'Cerco chi vuoi raggiungere', company: 'Cerco chi volete raggiungere', client: 'Cerco chi vuole raggiungere' },
       themes: { read: 'Rileggo cosa fa il brand', pick: 'Scelgo i temi che reggono un piano' },
-      voice: {
-        recording: 'Trascrivo la registrazione',
-        history: 'Leggo gli ultimi post pubblicati',
-        pasted: 'Leggo i tuoi testi',
-        rhythm: 'Misuro ritmo e lunghezza delle frasi',
-        card: 'Scrivo la scheda voce',
-      },
       visual: {
         noReferences: 'Parto da palette, sito e indicazioni',
         references: '{n, plural, one {Guardo l’immagine di riferimento} other {Guardo le # immagini di riferimento}}',
@@ -88,13 +81,6 @@ export const steps = defineMessages({
       goals: { person: 'Thinking about why you post', company: 'Thinking about why you post', client: 'Thinking about why they post' },
       audiences: { person: 'Finding who you want to reach', company: 'Finding who you want to reach', client: 'Finding who they want to reach' },
       themes: { read: 'Rereading what the brand does', pick: 'Choosing topics that can carry a plan' },
-      voice: {
-        recording: 'Transcribing the recording',
-        history: 'Reading the latest published posts',
-        pasted: 'Reading your texts',
-        rhythm: 'Measuring rhythm and sentence length',
-        card: 'Writing the voice card',
-      },
       visual: {
         noReferences: 'Starting from palette, website and notes',
         references: '{n, plural, one {Looking at the reference image} other {Looking at the # reference images}}',
@@ -163,13 +149,6 @@ export const steps = defineMessages({
       goals: { person: 'Je réfléchis à pourquoi vous publiez', company: 'Je réfléchis à pourquoi vous publiez', client: 'Je réfléchis à pourquoi il publie' },
       audiences: { person: 'Je cherche qui vous voulez toucher', company: 'Je cherche qui vous voulez toucher', client: 'Je cherche qui il veut toucher' },
       themes: { read: 'Je relis ce que fait la marque', pick: 'Je choisis les thèmes qui tiennent un planning' },
-      voice: {
-        recording: "Je transcris l'enregistrement",
-        history: 'Je lis les dernières publications',
-        pasted: 'Je lis vos textes',
-        rhythm: 'Je mesure le rythme et la longueur des phrases',
-        card: 'Je rédige la fiche voix',
-      },
       visual: {
         noReferences: 'Je pars de la palette, du site et des indications',
         references: "{n, plural, one {Je regarde l'image de référence} other {Je regarde les # images de référence}}",

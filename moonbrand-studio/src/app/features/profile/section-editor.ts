@@ -13,10 +13,10 @@ import { ToastService } from '../../ui/toast';
 import { DraftStore } from '../onboarding/draft-store';
 import { ChannelsStep } from '../onboarding/steps/channels-step';
 import { IdentityStep } from '../onboarding/steps/identity-step';
+import { InstructionsStep } from '../onboarding/steps/instructions-step';
 import { PositioningStep } from '../onboarding/steps/positioning-step';
 import { ThemesStep } from '../onboarding/steps/themes-step';
 import { VisualStep } from '../onboarding/steps/visual-step';
-import { VoiceStep } from '../onboarding/steps/voice-step';
 import { ProfileDraftStore } from './profile-draft.store';
 import { ReferencesEditor } from './references-editor';
 
@@ -24,7 +24,7 @@ import { ReferencesEditor } from './references-editor';
 @Component({
   selector: 'mb-section-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, VoiceStep, VisualStep, ReferencesEditor, TranslatePipe],
+  imports: [Icon, IdentityStep, PositioningStep, ChannelsStep, ThemesStep, InstructionsStep, VisualStep, ReferencesEditor, TranslatePipe],
   providers: [ProfileDraftStore, { provide: DraftStore, useExisting: ProfileDraftStore }],
   template: `
     <div class="scrim" (click)="close()"></div>
@@ -48,7 +48,7 @@ import { ReferencesEditor } from './references-editor';
               @case ('positioning') { <mb-positioning-step [draft]="draft" /> }
               @case ('channels') { <mb-channels-step [draft]="draft" /> }
               @case ('themes') { <mb-themes-step [draft]="draft" /> }
-              @case ('voice') { <mb-voice-step [draft]="draft" /> }
+              @case ('instructions') { <mb-instructions-step [draft]="draft" /> }
               @case ('visual') { <mb-visual-step [draft]="draft" /> }
               @case ('references') { <mb-references-editor [draft]="draft" /> }
             }

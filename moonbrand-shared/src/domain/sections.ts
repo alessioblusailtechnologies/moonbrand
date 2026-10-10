@@ -2,18 +2,21 @@ import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
 import { sections } from '../i18n/messages/sections';
 import { translate } from '../i18n/translate';
 import type { BrandDraft, BrandKind, SectionKey } from './brand';
-import { currentVoiceCard, isConnected, needsReconnect } from './brand';
+import { isConnected, needsReconnect } from './brand';
 import { CHANNELS, paletteName, positioningLabel } from './catalog';
 import { themeLevelLabel, totalWeight } from './themes';
 
+// Quanto delle istruzioni si legge nel riepilogo della sezione.
+const INSTRUCTIONS_PREVIEW = 120;
+
 export type SectionStatus = 'complete' | 'partial' | 'missing';
 
-export const SECTION_KEYS: SectionKey[] = ['identity', 'positioning', 'channels', 'themes', 'voice', 'visual', 'references'];
+export const SECTION_KEYS: SectionKey[] = ['identity', 'positioning', 'channels', 'themes', 'instructions', 'visual', 'references'];
 
 export const ONBOARDING_SECTION_KEYS: SectionKey[] = SECTION_KEYS.filter((key) => key !== 'references');
 
 export function isSkippable(key: SectionKey): boolean {
-  return key === 'voice' || key === 'visual' || key === 'references';
+  return key === 'instructions' || key === 'visual' || key === 'references';
 }
 
 export function sectionCopy(key: SectionKey, kind: BrandKind, locale: Locale = DEFAULT_LOCALE) {
@@ -57,8 +60,8 @@ export function sectionStatus(key: SectionKey, draft: BrandDraft): SectionStatus
       return sectionError(key, draft) ? 'missing' : 'complete';
     case 'channels':
       return sectionError(key, draft) ? 'missing' : 'complete';
-    case 'voice':
-      return draft.voice.cards.length > 0 ? 'complete' : 'missing';
+    case 'instructions':
+      return draft.instructions.trim() ? 'complete' : 'missing';
     case 'visual':
       return draft.visual.logoUri ? 'complete' : 'partial';
     case 'references': {
@@ -97,9 +100,9 @@ export function sectionSummary(key: SectionKey, draft: BrandDraft, locale: Local
       return draft.themes.length
         ? draft.themes.map((theme) => `${theme.name} (${themeLevelLabel(theme, locale).toLowerCase()})`).join(' · ')
         : summary.noThemes;
-    case 'voice': {
-      const card = currentVoiceCard(draft.voice);
-      return card ? t('voiceCard', { version: card.version, source: card.sourceLabel }) : summary.noVoice;
+    case 'instructions': {
+      const text = draft.instructions.trim().replace(/\s+/g, ' ');
+      return text ? (text.length > INSTRUCTIONS_PREVIEW ? `${text.slice(0, INSTRUCTIONS_PREVIEW).trimEnd()}…` : text) : summary.noInstructions;
     }
     case 'visual': {
       const { logoUri, palette, signature, references = [], line } = draft.visual;

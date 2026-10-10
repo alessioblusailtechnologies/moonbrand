@@ -11,7 +11,7 @@ const LIST: { label: MessageKey; color: string; square: boolean }[] = [
   { label: 'onboarding.introStep.list.who', color: 'var(--accent)', square: true },
   { label: 'onboarding.introStep.list.channels', color: 'var(--primary)', square: false },
   { label: 'onboarding.introStep.list.themes', color: 'var(--primary-soft)', square: true },
-  { label: 'onboarding.introStep.list.voice', color: 'var(--mint-400)', square: false },
+  { label: 'onboarding.introStep.list.instructions', color: 'var(--mint-400)', square: false },
 ];
 
 const SHAPES = [

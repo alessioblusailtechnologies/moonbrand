@@ -47,8 +47,8 @@ export async function insertBrand(
   plan?: SubscriptionPlanId,
 ): Promise<BrandSummary> {
   const { rows } = await db.query<SummaryRow>(
-    `insert into presenza.brands (id, account_id, identity, positioning, channels, themes, voice, visual, refs, plan)
-     values ($9, $1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb, coalesce($10, $11))
+    `insert into presenza.brands (id, account_id, identity, positioning, channels, themes, instructions, visual, refs, plan)
+     values ($9, $1, $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb, $6, $7::jsonb, $8::jsonb, coalesce($10, $11))
      returning ${SUMMARY}`,
     [
       accountId,
@@ -56,7 +56,7 @@ export async function insertBrand(
       JSON.stringify(draft.positioning),
       JSON.stringify(draft.channels),
       JSON.stringify(draft.themes),
-      JSON.stringify(draft.voice),
+      draft.instructions,
       JSON.stringify(draft.visual),
       JSON.stringify(draft.references),
       brandId,
@@ -74,7 +74,7 @@ export async function updateBrandPlan(db: Queryable, brandId: string, plan: Subs
 
 export async function findBrandDraft(db: Queryable, brandId: string): Promise<BrandDraft | null> {
   const { rows } = await db.query<BrandDraft>(
-    'select identity, positioning, channels, themes, voice, visual, refs as "references" from presenza.brands where id = $1',
+    'select identity, positioning, channels, themes, instructions, visual, refs as "references" from presenza.brands where id = $1',
     [brandId],
   );
   return rows[0] ?? null;
@@ -83,7 +83,7 @@ export async function findBrandDraft(db: Queryable, brandId: string): Promise<Br
 export async function updateBrand(db: Queryable, brandId: string, draft: BrandDraft): Promise<BrandSummary | null> {
   const { rows } = await db.query<SummaryRow>(
     `update presenza.brands set identity = $2::jsonb, positioning = $3::jsonb, channels = $4::jsonb, themes = $5::jsonb,
-       voice = $6::jsonb, visual = $7::jsonb, refs = $8::jsonb
+       instructions = $6, visual = $7::jsonb, refs = $8::jsonb
      where id = $1
      returning ${SUMMARY}`,
     [
@@ -92,7 +92,7 @@ export async function updateBrand(db: Queryable, brandId: string, draft: BrandDr
       JSON.stringify(draft.positioning),
       JSON.stringify(draft.channels),
       JSON.stringify(draft.themes),
-      JSON.stringify(draft.voice),
+      draft.instructions,
       JSON.stringify(draft.visual),
       JSON.stringify(draft.references),
     ],

@@ -238,7 +238,8 @@ export class OnboardingStore extends DraftStore<State> {
   }
 }
 
-// Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato.
+// Una bozza di prima di un canale nuovo (Pinterest) non lo ha: entra non collegato. Una di prima delle istruzioni ha la
+// voce al loro posto: la voce si toglie, le istruzioni partono vuote.
 function normalize(raw: unknown): State {
   if (!raw || typeof raw !== 'object') return INITIAL;
   const saved = raw as Partial<State>;
@@ -247,7 +248,8 @@ function normalize(raw: unknown): State {
   if (saved.plan === undefined && saved.draft) state.stepIndex = (saved.stepIndex ?? 0) + 1;
   if (!state.draft) return state;
   const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
-  return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...state.draft, channels } };
+  const { voice: _voice, ...draft } = state.draft as BrandDraft & { voice?: unknown };
+  return { ...state, brandId: state.brandId ?? newBrandId(), draft: { ...draft, channels, instructions: draft.instructions ?? '' } };
 }
 
 // Il primo brand parte con il nome scritto nel form del sito, se c'era.
