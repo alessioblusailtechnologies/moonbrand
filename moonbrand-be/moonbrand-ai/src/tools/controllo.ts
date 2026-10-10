@@ -9,6 +9,7 @@ import { ensureBrowser } from '@remotion/renderer';
 import { z } from 'zod';
 
 import { PARALLEL } from './parallel';
+import { AI_SIGNS_CHECK } from './vista';
 
 // Il controllo dei fotogrammi in una sola chiamata: tipi, export dei fotogrammi di tutte le composizioni e sguardo di
 // Gemini. Prima Claude lo faceva con un comando per volta (pnpm check, npx remotion render, ls, guarda), e ogni passaggio
@@ -76,7 +77,7 @@ export function checkVideoTool(folder: string, lookAt: Look) {
   return tool(
     'controlla_video',
     'Controlla il video mentre lo fai, in una sola chiamata: controlla i tipi del progetto (come pnpm check), esporta in PNG a metà ' +
-      'risoluzione i fotogrammi che chiedi di tutte le composizioni e li fa guardare al motore di visione con la tua lista di controlli. ' +
+      'risoluzione i fotogrammi che chiedi di tutte le composizioni e li fa guardare al motore di visione con la tua lista di controlli, a cui aggiunge da solo quello dei segni che tradiscono l’AI.' +
       'Se i tipi o l’export non vanno, ti dice solo l’errore e non guarda niente. Usalo al posto di pnpm check, npx remotion render/still ' +
       'e guarda per i fotogrammi di controllo; per i video finali usa esporta_video e poi guarda.',
     {
@@ -127,7 +128,7 @@ export function checkVideoTool(folder: string, lookAt: Look) {
 
       const files = frames.map(file);
       const legend = `I file si chiamano ${OUT}/<composizione>-<fotogramma>.png.`;
-      const { text, isError } = await lookAt(files, `${legend}\n\n${domanda}`);
+      const { text, isError } = await lookAt(files, `${legend}\n\n${domanda}\n\n${AI_SIGNS_CHECK}`);
       return { content: [{ type: 'text' as const, text: `Fotogrammi in ${OUT}/ (${files.length}).\n\n${text}` }], ...(isError && { isError }) };
     },
     PARALLEL,

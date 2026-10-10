@@ -7,7 +7,7 @@ import { ensureBrowser } from '@remotion/renderer';
 import puppeteer, { type Browser } from 'puppeteer-core';
 import { z } from 'zod';
 
-import { createLooker } from './vista';
+import { AI_SIGNS_CHECK, createLooker } from './vista';
 import { PARALLEL } from './parallel';
 
 // Le immagini dei contenuti sono HTML: renderizza le esporta in PNG o JPEG con il Chrome headless che Remotion ha già
@@ -126,7 +126,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
     'renderizza',
     'Esporta in PNG o JPEG l’HTML di un’immagine, con il browser già pronto e le misure giuste per il formato; aspetta font e immagini prima dello scatto. ' +
       'Poi misura sul DOM testi tagliati o fuori bordo, font non caricati, immagini rotte, testi sovrapposti e corpo troppo piccolo, e te lo dice. ' +
-      'Con domanda, fa anche guardare le immagini al motore di visione e ti riporta la risposta: usala per il giudizio che il DOM non dà (cosa copre cosa, equilibrio, colori). ' +
+      'Con domanda, fa anche guardare le immagini al motore di visione e ti riporta la risposta: usala per il giudizio che il DOM non dà (cosa copre cosa, equilibrio, colori); il controllo dei segni che tradiscono l’AI lo aggiunge da solo. ' +
       'Più uscite in una chiamata si fanno in parallelo.',
     {
       uscite: z
@@ -150,7 +150,7 @@ export function graphicsTools(folder: string, geminiKey?: string) {
       let text = results.join('\n\n');
       const done = uscite.filter((_, index) => results[index].startsWith('Salvata')).map((item) => item.file);
       if (domanda && done.length > 0) {
-        text += lookAt ? `\n\nGemini:\n${(await lookAt(done, domanda)).text}` : '\n\nGemini non è disponibile in questo lavoro: usa guarda.';
+        text += lookAt ? `\n\nGemini:\n${(await lookAt(done, `${domanda}\n\n${AI_SIGNS_CHECK}`)).text}` : '\n\nGemini non è disponibile in questo lavoro: usa guarda.';
       }
       return { content: [{ type: 'text' as const, text }], ...(done.length < uscite.length && { isError: true as const }) };
     },

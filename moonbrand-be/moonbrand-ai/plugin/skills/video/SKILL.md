@@ -7,6 +7,8 @@ description: Come si fa un video per il brand della cartella (Reels, TikTok, Sho
 
 Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video lo guarda il motore di visione con il tool guarda, e alla fine si esporta sempre.
 
+Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo.
+
 ## Il copione
 
 Un video nasce in due tempi: prima il copione, che l'utente legge e corregge, poi il video. Non generare immagini, clip o audio finché il copione non è approvato, a meno che il lavoro non dica di andare dritto.
@@ -26,7 +28,7 @@ Proponi sempre il video migliore per l'idea, non il più economico. Le clip gene
 - Un'inquadratura porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
 - Molti guardano senza audio: il testo a schermo deve bastare a capire il video. Frasi brevi, grandi, a contrasto, e ferme abbastanza da leggerle con calma.
 - La durata è quella che serve all'idea, senza allungare.
-- La chiusura lascia il brand riconoscibile, di solito con il logo o un'azione; su TikTok senza schermata finale (vedi la confezione per canale nella skill moonbrand:contenuti).
+- La chiusura lascia il brand riconoscibile dentro l'ultima inquadratura (i colori, il tono, il logo piccolo dove la confezione lo vuole) o con l'invito nella didascalia, mai con una schermata finale staccata; su TikTok niente logo (vedi la confezione per canale nella skill moonbrand:contenuti).
 
 Testo a schermo e voce seguono le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
 
@@ -58,7 +60,7 @@ Di' un numero arrotondato o una forchetta stretta («circa 450 crediti»), senza
 
 - Lo stile del brand si prende come per le immagini: riferimenti-da-seguire e file-riferimento danno palette, font, tono delle foto e dettagli grafici, da seguire senza ricalcare l'impaginazione. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile».
 - video/src/brand.ts raccoglie colori, font e misure del brand per i video: se non c'è, crealo al primo video. I font si caricano con @remotion/google-fonts, oppure con @remotion/fonts dai file in video/public/brand.
-- video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro.
+- video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro; nel kit non entra nessun pezzo con i segni che tradiscono l'AI. video/src/archivio contiene i pezzi dei video vecchi: servono solo a quei video, non usarli, non copiarli e non spostarli nel kit.
 - Guarda come sono fatti gli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri. Per capirlo bastano i nomi e l'inizio delle composizioni, non i file interi.
 - Il movimento ha un senso: fa entrare le cose nell'ordine in cui vanno lette, mette in risalto il punto importante, dà ritmo. Niente animazioni messe tanto per muovere.
 

@@ -6,7 +6,7 @@ Il progetto Remotion di questo brand: i video sono pagine React che cambiano fot
 
 - `src/Root.tsx`: registra le composizioni, una per video e per proporzione.
 - `src/brand.ts`: colori, font, misure e voce fuori campo del brand per i video. Se non c'è ancora, crealo al primo video partendo dai riferimenti del brand.
-- `src/kit/`: i pezzi riusabili del brand (entrate, titoli, logo animato, sottotitoli, transizioni…). Si parte da pochi pezzi generici: migliorali e aggiungine quando un video ne crea uno che servirà ancora.
+- `src/kit/`: i pezzi riusabili del brand (entrate, titoli, sottotitoli, transizioni…). Si parte da pochi pezzi generici: migliorali e aggiungine quando un video ne crea uno che servirà ancora.
 - `src/contenuti/<id>/`: la composizione di ogni video.
 - `public/brand/`: logo e file del brand usati nei video.
 - `public/contenuti/<id>/`: musica, voce, clip e immagini di ogni video, da usare con `staticFile('contenuti/<id>/…')`.

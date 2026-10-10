@@ -41,6 +41,23 @@ export const VISION_INSTRUCTION = `Guardi immagini e video per un agente che pre
 - Quando ti chiede un controllo, elenca ogni problema con il file, il punto (in alto a destra, al centro…) e nei video il tempo; se è tutto a posto, dillo in una riga.
 - Con più file, tienili distinti e chiamali con il loro nome.`;
 
+// Il controllo che renderizza e controlla_video aggiungono sempre alla domanda dell'agente: i segni che fanno sembrare
+// un contenuto fatto da un'AI o da un template. È la lista di plugin/skills/contenuti/mestiere.md: se cambia lì, cambia qui.
+export const AI_SIGNS_CHECK = `In più, sempre: guarda come uno sconosciuto che scorre il feed. Sembra fatto da un grafico bravo o da un'AI o da un template? Segnala ogni segno di questi, con il file e il punto:
+- pillole, capsule, badge o etichette arrotondate (anche sotto sottotitoli, fonti o inviti);
+- finestre di browser o di interfaccia, telefoni o schermi disegnati, cursori finti;
+- card con angoli arrotondati e ombra, riquadri dentro riquadri;
+- sfondi a sfumatura, macchie di colore sfocate, vetro smerigliato, bagliori;
+- titolo in maiuscolo largo con una parola in corsivo d'accento sotto, o una parola del titolo evidenziata in corsivo o in un altro colore; stelline, scintille, puntini decorativi;
+- etichette piccole in maiuscolo spaziato sopra o sotto il titolo;
+- fondo crema con accento terracotta, quasi nero con un solo colore acceso, viola e blu;
+- nei video: tutti gli elementi che entrano con la stessa dissolvenza, numeri che salgono contando;
+- numeri d'ordine 01/02/03, icone dentro cerchi, cerchi o frecce che indicano un dettaglio con un'etichetta;
+- tutto centrato e simmetrico con margini uguali;
+- una schermata finale staccata con logo, sito e invito;
+- nel testo: trattini lunghi, «non è X, è Y», elenchi di tre, domande retoriche in apertura, emoji come punti elenco, frecce.
+Se non ce n'è nessuno, dillo in una riga.`;
+
 // Gemini che guarda file della cartella del brand e risponde a parole: lo usano guarda e renderizza.
 // La risposta, o perché non è arrivata, è già scritta per Claude.
 export function createLooker(folder: string, apiKey: string): (file: string[], domanda: string) => Promise<{ text: string; isError?: true }> {

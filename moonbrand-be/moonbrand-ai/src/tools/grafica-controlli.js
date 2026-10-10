@@ -103,5 +103,66 @@
   for (const image of document.images) {
     if (!image.naturalWidth) fix.push(`l'immagine ${image.getAttribute('src') ?? ''} non si è caricata`);
   }
+
+  // I segni che fanno sembrare l'immagine fatta da un'AI o da un template (plugin/skills/contenuti/mestiere.md), letti dal
+  // CSS calcolato: costano niente e arrivano prima dello sguardo di Gemini. Uno per tipo, con il primo esempio.
+  const signs = new Map();
+  const sign = (kind, where) => {
+    if (!signs.has(kind)) signs.set(kind, where);
+  };
+  const AI_FONTS = new Set(['inter', 'space grotesk', 'fraunces', 'instrument serif', 'geist', 'dm sans', 'manrope', 'plus jakarta sans']);
+  const area = width * height;
+  const label = (element) => {
+    const text = element.textContent.replace(/\s+/g, ' ').trim();
+    return text ? quote(text) : `<${element.tagName.toLowerCase()}${element.className ? ` class="${String(element.className).slice(0, 30)}"` : ''}>`;
+  };
+  const painted = (style) =>
+    (style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.backgroundColor !== 'transparent') || style.backgroundImage !== 'none' || parseFloat(style.borderTopWidth) > 0;
+  for (const element of [document.documentElement, document.body, ...document.body.querySelectorAll('*')]) {
+    const style = getComputedStyle(element);
+    if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) continue;
+    const box = element.getBoundingClientRect();
+    if (box.width < 2 || box.height < 2) continue;
+    const radius = parseFloat(style.borderTopLeftRadius) || 0;
+    const hasText = element.textContent.trim().length > 0;
+    if (painted(style) && hasText && box.height < width * 0.14 && box.width > box.height * 1.6 && radius >= box.height / 2 - 2) {
+      sign('pillole o etichette arrotondate', label(element));
+    }
+    if (style.backgroundImage.includes('gradient')) {
+      if (style.webkitBackgroundClip === 'text' || style.backgroundClip === 'text') sign('testo a sfumatura', label(element));
+      else if (box.width * box.height > area * 0.2) sign('sfondo a sfumatura', label(element));
+    }
+    if (style.backdropFilter && style.backdropFilter !== 'none') sign('vetro smerigliato (backdrop-filter)', label(element));
+    if (/blur\(/.test(style.filter) && box.width * box.height > area * 0.03 && !element.querySelector('img') && element.tagName !== 'IMG') {
+      sign('macchie di colore sfocate', label(element));
+    }
+    if (style.boxShadow !== 'none' && radius > 0 && painted(style) && box.width * box.height > area * 0.04) sign('card con angoli arrotondati e ombra', label(element));
+  }
+  const numbers = blocks.filter(({ text }) => /^0\d\.?$/.test(text));
+  if (numbers.length >= 2) sign('numeri d’ordine 01/02/03', numbers.map(({ text }) => text).join(' '));
+  for (const { element, text } of blocks) {
+    const style = getComputedStyle(element);
+    if (/[✦✧✨★☆❖]/.test(text)) sign('stelline o scintille', quote(text));
+    if (/[→➜➔]/.test(text)) sign('frecce nel testo', quote(text));
+    const size = parseFloat(style.fontSize);
+    const spacing = parseFloat(style.letterSpacing) || 0;
+    const upper = style.textTransform === 'uppercase' || (text === text.toUpperCase() && /[A-Z]/.test(text));
+    if (upper && spacing > size * 0.08 && size < width * 0.035 && text.length < 40) sign('etichetta in maiuscolo spaziato sopra o sotto il titolo', quote(text));
+    // Una parola d'accento in corsivo o in un altro colore dentro un titolo dritto.
+    const parent = element.parentElement;
+    if (parent && parent !== document.body && size > width * 0.05) {
+      const parentStyle = getComputedStyle(parent);
+      const ownText = [...parent.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+      if (ownText && parentStyle.fontStyle !== 'italic' && (style.fontStyle === 'italic' || style.color !== parentStyle.color)) {
+        sign('una parola del titolo in corsivo o in un colore d’accento', quote(text));
+      }
+    }
+    const family = unquote(style.fontFamily.split(',')[0]).toLowerCase();
+    if (AI_FONTS.has(family)) sign(`font tipico dell’AI (${unquote(style.fontFamily.split(',')[0])})`, quote(text));
+    if (text.includes('—')) fix.push(`${quote(text)} ha un trattino lungo: riscrivi la frase senza`);
+  }
+  if (signs.size > 0) {
+    check.push(`segni da AI o da template, da togliere se non li chiede il brand: ${[...signs].map(([kind, where]) => `${kind} (${where})`).join('; ')}`);
+  }
   return { fix, check };
 }

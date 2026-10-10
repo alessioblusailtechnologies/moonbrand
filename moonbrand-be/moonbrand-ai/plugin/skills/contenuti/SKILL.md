@@ -71,6 +71,7 @@ L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. 
 
 ## Immagini
 
+- Prima di fare immagini o video leggi [Il mestiere](./mestiere.md): come lavora un grafico social e i segni che tradiscono l’AI, da non usare.
 - Le chiamate che non dipendono l’una dall’altra (più genera_immagine, più renderizza, i controlli con guarda) falle nello stesso messaggio: girano insieme e finiscono nel tempo della più lenta.
 - Immagini e video li guarda il motore di visione con il tool guarda, che ti risponde a parole: usalo per riferimenti, allegati, contenuti già fatti e controlli. Apri tu un’immagine solo quando devi correggere un’impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile»: parti da lì. Se quella parte manca, chiedi a guarda proprio queste cose. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.
