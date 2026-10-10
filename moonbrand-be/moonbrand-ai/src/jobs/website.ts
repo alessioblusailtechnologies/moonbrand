@@ -4,6 +4,9 @@ import path from 'node:path';
 
 import { query } from '@anthropic-ai/claude-agent-sdk';
 
+import { BRAND_CATEGORIES } from '@moonbrand/shared/domain/brand';
+import { categoryLabel } from '@moonbrand/shared/domain/catalog';
+
 import { languageName, replyRule, uiLocale } from '../lib/language';
 
 const site = process.argv[2];
@@ -15,11 +18,16 @@ if (!site) {
 const schema = {
   type: 'object',
   additionalProperties: false,
-  required: ['site', 'name', 'sector', 'summary', 'pitch', 'themes', 'goals', 'audiences', 'colors', 'logo', 'language'],
+  required: ['site', 'name', 'sector', 'category', 'summary', 'pitch', 'themes', 'goals', 'audiences', 'colors', 'logo', 'language'],
   properties: {
     site: { type: 'string', description: 'Dominio del sito, senza protocollo né www' },
     name: { type: 'string', description: 'Nome del brand come appare sul sito' },
     sector: { type: 'string', description: `Settore in poche parole, in ${languageName(uiLocale)} (es. "Parrucchiere", "Panificio artigianale")` },
+    category: {
+      type: ['string', 'null'],
+      enum: [...BRAND_CATEGORIES, null],
+      description: `Il tipo di attività, tra: ${BRAND_CATEGORIES.map((id) => `${id} (${categoryLabel(id)})`).join(', ')}. Quella che fa davvero il brand, non i clienti a cui si rivolge; null se nessuna è adatta`,
+    },
     summary: { type: 'string', description: 'Cosa fa il brand, 2-3 frasi' },
     pitch: { type: 'string', description: 'Il pitch del brand in una frase, in prima persona' },
     themes: { type: 'array', items: { type: 'string' }, description: 'Temi editoriali per i social, 3-5, dal più importante' },

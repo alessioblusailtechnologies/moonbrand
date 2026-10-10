@@ -8,11 +8,13 @@ import { formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 
 import { describeBrand } from './brand-brief';
 import { logoFile } from './brand-logo';
+import { categoryGuide } from './category-guide';
 
 // Il CLAUDE.md della cartella del brand: chi apre Claude lì dentro sa già chi è il brand e dove sono le cose.
 // Le regole per scrivere e proporre idee stanno nelle skill di moonbrand. Si riscrive prima di ogni job dal brand com'è sul DB.
 // logo: il file del logo nella cartella del brand (lo scrive il worker dal profilo), null se il brand non ce l'ha.
-export function brandGuide(brand: BrandContext, logo: string | null = null): string {
+// category: la guida della categoria del brand (category-guide), null se non ce l'ha.
+export function brandGuide(brand: BrandContext, logo: string | null = null, category: string | null = null): string {
   const name = brand.identity.name || 'Brand';
   // Il logo vero, mai uno rifatto: chi fa una grafica lo mette con <img> com'è.
   const logoSection = `
@@ -61,12 +63,21 @@ ${planned
       : 'Nei prossimi 14 giorni non ci sono uscite.'
   }
 `;
+  // La guida della categoria la sceglie il codice dal brand, non l'agente: così vale in ogni job e in chat.
+  const categorySection = category
+    ? `
+## La guida della categoria
+Come lavorano le attività come questa sui canali del brand: formati, materiale vero da chiedere, cosa evitare. Vale insieme alle skill; lo stile resta quello del brand.
+
+${category}
+`
+    : '';
   return `# ${name}
 
 La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
 
 ${describeBrand(brand)}
-${logoSection}${style}${recent}${plan}
+${logoSection}${style}${categorySection}${recent}${plan}
 ## La cartella
 ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file caricati per il brand (logo, foto, materiali).
 - riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.
@@ -84,5 +95,5 @@ ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file cari
 }
 
 export async function writeBrandGuide(brandDir: string, brand: BrandContext): Promise<void> {
-  await writeFile(path.join(brandDir, 'CLAUDE.md'), brandGuide(brand, await logoFile(brandDir)));
+  await writeFile(path.join(brandDir, 'CLAUDE.md'), brandGuide(brand, await logoFile(brandDir), await categoryGuide(brand.identity.category, brand.channels)));
 }

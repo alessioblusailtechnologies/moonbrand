@@ -42,9 +42,11 @@ plugin/skills/contenuti/
   canali/
     tiktok.md               ← la grammatica di TikTok, vale per ogni attività
   categorie/
-    parrucchieri.md         ← caricato solo per i brand di quella categoria
-    ristorazione.md
-    ...
+    bellezza/
+      tiktok.md             ← caricato solo per i brand di quella categoria che usano TikTok
+      instagram.md
+    ristorazione/
+      ...
 ```
 
 ### 1. Il canale
@@ -60,8 +62,9 @@ moonbrand serve qualsiasi attività: creator e personal brand, negozi, ristorant
 funziona su un canale dipende dalla categoria: un salone vive di prima e dopo, un ristorante di preparazione e suoni,
 un SaaS di schermo registrato, un creator di volto in camera.
 
-Per ogni categoria c'è un `.md` che **il sistema carica programmaticamente** in base al brand: non lo sceglie
-l'agente. Contiene, per canale:
+Per ogni categoria c'è una cartella con un `.md` per canale, che **il sistema carica programmaticamente** in base al
+brand: non lo sceglie l'agente, ed entrano solo i canali che il brand usa (deciso l'11/10, per non rileggere a ogni turno
+le regole di canali che il brand non ha). Ogni file contiene:
 
 - i formati che funzionano per quella categoria, descritti a parole: struttura, inquadrature, durate, testo a schermo,
   chiusura;
@@ -77,13 +80,12 @@ che cambia per categoria è un file di dati scelto dal codice.
 
 ### Come si carica
 
-- **La categoria del brand.** Oggi `identity.sector` è testo libero («Panificio artigianale»). Serve un elenco chiuso
-  di categorie (una decina: ristorazione, beauty, negozio, e-commerce, SaaS e tech, professionisti, salute e fitness,
-  creator, agenzia, turismo, sport). Il job `website` la assegna nell'onboarding accanto a `sector`; l'utente la può
-  correggere nelle Impostazioni del brand.
-- **Il file nel contesto.** `writeBrandGuide` (`src/lib/brand-guide.ts`) riscrive il `CLAUDE.md` del brand prima di
-  ogni job: lì si aggiunge la guida della categoria (copiata nella cartella del brand o richiamata per percorso), così
-  vale per i job e per la chat allo stesso modo.
+- **La categoria del brand.** `identity.sector` resta testo libero («Panificio artigianale»); accanto c'è
+  `identity.category`, da un elenco chiuso di 11 categorie. Il job `website` la assegna nell'onboarding accanto a
+  `sector`; l'utente la può correggere nelle Impostazioni del brand.
+- **I file nel contesto.** `writeBrandGuide` (`src/lib/brand-guide.ts`) riscrive il `CLAUDE.md` del brand prima di
+  ogni job: lì entrano, scritte per intero, le guide della categoria per i canali del brand, così valgono per i job e
+  per la chat allo stesso modo.
 - **Brand senza categoria** o con una categoria ancora senza file: solo le regole comuni e quelle del canale, come oggi.
 
 ### Gli esempi di template per categoria
@@ -98,6 +100,18 @@ categoria**: post, caroselli e video reali scelti per quel tipo di attività. Es
 - Sono ispirazione per struttura e mestiere, non impaginazioni da copiare: lo stile resta quello del brand e le
   impaginazioni cambiano da un contenuto all'altro.
 
+## Fatto l'11/10: la categoria del brand
+
+- `BRAND_CATEGORIES` in `moonbrand-shared/src/domain/brand.ts`: ristorazione, bellezza (parrucchieri, estetica,
+  benessere), negozio, ecommerce, tech, professionisti, fitness, creator, agenzia, turismo, sport. Etichette in it/en/fr
+  nel catalogo. `identity.category` è facoltativa: null vuol dire «nessuna adatta», assente nei brand di prima.
+- Il job `website` la sceglie dall'elenco accanto a `sector`; lo studio la riempie dal sito come la lingua (una scelta a
+  mano resta) e la mostra nel passo identità, quindi anche nelle Impostazioni brand. L'app la prende dal sito ma non
+  ha ancora il campo.
+- `src/lib/category-guide.ts` legge `plugin/skills/contenuti/categorie/<categoria>/<canale>.md` per i canali del brand e
+  `writeBrandGuide` li mette nel `CLAUDE.md` sotto «La guida della categoria», uno per canale. Come si scrive una guida: `categorie/README.md`.
+- I brand già esistenti non hanno la categoria finché qualcuno non la sceglie nelle Impostazioni.
+
 ## Come si ricavano le guide
 
 Non da skill pubbliche ma da contenuti reali forti, una categoria alla volta:
@@ -109,10 +123,19 @@ Non da skill pubbliche ma da contenuti reali forti, una categoria alla volta:
 - di ognuno si analizzano fotogrammi, testo a schermo, voce, ritmo dei tagli, durata, chiusura e didascalia;
 - la guida del canale nasce dalle parti comuni a tutte le categorie, quella di categoria da ciò che le distingue.
 
-Si parte da due categorie molto diverse tra loro (la prima: parrucchieri, dove ci sono già scraper, template e la prova
+Si parte da due categorie molto diverse tra loro (la prima: bellezza, partendo dai parrucchieri, dove ci sono già scraper, template e la prova
 F come termine di confronto), per verificare che la guida del canale regga per tutti.
 
 ## Come si misura
 
 Stesso brand e stessa idea, prima e dopo, con il confronto già usato nelle prove del 7/10 (giudice «nativo su 10»,
 costo, tempo). Se il salto si vede, si passa alle altre categorie e poi a Instagram.
+
+## Prossimi passi
+
+1. Raccolta per `bellezza` su TikTok, partendo dai saloni: circa 50 contenuti con lo scraper, schede con Gemini.
+2. Da lì `canali/tiktok.md` (richiamato da `contenuti/SKILL.md` e `video/SKILL.md`, con dentro il paragrafo TikTok
+   di oggi della tabella «La confezione per canale») e `categorie/bellezza/tiktok.md`.
+3. La seconda categoria, molto diversa dalla prima (proposta: `tech`), per verificare che la guida del canale regga.
+4. Il confronto prima e dopo; poi le altre categorie e Instagram.
+5. Il campo categoria nell'app.

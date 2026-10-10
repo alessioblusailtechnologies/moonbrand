@@ -1,5 +1,5 @@
 import type { AiStep } from '../ai/steps';
-import type { BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
+import type { BrandCategory, BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
@@ -138,6 +138,8 @@ export interface WebsiteReading {
   site: string;
   name: string;
   sector: string;
+  // La categoria dell'attività, null se nessuna è adatta; manca nelle letture fatte prima che ci fosse.
+  category?: BrandCategory | null;
   summary: string;
   pitch: string;
   themes: string[];

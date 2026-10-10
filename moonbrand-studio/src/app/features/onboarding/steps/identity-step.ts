@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { BrandDraft, BrandKind, Identity } from '@moonbrand/shared/domain/brand';
+import { BRAND_CATEGORIES, type BrandDraft, type BrandKind, type Identity } from '@moonbrand/shared/domain/brand';
+import { categoryLabel } from '@moonbrand/shared/domain/catalog';
 import { brandLanguage, LOCALE_NAMES, LOCALES } from '@moonbrand/shared/i18n/locales';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
@@ -79,6 +80,17 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
     }
 
     <div class="field">
+      <label for="category">{{ 'brand.category' | t }}</label>
+      <select id="category" (change)="updateCategory($any($event.target).value)">
+        <option value="" [selected]="!value.category">{{ 'brand.categoryNone' | t }}</option>
+        @for (option of categories(); track option.id) {
+          <option [value]="option.id" [selected]="option.id === value.category">{{ option.label }}</option>
+        }
+      </select>
+      <span class="hint">{{ 'brand.categoryHint' | t }}</span>
+    </div>
+
+    <div class="field">
       <label for="pitch">{{ pitch().label | t }}</label>
       <textarea id="pitch" rows="3" [placeholder]="(reading() ? 'onboarding.identity.pitchWriting' : pitch().placeholder) | t"
         [value]="value.pitch" (input)="update('pitch', $any($event.target).value)"></textarea>
@@ -124,6 +136,8 @@ export class IdentityStep {
   protected readonly locales = LOCALES;
   protected readonly localeNames = LOCALE_NAMES;
 
+  protected readonly categories = computed(() => BRAND_CATEGORIES.map((id) => ({ id, label: categoryLabel(id, this.i18n.locale()) })));
+
   protected readonly identity = computed(() => this.draft().identity);
   protected readonly language = computed(() => brandLanguage(this.identity()));
   protected readonly fields = computed(() => FIELDS[this.identity().kind]);
@@ -139,6 +153,11 @@ export class IdentityStep {
 
   protected update(key: keyof Identity, text: string): void {
     this.store.patch({ key: 'identity', value: { ...this.identity(), [key]: text } });
+  }
+
+  protected updateCategory(value: string): void {
+    const category = BRAND_CATEGORIES.find((id) => id === value) ?? null;
+    this.store.patch({ key: 'identity', value: { ...this.identity(), category } });
   }
 
   protected async read(): Promise<void> {

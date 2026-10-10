@@ -1,6 +1,6 @@
 import type { BrandContext } from '@moonbrand/shared/api/contract';
 import type { BrandKind } from '@moonbrand/shared/domain/brand';
-import { channelName, kindLabel, positioningLabel } from '@moonbrand/shared/domain/catalog';
+import { categoryLabel, channelName, kindLabel, positioningLabel } from '@moonbrand/shared/domain/catalog';
 import { brandLanguage } from '@moonbrand/shared/i18n/locales';
 
 import { languageName } from './language';
@@ -26,6 +26,7 @@ export function describeBrand(brand: BrandContext): string {
     identity.kind === 'person' && identity.role ? `Ruolo: ${identity.role}` : '',
     identity.kind === 'person' && identity.company ? `Azienda: ${identity.company}` : '',
     identity.kind !== 'person' && identity.sector ? `Settore: ${identity.sector}` : '',
+    identity.category ? `Categoria: ${categoryLabel(identity.category)}` : '',
     identity.site ? `Sito: ${identity.site}` : '',
     identity.pitch ? `Cosa fa, in una frase: ${identity.pitch}` : '',
     `Persona grammaticale dei post: ${PERSON[identity.kind]}`,

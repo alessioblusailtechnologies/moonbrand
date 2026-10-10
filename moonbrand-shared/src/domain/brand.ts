@@ -9,12 +9,32 @@ export interface MediaFile {
   url: string;
 }
 
+// Il tipo di attività, da un elenco chiuso: il motore carica la guida della categoria (plugin/skills/contenuti/categorie/<id>.md).
+// Sono tipi di cliente, non stili grafici.
+export const BRAND_CATEGORIES = [
+  'ristorazione',
+  'bellezza',
+  'negozio',
+  'ecommerce',
+  'tech',
+  'professionisti',
+  'fitness',
+  'creator',
+  'agenzia',
+  'turismo',
+  'sport',
+] as const;
+
+export type BrandCategory = (typeof BRAND_CATEGORIES)[number];
+
 export interface Identity {
   kind: BrandKind;
   name: string;
   role: string;
   company: string;
   sector: string;
+  // null: nessuna categoria adatta. Manca nei brand nati prima che ci fosse: valgono solo le regole comuni.
+  category?: BrandCategory | null;
   site: string;
   pitch: string;
   // La lingua in cui il brand pubblica; i brand nati prima della scelta non ce l'hanno e scrivono in italiano.

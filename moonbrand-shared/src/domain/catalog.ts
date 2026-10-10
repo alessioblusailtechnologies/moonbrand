@@ -2,7 +2,7 @@ import { palette } from '../design/tokens';
 import { DEFAULT_LOCALE, type Locale } from '../i18n/locales';
 import { catalog } from '../i18n/messages/catalog';
 import { translate, type MessageKey } from '../i18n/translate';
-import type { BrandDraft, BrandKind, ChannelId, Channels, Palette, SignalSource, TypographyId } from './brand';
+import type { BrandCategory, BrandDraft, BrandKind, ChannelId, Channels, Palette, SignalSource, TypographyId } from './brand';
 
 // I testi del catalogo sono nei dizionari (i18n/messages/catalog): le funzioni qui sotto li danno nella lingua chiesta,
 // di base l'italiano, che è quella dei prompt del motore.
@@ -15,6 +15,10 @@ export function kindOptions(locale: Locale = DEFAULT_LOCALE): { kind: BrandKind;
 
 export function kindLabel(kind: BrandKind, locale: Locale = DEFAULT_LOCALE): string {
   return catalog[locale].kinds[kind]?.label ?? '';
+}
+
+export function categoryLabel(category: BrandCategory, locale: Locale = DEFAULT_LOCALE): string {
+  return catalog[locale].categories[category] ?? '';
 }
 
 export const CHANNELS: { id: ChannelId; name: string }[] = [
@@ -220,7 +224,7 @@ function emptyChannels(): Channels {
 // language: la lingua in cui il brand pubblicherà; di solito quella di chi lo crea.
 export function createEmptyDraft(kind: BrandKind, language: Locale = DEFAULT_LOCALE): BrandDraft {
   return {
-    identity: { kind, name: '', role: '', company: '', sector: '', site: '', pitch: '', language },
+    identity: { kind, name: '', role: '', company: '', sector: '', category: null, site: '', pitch: '', language },
     positioning: { goals: [], audiences: [], postsPerWeek: 3 },
     channels: emptyChannels(),
     themes: [],

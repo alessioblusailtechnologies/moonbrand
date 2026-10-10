@@ -44,6 +44,7 @@ export class AiJobsService {
       site: host,
       name: reading.name,
       sector: reading.sector,
+      category: reading.category ?? null,
       summary: reading.summary,
       pitch: reading.pitch,
       themes: reading.themes,

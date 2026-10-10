@@ -3,18 +3,19 @@ import { z } from 'zod';
 import type { CreateBrandRequest, UpdateBrandPlanRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLAN_IDS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
-import type {
-  BrandDraft,
-  BrandLine,
-  BrandVideo,
-  Channels,
-  Identity,
-  MediaFile,
-  Positioning,
-  References,
-  Theme,
-  Visual,
-  VisualExample,
+import {
+  BRAND_CATEGORIES,
+  type BrandDraft,
+  type BrandLine,
+  type BrandVideo,
+  type Channels,
+  type Identity,
+  type MediaFile,
+  type Positioning,
+  type References,
+  type Theme,
+  type Visual,
+  type VisualExample,
 } from '@moonbrand/shared/domain/brand';
 import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
@@ -31,6 +32,7 @@ export const identity = z.object({
   role: text(200),
   company: text(200),
   sector: text(200),
+  category: z.enum(BRAND_CATEGORIES).nullable().optional(),
   site: text(300),
   pitch: text(2000),
   language: z.enum(LOCALES).optional(),

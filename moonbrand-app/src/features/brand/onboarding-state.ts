@@ -70,6 +70,8 @@ function fillFromSite(identity: Identity, insights: WebsiteInsights, previous: W
     [nameKey]: fill(identity[nameKey], insights.name, previous?.name),
     ...(identity.kind !== 'person' && { sector: fill(identity.sector, insights.sector, previous?.sector) }),
     pitch: fill(identity.pitch, insights.pitch, previous?.pitch),
+    // Una categoria scelta a mano dopo la lettura precedente resta.
+    category: !identity.category || identity.category === previous?.category ? insights.category : identity.category,
     // La lingua dei post la suggerisce il sito; una cambiata a mano dopo la lettura precedente resta.
     language: !previous?.language || identity.language === previous.language ? insights.language : identity.language,
   };
