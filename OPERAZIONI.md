@@ -86,7 +86,7 @@ riavvio dell'API (un paio di secondi) lo studio può mostrare un errore di rete 
 
 Una migration nuova è un file in `moonbrand-be/moonbrand-api/migrations` con data e ora nel nome, successiva a
 quelle già lanciate (in produzione: tutte quelle fino a `20261005100000` sono nello schema iniziale, dopo sono
-state lanciate `20261006100000_free_jobs.sql`, `20261006180000_account_email.sql`, `20261006200000_pinterest.sql`, `20261006220000_publish_requests.sql`, `20261007085000_turns_publish_grant.sql`, `20261007090000_onboarding_drafts.sql`, `20261007100000_brand_credits.sql` e `20261008120000_publications_retry.sql`).
+state lanciate `20261006100000_free_jobs.sql`, `20261006180000_account_email.sql`, `20261006200000_pinterest.sql`, `20261006220000_publish_requests.sql`, `20261007085000_turns_publish_grant.sql`, `20261007090000_onboarding_drafts.sql`, `20261007100000_brand_credits.sql`, `20261008120000_publications_retry.sql` e `20261010120000_brand_instructions.sql`).
 
 1. Si prova sul DB di sviluppo.
 2. Commit e push, `git pull` sul server.
