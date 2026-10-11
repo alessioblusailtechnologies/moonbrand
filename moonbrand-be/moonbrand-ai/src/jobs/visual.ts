@@ -38,7 +38,9 @@ ${templateSection(name, template)}
     : 'Ispirati alle immagini di riferimento nella cartella file-riferimento.';
 
 // L'identità del brand vale in ogni esempio, con o senza template: il logo vero (l'API lo mette nella cartella) e i font.
-const logo = await logoFile(path.resolve(brandDir));
+// Il logo della bozza l'API lo mette in esempi/ (lo storage non vuole file alla radice); quello del profilo è alla radice.
+const draftLogo = await logoFile(path.join(path.resolve(brandDir), 'esempi'));
+const logo = (await logoFile(path.resolve(brandDir))) ?? (draftLogo && `esempi/${draftLogo}`);
 const fonts = fontsLine(brand.fonts);
 const identity = `## Il logo
 ${logo ? `Il logo del brand è ${logo}, nella cartella del brand: dove un post porta il logo, mettilo com'è con <img> (percorso relativo dalla pagina), senza ridisegnarlo, ricolorarlo o ritagliarlo.` : 'Il brand non ha un logo: dove serve la firma, scrivi il nome del brand con il font dei titoli.'}

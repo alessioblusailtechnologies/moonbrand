@@ -16,6 +16,7 @@ import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { findExamplesJob, findJob, insertJob, isDraftBrand } from './repository';
+import { EXAMPLES_DIR } from '../brand-files/files';
 
 // Quello che si fa su un brand ancora in bozza è l'onboarding, e non scala crediti. La bozza dev'essere dell'account:
 // lo controlla claim prima, così un brand di altri non passa per una bozza.
@@ -33,8 +34,9 @@ export function queueWebsiteJob(pool: pg.Pool, files: BrandFiles, identity: Iden
   });
 }
 
-// Il logo della bozza nella cartella del brand, come logo.<estensione>: lo stesso file che il worker scrive dal profilo
-// per i brand già creati. Un logo che non si legge si salta: gli esempi useranno il nome in testo.
+// Il logo della bozza nella cartella degli esempi, come esempi/logo.<estensione> (lo storage vuole i file in una cartella;
+// per i brand già creati il worker scrive logo.<estensione> alla radice dal profilo). Un logo che non si legge si salta:
+// gli esempi useranno il nome in testo.
 const LOGO_EXTENSIONS: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
 
 async function saveDraftLogo(files: BrandFiles, brandId: string, uri: string): Promise<void> {
@@ -42,8 +44,8 @@ async function saveDraftLogo(files: BrandFiles, brandId: string, uri: string): P
   const extension = match && LOGO_EXTENSIONS[match[1].toLowerCase()];
   if (!match || !extension) return;
   const bytes = match[2].includes(';base64') ? Buffer.from(match[3], 'base64') : Buffer.from(decodeURIComponent(match[3]));
-  for (const other of Object.values(LOGO_EXTENSIONS).filter((ext) => ext !== extension)) await files.remove(brandId, `logo.${other}`).catch(() => undefined);
-  await files.save(brandId, `logo.${extension}`, bytes);
+  for (const other of Object.values(LOGO_EXTENSIONS).filter((ext) => ext !== extension)) await files.remove(brandId, `${EXAMPLES_DIR}/logo.${other}`).catch(() => undefined);
+  await files.save(brandId, `${EXAMPLES_DIR}/logo.${extension}`, bytes);
 }
 
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
