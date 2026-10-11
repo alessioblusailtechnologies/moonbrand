@@ -148,8 +148,14 @@ costo, tempo). Se il salto si vede, si passa alle altre categorie e poi a Instag
 - Quello che è proprio di una categoria (prima e dopo per i saloni, indossato per i gioielli, atmosfera per i
   ristoranti, consigli e scenette per le agenzie) resta per le guide `categorie/<categoria>/tiktok.md`.
 
+## Fatto l'11/10: le guide di categoria per TikTok
+
+`categorie/bellezza/tiktok.md`, `categorie/ecommerce/tiktok.md` (dai gioielli: vale per i prodotti che si indossano o si
+tengono in mano) e `categorie/agenzia/tiktok.md`, dalle stesse schede: formati a parole con durate e inquadrature,
+materiale vero da chiedere, cosa evitare. Circa 3.000 caratteri ciascuna, entrano nel `CLAUDE.md` solo dei brand di
+quella categoria che usano TikTok. `ristorazione` ha solo 4 contenuti: niente guida finché non se ne raccolgono altri.
+
 ## Prossimi passi
 
-1. Le guide di categoria per TikTok dalle stesse schede: `bellezza`, `ecommerce`, `agenzia` (i primi clienti).
-2. Il confronto prima e dopo; poi le altre categorie e Instagram.
-3. Il campo categoria nell'app.
+1. Il confronto prima e dopo; poi le altre categorie e Instagram.
+2. Il campo categoria nell'app.
