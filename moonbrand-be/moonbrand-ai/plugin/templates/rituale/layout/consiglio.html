@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1E2C2E; --secondario: #73847F; --accento: #8A5566; --sfondo: #E5E8E3; }
+  body { --filo: color-mix(in srgb, var(--principale) 55%, transparent); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Hanken Grotesk', sans-serif; }
+
+  .logo { position: absolute; left: 88px; top: 76px; font-size: 28px; font-weight: 600; letter-spacing: 0.01em; }
+
+  /* la foto piccola, in alto a destra: un dettaglio del gesto */
+  .foto { position: absolute; left: 588px; top: 160px; width: 420px; height: 525px; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* il filetto: prosegue il lato basso della foto fino al margine sinistro */
+  .filetto { position: absolute; left: 88px; top: 684px; width: 500px; height: 1.5px; background: var(--filo); }
+  .segno { position: absolute; left: 88px; top: 671px; width: 1.5px; height: 28px; background: var(--accento); }
+
+  h1 { position: absolute; left: 88px; bottom: 702px; width: 460px; font-family: 'Newsreader', serif; font-weight: 300; font-size: 58px; line-height: 1.06; letter-spacing: -0.01em; font-variation-settings: 'opsz' 60; }
+
+  .testo { position: absolute; left: 88px; top: 752px; width: 720px; font-size: 31px; line-height: 1.5; }
+  .testo p + p { margin-top: 28px; }
+  .firma { position: absolute; left: 88px; bottom: 80px; font-size: 26px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand in testo, l'agente lo sostituisce con il file del logo -->
+  <div class="logo">Studio Neve</div>
+
+  <!-- foto: verticale 4:5, il gesto del consiglio da vicino (mani, prodotto in uso), luce naturale -->
+  <div class="foto"><img src="../esempio/consiglio.jpg" alt=""></div>
+
+  <!-- titolo: il consiglio in 5-9 parole, sta sopra il filetto, al massimo 4 righe -->
+  <h1>La crema solare va anche sul dorso delle mani</h1>
+
+  <div class="filetto"></div>
+  <div class="segno"></div>
+
+  <!-- testo: il perché e il come, 2 paragrafi brevi, in tutto 50-80 parole -->
+  <div class="testo">
+    <p>È la pelle che prende più sole in un anno, anche in macchina e in bicicletta, ed è lì che le macchie arrivano per prime.</p>
+    <p>Dopo la crema del viso, stendi quello che resta sulle dita fino ai polsi. Se ti lavi spesso le mani, rimettila a pranzo: il sapone la porta via quasi tutta.</p>
+  </div>
+
+  <!-- firma: chi dà il consiglio, nome e ruolo -->
+  <p class="firma">Marta, estetista</p>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #0F5F5C; --secondario: #E7B7A8; --accento: #F4B63F; --sfondo: #F7E7E1; }
+html { --margine: 72px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--sfondo); font-family: 'Archivo', sans-serif; color: var(--principale); }
+
+/* La foto in alto a tutta larghezza; il fondo chiaro risale nella foto con un gradino sotto la prima riga del titolo. */
+.foto { position: absolute; left: 0; top: 0; width: 1080px; height: 640px; object-fit: cover; object-position: 50% 52%; }
+.gradino { position: absolute; left: 0; top: 520px; width: 820px; height: 120px; background: var(--sfondo); }
+
+.titolo {
+  position: absolute; left: var(--margine); top: 556px; width: 900px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 128px; line-height: 0.86;
+  text-transform: uppercase; color: var(--principale);
+}
+.testo { position: absolute; left: var(--margine); top: 870px; width: 800px; font-size: 38px; line-height: 1.38; color: var(--principale); }
+.firma { position: absolute; left: var(--margine); bottom: 72px; font-size: 28px; font-weight: 500; color: var(--principale); }
+.logo {
+  position: absolute; right: var(--margine); bottom: 68px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 46px; line-height: 1; color: var(--principale);
+}
+</style>
+</head>
+<body>
+  <!-- foto: il gesto del consiglio, ripreso da vicino (mani, pettine, prodotto) -->
+  <img class="foto" src="../esempio/consiglio.jpg" alt="">
+  <div class="gradino"></div>
+  <!-- titolo: il consiglio in 4-7 parole, 2 righe; la prima riga sta nel gradino -->
+  <h1 class="titolo">Pettina dalle punte, poi sali</h1>
+  <!-- testo: come si fa e perché, 2-3 frasi, al massimo 45 parole -->
+  <p class="testo">Sui capelli bagnati usa un pettine a denti larghi e comincia dagli ultimi cinque centimetri. Quando scorre senza tirare, sali di una spanna. Si spezzano molto meno e le doppie punte arrivano più tardi.</p>
+  <!-- firma: chi dà il consiglio -->
+  <div class="firma">Il consiglio di Nives</div>
+  <!-- logo: il nome del salone -->
+  <div class="logo">Da Nives</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #0F5F5C; --secondario: #E7B7A8; --accento: #F4B63F; --sfondo: #F7E7E1; }
+html { --margine: 72px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--principale); font-family: 'Archivo', sans-serif; color: var(--sfondo); }
+
+/* Il ritratto al vivo; dal basso sale una campitura a gradino, più alta a sinistra dove sta il nome. */
+.foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; }
+.campitura { position: absolute; left: 0; top: 1060px; width: 1080px; height: 290px; background: var(--principale); }
+.gradino { position: absolute; left: 0; top: 900px; width: 560px; height: 160px; background: var(--principale); }
+
+.nome {
+  position: absolute; left: var(--margine); top: 936px; width: 480px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 160px; line-height: 0.84;
+  text-transform: uppercase; color: var(--sfondo);
+}
+.ruolo { position: absolute; left: var(--margine); top: 1100px; width: 520px; font-size: 32px; font-weight: 600; line-height: 1.3; color: var(--sfondo); }
+.testo { position: absolute; left: 620px; top: 1100px; width: 388px; font-size: 30px; line-height: 1.35; color: var(--sfondo); }
+.logo {
+  position: absolute; left: var(--margine); bottom: 72px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 46px; line-height: 1; color: var(--sfondo);
+}
+</style>
+</head>
+<body>
+  <!-- foto: la persona nel salone, mezza figura, il viso nella metà alta -->
+  <img class="foto" src="../esempio/persona.jpg" alt="">
+  <div class="campitura"></div>
+  <div class="gradino"></div>
+  <!-- nome: il nome di battesimo, una parola sola -->
+  <h1 class="nome">Nives</h1>
+  <!-- ruolo: cosa fa nel salone, una riga -->
+  <div class="ruolo">Titolare, colore e tagli corti</div>
+  <!-- testo: una cosa vera su di lei, 1-2 frasi, al massimo 25 parole -->
+  <p class="testo">Ha aperto qui nel 2003. Il sabato mattina c'è la fila, ma il caffè lo offre lo stesso.</p>
+  <!-- logo: il nome del salone -->
+  <div class="logo">Da Nives</div>
+</body>
+</html>

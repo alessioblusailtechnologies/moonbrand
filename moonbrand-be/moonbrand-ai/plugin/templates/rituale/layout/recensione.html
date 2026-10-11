@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1E2C2E; --secondario: #73847F; --accento: #8A5566; --sfondo: #E5E8E3; }
+  body { --filo: color-mix(in srgb, var(--principale) 55%, transparent); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Hanken Grotesk', sans-serif; }
+
+  .logo { position: absolute; left: 88px; top: 76px; font-size: 28px; font-weight: 600; letter-spacing: 0.01em; }
+
+  /* le parole della cliente: comandano, in alto a sinistra, rientrate solo dalle virgolette */
+  blockquote { position: absolute; left: 88px; top: 230px; width: 840px; font-family: 'Newsreader', serif; font-weight: 300; font-size: 58px; line-height: 1.15; letter-spacing: -0.008em; font-variation-settings: 'opsz' 60; text-indent: -0.42em; }
+
+  /* la foto piccola, in basso a destra */
+  .foto { position: absolute; left: 688px; top: 820px; width: 320px; height: 427px; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* il filetto: prosegue il lato alto della foto fino al margine sinistro */
+  .filetto { position: absolute; left: 88px; top: 819px; width: 600px; height: 1.5px; background: var(--filo); }
+  .segno { position: absolute; left: 88px; top: 806px; width: 1.5px; height: 28px; background: var(--accento); }
+
+  .chi { position: absolute; left: 88px; top: 860px; width: 520px; font-size: 26px; line-height: 1.42; }
+  .chi strong { font-weight: 600; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand in testo, l'agente lo sostituisce con il file del logo -->
+  <div class="logo">Studio Neve</div>
+
+  <!-- citazione: le parole vere della cliente tra «», 25-45 parole, senza ritoccarle -->
+  <blockquote>«Avevo smesso di truccarmi per coprire il rossore e lo peggioravo. Marta mi ha detto cosa togliere prima ancora di cosa mettere. Dopo tre mesi esco senza fondotinta.»</blockquote>
+
+  <div class="filetto"></div>
+  <div class="segno"></div>
+
+  <!-- chi: nome della cliente (con il suo permesso) e da quanto viene o che trattamento ha fatto -->
+  <p class="chi"><strong>Lucia Bonetti</strong><br>viene da noi dal 2023 per la pelle sensibile</p>
+
+  <!-- foto: verticale 3:4, la cliente (solo se ha dato il permesso), altrimenti la cabina o un dettaglio -->
+  <div class="foto"><img src="../esempio/recensione.jpg" alt=""></div>
+</body>
+</html>

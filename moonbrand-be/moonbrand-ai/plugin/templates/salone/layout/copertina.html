@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #0F5F5C; --secondario: #E7B7A8; --accento: #F4B63F; --sfondo: #F7E7E1; }
+html { --margine: 72px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--principale); font-family: 'Archivo', sans-serif; color: var(--sfondo); }
+
+/* La campitura piena in alto taglia la foto con un gradino: scende più in basso a sinistra, sotto l'ultima riga del titolo. */
+.foto { position: absolute; left: 0; top: 470px; width: 1080px; height: 880px; object-fit: cover; object-position: 50% 18%; }
+.campitura { position: absolute; left: 0; top: 0; width: 1080px; height: 470px; background: var(--principale); }
+.gradino { position: absolute; left: 0; top: 470px; width: 640px; height: 160px; background: var(--principale); }
+
+.titolo {
+  position: absolute; left: var(--margine); top: 150px; width: 940px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 172px; line-height: 0.84;
+  text-transform: uppercase; color: var(--sfondo);
+}
+.logo {
+  position: absolute; left: var(--margine); top: 66px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 46px; line-height: 1; color: var(--sfondo);
+}
+.dove { position: absolute; right: var(--margine); top: 74px; font-size: 28px; font-weight: 500; color: var(--sfondo); }
+</style>
+</head>
+<body>
+  <!-- foto: vera e vicina, mani al lavoro, forbici, capelli; il soggetto sta nella metà alta della foto -->
+  <img class="foto" src="../esempio/forbici.jpg" alt="">
+  <div class="campitura"></div>
+  <!-- gradino: largo quanto l'ultima riga del titolo più un margine -->
+  <div class="gradino"></div>
+  <!-- logo: il nome del salone -->
+  <div class="logo">Da Nives</div>
+  <!-- dove: via o quartiere del salone, facoltativo -->
+  <div class="dove">via Padova 112</div>
+  <!-- titolo: 4-7 parole, al massimo 3 righe -->
+  <h1 class="titolo">Il corto che rimandi da un anno</h1>
+</body>
+</html>

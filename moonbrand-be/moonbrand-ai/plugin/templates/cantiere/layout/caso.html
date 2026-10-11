@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22302B; --secondario: #7D8A83; --accento: #2D54C8; --sfondo: #E8E7E1; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Archivo', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-size: 24px; line-height: 1.35; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 740px; object-fit: cover; object-position: 50% 52%; display: block; }
+  .didascalia { position: absolute; left: 64px; right: 64px; top: 762px; display: flex; justify-content: space-between; gap: 40px; }
+  .titolo { position: absolute; left: 60px; top: 836px; width: 880px; font-size: 72px; font-weight: 800; font-stretch: 72%; line-height: 0.97; }
+  .risultati { position: absolute; left: 64px; right: 64px; bottom: 136px; border-top: 2px solid var(--principale); padding-top: 22px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; }
+  .cifra { font-size: 120px; font-weight: 800; font-stretch: 68%; line-height: 0.95; color: var(--accento); }
+  .misura { margin-top: 10px; }
+  .logo { position: absolute; left: 64px; bottom: 52px; font-size: 30px; font-weight: 700; font-stretch: 90%; }
+</style>
+</head>
+<body>
+  <!-- foto: il lavoro fatto per il cliente (set, prodotto, stampato, schermo vero), orizzontale -->
+  <img class="foto" src="../esempio/set.jpg" alt="">
+
+  <div class="didascalia mono">
+    <!-- didascalia sinistra: cosa si vede, in modo tecnico, 4-8 parole -->
+    <span>Set per l’e-commerce, 2 giorni, 46 scatti</span>
+    <!-- didascalia destra: il cliente -->
+    <span>Frantoio Ruggi</span>
+  </div>
+
+  <!-- titolo: cosa avete fatto, 5-9 parole -->
+  <h2 class="titolo">Foto e schede nuove per lo shop</h2>
+
+  <!-- risultati: due numeri veri, ognuno con cosa misura e il periodo; se ce n'è uno solo, togli il secondo blocco -->
+  <div class="risultati">
+    <div>
+      <div class="cifra">+64%</div>
+      <p class="misura mono">ordini online, aprile-giugno 2026 sul 2025</p>
+    </div>
+    <div>
+      <div class="cifra">3,1%</div>
+      <p class="misura mono">visite che comprano, prima era 1,4%</p>
+    </div>
+  </div>
+
+  <!-- logo: il nome del brand -->
+  <div class="logo">Studio Rovo</div>
+</body>
+</html>

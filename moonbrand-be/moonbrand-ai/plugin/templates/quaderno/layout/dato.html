@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #1A2230; --secondario: #5C6470; --accento: #2E5E4E; --sfondo: #EEEEEA; }
+
+/* Griglia: margine sinistro 88, destro 72, sei colonne da 133 con canale da 24. Inizio colonne: 88, 245, 403, 560, 717, 875. */
+html { --filo: color-mix(in srgb, var(--principale) 35%, transparent); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Newsreader', serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+
+.testata { position: absolute; left: 88px; right: 72px; top: 56px; padding-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--principale); }
+.logo { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; text-wrap: pretty; }
+.rubrica { font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; color: var(--secondario); }
+
+.numero { position: absolute; left: 60px; top: 150px; font-size: 580px; line-height: 1; font-weight: 400; letter-spacing: -0.045em; font-variant-numeric: lining-nums; color: var(--accento); }
+.numero small { font-size: 0.5em; letter-spacing: -0.02em; vertical-align: 0.62em; margin-left: 0.04em; }
+
+.spiega { position: absolute; left: 88px; right: 72px; top: 700px; display: grid; grid-template-columns: 604px 1fr; column-gap: 24px; padding-top: 32px; border-top: 1px solid var(--filo); }
+.cosa { font-size: 50px; line-height: 1.12; font-weight: 450; letter-spacing: -0.01em; text-wrap: pretty; }
+.quindi { font-family: 'Schibsted Grotesk', sans-serif; font-size: 25px; line-height: 1.4; padding-top: 10px; }
+
+.fonte { position: absolute; left: 88px; right: 72px; bottom: 56px; padding-top: 16px; border-top: 1px solid var(--filo); font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; line-height: 1.4; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <header class="testata">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pardo &amp; Ferri</span>
+    <!-- rubrica: da dove viene il dato, 2-5 parole -->
+    <span class="rubrica">I numeri dei nostri clienti</span>
+  </header>
+
+  <!-- numero: il dato, vero e verificabile, al massimo 4 cifre; il simbolo (%, €, x) nello small -->
+  <div class="numero">62<small>%</small></div>
+
+  <section class="spiega">
+    <!-- cosa misura: una frase che completa il numero, al massimo 110 caratteri -->
+    <p class="cosa">delle richieste di preventivo arriva da un telefono, una su tre dopo le nove di sera.</p>
+    <!-- cosa vuol dire: la conseguenza pratica per chi legge, 1-2 frasi, massimo 120 caratteri -->
+    <p class="quindi">Il modulo di contatto va provato con il pollice, sul divano, non alla scrivania.</p>
+  </section>
+
+  <!-- fonte: chi l'ha misurato, su quanti casi e quando; obbligatoria -->
+  <p class="fonte">Fonte: 1.480 richieste ai siti di 23 nostri clienti, da gennaio a giugno 2026.</p>
+</body>
+</html>

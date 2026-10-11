@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1E2C2E; --secondario: #73847F; --accento: #8A5566; --sfondo: #E5E8E3; }
+  body { --filo: color-mix(in srgb, var(--principale) 55%, transparent); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Hanken Grotesk', sans-serif; }
+
+  .logo { position: absolute; left: 660px; top: 76px; font-size: 28px; font-weight: 600; letter-spacing: 0.01em; }
+
+  /* la foto: tagliata dal bordo sinistro e da quello alto, due terzi dell'altezza */
+  .foto { position: absolute; left: 0; top: 0; width: 600px; height: 900px; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* il filetto: prosegue il lato basso della foto fino al margine destro */
+  .filetto { position: absolute; left: 600px; top: 899px; width: 408px; height: 1.5px; background: var(--filo); }
+  .segno { position: absolute; left: 1006px; top: 886px; width: 1.5px; height: 28px; background: var(--accento); }
+
+  h1 { position: absolute; left: 660px; bottom: 498px; width: 348px; font-family: 'Newsreader', serif; font-weight: 300; font-size: 52px; line-height: 1.08; letter-spacing: -0.01em; font-variation-settings: 'opsz' 60; }
+
+  /* il prezzo comanda */
+  .prezzo { position: absolute; left: 80px; bottom: 132px; font-family: 'Newsreader', serif; font-weight: 300; font-size: 200px; line-height: 0.8; letter-spacing: -0.03em; font-variation-settings: 'opsz' 72; }
+  .prima { position: absolute; left: 88px; bottom: 80px; font-size: 26px; line-height: 1.4; }
+  .condizioni { position: absolute; left: 660px; bottom: 80px; width: 348px; font-size: 26px; line-height: 1.45; }
+  .condizioni p + p { margin-top: 18px; }
+</style>
+</head>
+<body>
+  <!-- foto: verticale 4:5, la cabina o il trattamento in offerta -->
+  <div class="foto"><img src="../esempio/offerta.jpg" alt=""></div>
+
+  <!-- logo: il nome del brand in testo, l'agente lo sostituisce con il file del logo -->
+  <div class="logo">Studio Neve</div>
+
+  <!-- titolo: il trattamento o la novità, 3-7 parole -->
+  <h1>Il peeling di novembre</h1>
+
+  <div class="filetto"></div>
+  <div class="segno"></div>
+
+  <!-- prezzo: il numero dell'offerta, corto (55 €, -20%, 2×1) -->
+  <p class="prezzo">55 €</p>
+  <!-- prezzo pieno: il prezzo di listino o cosa comprende, una riga -->
+  <p class="prima">invece di 75 €, seduta da 50 minuti</p>
+
+  <!-- condizioni: date, giorni, come prenotare; 2 paragrafi brevi, al massimo 40 parole -->
+  <div class="condizioni">
+    <p>Dal 3 al 29 novembre, il martedì e il giovedì.</p>
+    <p>Su appuntamento al 030 241 8890 o in messaggio qui.</p>
+  </div>
+</body>
+</html>

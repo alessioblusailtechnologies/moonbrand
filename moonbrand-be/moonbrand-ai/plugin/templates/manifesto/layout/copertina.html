@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #4A1520; --secondario: #E8A3B0; --accento: #F2B300; --sfondo: #E6E3DC; }
+:root { --margine: 64px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1350px; }
+body {
+  background: var(--principale);
+  color: var(--sfondo);
+  font-family: 'Archivo', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.testa {
+  position: absolute; top: var(--margine); left: var(--margine); right: var(--margine);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 30px; font-weight: 500; font-stretch: 100%;
+}
+.logo { font-weight: 800; font-stretch: 110%; letter-spacing: -0.01em; }
+.serie { color: color-mix(in srgb, var(--sfondo) 70%, var(--principale)); }
+h1 {
+  position: absolute; left: calc(var(--margine) - 8px); right: var(--margine); bottom: 250px;
+  font-size: 276px; line-height: 0.84; font-weight: 900; font-stretch: 62%;
+  letter-spacing: -0.015em;
+}
+.filetto {
+  position: absolute; left: var(--margine); right: var(--margine); bottom: 196px;
+  height: 14px; background: var(--accento);
+}
+.sotto {
+  position: absolute; left: var(--margine); bottom: var(--margine); width: 640px;
+  font-size: 34px; line-height: 1.25; font-weight: 500; font-stretch: 100%;
+}
+.scorri {
+  position: absolute; right: var(--margine); bottom: var(--margine);
+  font-size: 30px; font-weight: 500;
+  color: color-mix(in srgb, var(--sfondo) 70%, var(--principale));
+}
+</style>
+</head>
+<body>
+  <div class="testa">
+    <!-- logo: il nome del brand (diventa il file del logo se c'è) -->
+    <span class="logo">Calce</span>
+    <!-- serie: il nome della rubrica e il numero, o niente -->
+    <span class="serie">Opinioni, n. 14</span>
+  </div>
+  <!-- titolo: la presa di posizione, 3-7 parole; i <br> li decide chi impagina, una parola lunga può andare da sola -->
+  <h1>Smettete<br>di postare<br>tutti<br>i giorni.</h1>
+  <div class="filetto"></div>
+  <!-- sottotitolo: una frase che apre il carosello, al massimo 2 righe -->
+  <p class="sotto">Tre post buoni a settimana battono sette fatti di corsa. Vi spieghiamo perché.</p>
+  <!-- pagina: la posizione nel carosello -->
+  <span class="scorri">1/6</span>
+</body>
+</html>

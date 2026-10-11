@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22302B; --secondario: #7D8A83; --accento: #2D54C8; --sfondo: #E8E7E1; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Archivo', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-size: 24px; line-height: 1.35; }
+
+  .foto { position: absolute; left: 300px; top: 0; width: 780px; height: 680px; object-fit: cover; object-position: 55% 40%; display: block; }
+  .didascalia { position: absolute; left: 64px; top: 520px; width: 210px; }
+  .parole { position: absolute; left: 60px; top: 760px; width: 940px; }
+  .frase { font-size: 60px; font-weight: 500; font-stretch: 85%; line-height: 1.08; letter-spacing: -0.005em; }
+  .nome { margin: 72px 0 0 4px; font-size: 32px; font-weight: 700; font-stretch: 90%; }
+  .azienda { margin: 8px 0 0 4px; }
+  .logo { position: absolute; right: 64px; bottom: 52px; font-size: 30px; font-weight: 700; font-stretch: 90%; }
+</style>
+</head>
+<body>
+  <!-- foto: il cliente al lavoro con voi o nel suo posto, orizzontale -->
+  <img class="foto" src="../esempio/riunione.jpg" alt="">
+
+  <!-- didascalia: quando e cosa si guardava, 4-8 parole -->
+  <p class="didascalia mono">Revisione dei sacchetti, 12 marzo</p>
+
+  <div class="parole">
+  <!-- frase: le parole del cliente tra «», 12-25 parole, nessun aggettivo da pubblicità -->
+  <blockquote class="frase">«Ci hanno fatto togliere metà delle cose che volevamo scrivere sul sacchetto. Avevano ragione loro, adesso si legge da lontano.»</blockquote>
+
+  <!-- nome: chi parla -->
+  <p class="nome">Nicola Sforza</p>
+  <!-- azienda: attività e città -->
+  <p class="azienda mono">Forno Sforza, Bari</p>
+  </div>
+
+  <!-- logo: il nome del brand -->
+  <div class="logo">Studio Rovo</div>
+</body>
+</html>
