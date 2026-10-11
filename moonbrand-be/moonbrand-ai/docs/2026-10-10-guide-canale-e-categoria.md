@@ -155,7 +155,21 @@ tengono in mano) e `categorie/agenzia/tiktok.md`, dalle stesse schede: formati a
 materiale vero da chiedere, cosa evitare. Circa 3.000 caratteri ciascuna, entrano nel `CLAUDE.md` solo dei brand di
 quella categoria che usano TikTok. `ristorazione` ha solo 4 contenuti: niente guida finché non se ne raccolgono altri.
 
+## Il confronto dell'11/10
+
+Stesso TikTok del salone Giovanni Messina (brief e girato della prova F), Opus 5.5, senza libreria né formato nel kit;
+G0 con le skill di prima, G1 con la guida di TikTok e quella dei saloni. Giudice Gemini, tre giudizi per video.
+
+| | Nativo su 10 | Spot su 10 | Claude | Tempo | Video |
+| --- | --- | --- | --- | --- | --- |
+| G0, prima | 8,7 | 2,3 | 1,05 $ | 5,5 min | 20 s, testo su 6 scene, invito a schermo |
+| G1, con le guide | 9,5 | 0,7 | 0,80 $ | 4,2 min | 15 s, testo su 3 scene, invito in didascalia |
+
+Il salto c'è ed è nella direzione della guida (più corto, meno testo, cambio sul drop, niente invito a schermo), con un
+quarto di costo e di tempo in meno. Una corsa per variante: va confermato. Dettagli in
+`moonbrand-prova-riferimenti/RISULTATI-GUIDE.md`.
+
 ## Prossimi passi
 
-1. Il confronto prima e dopo; poi le altre categorie e Instagram.
+1. Confermare il confronto con un secondo brief (un brand senza prima e dopo, per esempio i gioielli); poi Instagram.
 2. Il campo categoria nell'app.
