@@ -1,20 +1,16 @@
-# Guide per canale e per categoria: la decisione del 10 ottobre 2026
+# Guide per canale e per categoria
 
-Come rendere migliori i contenuti su ogni canale senza tarare il prompt su un settore. Si parte da TikTok; gli altri
-canali seguono lo stesso schema.
+Decise il 10/10/2026, fatte l'11 e il 12/10 per TikTok e Instagram. Come rendere migliori i contenuti su ogni canale
+senza tarare il prompt su un settore.
 
-## Da dove si parte
+## Il problema
 
-Oggi le regole per canale stanno dentro due skill generali:
+Le regole per canale stavano dentro due skill generali: in `contenuti/SKILL.md` tre tabelle (testo e hashtag,
+proporzioni, «La confezione per canale»), in `video/SKILL.md` un copione unico con una composizione per confezione. Ogni
+canale aveva una riga di tabella, TikTok un paragrafo. La confezione diceva *come* si presenta il contenuto, ma non quali
+formati funzionano, come si costruisce l'aggancio, quanto dura un video, come si chiude.
 
-- `plugin/skills/contenuti/SKILL.md`: tre tabelle per canale (testo e hashtag, proporzioni, «La confezione per canale»).
-- `plugin/skills/video/SKILL.md`: un copione unico e una composizione per ogni proporzione e confezione.
-
-Ogni canale ha una riga di tabella. TikTok, il canale più diverso, ha un paragrafo. È qui che si perde qualità: la
-confezione dice *come* si presenta il contenuto, ma non quali formati funzionano, come si costruisce l'aggancio,
-quanto dura un video, come si chiude.
-
-## Cosa si è valutato
+## Cosa si è scartato
 
 **Skill pubbliche già pronte** (ricerca del 10/10):
 
@@ -24,165 +20,134 @@ quanto dura un video, come si chiude.
 | [social-media-skills/skills](https://github.com/social-media-skills/skills) | `tiktok-photo-mode`, `tiktok-script` | legate al loro strumento di pubblicazione |
 | [sergebulaev/tiktok-skills](https://github.com/sergebulaev/tiktok-skills) | 8 skill (aggancio, didascalia, trend, piano) | più processo che regole; le formule sono in file a parte |
 
-Sono generiche e pensate per chi si filma da solo. Se ne tiene qualche idea come lista di controllo (l'aggancio su tre
-livelli: primo fotogramma, frase detta, testo a schermo; niente saluti, logo o intro; photo mode da 5 a 7 slide), non
-il testo.
+Generiche e pensate per chi si filma da solo: se ne è tenuta qualche idea come lista di controllo, non il testo.
 
-**Una skill per canale** (`tiktok`, `instagram`, …): scartata. Una skill la sceglie il modello dalla descrizione, quindi
-non è detto che la carichi; un contenuto su quattro canali ne caricherebbe quattro, e le regole comuni finirebbero
-copiate in ognuna.
+**Una skill per canale** (`tiktok`, `instagram`, …): una skill la sceglie il modello dalla descrizione, quindi non è
+detto che la carichi; un contenuto su quattro canali ne caricherebbe quattro, e le regole comuni finirebbero copiate in
+ognuna.
 
 ## La decisione
 
-Due livelli di guida, tutti e due file `.md`:
+Due livelli di guida, file `.md` in `plugin/skills/contenuti/`:
 
 ```
-plugin/skills/contenuti/
-  SKILL.md                  ← regole comuni, come oggi
+contenuti/
+  SKILL.md                  ← regole comuni; la confezione di TikTok e Instagram rimanda alle guide
   canali/
-    tiktok.md               ← la grammatica di TikTok, vale per ogni attività
+    tiktok.md               ← come si fa un contenuto nato su quel canale, per ogni attività
+    instagram.md
   categorie/
+    README.md               ← come si scrive una guida di categoria
     bellezza/
-      tiktok.md             ← caricato solo per i brand di quella categoria che usano TikTok
+      tiktok.md             ← come lavorano su quel canale le attività di quel tipo
       instagram.md
-    ristorazione/
-      ...
+    ecommerce/  agenzia/    ← stessi file
 ```
 
-### 1. Il canale
+- **La guida del canale** vale per ogni attività. `contenuti/SKILL.md` e `video/SKILL.md` dicono di leggerla quando il
+  canale è tra quelli del contenuto.
+- **La guida di categoria** la carica il codice in base al brand, non la sceglie l'agente, e solo per i canali che il
+  brand usa: formati descritti a parole (struttura, inquadrature, durate, testo, chiusura), materiale vero da chiedere,
+  cosa evitare.
+- Le guide **non richiamano composizioni Remotion pronte**: l'agente costruisce ogni formato dalla descrizione. Un
+  formato pronto nel kit abbassa costo e tempo (prove E ed F del 7/10): si potrà riprendere con una decisione a parte.
+- Non contraddice la regola del 28/9 «niente prompt tarati su un settore»: prompt e skill restano generici, quello che
+  cambia per categoria è un file di dati scelto dal codice.
 
-`canali/tiktok.md` dice come si fa un contenuto che sembra nato su TikTok, qualunque sia l'attività: aggancio, testo a
-schermo, durata, ritmo, chiusura, photo mode, didascalia. `contenuti/SKILL.md` e `video/SKILL.md` lo richiamano in
-modo esplicito («se tra i canali del contenuto c'è TikTok, leggi `canali/tiktok.md`»), così si legge sempre quando
-serve e mai quando non serve.
+## Come si carica
 
-### 2. La categoria
+- **La categoria del brand**: `identity.category`, da `BRAND_CATEGORIES` in `moonbrand-shared/src/domain/brand.ts`
+  (ristorazione, bellezza, negozio, ecommerce, tech, professionisti, fitness, creator, agenzia, turismo, sport; etichette
+  it/en/fr nel catalogo). Facoltativa: null vuol dire «nessuna adatta». Le categorie sono tipi di cliente, non stili.
+  `identity.sector` resta testo libero accanto.
+- **Chi la sceglie**: il job `website` nell'onboarding, dall'elenco; lo studio la riempie dal sito come la lingua (una
+  scelta a mano resta) e la mostra nel passo identità, quindi anche nelle Impostazioni brand. L'app la prende dal sito
+  ma non ha ancora il campo.
+- **Dove entra**: `src/lib/guides.ts` legge le guide. `writeBrandGuide` mette nel `CLAUDE.md` del brand, sotto «La
+  guida della categoria», `categorie/<categoria>/<canale>.md` per ogni canale del brand (un salone su TikTok e Instagram:
+  circa 5.400 caratteri). Vale per chat, `content` e `ideas`, che riscrivono il `CLAUDE.md`; `content-video` e
+  `content-edit` usano quello scritto dal lavoro prima.
+- **Gli esempi dell'onboarding** (`visual`) non hanno skill né `CLAUDE.md`: `channelLooks` (`src/lib/examples.ts`) mette
+  nel prompt `canali/<canale>.md` per i canali che ce l'hanno, la stessa guida dei contenuti, con la nota che l'esempio
+  è un'immagine ferma. Gli altri canali tengono la loro riga breve.
+- **Brand senza categoria** o categoria senza file: solo le regole comuni e la guida del canale.
 
-moonbrand serve qualsiasi attività: creator e personal brand, negozi, ristoranti, SaaS, professionisti. Quello che
-funziona su un canale dipende dalla categoria: un salone vive di prima e dopo, un ristorante di preparazione e suoni,
-un SaaS di schermo registrato, un creator di volto in camera.
+## Come si sono ricavate le guide
 
-Per ogni categoria c'è una cartella con un `.md` per canale, che **il sistema carica programmaticamente** in base al
-brand: non lo sceglie l'agente, ed entrano solo i canali che il brand usa (deciso l'11/10, per non rileggere a ogni turno
-le regole di canali che il brand non ha). Ogni file contiene:
+Da contenuti reali scelti a mano dall'utente, non da skill pubbliche né da ricerche per parola (che portano compilation
+e aggregatori). Quattro categorie: le tre dei primi clienti (saloni, gioielli e bigiotteria, agenzie di marketing) più
+i ristoranti come controllo. La guida del canale nasce da quello che si ripete in tutte, quella di categoria da quello
+che le distingue. Script e dati in `moonbrand-be/moonbrand-scraper` (README), i dati in `risultati/`, fuori dal
+repository.
 
-- i formati che funzionano per quella categoria, descritti a parole: struttura, inquadrature, durate, testo a schermo,
-  chiusura;
-- quale materiale vero chiedere all'attività (quale girato, quali foto);
-- cosa evitare in quella categoria.
+| | TikTok | Instagram |
+| --- | --- | --- |
+| Contenuti | 38: 30 video e 6 caroselli riusciti, 2 controprove | 27: 18 Reel e 9 caroselli |
+| Download | `src/video.ts`, ScrapeCreators, 2 crediti a link | `src/instagram.ts`, yt-dlp, senza login e senza crediti |
+| Quanto è andato bene | visualizzazioni contro la mediana degli altri video dell'autore: quasi tutti molto sopra | solo like e commenti: senza login Instagram non dà visualizzazioni né il profilo; vale la scelta dell'utente |
+| Schede | `src/schede-tiktok.ts`, Gemini, 0,41 $ | `src/schede-instagram.ts`, Gemini, 0,28 $ |
 
-I `.md` di categoria **non richiamano composizioni Remotion già pronte**: per ora l'agente costruisce ogni formato da
-zero partendo dalla descrizione. Le prove del 7/10 (memoria «libreria riferimenti», prove E ed F) dicono che un
-formato pronto nel kit abbassa costo e tempo; si potrà riprendere in seguito, con una decisione a parte.
+Non scaricano: Zernio da TikTok (provider fermo, link corti non accettati) e da Instagram (dà solo la copertina);
+yt-dlp da TikTok (chiede il login).
 
-Non contraddice la regola del 28/9 «niente prompt tarati su un settore»: il prompt e le skill restano generici; quello
-che cambia per categoria è un file di dati scelto dal codice.
+## Cosa dicono i dati
 
-### Come si carica
+**TikTok** (`canali/tiktok.md`), uguale nelle quattro categorie: durata mediana 12 secondi, i più forti tra 5 e 13, i
+due oltre il minuto i più deboli; testo a schermo entro il primo secondo in 30 su 36, quasi sempre una frase sola, più
+spesso bianco senza sfondo che nel riquadro; canzone o suono di tendenza in 27, nessuno che parla in 29; una persona
+(volto o mani) in 31; nessuna grafica montata in 26; schermata finale con logo in 2; si chiude tagliando sul momento
+forte. «POV:» resta come una delle formule. Il kit ha lo stile «semplice» in `TestoTikTok`; hashtag fino a 6.
 
-- **La categoria del brand.** `identity.sector` resta testo libero («Panificio artigianale»); accanto c'è
-  `identity.category`, da un elenco chiuso di 11 categorie. Il job `website` la assegna nell'onboarding accanto a
-  `sector`; l'utente la può correggere nelle Impostazioni del brand.
-- **I file nel contesto.** `writeBrandGuide` (`src/lib/brand-guide.ts`) riscrive il `CLAUDE.md` del brand prima di
-  ogni job: lì entrano, scritte per intero, le guide della categoria per i canali del brand, così valgono per i job e
-  per la chat allo stesso modo.
-- **Brand senza categoria** o con una categoria ancora senza file: solo le regole comuni e quelle del canale, come oggi.
+**Instagram** (`canali/instagram.md`): due confezioni. Il Reel è nativo ma curato (14 su 18): riprese vere, 6-11
+secondi, una frase al centro, nessuna voce, niente grafica del brand; il volto si vede poco, più spesso mani e prodotto.
+Il carosello è editoriale: titoli impaginati nel font e nella palette del brand (8 su 9); quelli che insegnano chiudono
+con «commenta una parola» e sono i contenuti più commentati. Il Reel tipografico con logo finale è il più incerto.
+Didascalia mediana 220 caratteri, 10 su 27 senza hashtag; hashtag fino a 5. Prima la skill diceva «editoriale con la
+grafica del brand» per tutto Instagram: ora la grafica del brand sta nei caroselli e nei post, anche quando i
+riferimenti del brand la mettono nei Reel.
 
-### Gli esempi di template per categoria
+**Categorie**: `bellezza`, `ecommerce` (dai gioielli: vale per i prodotti che si indossano o si tengono in mano) e
+`agenzia`, per TikTok e Instagram. `ristorazione` ha troppo pochi contenuti (4 su TikTok, 3 su Instagram): niente
+guida. Le guide di categoria Instagram stanno su 7-9 contenuti ciascuna: più fragili di quelle di TikTok.
 
-In un secondo passo, accanto alla guida, il sistema caricherà programmaticamente anche **esempi di template per
-categoria**: post, caroselli e video reali scelti per quel tipo di attività. Esempi già raccolti: `moonbrand-examples/`
-(template Etsy e Creative Market per agenzia di marketing e parrucchieri) e le schede organiche dello scraper
-(`moonbrand-be/moonbrand-scraper`).
+## Il confronto
 
-- Le categorie sono **tipi di cliente**, non stili grafici.
-- Per ogni lavoro entrano **pochi esempi pertinenti** (3-8, per formato e canale), mai tutta la libreria.
-- Sono ispirazione per struttura e mestiere, non impaginazioni da copiare: lo stile resta quello del brand e le
-  impaginazioni cambiano da un contenuto all'altro.
-
-## Fatto l'11/10: la categoria del brand
-
-- `BRAND_CATEGORIES` in `moonbrand-shared/src/domain/brand.ts`: ristorazione, bellezza (parrucchieri, estetica,
-  benessere), negozio, ecommerce, tech, professionisti, fitness, creator, agenzia, turismo, sport. Etichette in it/en/fr
-  nel catalogo. `identity.category` è facoltativa: null vuol dire «nessuna adatta», assente nei brand di prima.
-- Il job `website` la sceglie dall'elenco accanto a `sector`; lo studio la riempie dal sito come la lingua (una scelta a
-  mano resta) e la mostra nel passo identità, quindi anche nelle Impostazioni brand. L'app la prende dal sito ma non
-  ha ancora il campo.
-- `src/lib/guides.ts` legge `plugin/skills/contenuti/categorie/<categoria>/<canale>.md` per i canali del brand e
-  `writeBrandGuide` li mette nel `CLAUDE.md` sotto «La guida della categoria», uno per canale. Come si scrive una guida: `categorie/README.md`.
-- I brand già esistenti non hanno la categoria finché qualcuno non la sceglie nelle Impostazioni.
-
-## Come si ricavano le guide
-
-Non da skill pubbliche ma da contenuti reali forti, una categoria alla volta:
-
-- circa 50 contenuti per categoria (circa 35 video e 15 caroselli in photo mode), da account di quella categoria,
-  degli ultimi 6-12 mesi;
-- forti **rispetto al proprio account** (visualizzazioni contro follower), con qualche contenuto andato male degli
-  stessi account per contrasto;
-- di ognuno si analizzano fotogrammi, testo a schermo, voce, ritmo dei tagli, durata, chiusura e didascalia;
-- la guida del canale nasce dalle parti comuni a tutte le categorie, quella di categoria da ciò che le distingue.
-
-Si parte da due categorie molto diverse tra loro (la prima: bellezza, partendo dai parrucchieri, dove ci sono già scraper, template e la prova
-F come termine di confronto), per verificare che la guida del canale regga per tutti.
-
-## Come si misura
-
-Stesso brand e stessa idea, prima e dopo, con il confronto già usato nelle prove del 7/10 (giudice «nativo su 10»,
-costo, tempo). Se il salto si vede, si passa alle altre categorie e poi a Instagram.
-
-## Fatto l'11/10: la guida di TikTok
-
-- 38 contenuti TikTok scelti a mano dall'utente: 13 agenzie, 11 saloni, 10 gioielli e bigiotteria, 4 ristoranti; 30
-  video e 6 caroselli, quasi tutti molto sopra la mediana del loro account, più 2 controprove nella media. Scaricati con
-  `moonbrand-scraper/src/video.ts` (ScrapeCreators, 2 crediti a link), schede con `src/schede-tiktok.ts` (Gemini,
-  0,41 $ in tutto). I dati stanno in `moonbrand-scraper/risultati/guida-tiktok/`, fuori dal repository.
-- Cosa dicono, uguale in tutte e quattro le categorie: durata mediana 12 secondi (i più forti tra 5 e 13, i due oltre
-  il minuto i più deboli); testo a schermo entro il primo secondo in 30 su 36, quasi sempre una frase sola; il più delle
-  volte testo bianco senza sfondo, non il riquadro; canzone o suono di tendenza in 27, nessuno che parla in 29; una
-  persona (volto o mani) in 31; nessuna grafica montata in 26; schermata finale con logo in 2; si chiude tagliando sul
-  momento forte. «POV:» resta, come una delle formule, non come regola.
-- Scritto `plugin/skills/contenuti/canali/tiktok.md`, richiamato da `contenuti/SKILL.md` (al posto del paragrafo
-  TikTok della confezione) e da `video/SKILL.md`; hashtag TikTok da 4 a 6 al massimo. `TestoTikTok` del kit ha lo stile
-  «semplice» (bianco senza sfondo); i kit dei brand esistenti lo aggiungono quando serve.
-- Quello che è proprio di una categoria (prima e dopo per i saloni, indossato per i gioielli, atmosfera per i
-  ristoranti, consigli e scenette per le agenzie) resta per le guide `categorie/<categoria>/tiktok.md`.
-
-## Fatto l'11/10: le guide di categoria per TikTok
-
-`categorie/bellezza/tiktok.md`, `categorie/ecommerce/tiktok.md` (dai gioielli: vale per i prodotti che si indossano o si
-tengono in mano) e `categorie/agenzia/tiktok.md`, dalle stesse schede: formati a parole con durate e inquadrature,
-materiale vero da chiedere, cosa evitare. Circa 3.000 caratteri ciascuna, entrano nel `CLAUDE.md` solo dei brand di
-quella categoria che usano TikTok. `ristorazione` ha solo 4 contenuti: niente guida finché non se ne raccolgono altri.
-
-## Il confronto dell'11/10
-
-Stesso TikTok del salone Giovanni Messina (brief e girato della prova F), Opus 5.5, senza libreria né formato nel kit;
-G0 con le skill di prima, G1 con la guida di TikTok e quella dei saloni. Giudice Gemini, tre giudizi per video.
+Lo stesso TikTok del salone Giovanni Messina (brief e girato della prova F: «il magenta nascosto sotto il castano
+scuro, prima e dopo»), Opus 5.5, senza libreria né formato nel kit. G0 con le skill di prima (`3ed66f8^`), G1 con la
+guida di TikTok e quella dei saloni. Giudice Gemini, tre giudizi per video. Script
+`moonbrand-prova-riferimenti/prova-guide.mts`, esiti in `RISULTATI-GUIDE.md`.
 
 | | Nativo su 10 | Spot su 10 | Claude | Tempo | Video |
 | --- | --- | --- | --- | --- | --- |
 | G0, prima | 8,7 | 2,3 | 1,05 $ | 5,5 min | 20 s, testo su 6 scene, invito a schermo |
 | G1, con le guide | 9,5 | 0,7 | 0,80 $ | 4,2 min | 15 s, testo su 3 scene, invito in didascalia |
 
-Il salto c'è ed è nella direzione della guida (più corto, meno testo, cambio sul drop, niente invito a schermo), con un
-quarto di costo e di tempo in meno. Una corsa per variante: va confermato. Dettagli in
-`moonbrand-prova-riferimenti/RISULTATI-GUIDE.md`.
+Il salto è nella direzione della guida, con un quarto di costo e di tempo in meno. Una corsa per variante. G1 ha usato
+comunque il riquadro bianco e non lo stile «semplice»: la regola sul testo per ora pesa poco.
 
-## Fatto il 12/10: la guida di Instagram
+## Dove siamo
 
-- 27 contenuti Instagram scelti a mano dall'utente (18 Reel e 9 caroselli: saloni, gioielli, agenzie, ristoranti),
-  scaricati con `moonbrand-scraper/src/instagram.ts` (yt-dlp, senza login e senza crediti: dà file, didascalia, like e
-  commenti, non le visualizzazioni né gli altri post dell'autore) e analizzati con `src/schede-instagram.ts` (0,28 $).
-  Zernio per Instagram restituisce solo la copertina.
-- Cosa dicono: il Reel è nativo ma curato (14 su 18), 6-11 secondi, una frase al centro, nessuna voce, niente grafica del
-  brand; il carosello è editoriale (titoli impaginati nel font del brand in 8 su 9), e quelli che insegnano chiudono con
-  «commenta una parola». Didascalia mediana 220 caratteri, 10 su 27 senza hashtag.
-- `canali/instagram.md`, richiamato da `contenuti/SKILL.md` e `video/SKILL.md`; la riga Instagram della confezione
-  ora dice Reel nativo e carosello editoriale; hashtag Instagram fino a 5. Guide `categorie/{bellezza,ecommerce,agenzia}/instagram.md`.
-  Gli esempi dell'onboarding la prendono da sola (`channelLooks`).
+| | Collaudo | Produzione |
+| --- | --- | --- |
+| Categoria del brand (shared, API, studio, job `website`) | sì | sì |
+| Guida di TikTok e guide di categoria TikTok | sì | sì, dal 12/10 (`39a85c6`) |
+| Esempi dell'onboarding con la guida del canale | sì | sì, dal 12/10 |
+| Guida di Instagram e guide di categoria Instagram | sì (`0699871`) | no: prima il confronto su Instagram |
 
-## Prossimi passi
+I brand già in produzione non hanno la categoria: finché non la si sceglie nelle Impostazioni (o con uno script dal
+settore) ricevono solo le guide dei canali. Vale anche per i primi tre clienti.
 
-1. Confermare il confronto con un secondo brief (un brand senza prima e dopo, per esempio i gioielli), anche su Instagram.
-2. Il campo categoria nell'app.
+## Cose aperte
+
+1. Il confronto prima e dopo su Instagram (Reel e carosello dello stesso brand), poi Instagram in produzione.
+2. Un secondo confronto su un brand senza prima e dopo (per esempio i gioielli), per confermare TikTok.
+3. La categoria dei brand in produzione, a cominciare dai primi clienti.
+4. `scarica_social` in chat: su Instagram Zernio dà solo la copertina (l'agente crede di vedere il Reel); su TikTok non
+   accetta i link corti. yt-dlp può fare da ripiego per Instagram.
+5. `content-video` e `content-edit` non riscrivono il `CLAUDE.md`: se la categoria cambia tra un lavoro e l'altro, usano
+   la guida vecchia.
+6. Il campo categoria nell'app.
+7. `moonbrand-scraper` non è nel repository.
+8. Gli esempi di template per categoria (`moonbrand-examples/`, le schede dello scraper), da caricare dal codice come le
+   guide: pochi per lavoro (3-8, per formato e canale), ispirazione per struttura e mestiere, non impaginazioni da
+   copiare.
