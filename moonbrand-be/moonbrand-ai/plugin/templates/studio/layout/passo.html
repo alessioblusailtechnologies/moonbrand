@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #000000; --secondario: #D9D9D9; --accento: #3A3A3A; --sfondo: #FFFFFF; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: 'Instrument Sans', sans-serif; }
+
+  .logo { position: absolute; top: 56px; left: 74px; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
+  .numero { position: absolute; right: 34px; top: -40px; font-size: 450px; font-weight: 700; line-height: 1; letter-spacing: -0.07em; }
+  .titolo { position: absolute; left: 70px; top: 396px; width: 900px; font-size: 128px; font-weight: 700; line-height: 1.06; letter-spacing: -0.055em; }
+  .freccia { display: inline-block; width: 118px; height: 118px; margin-left: 14px; vertical-align: -12px; }
+  .testo { position: absolute; left: 74px; top: 878px; width: 500px; font-size: 32px; font-weight: 400; line-height: 1.6; letter-spacing: -0.015em; }
+
+  .pillole { position: absolute; left: 74px; bottom: 70px; display: flex; gap: 14px; }
+  .pillola { height: 46px; padding: 0 18px; border: 2.5px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 41px; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome o l'account del brand -->
+  <div class="logo">@studiovarco</div>
+  <!-- numero: il passo del carosello a due cifre (01, 02, 03), tagliato dal bordo in alto -->
+  <div class="numero">01</div>
+
+  <!-- titolo: il passo, 4-7 parole su tre righe brevi; la freccia segue l'ultima parola -->
+  <h1 class="titolo">Il pubblico cambia ogni&nbsp;mese<svg class="freccia" viewBox="0 0 118 118" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="59" cy="59" r="56"/><path d="M44 44 L74 74 M74 49 L74 74 L49 74"/></svg></h1>
+  <!-- testo: cosa fare in questo passo, 12-20 parole -->
+  <p class="testo">Chi guarda i dati ogni settimana si accorge prima di cosa funziona e sposta lì il budget.</p>
+
+  <div class="pillole">
+    <!-- pillole: 1-2 argomenti del post, una parola ciascuno -->
+    <span class="pillola">Metodo</span>
+    <span class="pillola">Dati</span>
+  </div>
+</body>
+</html>

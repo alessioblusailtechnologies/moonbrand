@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, type ElementRef, inject, signal, untracked, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
@@ -130,8 +130,15 @@ export class Onboarding {
 
   protected readonly canClose = computed(() => this.brands.brands().length > 0);
 
+  // La pagina scorre da sola (quella del browser è bloccata): a ogni passo nuovo si riparte dall'alto.
+  private readonly page = viewChild<ElementRef<HTMLElement>>('page');
+
   constructor() {
     lockPageScroll();
+    effect(() => {
+      this.store.stepIndex();
+      untracked(() => this.page()?.nativeElement.scrollTo({ top: 0 }));
+    });
     void this.brands.ensureLoaded();
     // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali: l'indirizzo (con i token) si
     // ripulisce subito, il canale entra nella bozza quando la bozza è arrivata dal server.

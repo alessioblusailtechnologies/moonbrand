@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
+  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: 'Poppins', sans-serif; }
+
+  .titolo { position: absolute; left: 116px; top: 178px; width: 860px; font-size: 104px; font-weight: 700; line-height: 1.12; letter-spacing: -0.035em; }
+  .titolo .verde { display: block; color: var(--accento); }
+
+  .colonne { position: absolute; left: 118px; top: 492px; width: 872px; height: 720px; display: flex; gap: 42px; }
+  .colonna { position: relative; flex: 1; border-radius: 14px; padding: 58px 26px 0; background: linear-gradient(180deg, var(--accento), var(--verde-scuro)); }
+  .colonna::after { content: ''; position: absolute; left: 50%; bottom: -40px; width: 64px; height: 42px; transform: translateX(-50%);
+    background: var(--verde-scuro); clip-path: polygon(0 0, 100% 0, 58% 92%, 50% 100%, 42% 92%); }
+  .colonna.chiara { background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 45%, #DADADA 100%); color: var(--principale); }
+  .colonna.chiara::after { background: #DADADA; }
+  .voce { font-size: 34px; font-weight: 400; line-height: 1.22; }
+  .colonna.chiara .voce { color: color-mix(in srgb, var(--principale) 80%, #1F2A44); }
+  .cifra { position: absolute; left: 50%; top: 430px; transform: translate(-50%, -50%) rotate(90deg); white-space: nowrap;
+    font-size: 250px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+  <!-- titolo: due righe; la prima (verde) dice il periodo o il tema, la seconda (bianca) cosa sono i numeri, 2-3 parole ciascuna -->
+  <h1 class="titolo"><span class="verde">Terzo trimestre</span>I nostri numeri</h1>
+
+  <div class="colonne">
+    <!-- colonna 1 (chiara): voce in 2 righe brevi + cifra di 2-3 caratteri (4x, 120, 9+) -->
+    <div class="colonna chiara"><p class="voce">Ritorno sulla<br>pubblicità</p><p class="cifra">4x</p></div>
+    <!-- colonna 2: voce in 2 righe brevi + cifra di 2-3 caratteri -->
+    <div class="colonna"><p class="voce">Clienti<br>raggiunti</p><p class="cifra">126</p></div>
+    <!-- colonna 3: voce in 2 righe brevi + cifra di 2-3 caratteri -->
+    <div class="colonna"><p class="voce">Campagne<br>attive</p><p class="cifra">9+</p></div>
+  </div>
+</body>
+</html>

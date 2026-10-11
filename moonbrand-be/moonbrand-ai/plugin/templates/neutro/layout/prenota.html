@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Montserrat:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Montserrat', sans-serif; }
+
+  .linea { position: absolute; left: 278px; width: 3px; background: var(--accento); }
+  .linea.alto { top: 0; height: 350px; }
+  .linea.basso { bottom: 0; height: 330px; }
+  .colonna { position: absolute; left: 30px; width: 500px; top: 675px; transform: translateY(-50%); text-align: center; }
+  .titolo { margin: 0; font-family: 'Cinzel', serif; font-weight: 400; font-size: 52px; line-height: 78px; text-transform: uppercase; }
+  .testo { margin: 44px auto 0; width: 390px; font-size: 29px; line-height: 46px; font-weight: 500; }
+
+  .foto { position: absolute; left: 545px; top: 210px; width: 475px; height: 900px; object-fit: cover; object-position: 95% 15%; }
+  .anello { position: absolute; left: 420px; top: 960px; width: 240px; height: 240px; }
+  .anello text { font-family: 'Montserrat', sans-serif; font-size: 28px; letter-spacing: 1px; fill: var(--principale); }
+</style>
+</head>
+<body>
+  <div class="linea alto"></div>
+  <div class="linea basso"></div>
+  <div class="colonna">
+    <!-- titolo: 3 righe in maiuscolo, la riga più lunga al massimo 12 lettere -->
+    <h1 class="titolo">Fissa il tuo<br>appuntamento<br>oggi!</h1>
+    <!-- testo: 8-14 parole -->
+    <p class="testo">Prenditi un'ora tutta per te: ai tuoi capelli pensiamo noi.</p>
+  </div>
+  <!-- foto: ritratto verticale di una cliente con i capelli in vista -->
+  <img class="foto" src="../esempio/bionda.jpg" width="475" height="900" alt="">
+  <!-- anello: invito breve ripetuto tre volte, in minuscolo con il punto -->
+  <svg class="anello" viewBox="0 0 240 240">
+    <defs><path id="giro" d="M120,120 m-88,0 a88,88 0 1,1 176,0 a88,88 0 1,1 -176,0"/></defs>
+    <text><textPath href="#giro" textLength="548">chiama ora. chiama ora. chiama ora.</textPath></text>
+  </svg>
+</body>
+</html>

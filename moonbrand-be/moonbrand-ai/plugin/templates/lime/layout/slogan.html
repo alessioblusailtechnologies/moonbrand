@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Herr+Von+Muellerhoff&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
+  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: radial-gradient(ellipse 80% 60% at 50% 35%, #FFFFFF 0%, #FFFFFF 35%, var(--sfondo) 100%); color: var(--principale); font-family: 'Poppins', sans-serif; }
+
+  .foto { position: absolute; left: -289px; top: 470px; width: 1800px; height: 1200px; object-fit: cover; display: block; }
+  .foto.grigia { filter: grayscale(1) contrast(1.28) brightness(0.96);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 12%, #000 31%); mask-image: linear-gradient(180deg, transparent 0%, transparent 12%, #000 31%); }
+  .foto.colore { -webkit-mask-image: radial-gradient(ellipse 13% 48% at 49% 64%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 13% 48% at 49% 64%, #000 62%, transparent 100%); }
+
+  .titolo { position: absolute; left: 0; top: 186px; width: 1080px; text-align: center; }
+  .blocco { display: inline-block; text-align: left; }
+  .grande { display: block; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 216px; line-height: 1; text-transform: uppercase; letter-spacing: -0.012em; white-space: nowrap; }
+  .grande .verde { background: linear-gradient(180deg, var(--accento), var(--verde-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .seconda { display: flex; justify-content: space-between; align-items: baseline; margin-top: -46px; white-space: nowrap; }
+  .corsivo { font-family: 'Herr Von Muellerhoff', cursive; font-weight: 400; font-size: 190px; line-height: 1; color: var(--accento); margin-left: 6px; }
+  .forte { font-size: 100px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
+  .sotto { position: absolute; left: 0; top: 576px; width: 1080px; text-align: center; font-size: 54px; font-weight: 400; text-transform: uppercase; letter-spacing: -0.015em; }
+  .sotto .verde { color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona che guarda in camera in mezzo a gente di spalle; resta in bianco e nero, la persona al centro a colori -->
+  <img class="foto grigia" src="../esempio/folla.jpg" alt="">
+  <img class="foto colore" src="../esempio/folla.jpg" alt="">
+
+  <h1 class="titolo">
+    <!-- titolo: due parole in maiuscolo, la seconda in verde nello span, al massimo 10 lettere in tutto -->
+    <span class="blocco"><span class="grande">Esci <span class="verde">fuori</span></span>
+    <!-- corsivo + forte: una parolina scritta a mano e 1-2 parole in grassetto -->
+    <span class="seconda"><span class="corsivo">dalla</span><span class="forte">massa</span></span></span>
+  </h1>
+  <!-- sotto: una frase in maiuscolo di 5-7 parole, la fine in verde nello span -->
+  <p class="sotto">Sii il nome che <span class="verde">tutti ricordano</span></p>
+</body>
+</html>

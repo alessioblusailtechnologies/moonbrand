@@ -21,23 +21,7 @@
     @if (creating()) {
       <label class="field-line">
         <span class="label">{{ 'plan.drawer.what' | t }}</span>
-        <select class="sunken" (change)="chooseWhat($any($event.target).value)">
-          <option value="empty" [selected]="whatValue() === 'empty'">{{ 'plan.drawer.whatEmpty' | t }}</option>
-          @if (plan().ideas.length > 0) {
-            <optgroup [label]="'plan.drawer.savedIdea' | t">
-              @for (idea of plan().ideas; track idea.id) {
-                <option [value]="'idea:' + idea.id" [selected]="whatValue() === 'idea:' + idea.id">{{ idea.title }}</option>
-              }
-            </optgroup>
-          }
-          @if (plan().unscheduled.length > 0) {
-            <optgroup [label]="'plan.drawer.undatedContent' | t">
-              @for (item of plan().unscheduled; track item.id) {
-                <option [value]="'content:' + item.id" [selected]="whatValue() === 'content:' + item.id">{{ item.title }}</option>
-              }
-            </optgroup>
-          }
-        </select>
+        <mb-select [options]="whatOptions()" [value]="whatValue()" (changed)="chooseWhat($event)" />
       </label>
     }
 
@@ -106,23 +90,13 @@
       @if (plan().themes.length > 0) {
         <label class="field-line">
           <span class="label">{{ 'plan.drawer.theme' | t }}</span>
-          <select class="sunken" [disabled]="locked()" (change)="themeId.set($any($event.target).value || null)">
-            <option value="" [selected]="!themeId()">{{ 'plan.drawer.noTheme' | t }}</option>
-            @for (theme of plan().themes; track theme.id) {
-              <option [value]="theme.id" [selected]="themeId() === theme.id">{{ theme.name }}</option>
-            }
-          </select>
+          <mb-select [options]="themeOptions()" [value]="themeId() ?? ''" [disabled]="locked()" (changed)="themeId.set($event || null)" />
         </label>
       }
       @if (current) {
         <label class="field-line">
           <span class="label">{{ 'plan.drawer.idea' | t }}</span>
-          <select class="sunken" [disabled]="locked()" (change)="ideaId.set($any($event.target).value || null)">
-            <option value="" [selected]="!ideaId()">{{ 'plan.drawer.noIdea' | t }}</option>
-            @for (idea of ideas(); track idea.id) {
-              <option [value]="idea.id" [selected]="ideaId() === idea.id">{{ idea.title }}</option>
-            }
-          </select>
+          <mb-select [options]="ideaOptions()" [value]="ideaId() ?? ''" [disabled]="locked()" (changed)="ideaId.set($event || null)" />
         </label>
       }
     }

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Montserrat:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  :root { --chiaro: color-mix(in srgb, var(--sfondo) 40%, white); }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--chiaro); color: var(--principale); font-family: 'Montserrat', sans-serif; }
+
+  .polaroid { position: absolute; background: white; box-sizing: border-box; padding: 22px; box-shadow: 6px 10px 18px rgba(0, 0, 0, 0.16); }
+  .polaroid img { display: block; object-fit: cover; }
+  .prima { left: 18px; top: -70px; width: 580px; height: 820px; transform: rotate(9deg); }
+  .dopo { left: 520px; top: 400px; width: 470px; height: 860px; transform: rotate(3deg); }
+  .stelle { position: absolute; left: 570px; top: 470px; width: 150px; height: 120px; }
+
+  .testo { position: absolute; left: 700px; top: 175px; width: 330px; margin: 0; font-size: 29px; line-height: 46px; font-weight: 500; }
+  .titolo { position: absolute; left: 66px; top: 1050px; margin: 0; font-family: 'Bodoni Moda', serif; font-weight: 400;
+    font-size: 84px; line-height: 96px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto prima: il viso o i capelli della cliente prima del lavoro, verticale -->
+  <div class="polaroid prima"><img src="../esempio/prima.jpg" width="536" height="776" alt=""></div>
+  <!-- foto dopo: il risultato, dettaglio dei capelli, verticale -->
+  <div class="polaroid dopo"><img src="../esempio/dopo.jpg" width="426" height="816" alt="" style="object-position: 40% 50%"></div>
+  <svg class="stelle" viewBox="0 0 150 120" fill="white">
+    <path d="M40 18 C43 46 50 53 78 56 C50 59 43 66 40 94 C37 66 30 59 2 56 C30 53 37 46 40 18Z"/>
+    <path d="M118 10 C120 28 124 32 142 34 C124 36 120 40 118 58 C116 40 112 36 94 34 C112 32 116 28 118 10Z"/>
+    <path d="M74 14 C75 19 76 20 81 21 C76 22 75 23 74 28 C73 23 72 22 67 21 C72 20 73 19 74 14Z"/>
+    <path d="M104 76 C105 81 106 82 111 83 C106 84 105 85 104 90 C103 85 102 84 97 83 C102 82 103 81 104 76Z"/>
+  </svg>
+  <!-- testo: una frase di 10-16 parole, il senso del lavoro -->
+  <p class="testo">I capelli sono la tua corona: affidali a mani che sanno curarli.</p>
+  <!-- titolo: due righe, la seconda comincia con «&» -->
+  <h1 class="titolo">Prima<br>&amp; dopo</h1>
+</body>
+</html>

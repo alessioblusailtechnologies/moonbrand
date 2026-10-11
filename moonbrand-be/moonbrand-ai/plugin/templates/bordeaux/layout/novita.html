@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
+  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
+  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo span { display: block; width: fit-content; }
+  p { hyphens: auto; }
+  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+    clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
+  .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 14 0 0 0 -9.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  body { background: var(--principale); color: var(--sfondo); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 112px; font-size: 150px; color: var(--accento); text-align: center; }
+  .titolo span { margin: 0 auto; }
+  .servizio { left: 50%; top: 318px; width: 330px; transform: translateX(-50%) rotate(-2deg); }
+  .foto { position: absolute; left: 0; top: 470px; width: 600px; height: 880px; object-fit: cover; object-position: 40% 40%; display: block; mix-blend-mode: lighten; filter: contrast(1.7) brightness(1.25); }
+  .prezzo { position: absolute; left: 672px; top: 560px; font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 500; letter-spacing: -0.02em; font-size: 50px; }
+  .testo { position: absolute; left: 672px; top: 650px; width: 312px; font-size: 24px; line-height: 1.5; text-align: justify; }
+  .piede { position: absolute; left: 112px; right: 104px; bottom: 84px; display: flex; justify-content: space-between; font-size: 24px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in movimento o il risultato del servizio, su fondo scuro; i neri si fondono con lo sfondo -->
+  <img class="foto" src="../esempio/movimento.jpg" alt="">
+  <div class="grana"></div>
+
+  <!-- titolo: 2-3 parole su una riga -->
+  <h1 class="titolo"><span>Novità in salone</span></h1>
+
+  <!-- nastro: il nome del servizio, 1-3 parole -->
+  <p class="nastro servizio mono">Laminazione</p>
+
+  <!-- prezzo: da quanto parte -->
+  <p class="prezzo">Da 65 €</p>
+
+  <!-- testo: cos'è, per chi e quanto dura, 30-45 parole -->
+  <p class="testo">Distende e nutre la fibra senza bisogno della piastra. Dopo una seduta i capelli sono più lucidi, si districano subito e restano morbidi per sei settimane. Adatta anche ai capelli colorati.</p>
+
+  <div class="piede mono">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Atelier Ottavia</span>
+    <!-- sito: il sito o il profilo del brand -->
+    <span>atelierottavia.it</span>
+  </div>
+</body>
+</html>

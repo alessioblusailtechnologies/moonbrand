@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
+  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
+  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo span { display: block; width: fit-content; }
+  p { hyphens: auto; }
+  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+    clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
+  .fascia { position: absolute; left: -60px; width: 1200px; height: 58px; padding: 0 74px; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; font-size: 24px; letter-spacing: 0.03em; }
+  .fascia.scura { background: var(--principale); color: var(--sfondo); }
+  .fascia.chiara { background: var(--accento); color: var(--principale); }
+
+  body { background: #000; color: var(--sfondo); }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; filter: sepia(0.25) brightness(0.9); }
+  .polaroid { position: absolute; left: 0; top: 112px; width: 420px; height: 470px; background: #fff; padding: 22px 22px 30px; transform: rotate(-6deg); transform-origin: 0 0; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+  .polaroid img { width: 376px; height: 418px; object-fit: cover; object-position: 50% 20%; display: block; }
+  .avviso { left: 132px; top: 82px; width: 300px; transform: rotate(-5deg); }
+  .testo { position: absolute; left: 690px; top: 118px; width: 300px; font-size: 24px; line-height: 1.45; text-align: justify; color: #fff; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 640px; font-size: 156px; text-align: center; }
+  .titolo span { margin: 0 auto; }
+</style>
+</head>
+<body>
+  <!-- fondo: il dopo, primo piano della cliente con il lavoro finito, verticale -->
+  <img class="fondo" src="../esempio/ricci.jpg" alt="">
+
+  <!-- foto: il prima, la stessa cliente prima del lavoro -->
+  <div class="polaroid"><img src="../esempio/giacca.jpg" alt=""></div>
+
+  <!-- nastro: l'invito, 3-5 parole in due righe -->
+  <p class="nastro avviso mono">Scrivici per<br>fissare un posto!</p>
+
+  <!-- testo: cosa abbiamo fatto e in quanto tempo, 30-45 parole -->
+  <p class="testo">Giulia è arrivata con le punte rovinate da due estati al mare. Abbiamo accorciato di sei centimetri, fatto un impacco nutriente e ridato forma ai ricci con un taglio scalato. Tre ore in tutto, con la piega.</p>
+
+  <!-- titolo: 3-5 parole su due righe -->
+  <h1 class="titolo"><span>Prima &amp; dopo</span><span>il nuovo taglio</span></h1>
+
+  <!-- fascia: 1-2 parole ripetute, il tema della rubrica o il nome del salone -->
+  <div class="fascia scura mono" style="top: 1010px; transform: rotate(4deg);"><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span></div>
+  <div class="fascia chiara mono" style="top: 1222px; transform: rotate(-2deg);"><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span></div>
+</body>
+</html>

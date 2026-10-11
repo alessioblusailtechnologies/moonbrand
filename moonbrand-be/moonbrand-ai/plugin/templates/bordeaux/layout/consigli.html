@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
+  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
+  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo span { display: block; width: fit-content; }
+  p { hyphens: auto; }
+  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+    clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
+  .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 14 0 0 0 -9.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  body { background: #000; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; filter: sepia(0.15) brightness(0.92); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 110px; font-size: 156px; color: var(--accento); text-align: center; }
+  .titolo span { margin: 0 auto; }
+  .lista { position: absolute; left: 168px; top: 618px; width: 744px; list-style: none; }
+  .lista li { display: flex; align-items: center; gap: 30px; min-height: 112px; margin-bottom: 44px; padding: 16px 30px 16px 40px; background: color-mix(in srgb, var(--sfondo) 88%, transparent); color: var(--principale); font-size: 24px; line-height: 1.4; }
+  .lista li::before { content: ''; flex: none; width: 60px; height: 60px; border-radius: 50%; background: var(--principale)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M18 31l8 8 16-17' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
+  .invito { position: absolute; left: 50%; top: 1150px; transform: translateX(-50%); background: var(--principale); color: var(--sfondo); font-size: 24px; letter-spacing: 0.04em; padding: 22px 34px; white-space: nowrap; outline: 2px solid color-mix(in srgb, var(--sfondo) 70%, transparent); outline-offset: -8px; }
+</style>
+</head>
+<body>
+  <!-- fondo: primo piano di viso e capelli, caldo, verticale -->
+  <img class="fondo" src="../esempio/profilo.jpg" alt="">
+  <div class="grana"></div>
+
+  <!-- titolo: la domanda o il tema, 5-8 parole su tre righe -->
+  <h1 class="titolo"><span>Quale taglio</span><span>sta bene al</span><span>tuo viso?</span></h1>
+
+  <!-- lista: 3 consigli, 12-20 parole ciascuno -->
+  <ul class="lista">
+    <li>Viso tondo: lunghezze sotto il mento e volume in alto, niente frangia piena.</li>
+    <li>Viso lungo: frangia morbida e onde ai lati per bilanciare le proporzioni.</li>
+    <li>Viso quadrato: scalature leggere attorno alla mascella e riga laterale.</li>
+  </ul>
+
+  <!-- invito: 3-5 parole, come prenotare -->
+  <p class="invito mono">Prenota una consulenza</p>
+</body>
+</html>

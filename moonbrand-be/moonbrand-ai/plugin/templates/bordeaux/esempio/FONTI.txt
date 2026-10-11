@@ -1,0 +1,12 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License / Unsplash License).
+
+bianco-nero.jpg        https://www.pexels.com/photo/18702686/
+mani-capelli.jpg       https://www.pexels.com/photo/18702687/
+ritratto-sabbia.jpg    https://www.pexels.com/photo/8217769/
+ritratto-sabbia-2.jpg  https://www.pexels.com/photo/8217882/
+volto.jpg              https://www.pexels.com/photo/30873103/
+movimento.jpg          https://www.pexels.com/photo/4584400/
+seduta.jpg             https://www.pexels.com/photo/8070398/
+ricci.jpg              https://www.pexels.com/photo/32421200/
+giacca.jpg             https://www.pexels.com/photo/18173611/
+profilo.jpg            https://www.pexels.com/photo/30873102/

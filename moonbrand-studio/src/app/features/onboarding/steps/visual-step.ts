@@ -79,9 +79,11 @@ export class VisualStep implements OnInit {
     return list.map((template) => ({
       ...template,
       description: templateDescription(template.id, this.i18n.locale()),
-      cover: layoutUrl(template, template.layouts[0]),
+      slides: template.layouts.map((layout) => layoutUrl(template, layout)),
     }));
   });
+  // La slide visibile nello slider di ogni template, per i pallini e le frecce.
+  protected readonly slide = signal<Record<string, number>>({});
   protected readonly sitePalette = computed(() => this.store.insights()?.palette ?? (this.visual().palette.origin === 'site' ? this.visual().palette : null));
   protected readonly custom = computed(() => this.visual().palette.origin !== 'site');
   protected readonly placeholders = computed(() => Array.from({ length: this.uploading() }, (_, i) => i));
@@ -207,11 +209,21 @@ export class VisualStep implements OnInit {
     }
   }
 
-  protected openTemplate(template: PostTemplate): void {
+  protected openTemplate(template: PostTemplate, index: number): void {
     this.lightbox.open(
       template.layouts.map((layout, i) => ({ url: layoutUrl(template, layout), alt: this.i18n.t('onboarding.visual.template.layoutAlt', { name: template.name, n: i + 1 }) })),
-      0,
+      index,
     );
+  }
+
+  // Lo slider scorre da solo (scroll-snap, anche col dito): qui si legge a che slide è e si sposta con frecce e pallini.
+  protected onSlide(id: string, track: HTMLElement): void {
+    const index = Math.round(track.scrollLeft / track.clientWidth);
+    if (this.slide()[id] !== index) this.slide.update((slides) => ({ ...slides, [id]: index }));
+  }
+
+  protected goToSlide(track: HTMLElement, index: number): void {
+    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
   }
 
   protected openExample(index: number): void {

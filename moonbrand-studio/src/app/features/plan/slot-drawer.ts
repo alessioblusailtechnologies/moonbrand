@@ -16,6 +16,7 @@ import { PlanService } from '../../core/plan/plan.service';
 import { ChannelMark } from '../../ui/channel-mark';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
+import { Select, type SelectOption } from '../../ui/select';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
 import { canMove, SLOT_TONES, slotTitle, timeFor } from './labels';
@@ -34,7 +35,7 @@ type What = { kind: 'empty' } | { kind: 'idea'; id: string } | { kind: 'content'
 @Component({
   selector: 'mb-slot-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, ChannelMark, TranslatePipe],
+  imports: [RouterLink, Icon, ChannelMark, Select, TranslatePipe],
   host: { '(document:keydown.escape)': 'saving() || closed.emit()' },
   templateUrl: './slot-drawer.html',
   styleUrl: './slot-drawer.scss',
@@ -142,6 +143,20 @@ export class SlotDrawer implements OnInit {
     this.themeId.set(idea?.themeId ?? null);
     this.time.set(timeFor(channels, this.date()));
   }
+
+  protected readonly whatOptions = computed<SelectOption[]>(() => [
+    { value: 'empty', label: this.i18n.t('plan.drawer.whatEmpty') },
+    ...this.plan().ideas.map((idea) => ({ value: `idea:${idea.id}`, label: idea.title, group: this.i18n.t('plan.drawer.savedIdea') })),
+    ...this.plan().unscheduled.map((item) => ({ value: `content:${item.id}`, label: item.title, group: this.i18n.t('plan.drawer.undatedContent') })),
+  ]);
+  protected readonly themeOptions = computed<SelectOption[]>(() => [
+    { value: '', label: this.i18n.t('plan.drawer.noTheme') },
+    ...this.plan().themes.map((theme) => ({ value: theme.id, label: theme.name })),
+  ]);
+  protected readonly ideaOptions = computed<SelectOption[]>(() => [
+    { value: '', label: this.i18n.t('plan.drawer.noIdea') },
+    ...this.ideas().map((idea) => ({ value: idea.id, label: idea.title })),
+  ]);
 
   protected chooseWhat(value: string): void {
     const [kind, id] = value.split(':');

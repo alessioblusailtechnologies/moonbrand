@@ -1,0 +1,13 @@
+Foto d'esempio da Unsplash (licenza Unsplash, uso gratuito). Pagina di ogni foto:
+rasatura.jpg     https://unsplash.com/photos/1VTQaaI0HP8
+sfumatura.jpg    https://unsplash.com/photos/DrG4V5skbMY
+mani.jpg         https://unsplash.com/photos/YDOc9F6HUFA
+piega.jpg        https://unsplash.com/photos/a04Xt_QI8c8
+macchinetta.jpg  https://unsplash.com/photos/m4Pd_e-4zKs
+barba.jpg        https://unsplash.com/photos/-sRVfY0f2d8
+taglio.jpg       https://unsplash.com/photos/Q82AM6BWBPM
+barbiere.jpg     https://unsplash.com/photos/8HkPnJhC5Ic
+poltrona.jpg     https://unsplash.com/photos/IvQeAVeJULw
+mascherina.jpg   https://unsplash.com/photos/wJoB8D3hnzc
+bottega.jpg      https://unsplash.com/photos/5P-eClxMg1s
+attrezzi.jpg     https://unsplash.com/photos/MNu0n-3BIKs

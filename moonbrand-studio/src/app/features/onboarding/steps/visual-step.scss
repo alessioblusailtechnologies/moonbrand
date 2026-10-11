@@ -201,10 +201,10 @@
   }
 }
 
-// I template della categoria: la copertina apre tutti i layout, sotto il nome si sceglie.
+// I template della categoria: sopra lo slider dei layout, sotto il nome si sceglie.
 .templates {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -222,12 +222,32 @@
   }
 }
 
-.template-cover {
-  display: block;
+// Tutti i layout del template, uno alla volta: si scorre col dito, con le frecce o con i pallini.
+.template-slider {
+  position: relative;
   aspect-ratio: 4 / 5;
+  background: var(--grey-100);
+}
+
+.slides {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.slide {
+  flex: 0 0 100%;
+  height: 100%;
   padding: 0;
   border: 0;
-  background: var(--grey-100);
+  background: none;
+  scroll-snap-align: start;
   cursor: zoom-in;
 
   img {
@@ -240,6 +260,57 @@
   &:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: -2px;
+  }
+}
+
+.slide-nav {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transform: translateY(-50%);
+  cursor: pointer;
+
+  &.prev {
+    left: 8px;
+  }
+
+  &.next {
+    right: 8px;
+  }
+}
+
+.dots {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+
+  button {
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+
+    &.on {
+      background: var(--white);
+    }
   }
 }
 
@@ -257,7 +328,7 @@
 
 @media (max-width: 640px) {
   .templates {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 

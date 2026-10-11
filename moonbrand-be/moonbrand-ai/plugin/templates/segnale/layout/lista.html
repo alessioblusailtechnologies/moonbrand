@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0C0C0E; --secondario: #FF9200; --accento: #FFC915; --sfondo: #F2EFE8; }
+  :root { --sfumato: linear-gradient(100deg, var(--accento) 10%, var(--secondario) 100%); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(135deg, color-mix(in srgb, var(--accento) 88%, #fff) 0%, var(--accento) 35%, var(--secondario) 115%); color: var(--principale); font-family: 'Archivo', sans-serif; }
+
+  .titolo { position: absolute; left: 66px; top: 196px; width: 940px; font-size: 134px; font-weight: 800; font-stretch: 106%; line-height: 0.96; letter-spacing: -0.015em; }
+  .riquadro { position: relative; z-index: 0; color: var(--sfondo); }
+  .riquadro::before { content: ''; position: absolute; z-index: -1; left: -14px; right: -18px; top: 0.1em; bottom: -0.02em; background: var(--principale); border-radius: 10px; }
+
+  .voci { position: absolute; left: 64px; right: 64px; top: 840px; display: flex; flex-direction: column; gap: 20px; }
+  .voce { height: 108px; padding: 0 36px 0 28px; border-radius: 14px; background: var(--principale); color: var(--sfondo); display: flex; align-items: center; gap: 30px; }
+  .lettera { flex: none; width: 52px; height: 52px; border-radius: 50%; background: var(--sfumato); color: var(--principale); display: grid; place-items: center; font-size: 17px; font-weight: 700; }
+  .voce span:last-child { font-size: 31px; font-weight: 800; font-stretch: 104%; letter-spacing: -0.005em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- titolo: 5-8 parole su 3 righe, frasi corte col punto; una parola nel riquadro scuro (.riquadro) -->
+  <h1 class="titolo">Fanne <span class="riquadro">una.</span> Chiudila venerdì.</h1>
+
+  <div class="voci">
+    <!-- voce: un'azione concreta, 4-8 parole col punto; le lettere A, B, C -->
+    <div class="voce"><span class="lettera">A</span><span>Aggiorna gli orari su Google.</span></div>
+    <div class="voce"><span class="lettera">B</span><span>Pubblica la foto del banco di stamattina.</span></div>
+    <div class="voce"><span class="lettera">C</span><span>Rispondi alle tre recensioni in sospeso.</span></div>
+  </div>
+</body>
+</html>

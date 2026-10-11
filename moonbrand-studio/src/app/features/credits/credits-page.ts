@@ -12,6 +12,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
+import { Select, type SelectOption } from '../../ui/select';
 import { ToastService } from '../../ui/toast';
 
 // Crediti e utilizzo del brand attivo: quanto si è consumato nel mese, per tipo di lavoro e attività per attività,
@@ -19,7 +20,7 @@ import { ToastService } from '../../ui/toast';
 @Component({
   selector: 'mb-credits-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, TranslatePipe],
+  imports: [Icon, Select, TranslatePipe],
   template: `
     <section class="credits">
       <header class="head">
@@ -30,11 +31,7 @@ import { ToastService } from '../../ui/toast';
         @if (usage(); as data) {
           <label class="month">
             <span class="label">{{ 'credits.month' | t }}</span>
-            <select class="sunken" [value]="data.month" (change)="month.set($any($event.target).value)">
-              @for (option of data.months; track option) {
-                <option [value]="option">{{ monthName(option) }}</option>
-              }
-            </select>
+            <mb-select [options]="monthOptions(data.months)" [value]="data.month" (changed)="month.set($event)" />
           </label>
         }
       </header>
@@ -405,6 +402,10 @@ export class CreditsPage {
 
   protected number(value: number): string {
     return value.toLocaleString(this.i18n.intl(), { maximumFractionDigits: 2 });
+  }
+
+  protected monthOptions(months: string[]): SelectOption[] {
+    return months.map((month) => ({ value: month, label: this.monthName(month) }));
   }
 
   protected monthName(month: string): string {

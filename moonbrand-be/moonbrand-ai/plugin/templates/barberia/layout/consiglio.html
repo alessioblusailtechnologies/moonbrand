@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bevan&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C9AF7E; --secondario: #4A5444; --accento: #DCDCD9; --sfondo: #363635; }
+  :root {
+    /* bianco sui fondi scuri, nero su quelli chiari */
+    --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 92%, black); font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; }
+  /* l'ovale chiaro dietro le foto, che si vede solo ai lati */
+  .ovale { position: absolute; left: -150px; top: 166px; width: 1380px; height: 1000px; border: 15px solid var(--accento); border-radius: 50%; }
+  /* la fascia centrale del testo, un filo più chiara del fondo */
+  .fascia { position: absolute; left: 0; top: 560px; width: 1080px; height: 400px; background: var(--sfondo); }
+  /* la carta stropicciata del template */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: .8;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0035' numOctaves='4' seed='11'/%3E%3CfeDiffuseLighting lighting-color='%23b0b0b0' surfaceScale='7'%3E%3CfeDistantLight azimuth='225' elevation='40'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+  .foto { position: absolute; left: 135px; width: 812px; display: block; object-fit: cover; }
+  .foto-a { top: 80px; height: 480px; object-position: 50% 45%; }
+  .foto-b { top: 960px; height: 390px; object-position: 50% 22%; }
+  .testo { position: absolute; left: 90px; top: 612px; width: 380px; color: var(--su-sfondo); font-size: 25px; line-height: 30px; letter-spacing: .01em; }
+  .titolo { position: absolute; left: 488px; top: 640px; width: 540px; font-family: 'Bevan', serif; font-size: 66px; line-height: 1.04; color: var(--principale); }
+</style>
+</head>
+<body>
+  <div class="ovale"></div>
+  <div class="fascia"></div>
+  <div class="carta"></div>
+  <!-- foto in alto: il cliente sulla poltrona o il lavoro, orizzontale -->
+  <img class="foto foto-a" src="../esempio/poltrona.jpg" alt="">
+  <!-- foto in basso: il barbiere, tagliata dal bordo -->
+  <img class="foto foto-b" src="../esempio/mascherina.jpg" alt="">
+  <!-- testo: il consiglio spiegato, 45-60 parole -->
+  <p class="testo">Lavala due volte a settimana con uno shampoo delicato, non tutti i giorni. Dopo la doccia bastano due gocce di olio, massaggiate contro pelo fino alla pelle. Pettina sempre nel verso della crescita e passa da noi ogni tre settimane per tenere la forma.</p>
+  <!-- titolo: il consiglio in 4-7 parole, tre righe -->
+  <h1 class="titolo">Come tenere la barba morbida</h1>
+</body>
+</html>

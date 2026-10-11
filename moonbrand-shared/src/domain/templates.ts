@@ -16,12 +16,12 @@ export interface PostTemplate {
 }
 
 export const POST_TEMPLATES: PostTemplate[] = [
-  { id: 'specchio', category: 'bellezza', name: 'Specchio', layouts: ['copertina', 'prima-dopo', 'consiglio', 'recensione', 'offerta', 'persona'] },
-  { id: 'salone', category: 'bellezza', name: 'Salone', layouts: ['copertina', 'prima-dopo', 'consiglio', 'recensione', 'offerta', 'persona'] },
-  { id: 'rituale', category: 'bellezza', name: 'Rituale', layouts: ['copertina', 'prima-dopo', 'consiglio', 'recensione', 'offerta', 'persona'] },
-  { id: 'manifesto', category: 'agenzia', name: 'Manifesto', layouts: ['copertina', 'punto', 'dato', 'citazione', 'caso', 'persona'] },
-  { id: 'quaderno', category: 'agenzia', name: 'Quaderno', layouts: ['copertina', 'punto', 'dato', 'citazione', 'caso', 'persona'] },
-  { id: 'cantiere', category: 'agenzia', name: 'Cantiere', layouts: ['copertina', 'punto', 'dato', 'citazione', 'caso', 'persona'] },
+  { id: 'bordeaux', category: 'bellezza', name: 'Bordeaux', layouts: ['copertina', 'servizi', 'prenotazione', 'recensione', 'novita', 'cliente', 'prima-dopo', 'consigli'] },
+  { id: 'neutro', category: 'bellezza', name: 'Neutro', layouts: ['copertina', 'prima-dopo', 'consiglio', 'recensione', 'listino', 'prenota', 'offerta', 'salone'] },
+  { id: 'barberia', category: 'bellezza', name: 'Barberia', layouts: ['copertina', 'servizio', 'offerta', 'barbiere', 'recensione', 'consiglio', 'bottega', 'annuncio'] },
+  { id: 'segnale', category: 'agenzia', name: 'Segnale', layouts: ['copertina', 'passi', 'lista', 'dato', 'citazione', 'offerta', 'caso', 'chiusura'] },
+  { id: 'studio', category: 'agenzia', name: 'Studio', layouts: ['copertina', 'punto', 'passo', 'dato', 'frase', 'servizi', 'citazione', 'persona'] },
+  { id: 'lime', category: 'agenzia', name: 'Lime', layouts: ['copertina', 'risultati', 'numero', 'lo-sapevi', 'domanda', 'processo', 'recensione', 'slogan'] },
 ];
 
 export function findTemplate(id: string | null | undefined): PostTemplate | null {

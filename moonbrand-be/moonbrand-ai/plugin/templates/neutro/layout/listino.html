@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=DM+Sans:opsz,wght@9..40,400&family=Montserrat:wght@400&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: white; font-family: 'DM Sans', sans-serif; }
+
+  .arco { position: absolute; left: 340px; top: 80px; width: 400px; height: 120px; overflow: visible; }
+  .arco text { font-family: 'Montserrat', sans-serif; font-size: 34px; letter-spacing: 3px; fill: white; }
+  .titolo { position: absolute; left: 0; right: 0; top: 185px; margin: 0; text-align: center; font-family: 'Playfair Display', serif;
+    font-weight: 400; font-size: 128px; line-height: 150px; }
+  .sottotitolo { position: absolute; left: 0; right: 0; top: 340px; margin: 0; text-align: center; font-size: 44px; line-height: 56px; }
+
+  table { position: absolute; left: 132px; top: 455px; width: 816px; border-collapse: collapse; font-size: 40px; }
+  td { height: 124px; padding: 0 16px; text-align: center; border-top: 2px solid rgba(255, 255, 255, 0.85); }
+  td + td { width: 296px; border-left: 2px solid rgba(255, 255, 255, 0.85); }
+  tr:last-child td:first-child, tr:last-child td + td { border-bottom: none; }
+</style>
+</head>
+<body>
+  <!-- arco: in maiuscolo, 2-3 parole d'invito -->
+  <svg class="arco" viewBox="0 0 400 120">
+    <defs><path id="curva" d="M40,118 Q200,-20 360,118"/></defs>
+    <text><textPath href="#curva" startOffset="50%" text-anchor="middle">PRENOTA OGGI</textPath></text>
+  </svg>
+  <!-- titolo: una parola, la categoria del listino -->
+  <h1 class="titolo">Trattamenti</h1>
+  <!-- sottotitolo: 2 parole -->
+  <p class="sottotitolo">Listino prezzi</p>
+  <!-- righe: da 4 a 7 servizi, nome breve (max 22 caratteri) e prezzo -->
+  <table>
+    <tr><td>Taglio e piega</td><td>€ 38</td></tr>
+    <tr><td>Colore</td><td>€ 45</td></tr>
+    <tr><td>Balayage</td><td>€ 95</td></tr>
+    <tr><td>Ricostruzione</td><td>€ 35</td></tr>
+    <tr><td>Piega mossa</td><td>€ 25</td></tr>
+    <tr><td>Extension</td><td>da € 150</td></tr>
+  </table>
+</body>
+</html>

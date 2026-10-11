@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
+  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, var(--accento) 0%, var(--verde-scuro) 100%); color: #FFFFFF; font-family: 'Poppins', sans-serif; }
+
+  .hashtag { position: absolute; right: 82px; top: 112px; font-size: 44px; font-weight: 400; letter-spacing: -0.02em; }
+  .testo { position: absolute; left: 112px; top: 470px; width: 520px; font-size: 50px; font-weight: 300; line-height: 1.38; letter-spacing: -0.025em; }
+  .testo b { font-weight: 700; }
+  .cifra { position: absolute; left: 100px; top: 720px; white-space: nowrap; font-size: 560px; line-height: 1; letter-spacing: -0.06em; color: var(--secondario); }
+  .cifra b { font-weight: 600; }
+  .cifra span { font-weight: 100; color: #FFFFFF; letter-spacing: 0; margin-left: 0.04em; }
+</style>
+</head>
+<body>
+  <!-- hashtag: una parola composta, 12-18 caratteri -->
+  <p class="hashtag">#DatiCheContano</p>
+
+  <!-- testo: la frase che porta al numero, 10-16 parole, una parola chiave in grassetto con <b> -->
+  <p class="testo">Prima di provare un locale nuovo, lo <b>cerca</b> sui social il</p>
+
+  <!-- cifra: il numero in grassetto (2-3 caratteri) e l'unità sottile (%, K, mln) nello span -->
+  <p class="cifra"><b>71</b><span>%</span></p>
+</body>
+</html>

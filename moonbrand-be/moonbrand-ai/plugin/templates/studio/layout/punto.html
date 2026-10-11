@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #000000; --secondario: #D9D9D9; --accento: #3A3A3A; --sfondo: #FFFFFF; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: 'Instrument Sans', sans-serif; }
+
+  .tag { position: absolute; top: 56px; left: 74px; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
+  .logo { position: absolute; top: 56px; right: 74px; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
+  .titolo { position: absolute; left: 70px; top: 158px; width: 700px; font-size: 124px; font-weight: 700; line-height: 1.04; letter-spacing: -0.055em; }
+  .freccia { position: absolute; left: 877px; top: 192px; width: 126px; height: 126px; }
+  .testo { position: absolute; left: 74px; top: 452px; width: 680px; font-size: 33px; font-weight: 400; line-height: 1.6; letter-spacing: -0.015em; }
+  .foto { position: absolute; left: 70px; top: 606px; width: 940px; height: 586px; object-fit: cover; object-position: 50% 62%; border-radius: 32px; display: block; }
+
+  .pillole { position: absolute; left: 74px; bottom: 70px; display: flex; gap: 14px; }
+  .pillola { height: 46px; padding: 0 18px; border: 2.5px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 41px; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- tag: un hashtag del tema, 1-3 parole attaccate -->
+  <div class="tag">#Strategia</div>
+  <!-- logo: il nome o l'account del brand -->
+  <div class="logo">@studiovarco</div>
+
+  <!-- titolo: il punto della slide, 3-5 parole su due righe -->
+  <h1 class="titolo">Il mercato non aspetta</h1>
+  <svg class="freccia" viewBox="0 0 126 126" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="63" cy="63" r="60"/>
+    <path d="M47 47 L79 79 M79 52 L79 79 L52 79"/>
+  </svg>
+  <!-- testo: una frase che spiega il titolo, 8-14 parole, su due righe -->
+  <p class="testo">Se rimandi, il tuo spazio lo prende qualcun altro prima di te.</p>
+
+  <!-- foto: architettura dal basso, orizzontale, o il lavoro di cui parla la slide -->
+  <img class="foto" src="../esempio/grattacieli.jpg" alt="">
+
+  <div class="pillole">
+    <!-- pillole: 1-2 argomenti del post, una parola ciascuno -->
+    <span class="pillola">Mercato</span>
+    <span class="pillola">Tempi</span>
+  </div>
+</body>
+</html>

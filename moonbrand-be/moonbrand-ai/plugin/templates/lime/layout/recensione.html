@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
+  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, var(--accento) 0%, var(--verde-scuro) 100%); font-family: 'Poppins', sans-serif; }
+
+  .sfondo-parola { position: absolute; left: -64px; top: -42px; width: 1210px; height: 1430px; overflow: hidden; }
+  .sfondo-parola::before { content: attr(data-parola) attr(data-parola) attr(data-parola) attr(data-parola) attr(data-parola) attr(data-parola);
+    display: block; font-size: 330px; font-weight: 700; line-height: 0.96; letter-spacing: -0.02em; text-transform: uppercase; word-break: break-all;
+    color: color-mix(in srgb, #FFFFFF 32%, transparent); }
+
+  .scheda { position: absolute; left: 112px; top: 392px; width: 870px; padding: 54px 50px 64px 46px; border-radius: 56px; color: var(--principale);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 50%, #DADADA 100%); box-shadow: 0 30px 60px rgba(0,0,0,0.28); }
+  .chi { display: flex; align-items: center; gap: 30px; }
+  .iniziale { width: 108px; height: 108px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none;
+    background: linear-gradient(180deg, var(--accento), var(--verde-scuro)); color: #FFFFFF; font-size: 48px; font-weight: 400; }
+  .nome { font-size: 48px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+  .quante { font-size: 34px; font-weight: 300; color: #6B6B6B; line-height: 1.2; letter-spacing: -0.02em; }
+  .voto { margin-top: 22px; display: flex; align-items: center; gap: 26px; font-size: 34px; font-weight: 300; color: #6B6B6B; letter-spacing: -0.02em; }
+  .stelle { color: #F4B400; font-size: 40px; letter-spacing: 4px; line-height: 1; }
+  .testo { margin-top: 30px; font-size: 48px; font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; }
+</style>
+</head>
+<body>
+  <!-- parola-di-sfondo: nell'attributo data-parola, una parola lunga che si ripete a capo su tutto il fondo (RECENSIONI, OPINIONI) -->
+  <div class="sfondo-parola" data-parola="Recensioni"></div>
+
+  <div class="scheda">
+    <div class="chi">
+      <!-- iniziale: la prima lettera del nome -->
+      <div class="iniziale">G</div>
+      <div>
+        <!-- nome: nome e cognome di chi scrive -->
+        <p class="nome">Giulia Ferri</p>
+        <!-- quante: quante recensioni ha scritto -->
+        <p class="quante">3 recensioni</p>
+      </div>
+    </div>
+    <!-- quando: da quanto tempo, 2-3 parole -->
+    <p class="voto"><span class="stelle">★★★★★</span><span>2 settimane fa</span></p>
+    <!-- testo: la recensione vera, 20-30 parole -->
+    <p class="testo">Da quando curano i nostri social la pasticceria è piena anche il martedì. Precisi, veloci e sempre pronti a darci un’idea nuova.</p>
+  </div>
+</body>
+</html>

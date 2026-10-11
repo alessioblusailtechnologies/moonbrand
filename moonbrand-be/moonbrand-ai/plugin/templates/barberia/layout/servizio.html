@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bevan&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C9AF7E; --secondario: #4A5444; --accento: #DCDCD9; --sfondo: #363635; }
+  :root {
+    /* bianco sui fondi scuri, nero su quelli chiari */
+    --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; }
+  /* la carta stropicciata del template */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: .8;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0035' numOctaves='4' seed='11'/%3E%3CfeDiffuseLighting lighting-color='%23b0b0b0' surfaceScale='7'%3E%3CfeDistantLight azimuth='225' elevation='40'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  /* le due foto dentro la forma a U che esce dal bordo sinistro */
+  .forma { position: absolute; left: -130px; top: 0; width: 790px; height: 790px; border-radius: 0 0 395px 395px; overflow: hidden; }
+  .foto-a { left: 130px; top: 0; width: 660px; height: 470px; object-position: 50% 30%; }
+  .foto-b { left: 0; top: 470px; width: 790px; height: 320px; object-position: 50% 40%; }
+  .testo { position: absolute; left: 740px; top: 92px; width: 300px; color: var(--su-sfondo); font-size: 31px; line-height: 54px; letter-spacing: .01em; }
+  .titolo { position: absolute; left: 0; top: 676px; width: 1080px; text-align: center; font-family: 'Bevan', serif; font-size: 62px; line-height: 1; color: var(--principale); }
+  .foto-c { left: 426px; top: 830px; width: 654px; height: 520px; object-position: 50% 30%; }
+  .firma { position: absolute; left: 86px; top: 1090px; color: var(--su-sfondo); font-size: 42px; line-height: 40px; }
+</style>
+</head>
+<body>
+  <div class="carta"></div>
+  <div class="forma">
+    <!-- foto in alto a sinistra: il taglio da vicino (mani, testa, forbici) -->
+    <img class="foto foto-a" src="../esempio/piega.jpg" alt="">
+    <!-- foto sotto, nella curva: un altro momento dello stesso servizio, orizzontale -->
+    <img class="foto foto-b" src="../esempio/macchinetta.jpg" alt="">
+  </div>
+  <!-- testo: il servizio in 20-28 parole (come si fa, quanto dura) -->
+  <p class="testo">Forbici e macchinetta, linea pulita sulla nuca e rifinitura col rasoio. Quaranta minuti, shampoo compreso.</p>
+  <!-- titolo: il nome del servizio, 2-3 parole su una riga -->
+  <h1 class="titolo">Sfumatura classica</h1>
+  <!-- foto in basso a destra: il barbiere al lavoro -->
+  <img class="foto foto-c" src="../esempio/barba.jpg" alt="">
+  <!-- firma: tre righe brevi (prezzo, durata, prenotazione) -->
+  <p class="firma">Taglio uomo<br>25 euro<br>su prenotazione</p>
+</body>
+</html>

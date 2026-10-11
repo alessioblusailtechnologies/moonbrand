@@ -10,6 +10,7 @@ import { normalizeSite } from '@moonbrand/shared/lib/site';
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { Select, type SelectOption } from '../../../ui/select';
 import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
@@ -43,7 +44,7 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 @Component({
   selector: 'mb-identity-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [StepList, TranslatePipe],
+  imports: [StepList, Select, TranslatePipe],
   template: `
     @let value = identity();
     <div class="field">
@@ -81,12 +82,7 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
 
     <div class="field">
       <label for="category">{{ 'brand.category' | t }}</label>
-      <select id="category" (change)="updateCategory($any($event.target).value)">
-        <option value="" [selected]="!value.category">{{ 'brand.categoryNone' | t }}</option>
-        @for (option of categories(); track option.id) {
-          <option [value]="option.id" [selected]="option.id === value.category">{{ option.label }}</option>
-        }
-      </select>
+      <mb-select inputId="category" variant="plain" [options]="categories()" [value]="value.category ?? ''" (changed)="updateCategory($event)" />
       <span class="hint">{{ 'brand.categoryHint' | t }}</span>
     </div>
 
@@ -136,7 +132,10 @@ export class IdentityStep {
   protected readonly locales = LOCALES;
   protected readonly localeNames = LOCALE_NAMES;
 
-  protected readonly categories = computed(() => BRAND_CATEGORIES.map((id) => ({ id, label: categoryLabel(id, this.i18n.locale()) })));
+  protected readonly categories = computed<SelectOption[]>(() => [
+    { value: '', label: this.i18n.t('brand.categoryNone') },
+    ...BRAND_CATEGORIES.map((id) => ({ value: id, label: categoryLabel(id, this.i18n.locale()) })),
+  ]);
 
   protected readonly identity = computed(() => this.draft().identity);
   protected readonly language = computed(() => brandLanguage(this.identity()));

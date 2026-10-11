@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Cinzel:wght@400&family=Montserrat:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Montserrat', sans-serif; }
+
+  .polaroid { position: absolute; background: white; box-sizing: border-box; padding: 16px; box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.16); }
+  .polaroid img { display: block; object-fit: cover; }
+  .uno { left: -40px; top: -30px; width: 460px; height: 600px; transform: rotate(-2deg); }
+  .due { left: 370px; top: -40px; width: 640px; height: 620px; transform: rotate(4deg); }
+  .tre { left: 520px; top: 520px; width: 560px; height: 760px; transform: rotate(-6deg); }
+
+  .blocco { position: absolute; left: 40px; width: 520px; top: 690px; text-align: center; }
+  .firma { margin: 0; font-family: 'Mrs Saint Delafield', cursive; font-weight: 400; font-size: 150px; line-height: 170px; }
+  .servizi { margin: 6px 0 0; font-family: 'Cinzel', serif; font-size: 33px; line-height: 64px; text-transform: uppercase; }
+  .filetto { width: 140px; height: 3px; margin: 34px auto 32px; background: color-mix(in srgb, var(--principale) 35%, var(--sfondo)); }
+  .contatti { margin: 0; font-size: 28px; line-height: 48px; font-weight: 500; }
+</style>
+</head>
+<body>
+  <!-- foto 1: capelli visti di spalle o di lato, verticale -->
+  <div class="polaroid uno"><img src="../esempio/onde-retro.jpg" width="428" height="568" alt="" style="object-position: 30% 50%"></div>
+  <!-- foto 2: un viso con il taglio o il colore, verticale -->
+  <div class="polaroid due"><img src="../esempio/ritratto-luce.jpg" width="608" height="588" alt="" style="object-position: 55% 40%"></div>
+  <!-- foto 3: ritratto con capelli lunghi, verticale -->
+  <div class="polaroid tre"><img src="../esempio/onde-lunghe.jpg" width="528" height="728" alt="" style="object-position: 50% 30%"></div>
+  <div class="blocco">
+    <!-- firma: 1-2 parole in corsivo, il mestiere -->
+    <h1 class="firma">il salone</h1>
+    <!-- servizi: in maiuscolo, due righe brevi -->
+    <p class="servizi">Taglio, colore<br>e trattamenti</p>
+    <div class="filetto"></div>
+    <!-- contatti: nome del salone e telefono -->
+    <p class="contatti"><span class="logo">Salone Aurora</span><br>Chiama 0471 123 456</p>
+  </div>
+</body>
+</html>

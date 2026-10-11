@@ -6,6 +6,7 @@ import type { Content, SceneSource, VideoScene } from '@moonbrand/shared/domain/
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
+import { Select, type SelectOption } from '../../ui/select';
 import { sourceLabel } from './labels';
 
 const SOURCES: SceneSource[] = ['clip', 'photo', 'user', 'graphics'];
@@ -17,7 +18,7 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
 @Component({
   selector: 'mb-script-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, TranslatePipe],
+  imports: [Icon, Select, TranslatePipe],
   template: `
     <div class="panel script">
       <div class="head">
@@ -48,11 +49,8 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
                   [disabled]="busy()" (input)="update(i, { seconds: number($event) })" />
                 <span class="caption">{{ 'contents.script.secondsUnit' | t }}</span>
               </label>
-              <select class="sunken source" [attr.aria-label]="'contents.script.source' | t" [disabled]="busy()" (change)="update(i, { source: sourceOf($event) })">
-                @for (source of sources; track source) {
-                  <option [value]="source" [selected]="scene.source === source">{{ sourceLabel(source) }}</option>
-                }
-              </select>
+              <mb-select class="source" [compact]="true" [label]="'contents.script.source' | t" [options]="sourceOptions()" [value]="scene.source"
+                [disabled]="busy()" (changed)="update(i, { source: $any($event) })" />
               <button class="icon-btn" type="button" [attr.aria-label]="'contents.script.removeScene' | t" [disabled]="busy() || scenes().length === 1"
                 (click)="remove(i)">
                 <mb-icon name="trash" [size]="16" />
@@ -142,9 +140,6 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
       padding: 6px 10px;
     }
     .source {
-      width: auto;
-      min-height: 34px;
-      padding: 6px 10px;
       margin-right: auto;
     }
     .pair {
@@ -175,8 +170,7 @@ export class ScriptEditor {
   protected readonly script = linkedSignal(() => this.content().visual.script);
   protected readonly scenes = linkedSignal(() => this.content().visual.scenes.map((scene) => ({ ...scene })));
 
-  protected readonly sources = SOURCES;
-  protected readonly sourceLabel = (source: SceneSource) => sourceLabel(source, this.i18n.locale());
+  protected readonly sourceOptions = computed<SelectOption[]>(() => SOURCES.map((source) => ({ value: source, label: sourceLabel(source, this.i18n.locale()) })));
   protected readonly hasVideo = computed(() => (this.content().visual.files ?? []).some((file) => file.role === 'video'));
   protected readonly dirty = computed(
     () => this.script() !== this.content().visual.script || JSON.stringify(this.scenes()) !== JSON.stringify(this.content().visual.scenes),
@@ -190,10 +184,6 @@ export class ScriptEditor {
 
   protected value(event: Event): string {
     return (event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;
-  }
-
-  protected sourceOf(event: Event): SceneSource {
-    return (event.target as HTMLSelectElement).value as SceneSource;
   }
 
   protected number(event: Event): number {

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: 'Poppins', sans-serif; }
+
+  .titolo { position: absolute; left: 60px; top: 176px; width: 960px; text-align: center; font-size: 100px; font-weight: 700; line-height: 1.1; letter-spacing: -0.035em; }
+  .titolo .verde { display: block; color: var(--accento); }
+
+  .gradino { position: absolute; display: flex; align-items: center; justify-content: center; text-align: center; height: 163px;
+    font-size: 40px; font-weight: 500; letter-spacing: -0.02em; }
+  .g1 { top: 520px; left: 130px; width: 820px; clip-path: polygon(0 0, 100% 0, 87% 100%, 13% 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accento) 64%, black), color-mix(in srgb, var(--accento) 60%, black)); }
+  .g2 { top: 708px; left: 228px; width: 624px; clip-path: polygon(0 0, 100% 0, 88.4% 100%, 11.6% 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accento) 72%, black), color-mix(in srgb, var(--accento) 66%, black)); }
+  .g3 { top: 896px; left: 308px; width: 464px; clip-path: polygon(0 0, 100% 0, 90.5% 100%, 9.5% 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accento) 84%, black), color-mix(in srgb, var(--accento) 76%, black)); }
+  .g4 { top: 1084px; left: 376px; width: 328px; clip-path: polygon(0 0, 100% 0, 91% 100%, 9% 100%);
+    background: linear-gradient(180deg, var(--accento), color-mix(in srgb, var(--accento) 90%, black)); }
+</style>
+</head>
+<body>
+  <!-- titolo: due righe; la prima (verde) 1-2 parole, la seconda (bianca) 2-3 parole -->
+  <h1 class="titolo"><span class="verde">Il metodo</span>che porta clienti</h1>
+
+  <!-- gradini: quattro passaggi dall'alto al basso, il primo al massimo 30 caratteri, l'ultimo al massimo 16 -->
+  <p class="gradino g1">Farsi notare subito</p>
+  <p class="gradino g2">Catturare il pubblico</p>
+  <p class="gradino g3">Creare desiderio</p>
+  <p class="gradino g4">Chiudere il sì</p>
+</body>
+</html>

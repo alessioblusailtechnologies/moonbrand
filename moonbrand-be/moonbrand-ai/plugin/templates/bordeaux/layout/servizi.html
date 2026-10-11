@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
+  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
+  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo span { display: block; width: fit-content; }
+  p { hyphens: auto; }
+  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+    clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
+  .fascia { position: absolute; left: -60px; width: 1200px; height: 58px; padding: 0 74px; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; font-size: 24px; letter-spacing: 0.03em; }
+  .fascia.scura { background: var(--principale); color: var(--sfondo); }
+  .fascia.chiara { background: var(--accento); color: var(--principale); }
+
+  .titolo { position: absolute; left: 106px; top: 78px; font-size: 190px; }
+  .listino { position: absolute; left: 482px; top: 372px; width: 494px; list-style: none; }
+  .listino li { display: flex; justify-content: space-between; align-items: baseline; padding: 0 0 22px; margin-bottom: 30px; border-bottom: 2px dashed color-mix(in srgb, var(--principale) 70%, transparent); font-size: 25px; }
+  .cornice-oro { position: absolute; left: -16px; top: 404px; width: 318px; height: 568px; border: 16px solid var(--accento); }
+  .foto1 { position: absolute; left: 0; top: 420px; width: 286px; height: 536px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .avviso { left: 548px; top: 858px; width: 300px; transform: rotate(-4deg); z-index: 3; }
+  .cornice-scura { position: absolute; left: 676px; top: 904px; width: 420px; height: 470px; background: var(--principale); }
+  .foto2 { position: absolute; left: 692px; top: 920px; width: 388px; height: 430px; object-fit: cover; object-position: 50% 25%; display: block; }
+</style>
+</head>
+<body>
+  <!-- titolo: 1 parola -->
+  <h1 class="titolo"><span>Servizi</span></h1>
+
+  <!-- foto1: una cliente o un lavoro del salone, verticale -->
+  <div class="cornice-oro"></div>
+  <img class="foto1" src="../esempio/ritratto-sabbia.jpg" alt="">
+
+  <!-- listino: 4 servizi con il prezzo, nome di 1-4 parole -->
+  <ul class="listino">
+    <li><span>Taglio e piega</span><span>45 €</span></li>
+    <li><span>Colore</span><span>60 €</span></li>
+    <li><span>Balayage</span><span>120 €</span></li>
+    <li><span>Trattamento ricci</span><span>55 €</span></li>
+  </ul>
+
+  <!-- foto2: la stessa persona o lo stesso lavoro da un'altra inquadratura -->
+  <div class="cornice-scura"></div>
+  <img class="foto2" src="../esempio/ritratto-sabbia-2.jpg" alt="">
+
+  <!-- nastro: l'invito, 3-5 parole in due righe -->
+  <p class="nastro avviso mono">Scrivici per<br>fissare un posto!</p>
+
+  <!-- fascia: 1-2 parole ripetute, il tema della rubrica o il nome del salone -->
+  <div class="fascia scura mono" style="top: 1112px; transform: rotate(1.8deg); z-index: 2;"><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span><span>Cura capelli</span><span>&bull;</span></div>
+</body>
+</html>

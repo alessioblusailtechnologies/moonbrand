@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Montserrat:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: white; font-family: 'Montserrat', sans-serif; }
+
+  .sfondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 55% 50%; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 42%, transparent); }
+  .arco { position: absolute; left: 340px; top: 300px; width: 400px; height: 150px; overflow: visible; }
+  .arco text { font-family: 'Montserrat', sans-serif; font-size: 31px; letter-spacing: 1px; fill: white; }
+  .cifra { position: absolute; left: 0; right: 0; top: 420px; margin: 0; text-align: center; font-family: 'Bodoni Moda', serif;
+    font-weight: 400; font-size: 220px; line-height: 230px; }
+  .testo { position: absolute; left: 140px; right: 140px; top: 690px; margin: 0; text-align: center; font-size: 34px; line-height: 54px;
+    text-transform: uppercase; }
+  .pillola { position: absolute; left: 50%; top: 860px; transform: translateX(-50%); height: 80px; padding: 0 44px; border-radius: 40px;
+    background: white; color: var(--principale); display: flex; align-items: center; font-size: 32px; font-weight: 500; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto di sfondo: capelli in movimento o una mano tra i capelli, scattata da vicino -->
+  <img class="sfondo" src="../esempio/mano-capelli.jpg" width="1080" height="1350" alt="">
+  <div class="velo"></div>
+  <!-- arco: in maiuscolo, 3-4 parole, il limite dell'offerta -->
+  <svg class="arco" viewBox="0 0 400 150">
+    <defs><path id="curva" d="M10,170 A240,240 0 0 1 390,170"/></defs>
+    <text><textPath href="#curva" startOffset="50%" text-anchor="middle">OFFERTA A TEMPO</textPath></text>
+  </svg>
+  <!-- cifra: lo sconto, al massimo 7 caratteri -->
+  <h1 class="cifra">20%</h1>
+  <!-- testo: in maiuscolo, due righe, 10-14 parole -->
+  <p class="testo">Prenota entro fine mese: il 20% in meno sul tuo prossimo colore</p>
+  <!-- pillola: come prenotare, numero o contatto -->
+  <div class="pillola">Chiamaci: 0471 123 456</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400&display=block" rel="stylesheet">
+<style>
+  :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Arimo', sans-serif; }
+
+  .sfondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; }
+  .blocco { position: absolute; left: 175px; top: 675px; width: 730px; transform: translateY(-50%); }
+  .scheda { width: 730px; box-sizing: border-box; padding: 40px 48px 46px;
+    background: rgba(255, 255, 255, 0.92); border-radius: 22px; text-align: center; }
+  .stelle { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+  .stelle svg { width: 40px; height: 40px; fill: var(--accento); }
+  .testo { margin: 0; font-size: 31px; line-height: 49px; }
+  .ricerca { margin: 18px 0 0 8px; width: 714px; height: 86px; box-sizing: border-box; padding: 0 30px;
+    background: rgba(255, 255, 255, 0.92); border-radius: 14px; display: flex; align-items: center; gap: 24px; font-size: 32px;
+    color: color-mix(in srgb, var(--principale) 80%, white); }
+  .ricerca span { flex: 1; }
+  .ricerca svg { flex: none; }
+</style>
+</head>
+<body>
+  <!-- foto di sfondo: dettaglio di capelli o strumenti del salone, dall'alto -->
+  <img class="sfondo" src="../esempio/capelli-tessuto.jpg" width="1080" height="1350" alt="">
+  <div class="blocco">
+  <div class="scheda">
+    <div class="stelle">
+      <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg>
+    </div>
+    <!-- recensione: le parole vere di una cliente, 35-50 parole -->
+    <p class="testo">Non avevo mai trovato una parrucchiera così: mi ha spiegato ogni passaggio del taglio ed è andata oltre quello che le avevo chiesto. Giulia sa davvero cosa fa, con lei sei in buone mani. Tornerò di sicuro!</p>
+  </div>
+  <div class="ricerca">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
+    <!-- nome dell'attività, come scritto in una barra di ricerca -->
+    <span>Salone Aurora, Bolzano</span>
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 17.5V21M8.5 21h7" stroke="currentColor" stroke-width="1.8"/></svg>
+  </div>
+  </div>
+</body>
+</html>

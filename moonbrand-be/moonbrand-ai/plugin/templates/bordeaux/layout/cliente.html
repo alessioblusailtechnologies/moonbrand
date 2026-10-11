@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
+  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
+  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo span { display: block; width: fit-content; }
+  p { hyphens: auto; }
+  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+    clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
+  .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 14 0 0 0 -9.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  body { background: #000; color: var(--sfondo); }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 20%; display: block; filter: grayscale(1) contrast(1.1) brightness(0.72); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 92px; font-size: 168px; color: var(--accento); text-align: center; }
+  .titolo span { margin: 0 auto; }
+  .polaroid { position: absolute; left: 316px; top: 486px; width: 452px; height: 472px; background: #fff; padding: 26px 26px 34px; }
+  .polaroid img { width: 400px; height: 412px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .testo { position: absolute; left: 210px; top: 1010px; width: 660px; font-size: 25px; line-height: 1.5; text-align: center; hyphens: manual; color: #fff; }
+  .piede { position: absolute; left: 112px; right: 104px; bottom: 70px; display: flex; justify-content: space-between; font-size: 24px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <!-- fondo: la stessa cliente o il salone, verticale; reso in bianco e nero e scurito -->
+  <img class="fondo" src="../esempio/mani-capelli.jpg" alt="">
+  <div class="grana"></div>
+
+  <!-- titolo: 3-4 parole su due righe -->
+  <h1 class="titolo"><span>La cliente</span><span>del mese</span></h1>
+
+  <!-- foto: la cliente con il lavoro fatto, quadrata, a colori -->
+  <div class="polaroid"><img src="../esempio/ritratto-sabbia.jpg" alt=""></div>
+
+  <!-- testo: chi è e cosa le abbiamo fatto, 25-40 parole -->
+  <p class="testo">Marta viene da noi da tre anni. Questo mese ha scelto un castano dorato con schiariture morbide sul viso: poco da mantenere, perfetto per il ritorno al lavoro dopo l'estate.</p>
+
+  <div class="piede mono">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Atelier Ottavia</span>
+    <!-- sito: il sito o il profilo del brand -->
+    <span>atelierottavia.it</span>
+  </div>
+</body>
+</html>

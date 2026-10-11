@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #000000; --secondario: #D9D9D9; --accento: #3A3A3A; --sfondo: #FFFFFF; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Instrument Sans', sans-serif; }
+
+  .etichetta { position: absolute; top: 48px; left: 0; width: 1080px; text-align: center; }
+  .etichetta span { display: inline-block; height: 48px; padding: 0 22px; border: 3px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 42px; letter-spacing: -0.01em; }
+  .asterisco { position: absolute; left: 304px; top: 172px; width: 472px; height: 472px; }
+  .titolo { position: absolute; left: 70px; top: 712px; width: 640px; font-size: 114px; font-weight: 700; line-height: 1.01; letter-spacing: -0.055em; }
+
+  .pillole { position: absolute; left: 74px; bottom: 70px; display: flex; gap: 14px; }
+  .pillola { height: 46px; padding: 0 18px; border: 2.5px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 41px; letter-spacing: -0.01em; }
+  .logo { position: absolute; right: 74px; bottom: 80px; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- etichetta: il tema, 1-2 parole -->
+  <div class="etichetta"><span>Il metodo</span></div>
+
+  <svg class="asterisco" viewBox="-100 -100 200 200" fill="none" stroke="currentColor" stroke-width="15.5">
+    <line x1="0" y1="-100" x2="0" y2="100" transform="rotate(22.5)"/>
+    <line x1="0" y1="-100" x2="0" y2="100" transform="rotate(-22.5)"/>
+    <line x1="0" y1="-100" x2="0" y2="100" transform="rotate(67.5)"/>
+    <line x1="0" y1="-100" x2="0" y2="100" transform="rotate(-67.5)"/>
+  </svg>
+
+  <!-- titolo: una convinzione dello studio in due frasi brevi, 4-6 parole in tutto, su quattro righe -->
+  <h1 class="titolo">Decisioni misurate. Risultati concreti.</h1>
+
+  <div class="pillole">
+    <!-- pillole: 1-2 argomenti del post, una parola ciascuno -->
+    <span class="pillola">Strategia</span>
+    <span class="pillola">Dati</span>
+  </div>
+  <!-- logo: il nome o l'account del brand -->
+  <div class="logo">@studiovarco</div>
+</body>
+</html>

@@ -58,7 +58,9 @@ try {
   try {
     const page = await browser.newPage();
     await page.setViewport(STUDIO_SIZE);
-    for (const name of template.layouts.filter((layout) => done.includes(layout))) {
+    // Un template nuovo non ha ancora i layout nel catalogo: nello studio vanno tutti, in ordine di nome.
+    const shown = template.layouts.length > 0 ? template.layouts : layouts;
+    for (const name of shown.filter((layout) => done.includes(layout))) {
       const data = (await readFile(path.join(root, 'anteprima', `${name}.jpg`))).toString('base64');
       await page.setContent(`<body style="margin:0"><img src="data:image/jpeg;base64,${data}" style="display:block;width:100%;height:100%"></body>`);
       await page.evaluate('document.images[0].decode()');
