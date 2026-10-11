@@ -146,6 +146,10 @@ const video = z.object({
   sound: text(600),
 }) satisfies z.ZodType<BrandVideo>;
 
+// Una famiglia di Google Fonts: lettere, cifre e spazi.
+const fontFamily = z.string().trim().min(2).max(60).regex(/^[A-Za-z0-9 ]+$/, 'Font non valido.');
+export const brandFonts = z.object({ titles: fontFamily, text: fontFamily, found: text(200).nullable() });
+
 export const templateId = z.enum(POST_TEMPLATES.map((template) => template.id) as [string, ...string[]]);
 
 const visual = z.object({
@@ -161,6 +165,7 @@ const visual = z.object({
   signature: z.boolean(),
   references: z.array(mediaFile).max(6).optional(),
   template: templateId.nullable().optional(),
+  fonts: brandFonts.nullable().optional(),
   notes: text(2000).optional(),
   direction: z.object({ summary: text(600), photoStyle: text(1500) }).nullable().optional(),
   line: line.nullable().optional(),

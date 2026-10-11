@@ -7,23 +7,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
-  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 62%, black); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
 
   .fumetto { position: absolute; left: 122px; width: 870px; min-height: 256px; padding: 64px 70px 60px 118px; border-radius: 128px;
-    display: flex; align-items: center; font-size: 46px; font-weight: 700; line-height: 1.34; letter-spacing: -0.02em; }
+    display: flex; align-items: center; font-family: var(--font-titoli); font-size: 46px; font-weight: 700; line-height: 1.34; letter-spacing: -0.02em; }
   .fumetto::after { content: ''; position: absolute; top: calc(100% - 30px); width: 110px; height: 100px; }
-  .domanda { top: 426px; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 55%, #E6E6E6 100%); color: var(--principale); }
-  .domanda::after { left: 36px; background: #E6E6E6; clip-path: path('M30 0 L110 0 C 80 30, 50 52, 14 92 C 8 98, 2 96, 4 88 C 14 60, 22 30, 30 0 Z'); }
-  .risposta { top: 825px; background: linear-gradient(180deg, var(--accento) 0%, var(--verde-scuro) 100%); color: #FFFFFF; }
-  .risposta::after { right: 34px; background: var(--verde-scuro); clip-path: path('M80 0 L0 0 C 30 30, 60 52, 96 92 C 102 98, 108 96, 106 88 C 96 60, 88 30, 80 0 Z'); }
+  .domanda { top: 426px; background: linear-gradient(180deg, var(--secondario) 0%, var(--secondario) 55%, color-mix(in srgb, var(--secondario) 90%, black) 100%); color: var(--su-secondario); }
+  .domanda::after { left: 36px; background: color-mix(in srgb, var(--secondario) 90%, black); clip-path: path('M30 0 L110 0 C 80 30, 50 52, 14 92 C 8 98, 2 96, 4 88 C 14 60, 22 30, 30 0 Z'); }
+  .risposta { top: 825px; background: linear-gradient(180deg, var(--accento) 0%, var(--accento-scuro) 100%); color: #FFFFFF; }
+  .risposta::after { right: 34px; background: var(--accento-scuro); clip-path: path('M80 0 L0 0 C 30 30, 60 52, 96 92 C 102 98, 108 96, 106 88 C 96 60, 88 30, 80 0 Z'); }
 
   .etichetta { position: absolute; height: 84px; padding: 0 44px; border-radius: 16px; border: 5px solid; display: flex; align-items: center;
     font-size: 27px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
-  .etichetta.d { left: 700px; top: 382px; background: linear-gradient(180deg, var(--accento), var(--verde-scuro)); border-color: #FFFFFF; color: #FFFFFF; }
-  .etichetta.r { left: 250px; top: 783px; background: #FFFFFF; border-color: var(--accento); color: var(--principale); }
+  .etichetta.d { left: 700px; top: 382px; background: linear-gradient(180deg, var(--accento), var(--accento-scuro)); border-color: var(--secondario); color: #FFFFFF; }
+  .etichetta.r { left: 250px; top: 783px; background: var(--secondario); border-color: var(--accento); color: var(--su-secondario); }
 </style>
 </head>
 <body>

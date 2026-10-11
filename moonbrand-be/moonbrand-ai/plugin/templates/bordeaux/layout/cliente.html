@@ -7,15 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
-  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo sul secondario: bianco se il secondario è scuro, nero se è chiaro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
   .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
-  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo { font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
   .titolo span { display: block; width: fit-content; }
   p { hyphens: auto; }
-  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+  .nastro { position: absolute; background: var(--secondario); color: var(--su-secondario); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
     clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
   .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 14 0 0 0 -9.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -27,7 +29,7 @@
   .polaroid { position: absolute; left: 316px; top: 486px; width: 452px; height: 472px; background: #fff; padding: 26px 26px 34px; }
   .polaroid img { width: 400px; height: 412px; object-fit: cover; object-position: 50% 30%; display: block; }
   .testo { position: absolute; left: 210px; top: 1010px; width: 660px; font-size: 25px; line-height: 1.5; text-align: center; hyphens: manual; color: #fff; }
-  .piede { position: absolute; left: 112px; right: 104px; bottom: 70px; display: flex; justify-content: space-between; font-size: 24px; letter-spacing: 0.04em; }
+  .piede { position: absolute; left: 112px; right: 104px; bottom: 70px; display: flex; justify-content: space-between; font-size: 24px; letter-spacing: 0.04em; color: color-mix(in oklch, var(--secondario) 70%, white); }
 </style>
 </head>
 <body>

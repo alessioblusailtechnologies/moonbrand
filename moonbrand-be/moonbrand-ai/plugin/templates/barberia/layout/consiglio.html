@@ -7,16 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bevan&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #C9AF7E; --secondario: #4A5444; --accento: #DCDCD9; --sfondo: #363635; }
+  :root { --font-titoli: 'Bevan', serif; --font-testo: 'Bebas Neue', sans-serif; }
   :root {
     /* bianco sui fondi scuri, nero su quelli chiari */
     --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: color-mix(in srgb, var(--sfondo) 92%, black); font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; }
-  /* l'ovale chiaro dietro le foto, che si vede solo ai lati */
+  body { position: relative; background: var(--secondario); font-family: var(--font-testo); text-transform: uppercase; }
+  /* l'ovale d'accento dietro le foto, che si vede solo ai lati */
   .ovale { position: absolute; left: -150px; top: 166px; width: 1380px; height: 1000px; border: 15px solid var(--accento); border-radius: 50%; }
-  /* la fascia centrale del testo, un filo più chiara del fondo */
+  /* la fascia centrale del testo, sul fondo del secondario */
   .fascia { position: absolute; left: 0; top: 560px; width: 1080px; height: 400px; background: var(--sfondo); }
   /* la carta stropicciata del template */
   .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: .8;
@@ -24,8 +25,8 @@
   .foto { position: absolute; left: 135px; width: 812px; display: block; object-fit: cover; }
   .foto-a { top: 80px; height: 480px; object-position: 50% 45%; }
   .foto-b { top: 960px; height: 390px; object-position: 50% 22%; }
-  .testo { position: absolute; left: 90px; top: 612px; width: 380px; color: var(--su-sfondo); font-size: 25px; line-height: 30px; letter-spacing: .01em; }
-  .titolo { position: absolute; left: 488px; top: 640px; width: 540px; font-family: 'Bevan', serif; font-size: 66px; line-height: 1.04; color: var(--principale); }
+  .testo { position: absolute; left: 90px; top: 600px; width: 384px; color: var(--su-sfondo); font-size: 24px; line-height: 28px; }
+  .titolo { position: absolute; left: 488px; top: 640px; width: 540px; font-family: var(--font-titoli); font-size: 66px; line-height: 1.04; color: var(--principale); }
 </style>
 </head>
 <body>

@@ -8,6 +8,7 @@ import { formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 
 import { describeBrand } from './brand-brief';
 import { logoFile } from './brand-logo';
+import { fontsLine } from './fonts';
 import { categoryGuide } from './guides';
 import { installTemplate, templateName, templateSection } from './templates';
 
@@ -28,6 +29,14 @@ ${
   }
 `;
   // Lo stile l'ha già letto Gemini dai riferimenti (job style): chi prepara un contenuto parte da qui.
+  // I font del brand, letti dal sito o scelti: valgono con o senza template, come il logo.
+  const fonts = fontsLine(brand.fonts);
+  const fontsSection = fonts
+    ? `
+## I font
+${fonts}
+`
+    : '';
   const style = brand.style?.trim()
     ? `
 ## Lo stile
@@ -88,7 +97,7 @@ ${templateSection(chosen, template)}
 La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
 
 ${describeBrand(brand)}
-${logoSection}${templateBlock}${style}${categorySection}${recent}${plan}
+${logoSection}${fontsSection}${templateBlock}${style}${categorySection}${recent}${plan}
 ## La cartella
 ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file caricati per il brand (logo, foto, materiali).
 - riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.${template ? `
@@ -107,7 +116,7 @@ ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file cari
 }
 
 export async function writeBrandGuide(brandDir: string, brand: BrandContext): Promise<void> {
-  const template = await installTemplate(brandDir, brand.template, brand.palette);
+  const template = await installTemplate(brandDir, brand.template, brand.palette, brand.fonts);
   await writeFile(
     path.join(brandDir, 'CLAUDE.md'),
     brandGuide(brand, await logoFile(brandDir), await categoryGuide(brand.identity.category, brand.channels), template),

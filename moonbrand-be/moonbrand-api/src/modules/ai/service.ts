@@ -33,11 +33,26 @@ export function queueWebsiteJob(pool: pg.Pool, files: BrandFiles, identity: Iden
   });
 }
 
+// Il logo della bozza nella cartella del brand, come logo.<estensione>: lo stesso file che il worker scrive dal profilo
+// per i brand già creati. Un logo che non si legge si salta: gli esempi useranno il nome in testo.
+const LOGO_EXTENSIONS: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
+
+async function saveDraftLogo(files: BrandFiles, brandId: string, uri: string): Promise<void> {
+  const match = /^data:([^;,]+)((?:;[^;,]+)*),(.*)$/s.exec(uri);
+  const extension = match && LOGO_EXTENSIONS[match[1].toLowerCase()];
+  if (!match || !extension) return;
+  const bytes = match[2].includes(';base64') ? Buffer.from(match[3], 'base64') : Buffer.from(decodeURIComponent(match[3]));
+  for (const other of Object.values(LOGO_EXTENSIONS).filter((ext) => ext !== extension)) await files.remove(brandId, `logo.${other}`).catch(() => undefined);
+  await files.save(brandId, `logo.${extension}`, bytes);
+}
+
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
   // Gli esempi sono solo per i primi canali scelti: il job ricorda quelli, e una modifica lavora sugli stessi.
-  const input: VisualJobRequest = { ...request, brand: { ...request.brand, channels: exampleChannels(request.brand.channels) } };
+  const { logo, ...rest } = request;
+  const input: VisualJobRequest = { ...rest, brand: { ...rest.brand, channels: exampleChannels(rest.brand.channels) } };
   return withIdentity(pool, identity, async (db) => {
     const free = await onboarding(files, identity, db, request.brandId);
+    if (logo) await saveDraftLogo(files, request.brandId, logo);
     return { id: await insertJob(db, identity.accountId, 'visual', input, { free }) };
   });
 }

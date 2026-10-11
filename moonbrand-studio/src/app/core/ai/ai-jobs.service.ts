@@ -52,6 +52,7 @@ export class AiJobsService {
       audiences: reading.audiences,
       palette: { id: `site-${host}`, name: 'Dal sito', colors: reading.colors as Palette['colors'], origin: 'site' },
       logoUri: reading.logo ? await siteLogo(reading.logo) : null,
+      fonts: reading.fonts ?? null,
       language: siteLanguage(reading.language),
     };
   }

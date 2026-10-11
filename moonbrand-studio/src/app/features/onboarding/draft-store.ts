@@ -105,7 +105,10 @@ export abstract class DraftStore<S extends DraftState = DraftState> {
       const themesEdited = otherBrand ? false : state.themesEdited;
       // Il logo del sito entra se non ce n'è uno o se era quello del sito letto prima; uno caricato a mano resta.
       const siteLogo = !draft.visual.logoUri || draft.visual.logoUri === state.insights?.logoUri;
-      const visual = draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette };
+      const paletted = draft.visual.palette.origin === 'custom' ? draft.visual : { ...draft.visual, palette: insights.palette };
+      // Anche i font: quelli del sito entrano se non ce ne sono o se erano quelli del sito letto prima.
+      const siteFonts = !draft.visual.fonts || JSON.stringify(draft.visual.fonts) === JSON.stringify(state.insights?.fonts ?? null);
+      const visual = siteFonts && insights.fonts ? { ...paletted, fonts: insights.fonts } : paletted;
       return {
         ...state,
         insights,

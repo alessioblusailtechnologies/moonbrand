@@ -7,23 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
-  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo sul secondario: bianco se il secondario è scuro, nero se è chiaro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
   .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
-  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
-  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+  .titolo { font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .nastro { position: absolute; background: var(--secondario); color: var(--su-secondario); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
     clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
 
   .testata { position: absolute; left: 112px; right: 104px; top: 82px; display: flex; justify-content: space-between; font-size: 24px; letter-spacing: 0.04em; }
   .foto { position: absolute; left: 604px; top: 596px; width: 476px; height: 754px; object-fit: cover; object-position: 38% 50%; display: block; }
-  .titolo { position: absolute; left: 106px; top: 196px; font-size: 200px; }
-  .titolo span { display: block; width: fit-content; }
-  .avviso { left: 616px; top: 262px; width: 300px; transform: rotate(-4deg); }
+  .testa { position: absolute; left: 106px; top: 196px; right: 0; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 40px; }
+  .titolo { display: contents; font-size: 200px; }
+  .titolo span { display: block; flex: none; }
+  .titolo span:first-child { min-width: 470px; }
+  .titolo span + span { order: 2; flex-basis: 100%; }
+  .avviso { position: relative; order: 1; flex: none; width: 300px; margin-top: 66px; transform: rotate(-4deg); }
   .passi { position: absolute; left: 112px; top: 728px; width: 470px; list-style: none; }
   .passi li { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 52px; font-size: 26px; line-height: 1.32; }
-  .passi b { flex: none; width: 50px; height: 50px; margin-top: 4px; border-radius: 50%; background: var(--principale); color: var(--sfondo); font: 500 24px/50px 'Poppins', sans-serif; text-align: center; }
+  .passi b { flex: none; width: 50px; height: 50px; margin-top: 4px; border-radius: 50%; background: var(--accento); color: var(--principale); font: 500 24px/50px var(--font-testo); text-align: center; }
 </style>
 </head>
 <body>
@@ -37,11 +42,13 @@
     <span>atelierottavia.it</span>
   </div>
 
-  <!-- titolo: 2 parole, una per riga -->
-  <h1 class="titolo"><span>Come</span><span>prenotare</span></h1>
+  <div class="testa">
+    <!-- titolo: 2 parole, una per riga -->
+    <h1 class="titolo"><span>Come</span><span>prenotare</span></h1>
 
-  <!-- nastro: l'invito, 3-5 parole in due righe -->
-  <p class="nastro avviso mono">Scrivici per<br>fissare un posto!</p>
+    <!-- nastro: l'invito, 3-5 parole in due righe; sta accanto alla prima riga del titolo -->
+    <p class="nastro avviso mono">Scrivici per<br>fissare un posto!</p>
+  </div>
 
   <!-- passi: 3-4 passi in ordine, 6-10 parole ciascuno -->
   <ol class="passi">

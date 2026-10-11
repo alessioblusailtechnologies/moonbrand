@@ -7,13 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bevan&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #C9AF7E; --secondario: #4A5444; --accento: #DCDCD9; --sfondo: #363635; }
+  :root { --font-titoli: 'Bevan', serif; --font-testo: 'Bebas Neue', sans-serif; }
   :root {
     /* bianco sui fondi scuri, nero su quelli chiari */
     --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; }
+  body { position: relative; background: var(--sfondo); font-family: var(--font-testo); text-transform: uppercase; }
   /* la carta stropicciata del template */
   .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: .8;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0035' numOctaves='4' seed='11'/%3E%3CfeDiffuseLighting lighting-color='%23b0b0b0' surfaceScale='7'%3E%3CfeDistantLight azimuth='225' elevation='40'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
@@ -23,9 +24,9 @@
   .foto-a { left: 130px; top: 0; width: 660px; height: 470px; object-position: 50% 30%; }
   .foto-b { left: 0; top: 470px; width: 790px; height: 320px; object-position: 50% 40%; }
   .testo { position: absolute; left: 740px; top: 92px; width: 300px; color: var(--su-sfondo); font-size: 31px; line-height: 54px; letter-spacing: .01em; }
-  .titolo { position: absolute; left: 0; top: 676px; width: 1080px; text-align: center; font-family: 'Bevan', serif; font-size: 62px; line-height: 1; color: var(--principale); }
+  .titolo { position: absolute; left: 0; top: 676px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 62px; line-height: 1; color: var(--accento); }
   .foto-c { left: 426px; top: 830px; width: 654px; height: 520px; object-position: 50% 30%; }
-  .firma { position: absolute; left: 86px; top: 1090px; color: var(--su-sfondo); font-size: 42px; line-height: 40px; }
+  .firma { position: absolute; left: 86px; top: 1090px; width: 320px; color: var(--principale); font-size: 38px; line-height: 40px; }
 </style>
 </head>
 <body>

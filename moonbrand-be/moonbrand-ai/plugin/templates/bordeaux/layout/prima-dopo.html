@@ -7,15 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Courier+Prime&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #3F0F0E; --secondario: #E7DFCC; --accento: #DAB061; --sfondo: #D9C4A9; }
-  :root { --nastro: color-mix(in srgb, var(--sfondo) 35%, #F6F1E7); }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo sul secondario: bianco se il secondario è scuro, nero se è chiaro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
   .mono { font-family: 'Courier Prime', monospace; text-transform: uppercase; }
-  .titolo { font-family: 'Noto Serif Display', serif; font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
+  .titolo { font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; }
   .titolo span { display: block; width: fit-content; }
   p { hyphens: auto; }
-  .nastro { position: absolute; background: var(--nastro); color: var(--principale); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
+  .nastro { position: absolute; background: var(--secondario); color: var(--su-secondario); font-size: 24px; line-height: 1.3; text-align: center; padding: 18px 26px;
     clip-path: polygon(1% 4%, 30% 0, 62% 3%, 99% 0, 97% 22%, 100% 45%, 98% 70%, 100% 96%, 70% 100%, 35% 97%, 2% 100%, 0 76%, 2% 52%, 0 27%); }
   .fascia { position: absolute; left: -60px; width: 1200px; height: 58px; padding: 0 74px; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; font-size: 24px; letter-spacing: 0.03em; }
   .fascia.scura { background: var(--principale); color: var(--sfondo); }

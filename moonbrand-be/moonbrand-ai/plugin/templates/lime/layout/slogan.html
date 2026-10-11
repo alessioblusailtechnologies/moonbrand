@@ -7,10 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Herr+Von+Muellerhoff&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
-  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  /* Anton è strettissimo: qui è ingrandito, così le misure sotto valgono per i font del brand, più larghi. */
+  @font-face { font-family: 'Anton Slogan'; src: url(https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2) format('woff2'); size-adjust: 139%; }
+  :root { --font-titoli: 'Anton Slogan', 'Anton', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 62%, black); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: radial-gradient(ellipse 80% 60% at 50% 35%, #FFFFFF 0%, #FFFFFF 35%, var(--sfondo) 100%); color: var(--principale); font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: radial-gradient(ellipse 80% 60% at 50% 35%, #FFFFFF 0%, #FFFFFF 35%, color-mix(in srgb, var(--sfondo) 62%, var(--secondario)) 100%); color: var(--principale); font-family: var(--font-testo); }
 
   .foto { position: absolute; left: -289px; top: 470px; width: 1800px; height: 1200px; object-fit: cover; display: block; }
   .foto.grigia { filter: grayscale(1) contrast(1.28) brightness(0.96);
@@ -19,11 +22,11 @@
 
   .titolo { position: absolute; left: 0; top: 186px; width: 1080px; text-align: center; }
   .blocco { display: inline-block; text-align: left; }
-  .grande { display: block; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 216px; line-height: 1; text-transform: uppercase; letter-spacing: -0.012em; white-space: nowrap; }
-  .grande .verde { background: linear-gradient(180deg, var(--accento), var(--verde-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .grande { display: block; font-family: var(--font-titoli); font-weight: 400; font-size: 155px; line-height: 216px; text-transform: uppercase; letter-spacing: -0.012em; white-space: nowrap; }
+  .grande .verde { background: linear-gradient(180deg, var(--accento), var(--accento-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .seconda { display: flex; justify-content: space-between; align-items: baseline; margin-top: -46px; white-space: nowrap; }
   .corsivo { font-family: 'Herr Von Muellerhoff', cursive; font-weight: 400; font-size: 190px; line-height: 1; color: var(--accento); margin-left: 6px; }
-  .forte { font-size: 100px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
+  .forte { font-family: var(--font-testo); font-size: 100px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
   .sotto { position: absolute; left: 0; top: 576px; width: 1080px; text-align: center; font-size: 54px; font-weight: 400; text-transform: uppercase; letter-spacing: -0.015em; }
   .sotto .verde { color: var(--accento); }
 </style>

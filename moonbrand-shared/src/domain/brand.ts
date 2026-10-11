@@ -173,6 +173,14 @@ export interface BrandTrack {
   file: MediaFile;
 }
 
+// I font del brand, come famiglie di Google Fonts: quelli del sito se sono buoni, altrimenti i più simili di qualità.
+// found: i font che usa il sito, quando sono diversi (di sistema, a pagamento o di bassa qualità); null se coincidono.
+export interface BrandFonts {
+  titles: string;
+  text: string;
+  found: string | null;
+}
+
 export interface Visual {
   logoUri: string | null;
   palette: Palette;
@@ -183,6 +191,8 @@ export interface Visual {
   // Il template di moonbrand scelto (domain/templates), in alternativa alle immagini di riferimento: con il template
   // i riferimenti non si caricano. null o assente: nessun template.
   template?: string | null;
+  // I font del brand: li usano template e contenuti. null o assente: nessun font scelto, valgono quelli del template.
+  fonts?: BrandFonts | null;
   notes?: string;
   direction?: VisualDirection | null;
   line?: BrandLine | null;

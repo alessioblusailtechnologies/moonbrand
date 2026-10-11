@@ -4,24 +4,25 @@
 <meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #0C0C0E; --secondario: #FF9200; --accento: #FFC915; --sfondo: #F2EFE8; }
-  :root { --sfumato: linear-gradient(100deg, var(--accento) 10%, var(--secondario) 100%); --grigio: color-mix(in srgb, var(--principale) 62%, #fff); }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Inter', sans-serif; }
+  :root { --sfumato: linear-gradient(in oklab 100deg, var(--accento) 10%, var(--secondario) 100%); --grigio: color-mix(in srgb, var(--principale) 62%, #fff); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: #fff; color: var(--principale); font-family: 'Archivo', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
 
-  .logo { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 12px; font-size: 27px; font-weight: 700; font-stretch: 78%; letter-spacing: -0.01em; }
+  .logo { font-family: var(--font-titoli); position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 12px; font-size: 27px; font-weight: 700; font-stretch: 78%; letter-spacing: -0.01em; }
   .marchio { width: 48px; height: 48px; border-radius: 50%; background: var(--sfumato); color: var(--principale); display: grid; place-items: center; font-size: 30px; font-weight: 900; font-stretch: 100%; }
-  .titolo { position: absolute; left: 64px; top: 196px; width: 900px; font-size: 80px; font-weight: 800; font-stretch: 106%; line-height: 0.98; letter-spacing: -0.015em; }
+  .titolo { isolation: isolate; font-family: var(--font-titoli); position: absolute; left: 64px; top: 196px; width: 900px; font-size: 80px; font-weight: 800; font-stretch: 106%; line-height: 0.98; letter-spacing: -0.015em; }
   .finale { background: var(--sfumato); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
   .passi { position: absolute; left: 66px; right: 0; top: 476px; display: flex; flex-direction: column; gap: 28px; }
   .passo { height: 186px; padding: 40px 60px 0; border-radius: 18px 0 0 18px; background: var(--sfumato); }
   .numero { font-size: 14px; font-weight: 800; font-stretch: 125%; letter-spacing: 0.28em; text-transform: uppercase; }
-  .passo h2 { margin-top: 14px; font-size: 36px; font-weight: 800; font-stretch: 104%; letter-spacing: -0.01em; white-space: nowrap; }
-  .passo p { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 23px; color: color-mix(in srgb, var(--principale) 72%, transparent); white-space: nowrap; }
+  .passo h2 { font-family: var(--font-titoli); margin-top: 14px; font-size: 36px; font-weight: 800; font-stretch: 104%; letter-spacing: -0.01em; white-space: nowrap; }
+  .passo p { margin-top: 14px; font-family: var(--font-testo); font-size: 23px; color: color-mix(in srgb, var(--principale) 72%, transparent); white-space: nowrap; }
   .pagina { position: absolute; right: 78px; bottom: 56px; font-size: 13px; font-weight: 800; font-stretch: 125%; letter-spacing: 0.2em; color: var(--grigio); }
 </style>
 </head>

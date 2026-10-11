@@ -76,6 +76,31 @@
   }
 </section>
 
+<section class="panel">
+  <p class="label">{{ 'onboarding.visual.fonts.label' | t }}</p>
+  <p class="caption">
+    {{ (fonts()?.found ? 'onboarding.visual.fonts.fromSite' : 'onboarding.visual.fonts.hint') | t: { found: fonts()?.found ?? '' } }}
+  </p>
+  <div class="fonts">
+    <label class="font-row">
+      <span class="caption font-kind">{{ 'onboarding.visual.fonts.titles' | t }}</span>
+      <mb-select class="grow" [label]="'onboarding.visual.fonts.titles' | t" [options]="fontOptions()" [value]="fonts()?.titles ?? ''"
+        (changed)="setFont('titles', $event)" />
+    </label>
+    <label class="font-row">
+      <span class="caption font-kind">{{ 'onboarding.visual.fonts.text' | t }}</span>
+      <mb-select class="grow" [label]="'onboarding.visual.fonts.text' | t" [options]="fontOptions()" [value]="fonts()?.text ?? ''"
+        (changed)="setFont('text', $event)" />
+    </label>
+  </div>
+  @if (fonts(); as chosen) {
+    <div class="font-sample">
+      <p [style.font-family]="'\'' + chosen.titles + '\', sans-serif'">{{ 'onboarding.visual.fonts.sample' | t }}</p>
+      <span [style.font-family]="'\'' + chosen.text + '\', sans-serif'">{{ draft().identity.pitch || ('onboarding.visual.fonts.hint' | t) }}</span>
+    </div>
+  }
+</section>
+
 @if (templates().length > 0) {
   <section class="panel">
     <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
@@ -133,6 +158,14 @@
     @if (template()) {
       <p class="caption">{{ 'onboarding.visual.template.chosen' | t }}</p>
     }
+  </section>
+} @else {
+  <section class="panel soon">
+    <mb-icon name="layers" [size]="18" />
+    <div class="grow">
+      <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
+      <p class="caption">{{ templatesSoon() }}</p>
+    </div>
   </section>
 }
 

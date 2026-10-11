@@ -3,7 +3,9 @@
 Impaginazioni pronte per i post, per tipo di attività. Il brand ne sceglie uno nell'onboarding o nelle
 Impostazioni (`visual.template`), in alternativa alle immagini di riferimento. Il motore copia il template scelto in
 `template/` nella cartella del brand prima di ogni lavoro, con i colori del brand (`src/lib/templates.ts`), e lo descrive
-nel CLAUDE.md del brand: chi fa un contenuto parte da un layout e lo riempie.
+nel CLAUDE.md del brand. I layout sono un riferimento di stile, non moduli da riempire: chi fa un contenuto crea
+una composizione nuova in quello stile, con colori, font, logo e foto del brand (11/10/2026: gli esempi uguali al
+template con i testi cambiati sembravano un template sostituito).
 
 Il catalogo (id, categoria, nome, layout) è in `moonbrand-shared/src/domain/templates.ts`, le descrizioni nello studio
 in `moonbrand-shared/src/i18n/messages/catalog.ts` (`templates`).
@@ -34,7 +36,17 @@ simili. L'origine è scritta in TEMPLATE.md.
   Il blocco contiene solo queste quattro variabili; le altre variabili vanno in un altro blocco. Un colore del template che non serve si può lasciare inutilizzato. Si possono usare anche
   bianco e nero puri, e trasparenze dei quattro colori con `color-mix()`. Il layout deve reggere con palette diverse:
   il testo su `--sfondo` in `--principale`, mai l'accento per testi lunghi.
-- I font da Google Fonts con `<link>`, le stesse dell'originale o le più simili.
+- I colori sono quelli del brand: il template è uno stile, l'identità è del brand (non serve che si vedano tutti e quattro). Gli elementi
+  di evidenza (fasce, riquadri, parole evidenziate, numeri, pillole, filetti, bottoni, etichette) usano `--accento` o
+  `--secondario`, non bianco e nero fissi, anche se nell'originale erano bianchi o neri; bianco e nero solo per testi e fondi.
+- I font da Google Fonts con `<link>`, gli stessi dell'originale o i più simili. Titoli e testi passano da due variabili
+  in un blocco `:root` loro, che il motore riscrive mettendo davanti i font del brand (`visual.fonts`):
+  ```css
+  :root { --font-titoli: 'Anton', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  ```
+  Ogni titolo usa `var(--font-titoli)`, ogni testo `var(--font-testo)`. Un font scritto direttamente solo per un dettaglio
+  decorativo che non è né titolo né testo (una firma scritta a mano, un numero ornamentale).
+- Il logo: l'elemento con la classe `logo` è dove va il logo del brand (l'agente ci mette il file).
 - Le foto con `<img>` da `../esempio/<nome>.jpg`, `object-fit: cover`, con `width` e `height` espliciti (un `<img>` in posizione assoluta non si allarga con `left`+`right` o `top`+`bottom`). Il logo, dove c'è, è il nome del brand in testo
   con la classe `logo` (l'agente lo sostituisce con il file del logo se il brand lo ha).
 - Testi d'esempio in italiano, credibili per la categoria, con la lunghezza che avrà un testo vero.

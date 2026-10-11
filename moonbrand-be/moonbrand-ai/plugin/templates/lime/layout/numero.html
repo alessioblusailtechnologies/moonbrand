@@ -7,15 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
-  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 62%, black); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: linear-gradient(180deg, var(--accento) 0%, var(--verde-scuro) 100%); color: #FFFFFF; font-family: 'Poppins', sans-serif; }
+  body { position: relative; background: linear-gradient(180deg, var(--accento) 0%, var(--accento-scuro) 100%); color: #FFFFFF; font-family: var(--font-testo); }
 
   .hashtag { position: absolute; right: 82px; top: 112px; font-size: 44px; font-weight: 400; letter-spacing: -0.02em; }
   .testo { position: absolute; left: 112px; top: 470px; width: 520px; font-size: 50px; font-weight: 300; line-height: 1.38; letter-spacing: -0.025em; }
   .testo b { font-weight: 700; }
-  .cifra { position: absolute; left: 100px; top: 720px; white-space: nowrap; font-size: 560px; line-height: 1; letter-spacing: -0.06em; color: var(--secondario); }
+  .cifra { position: absolute; left: 100px; top: 720px; white-space: nowrap; font-family: var(--font-titoli); font-size: 510px; line-height: 1; letter-spacing: -0.035em; color: var(--secondario); }
   .cifra b { font-weight: 600; }
   .cifra span { font-weight: 100; color: #FFFFFF; letter-spacing: 0; margin-left: 0.04em; }
 </style>

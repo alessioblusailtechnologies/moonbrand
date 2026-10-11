@@ -7,22 +7,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Kaushan+Script&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #0A0A0A; --secondario: #DBFFB8; --accento: #66BE10; --sfondo: #DCDCDC; }
-  :root { --verde-scuro: color-mix(in srgb, var(--accento) 62%, black); }
+  /* Anton è strettissimo: qui è ingrandito, così le misure sotto valgono per i font del brand, più larghi. */
+  @font-face { font-family: 'Anton Copertina'; src: url(https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2) format('woff2'); size-adjust: 135%; }
+  :root { --font-titoli: 'Anton Copertina', 'Anton', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 62%, black); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: radial-gradient(ellipse 80% 70% at 50% 42%, #FFFFFF 0%, #FFFFFF 30%, var(--sfondo) 100%); color: var(--principale); font-family: 'Anton', sans-serif; }
+  body { position: relative; background: radial-gradient(ellipse 80% 70% at 50% 42%, #FFFFFF 0%, #FFFFFF 30%, color-mix(in srgb, var(--sfondo) 62%, var(--secondario)) 100%); color: var(--principale); font-family: var(--font-titoli); }
 
   .foto { position: absolute; left: -410px; top: 520px; width: 1900px; height: 1267px; object-fit: cover; display: block;
     -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 8%, #000 26%); mask-image: linear-gradient(180deg, transparent 0%, transparent 8%, #000 26%); }
 
   .titolo { position: absolute; left: 0; top: 168px; width: 1080px; text-align: center; text-transform: uppercase; font-weight: 400; }
-  .riga { display: block; height: 154px; font-size: 168px; line-height: 154px; letter-spacing: -0.015em; white-space: nowrap; }
+  .riga { display: block; height: 154px; font-size: 124px; line-height: 154px; letter-spacing: -0.015em; white-space: nowrap; }
   .parole { position: relative; display: inline-block; }
   .numero { position: absolute; right: 100%; top: -58px; margin-right: -28px; font-family: 'Kaushan Script', cursive; text-transform: none; font-size: 280px; line-height: 1;
     padding: 24px 30px 20px 10px; color: var(--accento); transform: rotate(-4deg);
-    background: linear-gradient(180deg, var(--accento) 30%, var(--verde-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .fascia { display: inline-block; margin-top: 8px; padding: 0 26px 6px; background: linear-gradient(180deg, var(--accento), var(--verde-scuro));
-    color: #FFFFFF; font-size: 132px; line-height: 1.1; letter-spacing: -0.005em; transform: rotate(-3.5deg); }
+    background: linear-gradient(180deg, var(--accento) 30%, var(--accento-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .fascia { display: inline-block; margin-top: 8px; padding: 0 26px 6px; background: linear-gradient(180deg, var(--accento), var(--accento-scuro));
+    color: #FFFFFF; font-size: 98px; line-height: 145px; letter-spacing: -0.005em; transform: rotate(-3.5deg); }
 </style>
 </head>
 <body>

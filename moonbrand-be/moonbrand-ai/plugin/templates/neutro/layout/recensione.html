@@ -5,8 +5,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400&display=block" rel="stylesheet">
 <style>
   :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  :root { --font-titoli: 'Arimo', serif; --font-testo: 'Arimo', sans-serif; }
   html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Arimo', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
 
   .sfondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; }
   .blocco { position: absolute; left: 175px; top: 675px; width: 730px; transform: translateY(-50%); }
@@ -19,7 +20,7 @@
     background: rgba(255, 255, 255, 0.92); border-radius: 14px; display: flex; align-items: center; gap: 24px; font-size: 32px;
     color: color-mix(in srgb, var(--principale) 80%, white); }
   .ricerca span { flex: 1; }
-  .ricerca svg { flex: none; }
+  .ricerca svg { flex: none; color: var(--secondario); }
 </style>
 </head>
 <body>

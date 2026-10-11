@@ -1,4 +1,4 @@
-import type { BrandCategory, BrandKind, Palette } from '../domain/brand';
+import type { BrandCategory, BrandFonts, BrandKind, Palette } from '../domain/brand';
 import { DEFAULT_LOCALE, INTL_LOCALES, type Locale } from '../i18n/locales';
 import { steps as stepMessages } from '../i18n/messages/steps';
 import { translate, type MessageKey } from '../i18n/translate';
@@ -66,6 +66,7 @@ export interface WebsiteInsights {
   audiences: string[];
   palette: Palette;
   logoUri: string | null;
+  fonts: BrandFonts | null;
   // La lingua dei post che il sito suggerisce (siteLanguage).
   language: Locale;
 }

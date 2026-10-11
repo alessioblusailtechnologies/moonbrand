@@ -18,7 +18,7 @@ if (!site) {
 const schema = {
   type: 'object',
   additionalProperties: false,
-  required: ['site', 'name', 'sector', 'category', 'summary', 'pitch', 'themes', 'goals', 'audiences', 'colors', 'logo', 'language'],
+  required: ['site', 'name', 'sector', 'category', 'summary', 'pitch', 'themes', 'goals', 'audiences', 'colors', 'fonts', 'logo', 'language'],
   properties: {
     site: { type: 'string', description: 'Dominio del sito, senza protocollo né www' },
     name: { type: 'string', description: 'Nome del brand come appare sul sito' },
@@ -40,6 +40,20 @@ const schema = {
       maxItems: 4,
       description: 'Palette del sito in esadecimale: primario, secondario, accento, sfondo',
     },
+    fonts: {
+      type: ['object', 'null'],
+      additionalProperties: false,
+      required: ['titles', 'text', 'found'],
+      properties: {
+        titles: { type: 'string', description: 'La famiglia di Google Fonts per i titoli, scritta come su fonts.google.com (es. "Playfair Display")' },
+        text: { type: 'string', description: 'La famiglia di Google Fonts per i testi, scritta come su fonts.google.com (es. "Work Sans")' },
+        found: {
+          type: ['string', 'null'],
+          description: 'I font che usa davvero il sito, se sono diversi da quelli scelti (di sistema, a pagamento o di bassa qualità); null se coincidono',
+        },
+      },
+      description: 'I font del brand; null se il sito non ne ha di riconoscibili',
+    },
     language: {
       type: 'string',
       pattern: '^[a-z]{2}$',
@@ -58,7 +72,12 @@ const workDir = await mkdtemp(path.join(tmpdir(), 'moonbrand-website-'));
 
 const prompt = `Leggi il sito ${site} e ricava le informazioni sul brand. ${replyRule()}
 
-Trova anche il logo: di solito è in testata o nel footer, a volte è la prima immagine della pagina o un'immagine con il nome del brand; l'immagine dell'anteprima social e la favicon sono ripieghi. Scarica i candidati con curl nella cartella corrente e guardali con Read prima di scegliere: il logo è il marchio o la scritta del brand, non un banner, una foto o un'icona generica.`;
+Trova anche il logo: di solito è in testata o nel footer, a volte è la prima immagine della pagina o un'immagine con il nome del brand; l'immagine dell'anteprima social e la favicon sono ripieghi. Scarica i candidati con curl nella cartella corrente e guardali con Read prima di scegliere: il logo è il marchio o la scritta del brand, non un banner, una foto o un'icona generica.
+
+Trova anche i font: scarica con curl l'HTML e i fogli di stile, e cerca la font-family dei titoli (h1, h2) e dei testi (body, p), i link a Google Fonts o Adobe Fonts e le regole @font-face. Per titoli e testi scegli una famiglia di Google Fonts:
+- la stessa del sito, se è su Google Fonts ed è un font curato;
+- se il sito usa un font di sistema (Arial, Helvetica, Times New Roman, Georgia, Verdana, Tahoma, system-ui e simili), un font a pagamento o non disponibile, o un font di bassa qualità, la famiglia di Google Fonts di alta qualità più simile per genere e carattere (grottesco, geometrico, umanista, con le grazie, slab, condensato), e scrivi in found quelli del sito.
+Controlla su fonts.google.com che le famiglie scelte esistano, scritte esattamente così.`;
 
 try {
   for await (const message of query({

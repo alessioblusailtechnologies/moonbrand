@@ -5,18 +5,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=Montserrat:ital,wght@0,400;0,500;1,400&display=block" rel="stylesheet">
 <style>
   :root { --principale: #1F1B18; --secondario: #BD9E84; --accento: #866B4F; --sfondo: #E6D7C8; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Montserrat', sans-serif; }
   html, body { margin: 0; width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Montserrat', sans-serif; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
 
   .sfondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 60% 50%; }
-  .scheda { position: absolute; left: 205px; top: 330px; width: 670px; height: 830px; box-sizing: border-box; padding: 175px 70px 0;
-    background: rgba(255, 255, 255, 0.92); border-radius: 14px; text-align: center; }
+  .scheda { position: absolute; left: 205px; top: 330px; width: 670px; min-height: 830px; box-sizing: border-box; padding: 175px 70px 140px;
+    background: color-mix(in srgb, color-mix(in srgb, var(--sfondo) 50%, white) 92%, transparent); border-radius: 14px; text-align: center; }
   .tondo { position: absolute; left: 420px; top: 210px; width: 240px; height: 240px; border-radius: 50%; object-fit: cover;
     object-position: 45% 40%; }
-  .titolo { margin: 0; font-family: 'Playfair Display', serif; font-weight: 400; font-size: 54px; line-height: 70px; }
-  .sottotitolo { margin: 10px 0 0; font-size: 27px; line-height: 36px; font-weight: 500; text-transform: uppercase; }
+  .titolo { margin: 0; font-family: var(--font-titoli); font-weight: 400; font-size: 54px; line-height: 70px; }
+  .sottotitolo { margin: 10px 0 0; font-size: 27px; line-height: 36px; font-weight: 500; text-transform: uppercase;
+    color: color-mix(in srgb, var(--secondario) 80%, var(--principale)); }
   .testo { margin: 44px 0 0; font-size: 31px; line-height: 46px; text-align: justify; text-align-last: left; }
-  .piede { position: absolute; left: 0; right: 0; bottom: 0; height: 108px; border-top: 2px solid color-mix(in srgb, var(--principale) 35%, white);
+  .piede { position: absolute; left: 0; right: 0; bottom: 0; height: 108px; border-top: 2px solid var(--accento); color: var(--accento);
     display: flex; align-items: center; justify-content: center; font-size: 33px; font-style: italic; }
 </style>
 </head>

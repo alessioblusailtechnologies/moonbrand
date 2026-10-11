@@ -1,5 +1,6 @@
 import type { BrandContext } from '@moonbrand/shared/api/contract';
 import {
+  type BrandFonts,
   type ChannelId,
   type Channels,
   type Identity,
@@ -71,8 +72,8 @@ export interface BrandForIdeas {
 }
 
 export async function findBrandForIdeas(db: Queryable, brandId: string): Promise<BrandForIdeas | null> {
-  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; instructions: string; style_guide: string | null; template: string | null; palette: string[] | null }>(
-    `select identity, positioning, channels, themes, instructions, style_guide, visual->>'template' as template, visual->'palette'->'colors' as palette from presenza.brands where id = $1`,
+  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; instructions: string; style_guide: string | null; template: string | null; palette: string[] | null; fonts: BrandFonts | null }>(
+    `select identity, positioning, channels, themes, instructions, style_guide, visual->>'template' as template, visual->'palette'->'colors' as palette, visual->'fonts' as fonts from presenza.brands where id = $1`,
     [brandId],
   );
   const row = rows[0];
@@ -132,6 +133,7 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
       style: row.style_guide,
       template: row.template,
       palette: row.palette ?? [],
+      fonts: row.fonts ?? null,
       layouts: layouts.rows,
       plan,
     },

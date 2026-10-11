@@ -201,6 +201,60 @@
   }
 }
 
+// La categoria non ha ancora template: un avviso, non un passo da fare.
+.soon {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--surface-sunken);
+
+  mb-icon {
+    flex: none;
+    margin-top: 2px;
+    color: var(--primary);
+  }
+}
+
+// I font del brand: titoli e testi, con una riga di prova nel loro font.
+.fonts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.font-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.font-kind {
+  flex: none;
+  width: 72px;
+}
+
+.font-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+
+  p {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text-title);
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--text-body);
+  }
+}
+
 // I template della categoria: sopra lo slider dei layout, sotto il nome si sceglie.
 .templates {
   display: grid;

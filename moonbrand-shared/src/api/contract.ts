@@ -1,5 +1,5 @@
 import type { AiStep } from '../ai/steps';
-import type { BrandCategory, BrandDraft, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
+import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
@@ -148,6 +148,9 @@ export interface WebsiteReading {
   colors: string[];
   // Il logo del sito come data URI, pronto per il brand; null se non c'è o non si è riusciti a scaricarlo.
   logo: string | null;
+  // I font del sito come famiglie di Google Fonts (vedi BrandFonts); null se il sito non ne ha di riconoscibili.
+  // Manca nelle letture fatte prima che ci fosse.
+  fonts?: BrandFonts | null;
   // La lingua principale dei testi del sito (ISO 639-1, es. it, de), anche se non è tra le nostre: vedi siteLanguage.
   // Manca nelle letture fatte prima che ci fosse.
   language?: string;
@@ -164,11 +167,14 @@ export interface VisualBrandContext {
   notes: string;
   // Il template di moonbrand scelto (domain/templates): gli esempi si fanno con i suoi layout. null: nessun template.
   template?: string | null;
+  fonts?: BrandFonts | null;
 }
 
 export interface VisualJobRequest {
   brandId: string;
   brand: VisualBrandContext;
+  // Il logo della bozza (data URI): l'API lo mette nella cartella del brand, così gli esempi lo usano com'è.
+  logo?: string | null;
 }
 
 export interface VisualEditJobRequest {
@@ -212,6 +218,8 @@ export interface BrandContext {
   template: string | null;
   // I colori della palette del brand: principale, secondario, accento, sfondo.
   palette: string[];
+  // I font del brand, null se non ne ha scelti.
+  fonts: BrandFonts | null;
   // Le uscite delle prossime due settimane, con quello che hanno: l'assistente sa cosa esce e quando.
   plan: { id: string; date: string; time: string; channels: ChannelId[]; status: SlotStatus; theme: string | null; title: string | null }[];
 }

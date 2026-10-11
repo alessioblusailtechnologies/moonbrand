@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
-import { CHANNELS, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
+import { CHANNELS, categoryLabel, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
+import { QUALITY_FONTS } from '@moonbrand/shared/domain/fonts';
 import { findTemplate, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
@@ -14,6 +15,7 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { ChannelMark } from '../../../ui/channel-mark';
 import { Icon } from '../../../ui/icon';
 import { PendingMedia, pendingFromSteps } from '../../../ui/pending-media';
+import { Select, type SelectOption } from '../../../ui/select';
 import { LogoBackdrop } from '../../../ui/logo-backdrop';
 import { LightboxService } from '../../../ui/lightbox';
 import { StepList } from '../../../ui/step-list';
@@ -29,6 +31,13 @@ function layoutUrl(template: PostTemplate, layout: string): string {
   return `templates/${template.id}/${layout}.jpg`;
 }
 
+function loadFontPreview(family: string): void {
+  const id = `font-${family.replace(/W+/g, '-').toLowerCase()}`;
+  if (document.getElementById(id)) return;
+  const link = Object.assign(document.createElement('link'), { id, rel: 'stylesheet', href: `https://fonts.googleapis.com/css2?family=${family.replace(/ +/g, '+')}&display=swap` });
+  document.head.appendChild(link);
+}
+
 // I lavori sugli esempi che si stanno seguendo, per id: tornando al passo il lavoro si riprende senza seguirlo due volte,
 // e il risultato va nella bozza una volta sola.
 const running = new Map<string, { steps: WritableSignal<AiStep[]>; result: Promise<VisualExampleFile[]> }>();
@@ -41,7 +50,7 @@ function normalizeHex(input: string): string | null {
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost, TranslatePipe],
+  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost, Select, TranslatePipe],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
@@ -82,6 +91,20 @@ export class VisualStep implements OnInit {
       slides: template.layouts.map((layout) => layoutUrl(template, layout)),
     }));
   });
+  // I font del brand: quelli letti dal sito in cima, poi quelli curati; vuoto = quelli del template.
+  protected readonly fonts = computed(() => this.visual().fonts ?? null);
+  protected readonly fontOptions = computed<SelectOption[]>(() => {
+    const own = this.fonts();
+    const families = [...new Set([own?.titles, own?.text, ...QUALITY_FONTS].filter((family): family is string => Boolean(family)))];
+    return [{ value: '', label: this.i18n.t('onboarding.visual.fonts.template') }, ...families.map((family) => ({ value: family, label: family }))];
+  });
+  // Senza template per la categoria: l'avviso che arriveranno, con il nome della categoria se il brand ne ha una.
+  protected readonly templatesSoon = computed(() => {
+    const category = this.draft().identity.category;
+    if (!category) return this.i18n.t('onboarding.visual.template.soonGeneric');
+    const label = categoryLabel(category, this.i18n.locale());
+    return this.i18n.t('onboarding.visual.template.soon', { category: label.charAt(0).toLowerCase() + label.slice(1) });
+  });
   // La slide visibile nello slider di ogni template, per i pallini e le frecce.
   protected readonly slide = signal<Record<string, number>>({});
   protected readonly sitePalette = computed(() => this.store.insights()?.palette ?? (this.visual().palette.origin === 'site' ? this.visual().palette : null));
@@ -118,6 +141,11 @@ export class VisualStep implements OnInit {
   protected readonly selectedCount = computed(() => this.examples().filter((example) => example.selected).length);
 
   constructor() {
+    // Le anteprime dei font scelti si vedono nel loro font: il foglio di Google Fonts si carica una volta per famiglia.
+    effect(() => {
+      const fonts = this.fonts();
+      for (const family of [fonts?.titles, fonts?.text]) if (family) loadFontPreview(family);
+    });
     effect(() => {
       this.hexDrafts.set(this.visual().palette.colors.map((color) => color.toUpperCase()));
     });
@@ -193,6 +221,17 @@ export class VisualStep implements OnInit {
       this.references().map((file, i) => ({ url: file.url, alt: this.i18n.t('onboarding.visual.references.alt', { n: i + 1 }) })),
       index,
     );
+  }
+
+  // Uno solo dei due vuoto vuol dire i font del template per tutti e due; scelto il primo, l'altro parte uguale.
+  protected setFont(kind: 'titles' | 'text', family: string): void {
+    const current = this.current().fonts;
+    if (!family) {
+      this.set({ fonts: null });
+      return;
+    }
+    const base = current ?? { titles: family, text: family, found: null };
+    this.set({ fonts: { ...base, [kind]: family } });
   }
 
   // Template e immagini di riferimento sono in alternativa: scegliendo un template quelle caricate si tolgono.
@@ -322,10 +361,13 @@ export class VisualStep implements OnInit {
       palette: [...this.current().palette.colors],
       notes,
       template: this.current().template ?? null,
+      fonts: this.current().fonts ?? null,
     };
     this.preparing.set(true);
     try {
-      const jobId = await this.ai.queueExamples({ brandId, brand });
+      // Il logo della bozza va con la richiesta: l'API lo mette nella cartella del brand per gli esempi.
+      const logo = this.current().logoUri;
+      const jobId = await this.ai.queueExamples({ brandId, brand, logo: logo?.startsWith('data:image/') ? logo : null });
       this.store.setExamplesPending({ jobId, edit: false });
       await this.track(jobId, false);
     } catch (error) {

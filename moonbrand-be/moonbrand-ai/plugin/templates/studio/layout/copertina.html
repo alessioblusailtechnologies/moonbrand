@@ -6,21 +6,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
 <style>
-  :root { --principale: #000000; --secondario: #D9D9D9; --accento: #3A3A3A; --sfondo: #FFFFFF; }
+  :root { --principale: #000000; --secondario: #000000; --accento: #FFFFFF; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Instrument Sans', sans-serif; --font-testo: 'Instrument Sans', sans-serif; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: 'Instrument Sans', sans-serif; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
 
-  .tag { position: absolute; top: 56px; left: 0; width: 1080px; text-align: center; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
+  .tag { position: absolute; top: 56px; left: 0; width: 1080px; text-align: center;  color: var(--accento); font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
   .foto { position: absolute; left: 584px; top: 206px; width: 422px; height: 932px; object-fit: cover; object-position: 50% 100%; border-radius: 38px; display: block; }
-  .titolo { position: absolute; left: 74px; top: 250px; font-size: 140px; font-weight: 700; line-height: 137px; letter-spacing: -0.055em; white-space: nowrap; }
+  .titolo { position: absolute; left: 74px; top: 250px; font-family: var(--font-titoli); font-size: 140px; font-weight: 700; line-height: 137px; letter-spacing: -0.055em; white-space: nowrap; }
   .titolo .riga { display: block; }
-  .titolo .evidenza { display: inline-block; background: var(--sfondo); color: var(--principale); line-height: 1; padding: 0 20px 10px 18px; margin-left: -18px; }
+  .titolo .evidenza { display: inline-block; background: var(--accento); color: var(--principale); line-height: 1; padding: 0 20px 10px 18px; margin-left: -18px; }
   .titolo .giu { transform: rotate(-1.6deg); }
   .titolo .su { transform: rotate(1.4deg); }
 
   .pillole { position: absolute; left: 74px; bottom: 70px; display: flex; gap: 14px; }
-  .pillola { height: 46px; padding: 0 18px; border: 2.5px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 41px; letter-spacing: -0.01em; }
+  .pillola { height: 46px; padding: 0 18px; background: var(--secondario); border: 2.5px solid currentColor; border-radius: 999px; font-size: 24px; font-weight: 600; line-height: 41px; letter-spacing: -0.01em; }
   .logo { position: absolute; right: 74px; bottom: 80px; font-size: 25px; font-weight: 700; letter-spacing: -0.01em; }
 </style>
 </head>

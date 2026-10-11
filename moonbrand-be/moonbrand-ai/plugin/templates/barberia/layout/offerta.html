@@ -7,25 +7,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bevan&display=swap" rel="stylesheet">
 <style>
   :root { --principale: #C9AF7E; --secondario: #4A5444; --accento: #DCDCD9; --sfondo: #363635; }
+  :root { --font-titoli: 'Bevan', serif; --font-testo: 'Bebas Neue', sans-serif; }
   :root {
     /* bianco sui fondi scuri, nero su quelli chiari */
     --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { position: relative; background: var(--sfondo); font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; }
-  /* le colonne del fondo: scuro, verde, una striscia scura, verde */
+  body { position: relative; background: var(--sfondo); font-family: var(--font-testo); text-transform: uppercase; }
+  /* le colonne del fondo: sfondo, secondario, una striscia scura del secondario, secondario */
   .colonna { position: absolute; top: 0; height: 1350px; }
   .verde-1 { left: 269px; width: 543px; background: var(--secondario); }
-  .striscia { left: 812px; width: 81px; background: color-mix(in srgb, var(--sfondo) 82%, black); }
+  .striscia { left: 812px; width: 81px; background: color-mix(in srgb, var(--secondario) 55%, black); }
   .verde-2 { left: 893px; width: 187px; background: var(--secondario); }
   /* la carta stropicciata del template */
   .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: .8;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0035' numOctaves='4' seed='11'/%3E%3CfeDiffuseLighting lighting-color='%23b0b0b0' surfaceScale='7'%3E%3CfeDistantLight azimuth='225' elevation='40'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
   .foto { position: absolute; left: 204px; top: 168px; width: 824px; height: 800px; display: block; object-fit: cover; object-position: 50% 50%; }
-  .parola { position: absolute; left: 204px; top: 82px; width: 824px; text-align: center; font-family: 'Bevan', serif; font-size: 142px; line-height: 1; color: var(--accento); }
+  .parola { position: absolute; left: 204px; top: 82px; width: 824px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-synthesis: none; font-size: 142px; line-height: 1; color: var(--accento); }
   .ripetuto { position: absolute; left: 62px; top: 470px; color: var(--su-sfondo); font-size: 34px; line-height: 42px; white-space: nowrap; }
-  .titolo { position: absolute; left: 82px; top: 1088px; width: 940px; font-family: 'Bevan', serif; font-size: 72px; line-height: 1.02; color: var(--principale); }
+  .titolo { position: absolute; left: 82px; top: 1088px; width: 940px; font-family: var(--font-titoli); font-size: 72px; line-height: 1.02; color: var(--principale); }
 </style>
 </head>
 <body>
