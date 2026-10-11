@@ -20,7 +20,7 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 | Canale | Testo | Caratteri al massimo | Hashtag al massimo |
 | --- | --- | --- | --- |
 | LinkedIn (linkedin) | la prima riga deve fermare lo scorrimento, le prime due righe (circa 210 caratteri) si vedono prima di «…altro»; paragrafi brevi separati da una riga vuota; da 700 a 1.500 caratteri, fino a 2.900 per un articolo | 3.000 | 3 |
-| Instagram (instagram) | didascalia da 300 a 900 caratteri: prima di «…altro» se ne vedono circa 125, lì va l’aggancio; per un carosello invita a scorrere | 2.200 | 6 |
+| Instagram (instagram) | didascalia intorno ai 220 caratteri, da una riga a qualche paragrafo breve: prima di «…altro» se ne vedono circa 125, lì va l’aggancio (vedi [Instagram](./canali/instagram.md)) | 2.200 | 5 |
 | Facebook (facebook) | tono vicino e discorsivo, da 300 a 1.000 caratteri | — | 2 |
 | TikTok (tiktok) | didascalia corta, una o due righe intorno ai 120 caratteri: sta sopra l’immagine (vedi [TikTok](./canali/tiktok.md)) | 4.000 | 6 |
 | X (x) | una sola idea: testo e hashtag insieme al massimo 280 caratteri | 280 | 2 |
@@ -56,18 +56,18 @@ Le immagini finali sono PNG o JPEG, i video MP4.
 
 L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. Su ogni canale il contenuto deve sembrare nato lì, e restare riconoscibile come del brand.
 
-Se tra i canali del contenuto c’è TikTok, prima di scegliere l’idea, scrivere il copione o fare le slide leggi [TikTok](./canali/tiktok.md): è la guida del canale e vale anche quando TikTok è insieme ad altri canali.
+Se tra i canali del contenuto c’è TikTok o Instagram, prima di scegliere l’idea, scrivere il copione o fare le slide leggi la guida del canale, [TikTok](./canali/tiktok.md) o [Instagram](./canali/instagram.md): vale anche quando il canale è insieme ad altri.
 
 | Canale | La confezione |
 | --- | --- |
-| Instagram | curata ed editoriale, con la grafica del brand: palette, font, logo. La copertina di un Reel si vede anche ritagliata al centro in 4:5 nella griglia del profilo: titolo e soggetto stanno lì. Un carosello si salva se ogni slide porta un punto utile. |
+| Instagram | due confezioni: il Reel nativo ma curato, con riprese vere e una frase al centro, senza grafica del brand né logo finale; il carosello e il post editoriali, con titoli impaginati nel font e nella palette del brand. Come si fa: [Instagram](./canali/instagram.md). |
 | Facebook | la stessa di Instagram: di solito i file sono gli stessi. |
 | TikTok | nativa, come la fa chi usa l’app: riprese vere a tutto schermo, una frase scritta come la scrive l’app dal primo secondo, niente grafiche montate e niente logo finale. Come si fa, per video e photo mode: [TikTok](./canali/tiktok.md). |
 | LinkedIn | sobria e leggibile: titoli chiari, dati e concetti in primo piano, poca decorazione, il logo discreto. |
 | X | un’immagine sola con un messaggio solo, leggibile anche piccola. |
 | Pinterest | un pin verticale da salvare: una foto bella e luminosa che occupa quasi tutto, un titolo grande e chiaro sull’immagine che dice cosa si trova (un’idea, una guida, una ricetta, un prodotto), leggibile anche come miniatura nella griglia; il nome o il logo del brand piccolo in basso. Contenuti che durano nel tempo più che notizie del giorno. |
 
-- Sotto «Lo stile», in CLAUDE.md, la voce «Per canale» dice come si presenta il brand su ciascun canale nei suoi riferimenti: seguila per palette, font e quanta grafica usare. La confezione del canale (dove sta il testo, come si aggancia, come si chiude) resta quella di questa tabella.
+- Sotto «Lo stile», in CLAUDE.md, la voce «Per canale» dice come si presenta il brand su ciascun canale nei suoi riferimenti: seguila per palette, font e quanta grafica usare. La confezione del canale (dove sta il testo, come si aggancia, come si chiude) resta quella di questa tabella e delle guide dei canali: su Instagram la grafica del brand va nei caroselli e nei post, anche se i riferimenti la mettono nei Reel.
 - Instagram e Facebook condividono i file. TikTok ha i suoi anche quando la proporzione è la stessa, come il video 9:16 accanto al Reel: salvali con channel «tiktok». Pinterest ha i suoi in 2:3; il suo video 9:16 è lo stesso del Reel.
 - Se l’utente chiede la stessa confezione per tutti i canali, fai come chiede.
 

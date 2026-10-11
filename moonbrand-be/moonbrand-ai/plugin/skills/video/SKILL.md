@@ -7,7 +7,7 @@ description: Come si fa un video per il brand della cartella (Reels, TikTok, Sho
 
 Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video lo guarda il motore di visione con il tool guarda, e alla fine si esporta sempre.
 
-Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo. Se tra i canali c'è TikTok leggi anche [TikTok](../contenuti/canali/tiktok.md): durata, aggancio, testo, ritmo e chiusura del video TikTok vengono da lì.
+Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo. Se tra i canali c'è TikTok o Instagram leggi anche la guida del canale, [TikTok](../contenuti/canali/tiktok.md) o [Instagram](../contenuti/canali/instagram.md): durata, aggancio, testo, ritmo e chiusura del video vengono da lì.
 
 ## Il copione
 

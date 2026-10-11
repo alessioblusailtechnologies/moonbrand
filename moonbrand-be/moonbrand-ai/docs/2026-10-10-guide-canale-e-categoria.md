@@ -169,7 +169,20 @@ Il salto c'è ed è nella direzione della guida (più corto, meno testo, cambio 
 quarto di costo e di tempo in meno. Una corsa per variante: va confermato. Dettagli in
 `moonbrand-prova-riferimenti/RISULTATI-GUIDE.md`.
 
+## Fatto il 12/10: la guida di Instagram
+
+- 27 contenuti Instagram scelti a mano dall'utente (18 Reel e 9 caroselli: saloni, gioielli, agenzie, ristoranti),
+  scaricati con `moonbrand-scraper/src/instagram.ts` (yt-dlp, senza login e senza crediti: dà file, didascalia, like e
+  commenti, non le visualizzazioni né gli altri post dell'autore) e analizzati con `src/schede-instagram.ts` (0,28 $).
+  Zernio per Instagram restituisce solo la copertina.
+- Cosa dicono: il Reel è nativo ma curato (14 su 18), 6-11 secondi, una frase al centro, nessuna voce, niente grafica del
+  brand; il carosello è editoriale (titoli impaginati nel font del brand in 8 su 9), e quelli che insegnano chiudono con
+  «commenta una parola». Didascalia mediana 220 caratteri, 10 su 27 senza hashtag.
+- `canali/instagram.md`, richiamato da `contenuti/SKILL.md` e `video/SKILL.md`; la riga Instagram della confezione
+  ora dice Reel nativo e carosello editoriale; hashtag Instagram fino a 5. Guide `categorie/{bellezza,ecommerce,agenzia}/instagram.md`.
+  Gli esempi dell'onboarding la prendono da sola (`channelLooks`).
+
 ## Prossimi passi
 
-1. Confermare il confronto con un secondo brief (un brand senza prima e dopo, per esempio i gioielli); poi Instagram.
+1. Confermare il confronto con un secondo brief (un brand senza prima e dopo, per esempio i gioielli), anche su Instagram.
 2. Il campo categoria nell'app.
