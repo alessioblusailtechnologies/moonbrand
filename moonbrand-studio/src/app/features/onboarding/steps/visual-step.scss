@@ -201,6 +201,66 @@
   }
 }
 
+// I template della categoria: la copertina apre tutti i layout, sotto il nome si sceglie.
+.templates {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.template {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1.5px solid var(--grey-100);
+  border-radius: 14px;
+  background: var(--white);
+
+  &.selected {
+    border-color: var(--border-strong);
+  }
+}
+
+.template-cover {
+  display: block;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  background: var(--grey-100);
+  cursor: zoom-in;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+.template-pick {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .templates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 // Due esempi, uno per canale, ciascuno nella cornice del suo canale.
 .examples {
   display: grid;

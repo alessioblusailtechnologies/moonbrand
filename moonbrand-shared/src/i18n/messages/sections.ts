@@ -92,6 +92,7 @@ export const sections = defineMessages({
       noLogo: 'Nessun logo',
       references: '{n, plural, one {# riferimento} other {# riferimenti}}',
       lineReady: 'linea pronta',
+      template: 'template {name}',
       signature: 'firma sulle card',
       sources:
         '{profiles, plural, one {# profilo} other {# profili}} · {sources, plural, one {# fonte} other {# fonti}} · {dates, plural, one {# data} other {# date}}',
@@ -188,6 +189,7 @@ export const sections = defineMessages({
       noLogo: 'No logo',
       references: '{n, plural, one {# reference} other {# references}}',
       lineReady: 'style ready',
+      template: '{name} template',
       signature: 'signature on cards',
       sources:
         '{profiles, plural, one {# profile} other {# profiles}} · {sources, plural, one {# source} other {# sources}} · {dates, plural, one {# date} other {# dates}}',
@@ -285,6 +287,7 @@ export const sections = defineMessages({
       noLogo: 'Aucun logo',
       references: '{n, plural, one {# référence} other {# références}}',
       lineReady: 'ligne prête',
+      template: 'modèle {name}',
       signature: 'signature sur les visuels',
       sources:
         '{profiles, plural, one {# profil} other {# profils}} · {sources, plural, one {# source} other {# sources}} · {dates, plural, one {# date} other {# dates}}',

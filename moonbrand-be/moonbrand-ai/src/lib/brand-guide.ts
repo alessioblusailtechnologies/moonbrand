@@ -9,12 +9,14 @@ import { formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 import { describeBrand } from './brand-brief';
 import { logoFile } from './brand-logo';
 import { categoryGuide } from './guides';
+import { installTemplate, templateName, templateSection } from './templates';
 
 // Il CLAUDE.md della cartella del brand: chi apre Claude lì dentro sa già chi è il brand e dove sono le cose.
 // Le regole per scrivere e proporre idee stanno nelle skill di moonbrand. Si riscrive prima di ogni job dal brand com'è sul DB.
 // logo: il file del logo nella cartella del brand (lo scrive il worker dal profilo), null se il brand non ce l'ha.
 // category: la guida della categoria del brand (guides), null se non ce l'ha.
-export function brandGuide(brand: BrandContext, logo: string | null = null, category: string | null = null): string {
+// template: il TEMPLATE.md del template scelto, già copiato in template/ (templates), null se il brand non ne ha.
+export function brandGuide(brand: BrandContext, logo: string | null = null, category: string | null = null, template: string | null = null): string {
   const name = brand.identity.name || 'Brand';
   // Il logo vero, mai uno rifatto: chi fa una grafica lo mette con <img> com'è.
   const logoSection = `
@@ -72,15 +74,25 @@ Come lavorano le attività come questa sui canali del brand: formati, materiale 
 ${category}
 `
     : '';
+  // Il template scelto è il sistema grafico del brand: viene prima dello stile letto dagli esempi, che ne sono già fatti.
+  const chosen = templateName(brand.template);
+  const templateBlock =
+    template && chosen
+      ? `
+## Il template
+${templateSection(chosen, template)}
+`
+      : '';
   return `# ${name}
 
 La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal profilo del brand: non modificarlo, si riscrive a ogni lavoro.
 
 ${describeBrand(brand)}
-${logoSection}${style}${categorySection}${recent}${plan}
+${logoSection}${templateBlock}${style}${categorySection}${recent}${plan}
 ## La cartella
 ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file caricati per il brand (logo, foto, materiali).
-- riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.
+- riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.${template ? `
+- template/: il template del brand (layout e anteprime).` : ''}
 - allegati/: le foto e i video mandati nella chat.
 - contenuti/<id>/: i contenuti salvati, con le immagini finali e i file di lavoro in lavoro/.
 - chat/<id>/: la cartella di lavoro di ogni conversazione.
@@ -95,5 +107,9 @@ ${logo ? `- ${logo}: il logo del brand.\n` : ''}- file-riferimento/: i file cari
 }
 
 export async function writeBrandGuide(brandDir: string, brand: BrandContext): Promise<void> {
-  await writeFile(path.join(brandDir, 'CLAUDE.md'), brandGuide(brand, await logoFile(brandDir), await categoryGuide(brand.identity.category, brand.channels)));
+  const template = await installTemplate(brandDir, brand.template, brand.palette);
+  await writeFile(
+    path.join(brandDir, 'CLAUDE.md'),
+    brandGuide(brand, await logoFile(brandDir), await categoryGuide(brand.identity.category, brand.channels), template),
+  );
 }

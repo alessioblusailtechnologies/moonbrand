@@ -162,6 +162,8 @@ export interface VisualBrandContext {
   instructions: string;
   palette: string[];
   notes: string;
+  // Il template di moonbrand scelto (domain/templates): gli esempi si fanno con i suoi layout. null: nessun template.
+  template?: string | null;
 }
 
 export interface VisualJobRequest {
@@ -206,6 +208,10 @@ export interface BrandContext {
   style: string | null;
   // Le impaginazioni degli ultimi contenuti, per farne una diversa.
   layouts: { title: string; format: ContentFormat; layout: string }[];
+  // Il template di moonbrand scelto (domain/templates), null se il brand segue i suoi riferimenti.
+  template: string | null;
+  // I colori della palette del brand: principale, secondario, accento, sfondo.
+  palette: string[];
   // Le uscite delle prossime due settimane, con quello che hanno: l'assistente sa cosa esce e quando.
   plan: { id: string; date: string; time: string; channels: ChannelId[]; status: SlotStatus; theme: string | null; title: string | null }[];
 }

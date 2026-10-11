@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22302B; --secondario: #7D8A83; --accento: #2D54C8; --sfondo: #E8E7E1; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: 'Archivo', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-size: 24px; line-height: 1.35; }
+
+  .contesto { position: absolute; left: 64px; top: 64px; width: 620px; }
+  .numero { position: absolute; left: 48px; top: 112px; font-size: 360px; font-weight: 800; font-stretch: 68%; line-height: 0.9; letter-spacing: -0.02em; color: var(--accento); }
+  .significato { position: absolute; left: 64px; top: 470px; width: 760px; font-size: 50px; font-weight: 600; font-stretch: 85%; line-height: 1.08; }
+  .foto { position: absolute; left: 440px; top: 700px; width: 640px; height: 650px; object-fit: cover; object-position: 40% 50%; display: block; }
+  .fonte { position: absolute; left: 64px; top: 716px; width: 336px; }
+  .logo { position: absolute; left: 64px; bottom: 52px; font-size: 30px; font-weight: 700; font-stretch: 90%; }
+</style>
+</head>
+<body>
+  <!-- contesto: di chi è il numero, 3-6 parole -->
+  <p class="contesto mono">Frantoio Ruggi, vendite dal sito</p>
+
+  <!-- numero: il dato vero, al massimo 5 caratteri (+212%, 3,1%, 48 h) -->
+  <div class="numero">+212%</div>
+
+  <!-- significato: cosa vuol dire il numero, 10-18 parole -->
+  <p class="significato">di ordini online in sei mesi, con le stesse bottiglie e lo stesso prezzo</p>
+
+  <!-- fonte: da dove viene il dato e su che periodo, 12-25 parole -->
+  <p class="fonte mono">Fonte: Google Analytics del frantoio, ottobre 2025-marzo 2026 sullo stesso periodo dell’anno prima.</p>
+
+  <!-- foto: un dettaglio del lavoro dietro al numero, orizzontale -->
+  <img class="foto" src="../esempio/matita.jpg" alt="">
+
+  <!-- logo: il nome del brand -->
+  <div class="logo">Studio Rovo</div>
+</body>
+</html>

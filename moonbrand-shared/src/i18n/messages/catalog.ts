@@ -57,6 +57,14 @@ export const catalog = defineMessages({
       accent: 'Accento',
       background: 'Sfondo',
     },
+    templates: {
+      specchio: 'Editoriale da rivista di moda: la foto a tutta pagina comanda, titoli con le grazie appoggiati di lato.',
+      salone: 'Caldo e di quartiere: foto vere e un colore pieno del brand, titoli stretti e decisi.',
+      rituale: 'Calmo e pulito, per estetica e benessere: tanto spazio, foto in riquadro, testi piccoli e precisi.',
+      manifesto: 'Tipografico e diretto: titoli enormi su un colore pieno, per opinioni, dati e prese di posizione.',
+      quaderno: 'Editoriale e ragionato: griglia a colonne, titoli con le grazie, numeri grandi per i dati.',
+      cantiere: 'Dal lavoro vero: la foto o la schermata del progetto in grande, didascalie tecniche, risultati in chiaro.',
+    },
     typography: {
       inter: 'Moderno',
       archivo: 'Deciso',
@@ -143,6 +151,14 @@ export const catalog = defineMessages({
       accent: 'Accent',
       background: 'Background',
     },
+    templates: {
+      specchio: 'Fashion-magazine editorial: the full-page photo leads, serif headlines set to one side.',
+      salone: 'Warm and local: real photos and a solid brand colour, narrow, confident headlines.',
+      rituale: 'Calm and clean, for beauty and wellness: lots of space, framed photos, small precise text.',
+      manifesto: 'Typographic and direct: huge headlines on a solid colour, for opinions, figures and stances.',
+      quaderno: 'Editorial and considered: column grid, serif headlines, big numbers for data.',
+      cantiere: 'From the real work: the project photo or screen up large, technical captions, results spelled out.',
+    },
     typography: {
       inter: 'Modern',
       archivo: 'Bold',
@@ -228,6 +244,14 @@ export const catalog = defineMessages({
       secondary: 'Secondaire',
       accent: 'Accent',
       background: 'Fond',
+    },
+    templates: {
+      specchio: 'Éditorial de magazine de mode : la photo pleine page domine, titres à empattements posés sur le côté.',
+      salone: 'Chaleureux et de quartier : vraies photos et une couleur pleine de la marque, titres étroits et affirmés.',
+      rituale: 'Calme et épuré, pour l’esthétique et le bien-être : beaucoup d’espace, photos encadrées, textes petits et précis.',
+      manifesto: 'Typographique et direct : titres énormes sur une couleur pleine, pour les opinions, les chiffres et les prises de position.',
+      quaderno: 'Éditorial et réfléchi : grille en colonnes, titres à empattements, grands chiffres pour les données.',
+      cantiere: 'Tiré du vrai travail : la photo ou l’écran du projet en grand, légendes techniques, résultats en clair.',
     },
     typography: {
       inter: 'Moderne',

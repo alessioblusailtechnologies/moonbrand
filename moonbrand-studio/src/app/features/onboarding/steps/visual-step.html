@@ -76,32 +76,69 @@
   }
 </section>
 
-<section class="panel">
-  <p class="label">{{ 'onboarding.visual.references.label' | t }}</p>
-  <p class="caption">{{ 'onboarding.visual.references.hint' | t }}</p>
-  <div class="references">
-    @for (file of references(); track file.path ?? file.url; let i = $index) {
-      <div class="reference">
-        <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.zoom' | t: { n: i + 1 }" (click)="openReference(i)">
-          <img [src]="file.url" [alt]="'onboarding.visual.references.alt' | t: { n: i + 1 }" />
-        </button>
-        <button class="icon-btn solid remove" type="button" [attr.aria-label]="'onboarding.visual.references.remove' | t: { n: i + 1 }"
-          (click)="removeReference(file)">
-          <mb-icon name="x" [size]="12" [stroke]="3" />
-        </button>
-      </div>
+@if (templates().length > 0) {
+  <section class="panel">
+    <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
+    <p class="caption">{{ 'onboarding.visual.template.hint' | t }}</p>
+    <div class="templates" role="radiogroup" [attr.aria-label]="'onboarding.visual.template.label' | t">
+      @for (item of templates(); track item.id) {
+        <div class="template" [class.selected]="value.template === item.id">
+          <button class="template-cover" type="button" [attr.aria-label]="'onboarding.visual.template.layouts' | t: { name: item.name }"
+            (click)="openTemplate(item)">
+            <img [src]="item.cover" [alt]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: 1 }" loading="lazy" />
+          </button>
+          <button class="template-pick" type="button" role="radio" [attr.aria-checked]="value.template === item.id" (click)="chooseTemplate(item.id)">
+            <span class="grow">
+              <span class="strong-sm block">{{ item.name }}</span>
+              <span class="caption block">{{ item.description }}</span>
+            </span>
+            <span class="radio-mark" [class.on]="value.template === item.id"></span>
+          </button>
+        </div>
+      }
+    </div>
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="!value.template" [class.selected]="!value.template"
+      (click)="chooseTemplate(null)">
+      <span class="grow">
+        <span class="strong-sm block">{{ 'onboarding.visual.template.none' | t }}</span>
+        <span class="caption block">{{ 'onboarding.visual.template.noneHint' | t }}</span>
+      </span>
+      <span class="radio-mark" [class.on]="!value.template"></span>
+    </button>
+    @if (template()) {
+      <p class="caption">{{ 'onboarding.visual.template.chosen' | t }}</p>
     }
-    @for (slot of placeholders(); track slot) {
-      <div class="reference empty"><span class="spinner"></span></div>
-    }
-    @if (references().length + uploading() < maxReferences) {
-      <label class="reference empty add" [attr.aria-label]="'onboarding.visual.references.add' | t">
-        <mb-icon name="plus" />
-        <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
-      </label>
-    }
-  </div>
-</section>
+  </section>
+}
+
+@if (!template()) {
+  <section class="panel">
+    <p class="label">{{ 'onboarding.visual.references.label' | t }}</p>
+    <p class="caption">{{ 'onboarding.visual.references.hint' | t }}</p>
+    <div class="references">
+      @for (file of references(); track file.path ?? file.url; let i = $index) {
+        <div class="reference">
+          <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.zoom' | t: { n: i + 1 }" (click)="openReference(i)">
+            <img [src]="file.url" [alt]="'onboarding.visual.references.alt' | t: { n: i + 1 }" />
+          </button>
+          <button class="icon-btn solid remove" type="button" [attr.aria-label]="'onboarding.visual.references.remove' | t: { n: i + 1 }"
+            (click)="removeReference(file)">
+            <mb-icon name="x" [size]="12" [stroke]="3" />
+          </button>
+        </div>
+      }
+      @for (slot of placeholders(); track slot) {
+        <div class="reference empty"><span class="spinner"></span></div>
+      }
+      @if (references().length + uploading() < maxReferences) {
+        <label class="reference empty add" [attr.aria-label]="'onboarding.visual.references.add' | t">
+          <mb-icon name="plus" />
+          <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
+        </label>
+      }
+    </div>
+  </section>
+}
 
 <section class="panel">
   <p class="label">{{ 'onboarding.visual.examples.label' | t }}</p>
@@ -129,7 +166,7 @@
       }
     </div>
   } @else {
-    <p class="caption">{{ 'onboarding.visual.examples.empty' | t }}</p>
+    <p class="caption">{{ (template() ? 'onboarding.visual.examples.emptyTemplate' : 'onboarding.visual.examples.empty') | t }}</p>
   }
 
   <div class="row">

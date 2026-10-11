@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #4A1520; --secondario: #E8A3B0; --accento: #F2B300; --sfondo: #E6E3DC; }
+:root { --margine: 64px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1350px; }
+body {
+  background: var(--sfondo);
+  color: var(--principale);
+  font-family: 'Archivo', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.testa {
+  position: absolute; top: var(--margine); left: var(--margine); right: var(--margine);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 30px; font-weight: 500; font-stretch: 100%;
+}
+.logo { font-weight: 800; font-stretch: 110%; letter-spacing: -0.01em; }
+h2 {
+  position: absolute; left: calc(var(--margine) - 6px); right: var(--margine); top: 200px;
+  font-size: 236px; line-height: 0.86; font-weight: 900; font-stretch: 62%;
+  letter-spacing: -0.012em;
+}
+.filetto {
+  position: absolute; left: var(--margine); right: var(--margine); top: 900px;
+  height: 14px; background: var(--principale);
+}
+.testo {
+  position: absolute; left: 392px; right: var(--margine); top: 958px;
+  font-size: 40px; line-height: 1.28; font-weight: 500; font-stretch: 100%;
+}
+.pagina {
+  position: absolute; left: var(--margine); top: 964px;
+  font-size: 30px; font-weight: 500;
+}
+</style>
+</head>
+<body>
+  <div class="testa">
+    <!-- logo: il nome del brand (diventa il file del logo se c'è) -->
+    <span class="logo">Calce</span>
+    <!-- serie: il nome della rubrica, uguale a quello della copertina -->
+    <span class="serie">Opinioni, n. 14</span>
+  </div>
+  <!-- titolo: il punto in 3-6 parole, che regge da solo; i <br> li decide chi impagina -->
+  <h2>Contate i<br>salvataggi,<br>non i like.</h2>
+  <div class="filetto"></div>
+  <!-- pagina: la posizione nel carosello -->
+  <span class="pagina">2/6</span>
+  <!-- testo: 1-2 frasi, 20-30 parole, che spiegano il punto con un esempio concreto -->
+  <p class="testo">Un post salvato è uno che il cliente vuole ritrovare: una guida, un prezzo, un prima e dopo. Se in un mese non ne avete, cambiate argomento.</p>
+</body>
+</html>

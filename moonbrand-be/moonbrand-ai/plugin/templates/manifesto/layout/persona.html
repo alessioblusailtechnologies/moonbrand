@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #4A1520; --secondario: #E8A3B0; --accento: #F2B300; --sfondo: #E6E3DC; }
+:root { --margine: 64px; --colonna: 392px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1350px; }
+body {
+  background: var(--sfondo);
+  color: var(--principale);
+  font-family: 'Archivo', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.foto {
+  position: absolute; top: 0; left: var(--colonna); right: 0; height: 860px; width: calc(1080px - var(--colonna));
+  object-fit: cover; object-position: 55% 30%;
+}
+.logo {
+  position: absolute; top: var(--margine); left: var(--margine);
+  font-size: 30px; font-weight: 800; font-stretch: 110%; letter-spacing: -0.01em;
+}
+.ruolo {
+  position: absolute; left: var(--margine); width: 290px; bottom: 520px;
+  font-size: 32px; line-height: 1.2; font-weight: 500; font-stretch: 100%;
+}
+h2 {
+  position: absolute; left: calc(var(--margine) - 8px); right: var(--margine); top: 880px;
+  font-size: 236px; line-height: 0.84; font-weight: 900; font-stretch: 62%;
+  letter-spacing: -0.015em; white-space: nowrap;
+}
+.bio {
+  position: absolute; left: var(--colonna); right: var(--margine); bottom: var(--margine);
+  font-size: 34px; line-height: 1.25; font-weight: 500; font-stretch: 100%;
+}
+</style>
+</head>
+<body>
+  <!-- foto: la persona, vera, nel suo posto di lavoro; il viso nel terzo alto -->
+  <img class="foto" src="../esempio/persona.jpg" alt="">
+  <!-- logo: il nome del brand (diventa il file del logo se c'è) -->
+  <span class="logo">Calce</span>
+  <!-- ruolo: cosa fa e da quando, 3-8 parole -->
+  <p class="ruolo">Art director, con noi dal 2019</p>
+  <!-- nome: nome e cognome, su una riga; se è lungo, solo il nome -->
+  <h2>Elena Bassi</h2>
+  <!-- bio: 1-2 frasi in prima o terza persona, 15-25 parole, una cosa vera e precisa -->
+  <p class="bio">Ha disegnato le insegne di mezza via Saragozza. Non presenta mai un’idea senza averla stampata e appesa al muro.</p>
+</body>
+</html>

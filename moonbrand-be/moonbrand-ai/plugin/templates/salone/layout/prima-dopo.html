@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #0F5F5C; --secondario: #E7B7A8; --accento: #F4B63F; --sfondo: #F7E7E1; }
+html { --margine: 72px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--principale); font-family: 'Archivo', sans-serif; color: var(--sfondo); }
+
+/* Due foto della stessa persona, stessa luce e stessa inquadratura, affiancate sotto una fascia piena. Le foto sono
+   ingrandite dentro il riquadro per stare sui capelli: si regolano con left/top dell'img. */
+.riquadro { position: absolute; top: 330px; width: 535px; height: 1020px; overflow: hidden; }
+.riquadro.prima { left: 0; }
+.riquadro.dopo { left: 545px; }
+.riquadro img { position: absolute; width: 1075px; height: 1440px; object-fit: cover; }
+.prima img { left: -438px; top: -250px; }
+.dopo img { left: -350px; top: -290px; }
+
+/* La targhetta che scende dalla fascia sopra ogni foto: lo stesso gradino della copertina. */
+.targa {
+  position: absolute; top: 330px; height: 96px; padding: 14px 28px 0 var(--margine);
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 64px; line-height: 1;
+  background: var(--principale); color: var(--sfondo);
+}
+.targa.prima { left: 0; }
+.targa.dopo { left: 545px; padding-left: 36px; }
+
+.titolo {
+  position: absolute; left: var(--margine); top: 96px; width: 660px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 120px; line-height: 0.86;
+  text-transform: uppercase; color: var(--sfondo);
+}
+.logo {
+  position: absolute; left: 790px; top: 104px;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 46px; line-height: 1; color: var(--sfondo);
+}
+.nota { position: absolute; left: 790px; top: 172px; width: 218px; font-size: 28px; line-height: 1.3; color: var(--sfondo); }
+</style>
+</head>
+<body>
+  <!-- foto prima: la cliente prima del lavoro, di spalle o di tre quarti, capelli al centro -->
+  <div class="riquadro prima"><img src="../esempio/prima.jpg" alt=""></div>
+  <!-- foto dopo: la stessa cliente, stessa poltrona, stessa luce e inquadratura -->
+  <div class="riquadro dopo"><img src="../esempio/dopo.jpg" alt=""></div>
+  <div class="targa prima">Prima</div>
+  <div class="targa dopo">Dopo</div>
+  <!-- titolo: cosa è cambiato, 3-5 parole, 2 righe -->
+  <h1 class="titolo">Da crespi a caschetto</h1>
+  <!-- logo: il nome del salone -->
+  <div class="logo">Da Nives</div>
+  <!-- nota: il lavoro fatto e il tempo, 2-3 righe brevi -->
+  <div class="nota">Taglio e gloss castano, due ore e mezza</div>
+</body>
+</html>

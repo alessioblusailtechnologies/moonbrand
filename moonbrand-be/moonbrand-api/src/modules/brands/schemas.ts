@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { CreateBrandRequest, UpdateBrandPlanRequest, UpdateBrandRequest } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLAN_IDS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
+import { POST_TEMPLATES } from '@moonbrand/shared/domain/templates';
 
 import {
   BRAND_CATEGORIES,
@@ -145,6 +146,8 @@ const video = z.object({
   sound: text(600),
 }) satisfies z.ZodType<BrandVideo>;
 
+export const templateId = z.enum(POST_TEMPLATES.map((template) => template.id) as [string, ...string[]]);
+
 const visual = z.object({
   logoUri: text(3_000_000).nullable(),
   palette: z.object({
@@ -157,6 +160,7 @@ const visual = z.object({
   typography: z.enum(['inter', 'archivo', 'space-grotesk', 'manrope', 'fraunces', 'dm-serif', 'playfair', 'ibm-plex']).default('inter'),
   signature: z.boolean(),
   references: z.array(mediaFile).max(6).optional(),
+  template: templateId.nullable().optional(),
   notes: text(2000).optional(),
   direction: z.object({ summary: text(600), photoStyle: text(1500) }).nullable().optional(),
   line: line.nullable().optional(),

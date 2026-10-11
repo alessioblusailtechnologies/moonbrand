@@ -180,6 +180,9 @@ export interface Visual {
   typography: TypographyId;
   signature: boolean;
   references?: MediaFile[];
+  // Il template di moonbrand scelto (domain/templates), in alternativa alle immagini di riferimento: con il template
+  // i riferimenti non si caricano. null o assente: nessun template.
+  template?: string | null;
   notes?: string;
   direction?: VisualDirection | null;
   line?: BrandLine | null;

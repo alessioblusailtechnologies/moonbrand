@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #1A2230; --secondario: #5C6470; --accento: #2E5E4E; --sfondo: #EEEEEA; }
+
+/* Griglia: margine sinistro 88, destro 72, sei colonne da 133 con canale da 24. Inizio colonne: 88, 245, 403, 560, 717, 875. */
+html { --filo: color-mix(in srgb, var(--principale) 35%, transparent); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Newsreader', serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+
+.testata { position: absolute; left: 88px; right: 72px; top: 56px; padding-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--principale); }
+.logo { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+.rubrica { font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; color: var(--secondario); }
+
+.foto { position: absolute; left: 403px; top: 164px; width: 677px; height: 660px; object-fit: cover; object-position: 55% 50%; }
+.occhiello { position: absolute; left: 88px; width: 290px; top: 164px; height: 660px; display: flex; flex-direction: column; justify-content: flex-end; font-family: 'Schibsted Grotesk', sans-serif; font-size: 26px; line-height: 1.4; color: var(--principale); }
+
+h1 { position: absolute; left: 84px; right: 72px; top: 862px; font-size: 104px; line-height: 0.98; font-weight: 450; letter-spacing: -0.025em; text-wrap: balance; }
+
+.piede { position: absolute; left: 88px; right: 72px; bottom: 56px; padding-top: 16px; display: flex; justify-content: space-between; border-top: 1px solid var(--filo); font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <header class="testata">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pardo &amp; Ferri</span>
+    <!-- rubrica: la serie o la rubrica del carosello, 2-5 parole -->
+    <span class="rubrica">Quaderno, numero 14</span>
+  </header>
+
+  <!-- foto: lavoro vero dello studio o del tema, gente al lavoro; tagliata a destra fuori bordo -->
+  <img class="foto" src="../esempio/riunione.jpg" alt="">
+
+  <!-- occhiello: chi deve leggere e cosa ci trova, 1-2 frasi, massimo 110 caratteri -->
+  <p class="occhiello">Per chi sta per chiedere un preventivo e vuole capire cosa c’è dentro, voce per voce.</p>
+
+  <!-- titolo: il tema del carosello, 6-10 parole, al massimo tre righe -->
+  <h1>Quanto deve costare il sito di una piccola impresa</h1>
+
+  <footer class="piede">
+    <!-- firma: chi l'ha scritto -->
+    <span>Testo di Giulia Ferri</span>
+    <!-- data o numero di pagine -->
+    <span>Otto pagine, ottobre 2026</span>
+  </footer>
+</body>
+</html>

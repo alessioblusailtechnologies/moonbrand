@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #1A2230; --secondario: #5C6470; --accento: #2E5E4E; --sfondo: #EEEEEA; }
+
+/* Griglia: margine sinistro 88, destro 72, sei colonne da 133 con canale da 24. Inizio colonne: 88, 245, 403, 560, 717, 875. */
+html { --filo: color-mix(in srgb, var(--principale) 35%, transparent); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Newsreader', serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+
+.testata { position: absolute; left: 88px; right: 72px; top: 56px; padding-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--principale); }
+.logo { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+.rubrica { font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; color: var(--secondario); }
+
+blockquote { position: absolute; left: 88px; right: 72px; top: 200px; font-size: 70px; line-height: 1.1; font-weight: 400; letter-spacing: -0.012em; text-indent: -0.42em; text-wrap: pretty; }
+
+.foto { position: absolute; left: 0; top: 740px; width: 536px; height: 610px; object-fit: cover; object-position: 50% 28%; }
+.firma { position: absolute; left: 560px; right: 72px; bottom: 72px; padding-top: 20px; border-top: 1px solid var(--filo); }
+.nome { font-size: 44px; line-height: 1.1; font-weight: 500; letter-spacing: -0.01em; }
+.ruolo { margin-top: 10px; font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; line-height: 1.4; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <header class="testata">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pardo &amp; Ferri</span>
+    <!-- rubrica: chi parla, 2-4 parole (un cliente, il fondatore) -->
+    <span class="rubrica">Detto da un cliente</span>
+  </header>
+
+  <!-- citazione: le parole vere della persona, tra «», 15-35 parole -->
+  <blockquote>«Pensavo che il sito servisse a farci trovare. Serve a far capire, prima che mi telefonino, che lavoro il legno massello e non il truciolato.»</blockquote>
+
+  <!-- foto: ritratto di chi parla, nel suo posto di lavoro; tagliata fuori bordo a sinistra e in basso -->
+  <img class="foto" src="../esempio/cliente.jpg" alt="">
+
+  <div class="firma">
+    <!-- nome: nome e cognome -->
+    <p class="nome">Mauro Bignami</p>
+    <!-- ruolo: attività, luogo e da quando lavora con il brand, massimo 90 caratteri -->
+    <p class="ruolo">Falegnameria Bignami, Castel Maggiore. Lavoriamo insieme dal 2023.</p>
+  </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
 import { type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
+import { findTemplate, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
@@ -22,6 +23,11 @@ import { LOGO_SIDE, resizedDataUri } from '../../../core/images';
 import { ExamplePost, type ExampleAuthor } from './example-post';
 
 const MAX_REFERENCES = 6;
+
+// Le anteprime dei layout di un template, in public/templates/<id>/ (le rende moonbrand-ai con npm run template-anteprime).
+function layoutUrl(template: PostTemplate, layout: string): string {
+  return `templates/${template.id}/${layout}.jpg`;
+}
 
 // I lavori sugli esempi che si stanno seguendo, per id: tornando al passo il lavoro si riprende senza seguirlo due volte,
 // e il risultato va nella bozza una volta sola.
@@ -63,6 +69,19 @@ export class VisualStep implements OnInit {
 
   protected readonly visual = computed(() => this.draft().visual);
   protected readonly references = computed(() => this.visual().references ?? []);
+  // I template della categoria del brand; quello già scelto resta in elenco anche se la categoria è cambiata.
+  // Nessuno: la categoria non ne ha, e si caricano solo i riferimenti come prima.
+  protected readonly template = computed(() => findTemplate(this.visual().template));
+  protected readonly templates = computed(() => {
+    const chosen = this.template();
+    const own = templatesFor(this.draft().identity.category);
+    const list = chosen && !own.includes(chosen) ? [chosen, ...own] : own;
+    return list.map((template) => ({
+      ...template,
+      description: templateDescription(template.id, this.i18n.locale()),
+      cover: layoutUrl(template, template.layouts[0]),
+    }));
+  });
   protected readonly sitePalette = computed(() => this.store.insights()?.palette ?? (this.visual().palette.origin === 'site' ? this.visual().palette : null));
   protected readonly custom = computed(() => this.visual().palette.origin !== 'site');
   protected readonly placeholders = computed(() => Array.from({ length: this.uploading() }, (_, i) => i));
@@ -174,6 +193,27 @@ export class VisualStep implements OnInit {
     );
   }
 
+  // Template e immagini di riferimento sono in alternativa: scegliendo un template quelle caricate si tolgono.
+  protected async chooseTemplate(id: string | null): Promise<void> {
+    if ((this.current().template ?? null) === id) return;
+    this.set({ template: id });
+    const uploaded = id ? (this.current().references ?? []) : [];
+    if (uploaded.length === 0) return;
+    try {
+      for (const file of uploaded) await this.store.removeReference(file);
+      this.toast.show(this.i18n.t('onboarding.visual.template.referencesRemoved'));
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.removeFailed')));
+    }
+  }
+
+  protected openTemplate(template: PostTemplate): void {
+    this.lightbox.open(
+      template.layouts.map((layout, i) => ({ url: layoutUrl(template, layout), alt: this.i18n.t('onboarding.visual.template.layoutAlt', { name: template.name, n: i + 1 }) })),
+      0,
+    );
+  }
+
   protected openExample(index: number): void {
     this.lightbox.open(
       this.examples().map((example) => ({ url: example.url, alt: this.i18n.t('onboarding.visual.examples.alt', { channel: example.name }), caption: example.caption })),
@@ -269,6 +309,7 @@ export class VisualStep implements OnInit {
       instructions: draft.instructions,
       palette: [...this.current().palette.colors],
       notes,
+      template: this.current().template ?? null,
     };
     this.preparing.set(true);
     try {

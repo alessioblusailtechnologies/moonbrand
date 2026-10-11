@@ -71,8 +71,8 @@ export interface BrandForIdeas {
 }
 
 export async function findBrandForIdeas(db: Queryable, brandId: string): Promise<BrandForIdeas | null> {
-  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; instructions: string; style_guide: string | null }>(
-    'select identity, positioning, channels, themes, instructions, style_guide from presenza.brands where id = $1',
+  const { rows } = await db.query<{ identity: Identity; positioning: Positioning; channels: Channels; themes: Theme[]; instructions: string; style_guide: string | null; template: string | null; palette: string[] | null }>(
+    `select identity, positioning, channels, themes, instructions, style_guide, visual->>'template' as template, visual->'palette'->'colors' as palette from presenza.brands where id = $1`,
     [brandId],
   );
   const row = rows[0];
@@ -130,6 +130,8 @@ export async function findBrandForIdeas(db: Queryable, brandId: string): Promise
       themes: row.themes.map(({ id, name, weight }) => ({ id, name, weight })),
       instructions: row.instructions,
       style: row.style_guide,
+      template: row.template,
+      palette: row.palette ?? [],
       layouts: layouts.rows,
       plan,
     },

@@ -71,7 +71,8 @@ export async function saveBrand(
     const stored: BrandDraft = { ...draft, channels: connectionsFrom(draft.channels, before.channels), visual: storableVisual(identity.accountId, draft.visual) };
     const brand = await updateBrand(db, brandId, stored);
     if (!brand) throw ApiError.notFound('Brand non trovato.');
-    const paths = (visual: Visual) => (visual.references ?? []).map((file) => file.path).sort().join('\n');
+    // Anche il template conta come riferimento: cambiarlo cambia lo stile.
+    const paths = (visual: Visual) => [visual.template ?? '', ...(visual.references ?? []).map((file) => file.path).sort()].join('\n');
     return { brand, referencesChanged: paths(before.visual) !== paths(stored.visual) };
   });
 }

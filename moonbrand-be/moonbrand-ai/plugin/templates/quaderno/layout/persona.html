@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --principale: #1A2230; --secondario: #5C6470; --accento: #2E5E4E; --sfondo: #EEEEEA; }
+
+/* Griglia: margine sinistro 88, destro 72, sei colonne da 133 con canale da 24. Inizio colonne: 88, 245, 403, 560, 717, 875. */
+html { --filo: color-mix(in srgb, var(--principale) 35%, transparent); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Newsreader', serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+
+.testata { position: absolute; left: 88px; right: 72px; top: 56px; padding-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--principale); }
+.logo { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+.rubrica { font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; color: var(--secondario); }
+
+.foto { position: absolute; left: 0; top: 164px; width: 693px; height: 1186px; object-fit: cover; object-position: 58% 40%; }
+
+.scheda { position: absolute; left: 717px; right: 72px; top: 164px; bottom: 72px; display: flex; flex-direction: column; }
+.nome { font-size: 66px; line-height: 0.98; font-weight: 450; letter-spacing: -0.02em; }
+.ruolo { margin-top: 18px; font-family: 'Schibsted Grotesk', sans-serif; font-size: 24px; line-height: 1.4; color: var(--secondario); }
+.bio { margin-top: auto; padding-top: 22px; border-top: 1px solid var(--filo); font-size: 30px; line-height: 1.3; text-wrap: pretty; }
+</style>
+</head>
+<body>
+  <header class="testata">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pardo &amp; Ferri</span>
+    <!-- rubrica: 2-4 parole -->
+    <span class="rubrica">Chi lavora nello studio</span>
+  </header>
+
+  <!-- foto: ritratto della persona al suo posto di lavoro, a metà pagina, fuori bordo a sinistra e in basso -->
+  <img class="foto" src="../esempio/persona.jpg" alt="">
+
+  <section class="scheda">
+    <!-- nome: nome e cognome, va a capo tra i due -->
+    <h2 class="nome">Giulia<br>Ferri</h2>
+    <!-- ruolo: cosa fa davvero, massimo 70 caratteri -->
+    <p class="ruolo">Socia. Scrive i testi e tiene i piani editoriali dei clienti.</p>
+    <!-- presentazione: un fatto concreto su di lei, 2-3 frasi, al massimo 170 caratteri -->
+    <p class="bio">In studio dal 2017, prima otto anni in un quotidiano di provincia. Ogni testo che passa da lei torna con la stessa domanda a margine: chi l’ha detto?</p>
+  </section>
+</body>
+</html>

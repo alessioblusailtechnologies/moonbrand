@@ -4,6 +4,7 @@ import { translate } from '../i18n/translate';
 import type { BrandDraft, BrandKind, SectionKey } from './brand';
 import { isConnected, needsReconnect } from './brand';
 import { CHANNELS, paletteName, positioningLabel } from './catalog';
+import { findTemplate } from './templates';
 import { themeLevelLabel, totalWeight } from './themes';
 
 // Quanto delle istruzioni si legge nel riepilogo della sezione.
@@ -106,10 +107,12 @@ export function sectionSummary(key: SectionKey, draft: BrandDraft, locale: Local
       return text ? (text.length > INSTRUCTIONS_PREVIEW ? `${text.slice(0, INSTRUCTIONS_PREVIEW).trimEnd()}…` : text) : summary.noInstructions;
     }
     case 'visual': {
-      const { logoUri, palette, signature, references = [], line } = draft.visual;
+      const { logoUri, palette, signature, references = [], line, template } = draft.visual;
+      const chosen = findTemplate(template);
       return [
         logoUri ? summary.logo : summary.noLogo,
         paletteName(palette, locale).toLowerCase(),
+        chosen ? t('template', { name: chosen.name }) : '',
         references.length > 0 ? t('references', { n: references.length }) : '',
         line ? summary.lineReady : '',
         signature && logoUri ? summary.signature : '',

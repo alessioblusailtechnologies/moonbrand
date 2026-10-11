@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1E2C2E; --secondario: #73847F; --accento: #8A5566; --sfondo: #E5E8E3; }
+  body { --filo: color-mix(in srgb, var(--principale) 55%, transparent); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body { position: relative; overflow: hidden; background: var(--sfondo); color: var(--principale); font-family: 'Hanken Grotesk', sans-serif; }
+
+  .logo { position: absolute; left: 88px; top: 76px; font-size: 28px; font-weight: 600; letter-spacing: 0.01em; }
+
+  /* il ritratto: grande, a sinistra, scende sotto la metà */
+  .foto { position: absolute; left: 88px; top: 190px; width: 600px; height: 800px; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* il filetto: prosegue il lato alto del ritratto fino al margine destro */
+  .filetto { position: absolute; left: 688px; top: 190px; width: 320px; height: 1.5px; background: var(--filo); }
+  .segno { position: absolute; left: 1006px; top: 177px; width: 1.5px; height: 28px; background: var(--accento); }
+
+  h1 { position: absolute; left: 736px; top: 236px; width: 272px; font-family: 'Newsreader', serif; font-weight: 300; font-size: 72px; line-height: 1; letter-spacing: -0.012em; font-variation-settings: 'opsz' 72; }
+  .ruolo { position: absolute; left: 736px; top: 420px; width: 272px; font-size: 26px; line-height: 1.42; }
+
+  .testo { position: absolute; left: 88px; top: 1046px; width: 760px; font-size: 30px; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand in testo, l'agente lo sostituisce con il file del logo -->
+  <div class="logo">Studio Neve</div>
+
+  <!-- foto: verticale 3:4, la persona al lavoro nel centro, guarda in macchina o no -->
+  <div class="foto"><img src="../esempio/persona.jpg" alt=""></div>
+
+  <div class="filetto"></div>
+  <div class="segno"></div>
+
+  <!-- nome: nome e cognome, va su due righe -->
+  <h1>Marta Ferri</h1>
+  <!-- ruolo: cosa fa e da quando, 1-3 righe brevi -->
+  <p class="ruolo">Estetista, segue la pelle sensibile e le pulizie del viso dal 2014</p>
+
+  <!-- testo: qualcosa di suo, detto come lo direbbe lei, 25-45 parole -->
+  <p class="testo">La prima volta non tocca quasi niente: guarda la pelle con la lampada, chiede cosa usi a casa e ti fa togliere almeno un prodotto. Il trattamento arriva dalla seconda seduta.</p>
+</body>
+</html>
