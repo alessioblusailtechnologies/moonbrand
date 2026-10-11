@@ -15,8 +15,9 @@ export const SECTION_KEYS: SectionKey[] = ['identity', 'positioning', 'channels'
 
 export const ONBOARDING_SECTION_KEYS: SectionKey[] = SECTION_KEYS.filter((key) => key !== 'references');
 
+// La grafica non si salta: gli esempi di post preparati lì diventano i riferimenti da seguire.
 export function isSkippable(key: SectionKey): boolean {
-  return key === 'instructions' || key === 'visual' || key === 'references';
+  return key === 'instructions' || key === 'references';
 }
 
 export function sectionCopy(key: SectionKey, kind: BrandKind, locale: Locale = DEFAULT_LOCALE) {

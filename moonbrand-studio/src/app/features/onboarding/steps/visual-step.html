@@ -142,7 +142,9 @@
     </button>
   </div>
   @if (!preparing()) {
-    <button class="btn btn-secondary btn-sm align-center" type="button" (click)="createExamples()">
+    <!-- Finché non ci sono esempi è il passo da fare per andare avanti: pulsante pieno; dopo serve solo a rifarli. -->
+    <button class="btn align-center" type="button" [class.btn-primary]="examples().length === 0" [class.btn-secondary]="examples().length > 0"
+      [class.btn-sm]="examples().length > 0" (click)="createExamples()">
       {{ (examples().length > 0 ? 'onboarding.visual.examples.regenerate' : 'onboarding.visual.examples.prepare') | t }}
     </button>
   }
