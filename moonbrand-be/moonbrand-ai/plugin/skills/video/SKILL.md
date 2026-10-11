@@ -7,7 +7,7 @@ description: Come si fa un video per il brand della cartella (Reels, TikTok, Sho
 
 Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video lo guarda il motore di visione con il tool guarda, e alla fine si esporta sempre.
 
-Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo.
+Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo. Se tra i canali c'è TikTok leggi anche [TikTok](../contenuti/canali/tiktok.md): durata, aggancio, testo, ritmo e chiusura del video TikTok vengono da lì.
 
 ## Il copione
 
@@ -28,7 +28,7 @@ Proponi sempre il video migliore per l'idea, non il più economico. Le clip gene
 - Un'inquadratura porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
 - Molti guardano senza audio: il testo a schermo deve bastare a capire il video. Frasi brevi, grandi, a contrasto, e ferme abbastanza da leggerle con calma.
 - La durata è quella che serve all'idea, senza allungare.
-- La chiusura lascia il brand riconoscibile dentro l'ultima inquadratura (i colori, il tono, il logo piccolo dove la confezione lo vuole) o con l'invito nella didascalia, mai con una schermata finale staccata; su TikTok niente logo (vedi la confezione per canale nella skill moonbrand:contenuti).
+- La chiusura lascia il brand riconoscibile dentro l'ultima inquadratura (i colori, il tono, il logo piccolo dove la confezione lo vuole) o con l'invito nella didascalia, mai con una schermata finale staccata; su TikTok niente logo (vedi la guida di TikTok).
 
 Testo a schermo e voce seguono le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
 

@@ -131,11 +131,25 @@ F come termine di confronto), per verificare che la guida del canale regga per t
 Stesso brand e stessa idea, prima e dopo, con il confronto già usato nelle prove del 7/10 (giudice «nativo su 10»,
 costo, tempo). Se il salto si vede, si passa alle altre categorie e poi a Instagram.
 
+## Fatto l'11/10: la guida di TikTok
+
+- 38 contenuti TikTok scelti a mano dall'utente: 13 agenzie, 11 saloni, 10 gioielli e bigiotteria, 4 ristoranti; 30
+  video e 6 caroselli, quasi tutti molto sopra la mediana del loro account, più 2 controprove nella media. Scaricati con
+  `moonbrand-scraper/src/video.ts` (ScrapeCreators, 2 crediti a link), schede con `src/schede-tiktok.ts` (Gemini,
+  0,41 $ in tutto). I dati stanno in `moonbrand-scraper/risultati/guida-tiktok/`, fuori dal repository.
+- Cosa dicono, uguale in tutte e quattro le categorie: durata mediana 12 secondi (i più forti tra 5 e 13, i due oltre
+  il minuto i più deboli); testo a schermo entro il primo secondo in 30 su 36, quasi sempre una frase sola; il più delle
+  volte testo bianco senza sfondo, non il riquadro; canzone o suono di tendenza in 27, nessuno che parla in 29; una
+  persona (volto o mani) in 31; nessuna grafica montata in 26; schermata finale con logo in 2; si chiude tagliando sul
+  momento forte. «POV:» resta, come una delle formule, non come regola.
+- Scritto `plugin/skills/contenuti/canali/tiktok.md`, richiamato da `contenuti/SKILL.md` (al posto del paragrafo
+  TikTok della confezione) e da `video/SKILL.md`; hashtag TikTok da 4 a 6 al massimo. `TestoTikTok` del kit ha lo stile
+  «semplice» (bianco senza sfondo); i kit dei brand esistenti lo aggiungono quando serve.
+- Quello che è proprio di una categoria (prima e dopo per i saloni, indossato per i gioielli, atmosfera per i
+  ristoranti, consigli e scenette per le agenzie) resta per le guide `categorie/<categoria>/tiktok.md`.
+
 ## Prossimi passi
 
-1. Raccolta per `bellezza` su TikTok, partendo dai saloni: circa 50 contenuti con lo scraper, schede con Gemini.
-2. Da lì `canali/tiktok.md` (richiamato da `contenuti/SKILL.md` e `video/SKILL.md`, con dentro il paragrafo TikTok
-   di oggi della tabella «La confezione per canale») e `categorie/bellezza/tiktok.md`.
-3. La seconda categoria, molto diversa dalla prima (proposta: `tech`), per verificare che la guida del canale regga.
-4. Il confronto prima e dopo; poi le altre categorie e Instagram.
-5. Il campo categoria nell'app.
+1. Le guide di categoria per TikTok dalle stesse schede: `bellezza`, `ecommerce`, `agenzia` (i primi clienti).
+2. Il confronto prima e dopo; poi le altre categorie e Instagram.
+3. Il campo categoria nell'app.

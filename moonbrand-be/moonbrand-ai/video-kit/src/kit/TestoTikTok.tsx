@@ -1,12 +1,13 @@
 import { loadFont } from '@remotion/google-fonts/TikTokSans';
 import { Easing, interpolate, useCurrentFrame } from 'remotion';
 
-const tiktokSans = loadFont('normal', { weights: ['700'], subsets: ['latin'] });
+const tiktokSans = loadFont('normal', { weights: ['500', '700'], subsets: ['latin'] });
 
-type Stile = 'riquadro' | 'contorno';
+type Stile = 'riquadro' | 'contorno' | 'semplice';
 
 // Il testo a schermo come lo scrive l'app di TikTok, in TikTok Sans: «riquadro» mette ogni riga su un suo riquadro
-// arrotondato (di solito bianco, testo nero), «contorno» è testo bianco con il bordo nero. Una riga per elemento di righe,
+// arrotondato (di solito bianco, testo nero), «contorno» è testo bianco con il bordo nero, «semplice» è testo bianco più
+// leggero con un'ombra appena accennata, quello che si vede più spesso nei contenuti che funzionano. Una riga per elemento di righe,
 // centrate. Entra con un piccolo scatto, come i testi nativi dell'app, dopo `ritardo` fotogrammi.
 export const TestoTikTok: React.FC<{
   righe: string[];
@@ -30,7 +31,7 @@ export const TestoTikTok: React.FC<{
           key={i}
           style={{
             fontFamily: tiktokSans.fontFamily,
-            fontWeight: 700,
+            fontWeight: stile === 'semplice' ? 500 : 700,
             fontSize: dimensione,
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
@@ -42,7 +43,9 @@ export const TestoTikTok: React.FC<{
                   padding: `${dimensione * 0.1}px ${dimensione * 0.3}px`,
                   marginTop: i === 0 ? 0 : -dimensione * 0.04,
                 }
-              : {
+              : stile === 'semplice'
+                ? { color: colore ?? '#FFFFFF', textShadow: '0 1px 4px rgba(0, 0, 0, 0.45)' }
+                : {
                   color: colore ?? '#FFFFFF',
                   WebkitTextStroke: `${bordo * 2}px #000000`,
                   paintOrder: 'stroke fill',

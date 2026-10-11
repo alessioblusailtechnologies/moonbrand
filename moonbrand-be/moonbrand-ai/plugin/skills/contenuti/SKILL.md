@@ -22,7 +22,7 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 | LinkedIn (linkedin) | la prima riga deve fermare lo scorrimento, le prime due righe (circa 210 caratteri) si vedono prima di «…altro»; paragrafi brevi separati da una riga vuota; da 700 a 1.500 caratteri, fino a 2.900 per un articolo | 3.000 | 3 |
 | Instagram (instagram) | didascalia da 300 a 900 caratteri: prima di «…altro» se ne vedono circa 125, lì va l’aggancio; per un carosello invita a scorrere | 2.200 | 6 |
 | Facebook (facebook) | tono vicino e discorsivo, da 300 a 1.000 caratteri | — | 2 |
-| TikTok (tiktok) | didascalia cortissima, una o due righe sotto i 150 caratteri: sta sopra l’immagine | 4.000 | 4 |
+| TikTok (tiktok) | didascalia corta, una o due righe intorno ai 120 caratteri: sta sopra l’immagine (vedi [TikTok](./canali/tiktok.md)) | 4.000 | 6 |
 | X (x) | una sola idea: testo e hashtag insieme al massimo 280 caratteri | 280 | 2 |
 | Pinterest (pinterest) | la descrizione del pin, da 150 a 400 caratteri: dice cosa si trova e perché salvarlo, con le parole che la gente cerca (Pinterest è un motore di ricerca); il titolo del pin è headline, fino a 100 caratteri | 500 | 3 |
 
@@ -56,11 +56,13 @@ Le immagini finali sono PNG o JPEG, i video MP4.
 
 L’idea, le foto e le clip sono le stesse su tutti i canali; la confezione no. Su ogni canale il contenuto deve sembrare nato lì, e restare riconoscibile come del brand.
 
+Se tra i canali del contenuto c’è TikTok, prima di scegliere l’idea, scrivere il copione o fare le slide leggi [TikTok](./canali/tiktok.md): è la guida del canale e vale anche quando TikTok è insieme ad altri canali.
+
 | Canale | La confezione |
 | --- | --- |
 | Instagram | curata ed editoriale, con la grafica del brand: palette, font, logo. La copertina di un Reel si vede anche ritagliata al centro in 4:5 nella griglia del profilo: titolo e soggetto stanno lì. Un carosello si salva se ogni slide porta un punto utile. |
 | Facebook | la stessa di Instagram: di solito i file sono gli stessi. |
-| TikTok | nativa, come la fa chi usa l’app: foto o clip a tutto schermo e poche grafiche, il brand si riconosce dai colori e dal tono più che dal logo. Il testo a schermo è quello dell’app, in TikTok Sans: frasi brevi, una riga per riquadro bianco arrotondato con testo nero, oppure testo bianco con il contorno nero, nel terzo centrale o basso e fuori dalle zone che l’app copre. L’aggancio sta nel primo secondo, spesso in prima persona o con «POV:». Niente schermata finale con il logo: l’invito sta nell’ultima frase a schermo o nella didascalia. La copertina è un fotogramma con l’aggancio scritto sopra nello stesso modo. |
+| TikTok | nativa, come la fa chi usa l’app: riprese vere a tutto schermo, una frase scritta come la scrive l’app dal primo secondo, niente grafiche montate e niente logo finale. Come si fa, per video e photo mode: [TikTok](./canali/tiktok.md). |
 | LinkedIn | sobria e leggibile: titoli chiari, dati e concetti in primo piano, poca decorazione, il logo discreto. |
 | X | un’immagine sola con un messaggio solo, leggibile anche piccola. |
 | Pinterest | un pin verticale da salvare: una foto bella e luminosa che occupa quasi tutto, un titolo grande e chiaro sull’immagine che dice cosa si trova (un’idea, una guida, una ricetta, un prodotto), leggibile anche come miniatura nella griglia; il nome o il logo del brand piccolo in basso. Contenuti che durano nel tempo più che notizie del giorno. |
