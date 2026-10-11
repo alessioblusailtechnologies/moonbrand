@@ -50,7 +50,7 @@
     }
 
     @if (loading()) {
-      <div class="empty"><span class="spinner"></span></div>
+      <div class="empty"><mb-loader /></div>
     } @else if (visible().length === 0) {
       @if (!preparing()) {
         <div class="empty">

@@ -28,7 +28,7 @@
           </div>
         }
         @if (loading()) {
-          <div class="empty"><span class="spinner"></span></div>
+          <div class="empty"><mb-loader /></div>
         } @else {
           <div class="grid" role="grid" [attr.aria-label]="title()">
             @for (day of days(); track day.date) {

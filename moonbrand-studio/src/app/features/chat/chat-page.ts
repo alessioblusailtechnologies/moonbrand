@@ -34,6 +34,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon, type IconName } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { LightboxService } from '../../ui/lightbox';
 import { PendingMedia, pendingFromSteps } from '../../ui/pending-media';
 import { Markdown } from '../../ui/markdown';
@@ -71,7 +72,7 @@ const PUBLISH_POLL_MAX = 100;
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Markdown, StepList, PendingMedia, ContentPreview, Composer, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Loader, Markdown, StepList, PendingMedia, ContentPreview, Composer, TranslatePipe],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })

@@ -30,6 +30,7 @@ import { errorMessage } from '../../core/errors';
 import { IdeasService } from '../../core/ideas/ideas.service';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { CreateContentDialog, type IdeaContentRequest } from './create-content-dialog';
@@ -44,7 +45,7 @@ const COLUMN_GAP = 16;
 @Component({
   selector: 'mb-ideas-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, Icon, StepList, CreateContentDialog, TranslatePipe],
+  imports: [RouterOutlet, Icon, Loader, StepList, CreateContentDialog, TranslatePipe],
   host: { '(window:resize)': 'updateScroll()' },
   templateUrl: './ideas-page.html',
   styleUrl: './ideas-page.scss',

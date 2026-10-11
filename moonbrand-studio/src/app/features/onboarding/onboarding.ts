@@ -15,6 +15,7 @@ import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { Logo } from '../../ui/logo';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { StepList } from '../../ui/step-list';
@@ -57,6 +58,7 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Icon,
+    Loader,
     Logo,
     StepList,
     TranslatePipe,

@@ -17,6 +17,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { ToastService } from '../../ui/toast';
 import { PlanDialog } from '../plans/plan-dialog';
 import { ChannelChoiceDialog } from './channel-choice';
@@ -31,7 +32,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
 @Component({
   selector: 'mb-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandAvatar, Icon, RouterLink, SectionEditor, ChannelChoiceDialog, PlanDialog, TranslatePipe],
+  imports: [BrandAvatar, Icon, Loader, RouterLink, SectionEditor, ChannelChoiceDialog, PlanDialog, TranslatePipe],
   template: `
     @if (brands.activeBrand(); as brand) {
       <section class="profile">
@@ -47,7 +48,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
         </header>
 
         @if (loading()) {
-          <div class="empty"><span class="spinner"></span></div>
+          <div class="empty"><mb-loader /></div>
         } @else if (profile()) {
           <div class="panel rows">
             @for (row of rows(); track row.key) {

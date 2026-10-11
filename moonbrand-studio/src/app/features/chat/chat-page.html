@@ -2,7 +2,7 @@
   <section class="chat">
     <div class="thread" #thread (scroll)="scrolled()">
       @if (loading()) {
-        <div class="empty"><span class="spinner"></span></div>
+        <div class="empty"><mb-loader /></div>
       } @else if (!current()) {
         <div class="welcome">
           <div class="intro">

@@ -4,6 +4,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 
 import { I18nService } from '../core/i18n/i18n.service';
 import { Icon } from './icon';
+import { Loader } from './loader';
 
 // Una card in arrivo: la proporzione, se è un video, e quante ne arrivano in quella proporzione (le slide di un carosello).
 // label: cosa dire quando il numero non si sa ancora.
@@ -44,16 +45,17 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
 @Component({
   selector: 'mb-pending-media',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, Loader],
   template: `
     @if (tiles().length > 0) {
       <div class="strip" role="status" [attr.aria-label]="label()">
         @for (tile of tiles(); track tile.aspect) {
           <div class="tile" [class.stack]="tile.count > 1" [style.aspect-ratio]="ratio(tile.aspect)">
             <span class="shimmer" aria-hidden="true"></span>
+            <mb-loader class="mark" aria-hidden="true" [size]="60" />
             <span class="tile-label" aria-hidden="true">
               <mb-icon [name]="tile.kind === 'video' ? 'play' : 'image-plus'" [size]="14" />
-              {{ tileLabel(tile) }}
+              <span class="text">{{ tileLabel(tile) }}</span>
             </span>
           </div>
         }
@@ -61,17 +63,25 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
     }
   `,
   styles: `
+    :host {
+      display: block;
+      min-width: 0;
+    }
     .strip {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
     }
+    // Il riquadro è la sua larghezza: l'etichetta si regola su quella (container query), non sulla pagina.
     .tile {
       position: relative;
+      flex: none;
       height: var(--tile-height, 220px);
       max-width: 100%;
+      container-type: inline-size;
+      border: 1px solid var(--border-card);
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, #eceef3, #f6f1e8);
+      background: linear-gradient(135deg, #e4e6ec, #efe7da);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       animation: breathe 2.4s ease-in-out infinite;
       overflow: hidden;
@@ -80,8 +90,8 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
     .stack {
       overflow: visible;
       box-shadow:
-        5px -5px 0 -1px #e3e5ea,
-        10px -10px 0 -2px #eceef1,
+        5px -5px 0 -1px #d9dce3,
+        10px -10px 0 -2px #e6e8ec,
         0 1px 3px rgba(0, 0, 0, 0.08);
       margin: 10px 10px 0 0;
     }
@@ -89,9 +99,18 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.75) 45%, rgba(252, 163, 17, 0.16) 55%, transparent 80%);
+      background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.85) 45%, rgba(242, 154, 46, 0.24) 55%, transparent 80%);
       background-size: 250% 100%;
       animation: sweep 1.6s linear infinite;
+    }
+    // Il marchio che gira, al centro della card, un po' sopra l'etichetta: in trasparenza, è un segnaposto, non il contenuto.
+    .mark {
+      position: absolute;
+      opacity: 0.35;
+      inset: 0 0 36px;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
     }
     .tile-label {
       position: absolute;
@@ -110,6 +129,16 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
       font-weight: 600;
       white-space: nowrap;
       backdrop-filter: blur(4px);
+    }
+    .text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    // Una card stretta (un video 9:16 sul telefono) non ha posto per la frase: resta l'icona, la frase è nell'aria-label.
+    @container (max-width: 130px) {
+      .text {
+        display: none;
+      }
     }
     @keyframes sweep {
       from {
@@ -130,9 +159,19 @@ export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
         animation: none;
       }
     }
+    // Sul telefono le card stanno in una riga che scorre di lato, invece di andare a capo una sotto l'altra:
+    // ognuna tiene la sua altezza e la sua proporzione, e quella dopo spunta dal bordo.
     @media (max-width: 640px) {
+      .strip {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+      }
       .tile {
-        height: var(--tile-height-small, 160px);
+        height: var(--tile-height-small, 200px);
+        max-width: none;
+        scroll-snap-align: start;
       }
     }
   `,

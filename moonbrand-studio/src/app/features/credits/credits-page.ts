@@ -12,6 +12,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { Select, type SelectOption } from '../../ui/select';
 import { ToastService } from '../../ui/toast';
 
@@ -20,7 +21,7 @@ import { ToastService } from '../../ui/toast';
 @Component({
   selector: 'mb-credits-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, Select, TranslatePipe],
+  imports: [Icon, Loader, Select, TranslatePipe],
   template: `
     <section class="credits">
       <header class="head">
@@ -37,7 +38,7 @@ import { ToastService } from '../../ui/toast';
       </header>
 
       @if (loading()) {
-        <div class="empty"><span class="spinner"></span></div>
+        <div class="empty"><mb-loader /></div>
       } @else if (usage(); as data) {
         @if (summary(); as card) {
           <div class="panel summary">

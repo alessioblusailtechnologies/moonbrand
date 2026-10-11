@@ -17,6 +17,7 @@ import { pageHeader } from '../../core/layout/page-header';
 import { PlanService } from '../../core/plan/plan.service';
 import { ChannelMark } from '../../ui/channel-mark';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { ToastService } from '../../ui/toast';
 import { canMove, SLOT_TONES, slotTitle, timeFor, weekdayNames } from './labels';
 import { PlanSession } from './plan-session';
@@ -44,7 +45,7 @@ const MONTH_VISIBLE = 3;
 @Component({
   selector: 'mb-plan-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, ChannelMark, SlotDrawer, PlanSession, TranslatePipe],
+  imports: [RouterLink, Icon, Loader, ChannelMark, SlotDrawer, PlanSession, TranslatePipe],
   templateUrl: './plan-page.html',
   styleUrl: './plan-page.scss',
 })

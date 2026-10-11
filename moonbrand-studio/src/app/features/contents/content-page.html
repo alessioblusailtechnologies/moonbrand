@@ -1,6 +1,6 @@
 <section class="content-page">
   @if (loading()) {
-    <div class="empty"><span class="spinner"></span></div>
+    <div class="empty"><mb-loader /></div>
   } @else if (content(); as current) {
     <!-- In cima: cos'è, a che punto è, dove e quando esce. Le azioni stanno nella topbar. -->
     <header class="head">

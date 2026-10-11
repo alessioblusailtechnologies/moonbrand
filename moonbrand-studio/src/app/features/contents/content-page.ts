@@ -18,6 +18,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { pageHeader } from '../../core/layout/page-header';
 import { ConfirmService } from '../../ui/confirm';
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 import { PendingMedia, type PendingTile } from '../../ui/pending-media';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
@@ -36,7 +37,7 @@ const PUBLISH_POLL_MAX = 100;
 @Component({
   selector: 'mb-content-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, StepList, PendingMedia, ContentPreview, ContentSchedule, ScriptEditor, TranslatePipe],
+  imports: [RouterLink, Icon, Loader, StepList, PendingMedia, ContentPreview, ContentSchedule, ScriptEditor, TranslatePipe],
   templateUrl: './content-page.html',
   styleUrl: './content-page.scss',
 })

@@ -21,6 +21,9 @@ export const ui = defineMessages({
     brandAvatar: {
       logoOf: 'Logo di {name}',
     },
+    loader: {
+      label: 'Caricamento',
+    },
   },
   en: {
     lightbox: {
@@ -41,6 +44,9 @@ export const ui = defineMessages({
     brandAvatar: {
       logoOf: '{name} logo',
     },
+    loader: {
+      label: 'Loading',
+    },
   },
   fr: {
     lightbox: {
@@ -60,6 +66,9 @@ export const ui = defineMessages({
     },
     brandAvatar: {
       logoOf: 'Logo de {name}',
+    },
+    loader: {
+      label: 'Chargement',
     },
   },
 });

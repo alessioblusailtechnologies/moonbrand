@@ -14,6 +14,7 @@ import {
 import { RouterLink } from '@angular/router';
 
 import { Icon } from '../../ui/icon';
+import { Loader } from '../../ui/loader';
 
 import type { ContentSummary } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
@@ -49,12 +50,12 @@ function aspectRatio(aspect: string | null): number {
 @Component({
   selector: 'mb-contents-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, TranslatePipe],
+  imports: [RouterLink, Icon, Loader, TranslatePipe],
   template: `
     @if (brands.activeBrand()) {
       <section class="contents">
         @if (loading()) {
-          <div class="empty"><span class="spinner"></span></div>
+          <div class="empty"><mb-loader /></div>
         } @else if (contents().length === 0) {
           <div class="empty">
             <p class="strong-sm">{{ 'contents.list.empty' | t }}</p>
