@@ -8,6 +8,7 @@ import { channelName, exampleChannels, examplesPerChannel } from '@moonbrand/sha
 import { FORMAT_ASPECT } from '@moonbrand/shared/domain/content';
 
 import { imageTools } from '../tools/immagini';
+import { channelGuide } from './guides';
 
 // Ogni generazione di esempi ha la sua cartella, così due generazioni dello stesso brand non si sovrascrivono;
 // una modifica riprende la sessione e lavora nella cartella della generazione da cui parte.
@@ -22,14 +23,11 @@ export function workDir(dir: string): string {
 }
 
 // Come si presenta un post su ogni canale: la confezione della skill moonbrand:contenuti, in breve. Gli esempi la mostrano
-// già nell'onboarding, e quelli scelti diventano i riferimenti del brand per il loro canale.
-const LOOK: Record<ChannelId, string> = {
+// già nell'onboarding, e quelli scelti diventano i riferimenti del brand per il loro canale. I canali con una guida
+// (plugin/skills/contenuti/canali) la prendono da lì, la stessa dei contenuti: qui c'è solo la riga di quelli senza.
+const LOOK: Partial<Record<ChannelId, string>> = {
   instagram: 'curato ed editoriale, con la grafica del brand: palette, font, logo',
   facebook: 'come su Instagram, curato e con la grafica del brand',
-  tiktok:
-    'nativo, come lo fa chi usa l’app: una foto a tutto schermo, poche grafiche, niente logotipo in testa; il testo come lo scrive l’app, ' +
-    'in TikTok Sans, frasi brevi su riquadri bianchi arrotondati con testo nero (oppure bianco con il contorno nero), nel terzo centrale ' +
-    'e lontano dai bordi che l’app copre in basso e a destra; il brand si riconosce dai colori e dal tono',
   linkedin: 'sobrio e leggibile: un titolo chiaro, un concetto o un dato in primo piano, poca decorazione, il logo discreto',
   x: 'un messaggio solo, leggibile anche piccolo',
   pinterest:
@@ -37,9 +35,22 @@ const LOOK: Record<ChannelId, string> = {
     'trova (un\'idea, una guida, un prodotto), leggibile anche come miniatura, e il nome o il logo del brand piccolo in basso',
 };
 
-// Una riga per canale: proporzione del post e confezione.
-export function channelLooks(channels: readonly ChannelId[]): string {
-  return channels.map((channel) => `- ${channelName(channel)}, in ${FORMAT_ASPECT.post[channel]}: ${LOOK[channel]}.`).join('\n');
+// Una riga per canale (proporzione del post e confezione), poi le guide dei canali che ce l'hanno.
+export async function channelLooks(channels: readonly ChannelId[]): Promise<string> {
+  const guides = await Promise.all(channels.map(async (channel) => ({ channel, guide: await channelGuide(channel) })));
+  const lines = guides.map(
+    ({ channel, guide }) => `- ${channelName(channel)}, in ${FORMAT_ASPECT.post[channel]}: ${guide ? 'segui la guida del canale qui sotto' : LOOK[channel]}.`,
+  );
+  // Gli esempi sono immagini ferme: della guida valgono le regole per una foto o una slide, non quelle del video.
+  const sections = guides.flatMap(({ channel, guide }) =>
+    guide
+      ? [
+          `## La guida di ${channelName(channel)}\n\nL'esempio è un'immagine ferma: prendi dalla guida quello che vale per una foto o una slide ` +
+            `(riprese vere, testo come lo scrive l'app, niente grafiche montate né logo); durata, ritmo e audio valgono per i video.\n\n${guide}`,
+        ]
+      : [],
+  );
+  return [lines.join('\n'), ...sections].join('\n\n');
 }
 
 function examplesSchema(dir: string, chosen: ChannelId[]) {

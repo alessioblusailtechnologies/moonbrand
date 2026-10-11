@@ -8,12 +8,12 @@ import { formatWeekdayShort, planNow } from '@moonbrand/shared/lib/dates';
 
 import { describeBrand } from './brand-brief';
 import { logoFile } from './brand-logo';
-import { categoryGuide } from './category-guide';
+import { categoryGuide } from './guides';
 
 // Il CLAUDE.md della cartella del brand: chi apre Claude lì dentro sa già chi è il brand e dove sono le cose.
 // Le regole per scrivere e proporre idee stanno nelle skill di moonbrand. Si riscrive prima di ogni job dal brand com'è sul DB.
 // logo: il file del logo nella cartella del brand (lo scrive il worker dal profilo), null se il brand non ce l'ha.
-// category: la guida della categoria del brand (category-guide), null se non ce l'ha.
+// category: la guida della categoria del brand (guides), null se non ce l'ha.
 export function brandGuide(brand: BrandContext, logo: string | null = null, category: string | null = null): string {
   const name = brand.identity.name || 'Brand';
   // Il logo vero, mai uno rifatto: chi fa una grafica lo mette con <img> com'è.

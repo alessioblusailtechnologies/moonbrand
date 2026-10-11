@@ -25,7 +25,7 @@ await rm(path.join(brandDir, dir), { recursive: true, force: true });
 const prompt = `Crea ${perChannel === 1 ? 'un esempio' : `${perChannel} esempi`} di post per ${chosen.length === 1 ? 'il canale' : 'ciascuno di questi canali'}: ${channels}.
 Ispirati alle immagini di riferimento nella cartella file-riferimento e salva ogni esempio come immagine nella cartella ${dir}.
 Ogni esempio deve sembrare nato sul suo canale, restando riconoscibile come del brand: stesso brand, confezione del canale.
-${channelLooks(chosen)}
+${await channelLooks(chosen)}
 Tieni i file di lavoro (HTML, script, foto intermedie) nella cartella ${workDir(dir)}.
 
 ${languageRules()}

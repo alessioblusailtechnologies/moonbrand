@@ -108,7 +108,7 @@ categoria**: post, caroselli e video reali scelti per quel tipo di attività. Es
 - Il job `website` la sceglie dall'elenco accanto a `sector`; lo studio la riempie dal sito come la lingua (una scelta a
   mano resta) e la mostra nel passo identità, quindi anche nelle Impostazioni brand. L'app la prende dal sito ma non
   ha ancora il campo.
-- `src/lib/category-guide.ts` legge `plugin/skills/contenuti/categorie/<categoria>/<canale>.md` per i canali del brand e
+- `src/lib/guides.ts` legge `plugin/skills/contenuti/categorie/<categoria>/<canale>.md` per i canali del brand e
   `writeBrandGuide` li mette nel `CLAUDE.md` sotto «La guida della categoria», uno per canale. Come si scrive una guida: `categorie/README.md`.
 - I brand già esistenti non hanno la categoria finché qualcuno non la sceglie nelle Impostazioni.
 
