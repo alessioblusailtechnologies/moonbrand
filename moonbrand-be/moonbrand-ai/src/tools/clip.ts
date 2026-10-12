@@ -33,7 +33,9 @@ const BUDGET_USD = Number(process.env.MOONBRAND_CLIP_BUDGET_USD) || 3;
 const SPENT_BEFORE_USD = Number(process.env.MOONBRAND_CLIP_SPENT_USD) || 0;
 const SCOPE = process.env.MOONBRAND_CLIP_SCOPE === 'contenuto' ? 'contenuto' : 'conversazione';
 const POLL_MS = 3_000;
-const MAX_WAIT_MS = 10 * 60_000;
+// Una clip arriva in 1-3 minuti (Kling in media 156 s, Gemini 53 s, 12/10/2026). Oltre i 5 è bloccata da Atlas: meglio
+// dirlo subito e farla rilanciare, che tenere ferma tutta la consegna (Sunraise, 12/10: 10 minuti persi per una clip).
+const MAX_WAIT_MS = 5 * 60_000;
 // Le foto passano in base64 dentro la richiesta: oltre questa misura meglio una versione più leggera.
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_REFERENCES = 10;
@@ -108,7 +110,7 @@ export function clipTools(folder: string, apiKey: string) {
         await writeFile(target, Buffer.from(await response.arrayBuffer()));
         return { content: [{ type: 'text' as const, text: `Clip salvata in ${file}.` }] };
       }
-      if (Date.now() - started > MAX_WAIT_MS) throw new Error('La clip non è arrivata entro 10 minuti.');
+      if (Date.now() - started > MAX_WAIT_MS) throw new Error('La clip non è arrivata entro 5 minuti: si è bloccata, rilanciala.');
     }
   };
   const failure = (error: unknown) => ({
