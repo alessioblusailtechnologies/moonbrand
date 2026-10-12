@@ -5,7 +5,7 @@ import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/ap
 import { type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, categoryLabel, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
 import { QUALITY_FONTS } from '@moonbrand/shared/domain/fonts';
-import { findTemplate, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
+import { findTemplate, POST_TEMPLATES, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
@@ -79,15 +79,20 @@ export class VisualStep implements OnInit {
   protected readonly visual = computed(() => this.draft().visual);
   protected readonly references = computed(() => this.visual().references ?? []);
   // I template della categoria del brand; quello già scelto resta in elenco anche se la categoria è cambiata.
-  // Nessuno: la categoria non ne ha, e si caricano solo i riferimenti come prima.
+  // Se la categoria non ne ha, l'avviso che arriveranno e, a richiesta, tutti gli altri: lo stile vale anche fuori
+  // dalla sua categoria. Con uno di quelli già scelto l'elenco resta aperto.
   protected readonly template = computed(() => findTemplate(this.visual().template));
+  protected readonly ownTemplates = computed(() => templatesFor(this.draft().identity.category));
+  protected readonly showOthers = signal(false);
   protected readonly templates = computed(() => {
     const chosen = this.template();
-    const own = templatesFor(this.draft().identity.category);
-    const list = chosen && !own.includes(chosen) ? [chosen, ...own] : own;
+    const own = this.ownTemplates();
+    const list = own.length === 0 ? (this.showOthers() || chosen ? POST_TEMPLATES : []) : chosen && !own.includes(chosen) ? [chosen, ...own] : own;
     return list.map((template) => ({
       ...template,
       description: templateDescription(template.id, this.i18n.locale()),
+      // Fuori dalla categoria del brand si dice per che attività è nato.
+      origin: own.length === 0 ? categoryLabel(template.category, this.i18n.locale()) : null,
       slides: template.layouts.map((layout) => layoutUrl(template, layout)),
     }));
   });

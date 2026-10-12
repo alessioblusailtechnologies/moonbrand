@@ -101,10 +101,23 @@
   }
 </section>
 
+@if (ownTemplates().length === 0) {
+  <section class="panel soon">
+    <mb-icon name="layers" [size]="18" />
+    <div class="grow">
+      <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
+      <p class="caption">{{ templatesSoon() }}</p>
+      @if (templates().length === 0) {
+        <button class="btn btn-secondary btn-sm" type="button" (click)="showOthers.set(true)">{{ 'onboarding.visual.template.others' | t }}</button>
+      }
+    </div>
+  </section>
+}
+
 @if (templates().length > 0) {
   <section class="panel">
     <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
-    <p class="caption">{{ 'onboarding.visual.template.hint' | t }}</p>
+    <p class="caption">{{ (ownTemplates().length > 0 ? 'onboarding.visual.template.hint' : 'onboarding.visual.template.othersHint') | t }}</p>
     <div class="templates" role="radiogroup" [attr.aria-label]="'onboarding.visual.template.label' | t">
       @for (item of templates(); track item.id) {
         <div class="template" [class.selected]="value.template === item.id">
@@ -139,7 +152,7 @@
           </div>
           <button class="template-pick" type="button" role="radio" [attr.aria-checked]="value.template === item.id" (click)="chooseTemplate(item.id)">
             <span class="grow">
-              <span class="strong-sm block">{{ item.name }}</span>
+              <span class="strong-sm block">{{ item.name }}@if (item.origin) {<span class="caption"> · {{ item.origin }}</span>}</span>
               <span class="caption block">{{ item.description }}</span>
             </span>
             <span class="radio-mark" [class.on]="value.template === item.id"></span>
@@ -158,14 +171,6 @@
     @if (template()) {
       <p class="caption">{{ 'onboarding.visual.template.chosen' | t }}</p>
     }
-  </section>
-} @else {
-  <section class="panel soon">
-    <mb-icon name="layers" [size]="18" />
-    <div class="grow">
-      <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
-      <p class="caption">{{ templatesSoon() }}</p>
-    </div>
   </section>
 }
 
