@@ -90,6 +90,7 @@ export const routes: Routes = [
           { path: 'spese', loadComponent: () => import('./features/admin/admin-spending').then((m) => m.AdminSpendingPage) },
           { path: 'gratuiti', loadComponent: () => import('./features/admin/admin-free').then((m) => m.AdminFreePage) },
           { path: 'salute', loadComponent: () => import('./features/admin/admin-health').then((m) => m.AdminHealthPage) },
+          { path: 'prompt', loadComponent: () => import('./features/admin/admin-prompts').then((m) => m.AdminPromptsPage) },
         ],
       },
     ],

@@ -53,6 +53,7 @@ export interface AppOptions {
     | 'EMAIL_SECRET'
     | 'SUPABASE_SERVICE_ROLE_KEY'
     | 'ADMIN_EMAILS'
+    | 'AI_DIR'
   >;
 }
 

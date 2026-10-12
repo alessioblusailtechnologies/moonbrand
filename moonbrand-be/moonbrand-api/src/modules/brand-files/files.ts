@@ -62,6 +62,9 @@ export interface BrandFiles {
   verify(brandId: string, relativePath: string, signature: string): boolean;
   // La sessione di Claude Code di un lavoro del brand (il .jsonl), per l'admin; null se non c'è.
   session(brandId: string, sessionId: string): Promise<string | null>;
+  // Quello che Claude legge del brand oltre al codice, per l'admin: il CLAUDE.md dell'ultimo lavoro e la memoria che
+  // Claude Code si scrive da solo (memory/ accanto alle sessioni), in ordine di nome.
+  promptFiles(brandId: string): Promise<{ guide: string | null; memory: { name: string; text: string }[] }>;
 }
 
 export const SESSION_ID = /^[0-9a-f-]{36}$/;
@@ -75,6 +78,10 @@ export function localBrandFiles(
   const secret = config.FILES_SECRET ?? config.SUPABASE_SERVICE_ROLE_KEY;
 
   const brandDir = (brandId: string) => path.join(root, brandId);
+  // Dove Claude Code tiene sessioni e memoria del brand sulla macchina del worker: il percorso della cartella del brand
+  // con ogni carattere che non è una lettera o una cifra cambiato in «-» (come sessionsDir di moonbrand-ai).
+  const sessionsDir = (brandId: string) =>
+    path.join(config.CLAUDE_CONFIG_DIR ?? path.join(homedir(), '.claude'), 'projects', path.resolve(brandDir(brandId)).replace(/[^a-zA-Z0-9]/g, '-'));
   const filePath = (brandId: string, relativePath: string) => {
     if (!RELATIVE_PATH.test(relativePath)) throw ApiError.invalid('Percorso del file non valido.');
     return path.join(brandDir(brandId), relativePath);
@@ -142,13 +149,18 @@ export function localBrandFiles(
     },
     url,
     verify,
-    // Dove le tiene Claude Code sulla macchina del worker: il percorso della cartella del brand con ogni carattere che
-    // non è una lettera o una cifra cambiato in «-» (come sessionsDir di moonbrand-ai).
     async session(brandId, sessionId) {
       if (!SESSION_ID.test(sessionId)) return null;
-      const projects = path.join(config.CLAUDE_CONFIG_DIR ?? path.join(homedir(), '.claude'), 'projects');
-      const folder = path.resolve(brandDir(brandId)).replace(/[^a-zA-Z0-9]/g, '-');
-      return readFile(path.join(projects, folder, `${sessionId}.jsonl`), 'utf8').catch(() => null);
+      return readFile(path.join(sessionsDir(brandId), `${sessionId}.jsonl`), 'utf8').catch(() => null);
+    },
+    async promptFiles(brandId) {
+      const memoryDir = path.join(sessionsDir(brandId), 'memory');
+      const names = (await readdir(memoryDir).catch(() => [])).filter((name) => name.endsWith('.md')).sort();
+      const [guide, memory] = await Promise.all([
+        readFile(path.join(brandDir(brandId), 'CLAUDE.md'), 'utf8').catch(() => null),
+        Promise.all(names.map(async (name) => ({ name, text: await readFile(path.join(memoryDir, name), 'utf8') }))),
+      ]);
+      return { guide, memory };
     },
   };
 }

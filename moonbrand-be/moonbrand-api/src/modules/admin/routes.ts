@@ -12,6 +12,7 @@ import { summarize, withUrls } from '../contents/service';
 import type { AuthGateway } from '../auth/gateway';
 import { registerAdminActions } from './actions';
 import { registerAdminInsights } from './insights';
+import { registerAdminPrompts } from './prompts';
 import { registerAdminSpending } from './spending';
 import {
   ACCOUNT_SELECT,
@@ -41,7 +42,7 @@ export function registerAdminRoutes(
   pool: pg.Pool,
   files: BrandFiles,
   gateway: AuthGateway,
-  settings: Pick<Config, 'ADMIN_EMAILS'>,
+  settings: Pick<Config, 'ADMIN_EMAILS' | 'AI_DIR'>,
 ): void {
   const isAdmin = adminCheck(pool, settings);
 
@@ -202,5 +203,6 @@ export function registerAdminRoutes(
     registerAdminInsights(scope, pool, files);
     registerAdminSpending(scope, pool);
     registerAdminActions(scope, pool, gateway);
+    registerAdminPrompts(scope, pool, files, settings);
   });
 }

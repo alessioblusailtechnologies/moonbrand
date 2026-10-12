@@ -904,6 +904,66 @@ export interface AdminJobTimeline {
   steps: { at: string; seconds: number; tool: string; detail: string }[];
 }
 
+// La sezione Prompt: cosa leggono Claude e Gemini in ogni punto in cui moonbrand li chiama, preso dal codice del worker
+// che gira (sola lettura). Nei testi le parti tra ${…} si riempiono a ogni lavoro.
+export interface AdminPromptPiece {
+  // system: prompt di sistema; message: il messaggio del lavoro; brand: quello che si legge del brand; check: le domande
+  // fisse ai controlli; external: un pezzo che non è nel nostro codice (text lo descrive).
+  kind: 'system' | 'message' | 'brand' | 'check' | 'external';
+  label: string;
+  // Dove sta, es. src/jobs/chat.ts · guide.
+  source: string;
+  // null: nel codice non si trova più (il catalogo dell'API va aggiornato).
+  text: string | null;
+  words: number;
+}
+
+export interface AdminPromptEntry {
+  id: string;
+  name: string;
+  // Cosa lo fa partire, detto per l'admin.
+  trigger: string;
+  model: string;
+  // Le skill di moonbrand che può caricare e i gruppi di strumenti che vede.
+  skills: string[];
+  tools: string[];
+  note: string | null;
+  pieces: AdminPromptPiece[];
+}
+
+export interface AdminPromptTool {
+  file: string;
+  name: string;
+  description: string;
+}
+
+export interface AdminPromptFile {
+  path: string;
+  words: number;
+}
+
+export interface AdminPrompts {
+  entries: AdminPromptEntry[];
+  tools: AdminPromptTool[];
+  // Le skill e le guide dei template (plugin/): il testo si chiede a parte, uno alla volta.
+  files: AdminPromptFile[];
+  // I file del worker che chiamano Claude o Gemini e che il catalogo non descrive ancora.
+  uncatalogued: string[];
+  brands: { id: string; name: string; email: string }[];
+}
+
+export interface AdminPromptFileText {
+  path: string;
+  text: string;
+}
+
+export interface AdminBrandPrompts {
+  // Il CLAUDE.md scritto per l'ultimo lavoro del brand; null se il brand non ha ancora lavorato.
+  guide: string | null;
+  // La memoria che Claude Code si è scritto da solo per questo brand.
+  memory: { name: string; text: string }[];
+}
+
 export interface AdminCreateAccountRequest {
   email: string;
   name: string;

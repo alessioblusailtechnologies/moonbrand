@@ -157,6 +157,15 @@ export function s3BrandFiles(
       if (!SESSION_ID.test(sessionId)) return null;
       return (await get(`_sessions/${brandId}/${sessionId}.jsonl`))?.toString('utf8') ?? null;
     },
+    // Il CLAUDE.md lo ricarica il worker a fine lavoro con il resto della cartella; la memoria arriva con le sessioni.
+    async promptFiles(brandId) {
+      const memoryKeys = (await keysUnder(`_sessions/${brandId}/memory/`)).filter((Key) => Key.endsWith('.md')).sort();
+      const [guide, memory] = await Promise.all([
+        get(`${brandId}/CLAUDE.md`),
+        Promise.all(memoryKeys.map(async (Key) => ({ name: path.basename(Key), text: (await get(Key))?.toString('utf8') ?? '' }))),
+      ]);
+      return { guide: guide?.toString('utf8') ?? null, memory };
+    },
     client,
     bucket: Bucket,
   };
