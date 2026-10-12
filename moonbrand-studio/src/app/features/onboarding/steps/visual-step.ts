@@ -65,6 +65,8 @@ export class VisualStep implements OnInit {
   private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
+  // Dalle Impostazioni: gli esempi che il brand segue già come riferimento, finché non se ne fanno di nuovi.
+  readonly followed = input<MediaFile[]>([]);
 
   protected readonly slotLabels = computed(() => paletteSlotLabels(this.i18n.locale()));
   protected readonly maxReferences = MAX_REFERENCES;
@@ -268,6 +270,13 @@ export class VisualStep implements OnInit {
 
   protected goToSlide(track: HTMLElement, index: number): void {
     track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+  }
+
+  protected openFollowed(index: number): void {
+    this.lightbox.open(
+      this.followed().map((file, i) => ({ url: file.url, alt: this.i18n.t('onboarding.visual.examples.followedAlt', { n: i + 1 }) })),
+      index,
+    );
   }
 
   protected openExample(index: number): void {

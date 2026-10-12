@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, u
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import type { BrandProfile } from '@moonbrand/shared/api/contract';
-import type { SectionKey } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, SectionKey } from '@moonbrand/shared/domain/brand';
 import { kindLabel } from '@moonbrand/shared/domain/catalog';
 import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
@@ -100,8 +100,8 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
 
       @if (editing(); as key) {
         @if (profile(); as current) {
-          <mb-section-editor [brandId]="current.id" [draft]="current.draft" [section]="key" (closed)="editing.set(null)"
-            (saved)="profile.set({ id: current.id, draft: $event }); editing.set(null)" />
+          <mb-section-editor [brandId]="current.id" [draft]="current.draft" [followed]="current.followed" [section]="key" (closed)="editing.set(null)"
+            (saved)="sectionSaved(current, key, $event)" />
         }
       }
     }
@@ -271,6 +271,19 @@ export class ProfilePage {
   protected readonly connected = async (brandId: string) => {
     if (this.activeId() === brandId) await this.load(brandId);
   };
+
+  // Con esempi nuovi scelti nel Visual cambiano anche quelli seguiti, che stanno nella cartella del brand: si rilegge il profilo.
+  protected sectionSaved(current: BrandProfile, section: SectionKey, draft: BrandDraft): void {
+    this.profile.set({ ...current, draft });
+    this.editing.set(null);
+    if (section === 'visual') void this.reloadFollowed(current.id);
+  }
+
+  private async reloadFollowed(brandId: string): Promise<void> {
+    const profile = await this.brands.profile(brandId).catch(() => null);
+    const current = this.profile();
+    if (profile && current?.id === brandId) this.profile.set({ ...current, followed: profile.followed });
+  }
 
   protected async load(brandId: string): Promise<void> {
     this.editing.set(null);

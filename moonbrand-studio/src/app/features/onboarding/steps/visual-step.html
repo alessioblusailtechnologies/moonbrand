@@ -228,6 +228,17 @@
         </figure>
       }
     </div>
+  } @else if (followed().length > 0) {
+    <p class="caption">{{ 'onboarding.visual.examples.followed' | t }}</p>
+    <div class="references">
+      @for (file of followed(); track file.path; let i = $index) {
+        <div class="reference">
+          <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.examples.followedAlt' | t: { n: i + 1 }" (click)="openFollowed(i)">
+            <img [src]="file.url" [alt]="'onboarding.visual.examples.followedAlt' | t: { n: i + 1 }" />
+          </button>
+        </div>
+      }
+    </div>
   } @else {
     <p class="caption">{{ (template() ? 'onboarding.visual.examples.emptyTemplate' : 'onboarding.visual.examples.empty') | t }}</p>
   }
@@ -243,9 +254,9 @@
   </div>
   @if (!preparing()) {
     <!-- Finché non ci sono esempi è il passo da fare per andare avanti: pulsante pieno; dopo serve solo a rifarli. -->
-    <button class="btn align-center" type="button" [class.btn-primary]="examples().length === 0" [class.btn-secondary]="examples().length > 0"
-      [class.btn-sm]="examples().length > 0" (click)="createExamples()">
-      {{ (examples().length > 0 ? 'onboarding.visual.examples.regenerate' : 'onboarding.visual.examples.prepare') | t }}
+    @let made = examples().length > 0 || followed().length > 0;
+    <button class="btn align-center" type="button" [class.btn-primary]="!made" [class.btn-secondary]="made" [class.btn-sm]="made" (click)="createExamples()">
+      {{ (made ? 'onboarding.visual.examples.regenerate' : 'onboarding.visual.examples.prepare') | t }}
     </button>
   }
 </section>

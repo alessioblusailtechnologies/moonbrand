@@ -125,6 +125,14 @@ export function s3BrandFiles(
         await client.send(new DeleteObjectsCommand({ Bucket, Delete: { Objects, Quiet: true } }));
       }
     },
+    async list(brandId, dir) {
+      if (!DIR_NAME.test(dir)) throw ApiError.invalid('Cartella non valida.');
+      const prefix = `${brandId}/`;
+      return (await keysUnder(`${prefix}${dir}/`))
+        .map((Key) => Key.slice(prefix.length))
+        .filter((relative) => relative.split('/').length === 2)
+        .sort();
+    },
     async copy(brandId, from, to) {
       const source = key(brandId, from);
       try {

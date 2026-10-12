@@ -97,6 +97,9 @@ export type CreateBrandResponse = BrandSummary & { setupJobs: string[] };
 export interface BrandProfile {
   id: string;
   draft: BrandDraft;
+  // Gli esempi scelti nell'onboarding (o rifatti dopo) che il brand segue come riferimento: file della sua cartella,
+  // non della bozza. Si cambiano rifacendo gli esempi.
+  followed: MediaFile[];
 }
 
 // referenceExamples: gli esempi rifatti dal Profilo, che prendono il posto dei riferimenti da seguire.

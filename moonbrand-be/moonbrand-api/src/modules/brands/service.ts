@@ -7,7 +7,7 @@ import type { SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
-import { REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
+import { FOLLOW_DIR, REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
 import { deleteOnboardingDraft } from '../onboarding/drafts';
 import { setActiveBrand } from '../auth/accounts';
 import type { MediaStorage } from '../media/storage';
@@ -56,7 +56,8 @@ export async function getBrandProfile(
   if (!draft) throw ApiError.notFound('Brand non trovato.');
   // I file di riferimento stanno nella cartella del brand, le altre immagini nello storage dell'account.
   const sign = (path: string) => (path.startsWith(`${REFERENCES_DIR}/`) ? Promise.resolve(files.url(brandId, path)) : storage.sign(path));
-  return { id: brandId, draft: { ...draft, visual: await signedVisual(draft.visual, sign) } };
+  const followed = (await files.list(brandId, FOLLOW_DIR)).map((path) => ({ path, url: files.url(brandId, path) }));
+  return { id: brandId, draft: { ...draft, visual: await signedVisual(draft.visual, sign) }, followed };
 }
 
 export async function saveBrand(

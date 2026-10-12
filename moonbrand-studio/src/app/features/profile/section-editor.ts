@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal, type OnInit } from '@angular/core';
 
-import type { BrandDraft, SectionKey } from '@moonbrand/shared/domain/brand';
+import type { BrandDraft, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 
 import { errorMessage } from '../../core/errors';
@@ -49,7 +49,7 @@ import { ReferencesEditor } from './references-editor';
               @case ('channels') { <mb-channels-step [draft]="draft" /> }
               @case ('themes') { <mb-themes-step [draft]="draft" /> }
               @case ('instructions') { <mb-instructions-step [draft]="draft" /> }
-              @case ('visual') { <mb-visual-step [draft]="draft" /> }
+              @case ('visual') { <mb-visual-step [draft]="draft" [followed]="followed()" /> }
               @case ('references') { <mb-references-editor [draft]="draft" /> }
             }
           }
@@ -173,6 +173,7 @@ export class SectionEditor implements OnInit {
   readonly brandId = input.required<string>();
   readonly draft = input.required<BrandDraft>();
   readonly section = input.required<SectionKey>();
+  readonly followed = input<MediaFile[]>([]);
   readonly saved = output<BrandDraft>();
   readonly closed = output<void>();
 

@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { createReadStream, type ReadStream } from 'node:fs';
-import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type pg from 'pg';
@@ -52,6 +52,8 @@ export interface BrandFiles {
   read(brandId: string, relativePath: string): Promise<Buffer>;
   remove(brandId: string, relativePath: string): Promise<void>;
   removeDir(brandId: string, dir: string): Promise<void>;
+  // I file di una cartella del brand (solo il primo livello), come percorsi relativi in ordine di nome; vuota se non c'è.
+  list(brandId: string, dir: string): Promise<string[]>;
   copy(brandId: string, from: string, to: string): Promise<void>;
   // Il file da mandare dall'API, oppure, se i file stanno su uno storage, un link temporaneo dove scaricarlo.
   open(brandId: string, relativePath: string): Promise<OpenFile | { redirect: string }>;
@@ -106,6 +108,14 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
     async removeDir(brandId, dir) {
       if (!DIR_NAME.test(dir)) throw ApiError.invalid('Cartella non valida.');
       await rm(path.join(brandDir(brandId), dir), { recursive: true, force: true });
+    },
+    async list(brandId, dir) {
+      if (!DIR_NAME.test(dir)) throw ApiError.invalid('Cartella non valida.');
+      const entries = await readdir(path.join(brandDir(brandId), dir), { withFileTypes: true }).catch(() => []);
+      return entries
+        .filter((entry) => entry.isFile())
+        .map((entry) => `${dir}/${entry.name}`)
+        .sort();
     },
     async copy(brandId, from, to) {
       const target = filePath(brandId, to);
