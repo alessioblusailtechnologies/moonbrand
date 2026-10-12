@@ -118,47 +118,49 @@
   <section class="panel">
     <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
     <p class="caption">{{ (ownTemplates().length > 0 ? 'onboarding.visual.template.hint' : 'onboarding.visual.template.othersHint') | t }}</p>
-    <div class="templates" role="radiogroup" [attr.aria-label]="'onboarding.visual.template.label' | t">
-      @for (item of templates(); track item.id) {
-        <div class="template" [class.selected]="value.template === item.id">
-          @let current = slide()[item.id] ?? 0;
-          <div class="template-slider" [attr.aria-label]="'onboarding.visual.template.layouts' | t: { name: item.name }" role="group">
-            <div class="slides" #track (scroll)="onSlide(item.id, track)">
-              @for (url of item.slides; track url; let i = $index) {
-                <button class="slide" type="button" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
-                  (click)="openTemplate(item, i)">
-                  <img [src]="url" [alt]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }" [attr.loading]="i === 0 ? null : 'lazy'" />
-                </button>
-              }
-            </div>
-            @if (item.slides.length > 1) {
-              @if (current > 0) {
-                <button class="slide-nav prev" type="button" [attr.aria-label]="'onboarding.visual.template.previous' | t" (click)="goToSlide(track, current - 1)">
-                  <mb-icon name="chevron-left" [size]="16" [stroke]="2.5" />
-                </button>
-              }
-              @if (current < item.slides.length - 1) {
-                <button class="slide-nav next" type="button" [attr.aria-label]="'onboarding.visual.template.next' | t" (click)="goToSlide(track, current + 1)">
-                  <mb-icon name="chevron-right" [size]="16" [stroke]="2.5" />
-                </button>
-              }
-              <div class="dots">
+    <div class="templates-box">
+      <div class="templates" role="radiogroup" [attr.aria-label]="'onboarding.visual.template.label' | t">
+        @for (item of templates(); track item.id) {
+          <div class="template" [class.selected]="value.template === item.id">
+            @let current = slide()[item.id] ?? 0;
+            <div class="template-slider" [attr.aria-label]="'onboarding.visual.template.layouts' | t: { name: item.name }" role="group">
+              <div class="slides" #track (scroll)="onSlide(item.id, track)">
                 @for (url of item.slides; track url; let i = $index) {
-                  <button type="button" [class.on]="i === current" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
-                    (click)="goToSlide(track, i)"></button>
+                  <button class="slide" type="button" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
+                    (click)="openTemplate(item, i)">
+                    <img [src]="url" [alt]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }" [attr.loading]="i === 0 ? null : 'lazy'" />
+                  </button>
                 }
               </div>
-            }
+              @if (item.slides.length > 1) {
+                @if (current > 0) {
+                  <button class="slide-nav prev" type="button" [attr.aria-label]="'onboarding.visual.template.previous' | t" (click)="goToSlide(track, current - 1)">
+                    <mb-icon name="chevron-left" [size]="16" [stroke]="2.5" />
+                  </button>
+                }
+                @if (current < item.slides.length - 1) {
+                  <button class="slide-nav next" type="button" [attr.aria-label]="'onboarding.visual.template.next' | t" (click)="goToSlide(track, current + 1)">
+                    <mb-icon name="chevron-right" [size]="16" [stroke]="2.5" />
+                  </button>
+                }
+                <div class="dots">
+                  @for (url of item.slides; track url; let i = $index) {
+                    <button type="button" [class.on]="i === current" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
+                      (click)="goToSlide(track, i)"></button>
+                  }
+                </div>
+              }
+            </div>
+            <button class="template-pick" type="button" role="radio" [attr.aria-checked]="value.template === item.id" (click)="chooseTemplate(item.id)">
+              <span class="grow">
+                <span class="strong-sm block">{{ item.name }}@if (item.origin) {<span class="caption"> · {{ item.origin }}</span>}</span>
+                <span class="caption block">{{ item.description }}</span>
+              </span>
+              <span class="radio-mark" [class.on]="value.template === item.id"></span>
+            </button>
           </div>
-          <button class="template-pick" type="button" role="radio" [attr.aria-checked]="value.template === item.id" (click)="chooseTemplate(item.id)">
-            <span class="grow">
-              <span class="strong-sm block">{{ item.name }}@if (item.origin) {<span class="caption"> · {{ item.origin }}</span>}</span>
-              <span class="caption block">{{ item.description }}</span>
-            </span>
-            <span class="radio-mark" [class.on]="value.template === item.id"></span>
-          </button>
-        </div>
-      }
+        }
+      </div>
     </div>
     <button class="palette-option" type="button" role="radio" [attr.aria-checked]="!value.template" [class.selected]="!value.template"
       (click)="chooseTemplate(null)">

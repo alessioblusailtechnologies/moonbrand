@@ -260,10 +260,21 @@
 }
 
 // I template della categoria: sopra lo slider dei layout, sotto il nome si sceglie.
+// Tanti template: un'altezza fissa che taglia a metà la terza riga, così si capisce che c'è da scorrere. La riga è la
+// slide 4:5 più nome e descrizione (≈ 100px); la larghezza di una colonna viene dal contenitore. Su uno schermo basso
+// il riquadro non supera i tre quarti dell'altezza, e il taglio resta visibile.
+.templates-box {
+  --riga: calc((100cqw - 12px) / 2 * 1.25 + 100px);
+  container-type: inline-size;
+}
+
 .templates {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  max-height: min(calc(var(--riga) * 2.5 + 24px), 75dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .template {
@@ -385,8 +396,13 @@
 }
 
 @media (max-width: 640px) {
+  .templates-box {
+    --riga: calc(100cqw * 1.25 + 100px);
+  }
+
   .templates {
     grid-template-columns: 1fr;
+    max-height: min(calc(var(--riga) * 1.5 + 12px), 75dvh);
   }
 }
 
