@@ -7,7 +7,9 @@ description: Come si fa un video per il brand della cartella (Reels, TikTok, Sho
 
 Il brand è descritto in CLAUDE.md. I video si fanno con Remotion nel progetto video del brand, in video/: com'è fatto lo spiega video/README.md. Per scrivere codice Remotion segui la skill moonbrand:remotion-best-practices. In moonbrand però non si apre lo studio di Remotion: il video lo guarda il motore di visione con il tool guarda, e alla fine si esporta sempre.
 
-Prima di scrivere il copione leggi [Il mestiere](../contenuti/mestiere.md), nella skill moonbrand:contenuti: come lavora un grafico social e i segni che tradiscono l'AI, da non usare né nella grafica né nel testo a schermo. Se tra i canali c'è TikTok o Instagram leggi anche la guida del canale, [TikTok](../contenuti/canali/tiktok.md) o [Instagram](../contenuti/canali/instagram.md): durata, aggancio, testo, ritmo e chiusura del video vengono da lì.
+Se tra i canali c'è TikTok o Instagram leggi anche la guida del canale, [TikTok](../contenuti/canali/tiktok.md) o [Instagram](../contenuti/canali/instagram.md): durata, aggancio, testo, ritmo e chiusura del video vengono da lì.
+
+Se l'utente chiede di rifare un video che ha mandato («come questo», «uguale», «rifammi questo»), leggi prima «Rifare un riferimento» qui sotto: dove le regole di questa skill, delle guide dei canali o dello stile del brand si scontrano con il riferimento, vale quella sezione.
 
 ## Il copione
 
@@ -28,7 +30,7 @@ Proponi sempre il video migliore per l'idea, non il più economico. Le clip gene
 - Un'inquadratura porta una sola idea. Il ritmo lo decide l'idea: tagli veloci per un elenco, più respiro per un racconto.
 - Molti guardano senza audio: il testo a schermo deve bastare a capire il video. Frasi brevi, grandi, a contrasto, e ferme abbastanza da leggerle con calma.
 - La durata è quella che serve all'idea, senza allungare.
-- La chiusura lascia il brand riconoscibile dentro l'ultima inquadratura (i colori, il tono, il logo piccolo dove la confezione lo vuole) o con l'invito nella didascalia, mai con una schermata finale staccata; su TikTok niente logo (vedi la guida di TikTok).
+- La chiusura lascia il brand riconoscibile, di solito con il logo o un'azione; su TikTok niente logo (vedi la guida di TikTok).
 
 Testo a schermo e voce seguono le stesse regole dei testi del brand (skill moonbrand:contenuti): voce del brand, niente fatti, numeri o nomi inventati, segnaposto tra parentesi quadre per quello che non sai.
 
@@ -60,9 +62,22 @@ Di' un numero arrotondato o una forchetta stretta («circa 450 crediti»), senza
 
 - Lo stile del brand si prende come per le immagini: riferimenti-da-seguire e file-riferimento danno palette, font, tono delle foto e dettagli grafici, da seguire senza ricalcare l'impaginazione. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile».
 - video/src/brand.ts raccoglie colori, font e misure del brand per i video: se non c'è, crealo al primo video. I font si caricano con @remotion/google-fonts, oppure con @remotion/fonts dai file in video/public/brand.
-- video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro; nel kit non entra nessun pezzo con i segni che tradiscono l'AI. video/src/archivio contiene i pezzi dei video vecchi: servono solo a quei video, non usarli, non copiarli e non spostarli nel kit.
+- video/src/kit contiene i pezzi riusabili del brand, tra cui TestoTikTok per il testo a schermo come lo scrive l'app. Usali, migliorali e aggiungi quelli che un video crea e che serviranno ancora, così i video del brand si riconoscono tra loro. video/src/archivio contiene i pezzi dei video vecchi: servono solo a quei video, non usarli, non copiarli e non spostarli nel kit.
 - Guarda come sono fatti gli altri video in video/src/contenuti e fai qualcosa di diverso: ogni video deve essere riconoscibile come del brand e diverso dagli altri. Per capirlo bastano i nomi e l'inizio delle composizioni, non i file interi.
 - Il movimento ha un senso: fa entrare le cose nell'ordine in cui vanno lette, mette in risalto il punto importante, dà ritmo. Niente animazioni messe tanto per muovere.
+
+## Rifare un riferimento
+
+Quando l'utente manda un video e chiede di rifarlo per il brand, il riferimento è il brief e comanda: vale più dello stile del brand in CLAUDE.md, della tua memoria su questo brand, del kit, della confezione dei canali e della regola di fare ogni video diverso dagli altri. Dal brand prendi solo nome, logo, prodotto, testi, colori e font, al posto di quelli del marchio del riferimento; formato, durata, struttura, impaginazione, movimenti, profondità, luce, sottotitoli e chiusura vengono dal riferimento, anche quando sono interfacce, cursori, card, pillole, bagliori o una schermata finale. Il lavoro è all'altezza del riferimento se, messi fianco a fianco, il tuo non sembra la versione povera.
+
+1. **Misura il riferimento.** Formato, durata e fotogrammi al secondo li dà ffprobe (accanto a ffmpeg, in video/node_modules/@remotion/compositor-*), non la descrizione del motore di visione. Il video lo fai nello stesso formato: se i canali ne chiedono un altro, fai prima quello del riferimento e dillo.
+2. **Smontalo.** Fallo guardare intero a guarda per la voce, la musica, gli effetti e i tempi. Poi guardalo tu: estrai i fotogrammi (uno alla volta, `ffmpeg -ss <secondo> -i riferimento.mp4 -frames:v 1 f.jpg`), uno ogni 0,2 s nelle scene in movimento e uno ogni mezzo secondo nelle altre, mettili in griglie con python3 e PIL (secondo scritto su ogni fotogramma) e aprile tu. Qui vale la pena: è l'unico modo di vedere curve, profondità e dettagli.
+3. **Scrivi la scheda delle scene**: per ognuna i secondi, cosa si vede, i movimenti di camera e degli oggetti con le loro curve (parte piano, frena, rimbalza), profondità e prospettiva, luce, tipografia (misure e pesi, rispetto al fotogramma), sottotitoli, suoni. Il copione per l'utente segue la scheda, scena per scena, con gli stessi tempi.
+4. **Ricostruisci**, non incollare. Interfacce e schermate dell'app si rifanno come componenti React, disegnati per il fotogramma del video e puliti; gli screenshot dell'utente servono per contenuti, testi e colori veri. Per la profondità usa trasformazioni 3D con prospettiva e parallasse; per la velocità @remotion/motion-blur; per i movimenti curve fatte apposta (spring o bezier) per ogni oggetto, non la stessa entrata per tutti.
+5. **Confronta, scena per scena.** Esporta con `npx remotion still` i tuoi fotogrammi negli stessi secondi di quelli del riferimento, mettili in un'unica immagine accanto ai suoi (riferimento a sinistra, il tuo a destra) e aprila tu. Scrivi cosa nel tuo è più povero (movimento, profondità, luce, tipografia, densità, rifinitura) e correggi. Almeno tre giri per scena, finché regge il confronto. Qui il limite dei 20 fotogrammi di controlla_video e la regola di non aprire i fotogrammi non valgono: valgono per i controlli normali.
+6. **Alla fine** passa a guarda il riferimento e il tuo video insieme, chiedendo scena per scena dove il tuo resta indietro, e nella risposta all'utente di' onestamente cosa non sei riuscito a raggiungere.
+
+È un lavoro più lungo di un video normale: il consumo stimato del copione lo tiene in conto.
 
 ## Immagini e clip
 

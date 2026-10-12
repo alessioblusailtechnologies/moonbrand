@@ -9,7 +9,8 @@ Il brand è descritto in CLAUDE.md: chi è, per chi scrive, temi, voce e canali.
 
 ## Regole di scrittura
 
-- Scrivi nella lingua dei post del brand (in CLAUDE.md, «Lingua dei post»), semplice e concreto: niente gergo di marketing, niente frasi fatte, niente trattini lunghi. Gli esempi di queste skill sono in italiano: valgono per il tono, non per la lingua.
+- Scrivi nella lingua dei post del brand (in CLAUDE.md, «Lingua dei post»), semplice e concreto: niente gergo di marketing, niente frasi fatte. Gli esempi di queste skill sono in italiano: valgono per il tono, non per la lingua.
+- Niente tic da testo scritto con l’AI, nei post, nel testo delle immagini e nei video: trattini lunghi (—), «non è X, è Y» e «non solo X, ma Y», elenchi di tre aggettivi o di tre frasi parallele, domande retoriche e «Immagina…», «Scopri…», «Ecco…» in apertura, emoji come punti elenco, frecce →, ✨, parole in maiuscolo per enfasi, tre puntini per creare attesa. Se le istruzioni del cliente chiedono una di queste cose, vale il cliente.
 - Segui alla lettera le istruzioni del cliente (nel CLAUDE.md del brand): se vietano esclamativi o emoji, non usarne; se chiedono i numeri in cifre, scrivi 3 e non tre.
 - Non inventare fatti, numeri, prezzi, nomi di clienti o risultati: quando serve un dato che non conosci, metti il segnaposto tra parentesi quadre, per esempio [prezzo].
 - Ogni canale ha la sua variante, scritta per quel canale e non copiata dalle altre.
@@ -73,11 +74,11 @@ Se tra i canali del contenuto c’è TikTok o Instagram, prima di scegliere l’
 
 ## Immagini
 
-- Prima di fare immagini o video leggi [Il mestiere](./mestiere.md): come lavora un grafico social e i segni che tradiscono l’AI, da non usare.
+- Se l’utente manda un’immagine o un video e chiede di rifarlo per il brand («come questo», «uguale», «rifammi questo»), il riferimento è il brief: vale più dello stile del brand in CLAUDE.md e della tua memoria su questo brand. Dal brand prendi solo nome, logo, prodotto, testi, colori e font; formato, impaginazione e dettagli vengono dal riferimento. Prima di consegnare mettili fianco a fianco e correggi dove il tuo è più povero (per i video, «Rifare un riferimento» nella skill moonbrand:video).
 - Le chiamate che non dipendono l’una dall’altra (più genera_immagine, più renderizza, i controlli con guarda) falle nello stesso messaggio: girano insieme e finiscono nel tempo della più lenta.
 - Immagini e video li guarda il motore di visione con il tool guarda, che ti risponde a parole: usalo per riferimenti, allegati, contenuti già fatti e controlli. Apri tu un’immagine solo quando devi correggere un’impaginazione e la descrizione non basta: ogni immagine che apri resta nella conversazione fino alla fine.
 - I post in riferimenti-da-seguire, e se servono le immagini in file-riferimento, sono spunti e guida per lo stile del brand: palette, font, tono delle foto, dettagli grafici, cura. Di solito sono già descritti in CLAUDE.md, sotto «Lo stile»: parti da lì. Se quella parte manca, chiedi a guarda proprio queste cose. Non ricalcarne l’impaginazione e non copiare i file HTML o CSS degli altri contenuti.
-- Se in CLAUDE.md c’è «Il template», il brand ha scelto un template di moonbrand: per i canali curati i layout in template/layout/ mostrano il suo sistema grafico, e ogni post è una composizione nuova in quello stile (non un layout con i testi cambiati), come dice quella sezione. Vale più dei riferimenti; i segni grafici del template si tengono anche se il mestiere li sconsiglia, il resto del mestiere (foto vere, testi, un’idea visiva per ogni contenuto) resta.
+- Se in CLAUDE.md c’è «Il template», il brand ha scelto un template di moonbrand: per i canali curati i layout in template/layout/ mostrano il suo sistema grafico, e ogni post è una composizione nuova in quello stile (non un layout con i testi cambiati), come dice quella sezione. Vale più dei riferimenti.
 - Lo stile si prende solo da lì: le cartelle esempi e lavoro alla radice del brand, se ci sono, sono bozze dell’onboarding che possono essere state scartate; non aprirle e non usarle.
 - Scegli la composizione che serve a questa idea e alternala: le impaginazioni degli ultimi contenuti sono in CLAUDE.md, e con guarda descrivi solo le immagini finali dei contenuti recenti che lì mancano. Usa un’impaginazione diversa. Ogni contenuto deve essere riconoscibile come del brand e diverso dagli altri.
 - Quando salvi un contenuto, scrivi nel campo layout la sua impaginazione in una frase: la leggeranno i contenuti dopo.

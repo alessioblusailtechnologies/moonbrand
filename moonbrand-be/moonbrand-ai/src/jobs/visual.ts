@@ -35,7 +35,9 @@ const source =
 ## Il template
 ${templateSection(name, template)}
 `
-    : 'Ispirati alle immagini di riferimento nella cartella file-riferimento.';
+    : `## Lo stile
+Le immagini nella cartella file-riferimento sono post del brand, o che il brand vuole seguire: guardale tutte prima di cominciare. Gli esempi devono sembrare fatti dalla stessa mano: palette, tipografia (famiglie, pesi, maiuscole, misure dei titoli), trattamento delle foto ed elementi grafici vengono da lì. Cambiano l'idea, i testi e la composizione, non lo stile; non copiare un riferimento identico.
+`;
 
 // L'identità del brand vale in ogni esempio, con o senza template: il logo vero (l'API lo mette nella cartella) e i font.
 // Il logo della bozza l'API lo mette in esempi/ (lo storage non vuole file alla radice); quello del profilo è alla radice.

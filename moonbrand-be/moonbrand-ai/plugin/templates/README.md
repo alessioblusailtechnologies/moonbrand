@@ -51,9 +51,8 @@ simili. L'origine è scritta in TEMPLATE.md.
   con la classe `logo` (l'agente lo sostituisce con il file del logo se il brand lo ha).
 - Testi d'esempio in italiano, credibili per la categoria, con la lunghezza che avrà un testo vero.
 - Ogni elemento che l'agente cambia ha un commento HTML che dice cosa ci va (`<!-- titolo: 3-7 parole -->`).
-- Quello che fa l'originale si tiene, anche se `skills/contenuti/mestiere.md` lo elenca tra i segni dell'AI (una parola
-  evidenziata, un'etichetta, una pillola): è la mano di un grafico vero, e TEMPLATE.md lo scrive tra i segni del template.
-  Non si aggiunge niente che l'originale non ha.
+- Quello che fa l'originale si tiene (una parola evidenziata, un'etichetta, una pillola): è la mano di un grafico vero, e
+  TEMPLATE.md lo scrive tra i segni del template. Non si aggiunge niente che l'originale non ha.
 - `npm run template-anteprime` stampa i controlli di `renderizza`: i «da correggere» (testi tagliati, sovrapposti, font
   mancanti) si correggono sempre; i «da valutare» restano solo se sono nell'originale.
 

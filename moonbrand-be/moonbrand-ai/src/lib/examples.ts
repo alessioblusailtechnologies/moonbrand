@@ -41,12 +41,16 @@ export async function channelLooks(channels: readonly ChannelId[]): Promise<stri
   const lines = guides.map(
     ({ channel, guide }) => `- ${channelName(channel)}, in ${FORMAT_ASPECT.post[channel]}: ${guide ? 'segui la guida del canale qui sotto' : LOOK[channel]}.`,
   );
-  // Gli esempi sono immagini ferme: della guida valgono le regole per una foto o una slide, non quelle del video.
+  // Gli esempi sono immagini ferme: della guida valgono le regole del post, non quelle del video. Su TikTok anche il post
+  // è nativo (riprese vere, testo dell'app); sugli altri canali il post è editoriale, con la grafica del brand.
   const sections = guides.flatMap(({ channel, guide }) =>
     guide
       ? [
-          `## La guida di ${channelName(channel)}\n\nL'esempio è un'immagine ferma: prendi dalla guida quello che vale per una foto o una slide ` +
-            `(riprese vere, testo come lo scrive l'app, niente grafiche montate né logo); durata, ritmo e audio valgono per i video.\n\n${guide}`,
+          `## La guida di ${channelName(channel)}\n\n` +
+            (channel === 'tiktok'
+              ? `L'esempio è un'immagine ferma: prendi dalla guida quello che vale per una foto o una slide (riprese vere, testo come lo scrive l'app, niente grafiche montate né logo); durata, ritmo e audio valgono per i video.`
+              : `L'esempio è un post: vale quello che la guida dice del post e del carosello (editoriale, con la grafica del brand), non quello del Reel.`) +
+            `\n\n${guide}`,
         ]
       : [],
   );
