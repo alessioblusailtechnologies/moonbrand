@@ -34,3 +34,8 @@ export const hasBrandsGuard: CanActivateFn = async () => {
   await brands.ensureLoaded();
   return brands.brands().length > 0 || router.createUrlTree(['/onboarding']);
 };
+
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.admin() || inject(Router).createUrlTree(['/']);
+};

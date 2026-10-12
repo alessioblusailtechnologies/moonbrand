@@ -67,13 +67,13 @@ export async function signIn(pool: pg.Pool, gateway: AuthGateway, input: SignInR
   return { ...tokens, account: publicAccount(account) };
 }
 
-export async function me(pool: pg.Pool, identity: Identity): Promise<Me> {
+export async function me(pool: pg.Pool, identity: Identity): Promise<Omit<Me, 'admin'>> {
   const account = await withIdentity(pool, identity, (db) => findAccount(db, identity.accountId));
   if (!account) throw ApiError.forbidden('NO_ACCOUNT', 'Questa email non ha ancora un account: registrati.');
   return { account: publicAccount(account), activeBrandId: account.activeBrandId };
 }
 
-export async function updateMe(pool: pg.Pool, identity: Identity, input: UpdateMeRequest): Promise<Me> {
+export async function updateMe(pool: pg.Pool, identity: Identity, input: UpdateMeRequest): Promise<Omit<Me, 'admin'>> {
   await withIdentity(pool, identity, (db) => setLocale(db, identity.accountId, input.locale));
   return me(pool, identity);
 }

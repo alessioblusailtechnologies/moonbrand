@@ -1,6 +1,6 @@
 import type { Routes, UrlMatcher } from '@angular/router';
 
-import { authGuard, confirmedGuard, guestGuard, hasBrandsGuard, unconfirmedGuard } from './core/auth/auth.guards';
+import { adminGuard, authGuard, confirmedGuard, guestGuard, hasBrandsGuard, unconfirmedGuard } from './core/auth/auth.guards';
 
 const assistantMatcher: UrlMatcher = (segments) => {
   const [section, conversationId] = segments;
@@ -74,6 +74,17 @@ export const routes: Routes = [
         path: 'impostazioni/crediti',
         canActivate: [hasBrandsGuard],
         loadComponent: () => import('./features/credits/credits-page').then((m) => m.CreditsPage),
+      },
+      // La sezione admin: utenze, consumi e lavori di tutti, solo per chi è in ADMIN_EMAILS nell'API.
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        children: [
+          { path: '', loadComponent: () => import('./features/admin/admin-overview').then((m) => m.AdminOverviewPage) },
+          { path: 'utenze', loadComponent: () => import('./features/admin/admin-accounts').then((m) => m.AdminAccountsPage) },
+          { path: 'utenze/:accountId', loadComponent: () => import('./features/admin/admin-account').then((m) => m.AdminAccountPage) },
+          { path: 'lavori', loadComponent: () => import('./features/admin/admin-jobs').then((m) => m.AdminJobsPage) },
+        ],
       },
     ],
   },

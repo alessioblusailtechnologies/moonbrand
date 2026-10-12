@@ -5,6 +5,7 @@ import type pg from 'pg';
 
 import type { Config } from './config';
 import { registerErrorHandler } from './errors';
+import { registerAdminRoutes } from './modules/admin/routes';
 import { registerAgentRoutes } from './modules/agent/routes';
 import { registerAiRoutes } from './modules/ai/routes';
 import { accountExists } from './modules/auth/accounts';
@@ -50,6 +51,7 @@ export interface AppOptions {
     | 'STUDIO_URL'
     | 'EMAIL_SECRET'
     | 'SUPABASE_SERVICE_ROLE_KEY'
+    | 'ADMIN_EMAILS'
   >;
 }
 
@@ -84,6 +86,7 @@ export function buildApp(options: AppOptions) {
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);
+  registerAdminRoutes(app, options.pool, options.files, options.settings);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;

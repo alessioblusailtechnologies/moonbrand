@@ -117,6 +117,12 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
       </div>
 
       <div class="foot">
+        @if (auth.admin()) {
+          <a class="nav-item" routerLink="/admin" routerLinkActive="active" ariaCurrentWhenActive="page" title="Admin">
+            <mb-icon name="bar-chart" [stroke]="1.8" />
+            <span class="nav-label">Admin</span>
+          </a>
+        }
         <a class="nav-item" routerLink="/impostazioni" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" [title]="'shell.brandSettings' | t">
           <mb-icon name="settings" [stroke]="1.8" />
           <span class="nav-label">{{ 'shell.brandSettings' | t }}</span>

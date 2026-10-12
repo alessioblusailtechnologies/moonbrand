@@ -19,6 +19,8 @@ export class AuthService {
   readonly status = signal<Status>('unknown');
   readonly account = signal<Account | null>(null);
   readonly activeBrandId = signal<string | null>(null);
+  // Chi vede la sezione admin (/admin): lo dice l'API, che ricontrolla a ogni richiesta.
+  readonly admin = signal(false);
   readonly signedIn = computed(() => this.status() === 'signed-in');
 
   token(): string | null {
@@ -105,6 +107,7 @@ export class AuthService {
     this.accessToken = null;
     this.account.set(null);
     this.activeBrandId.set(null);
+    this.admin.set(false);
     this.status.set('signed-out');
   }
 
@@ -119,6 +122,7 @@ export class AuthService {
     const me = await firstValueFrom(this.http.get<Me>('/v1/me'));
     this.account.set(me.account);
     this.activeBrandId.set(me.activeBrandId);
+    this.admin.set(me.admin);
   }
 
   private setToken(token: string, expiresIn: number): void {

@@ -61,6 +61,8 @@ export interface Session {
 export interface Me {
   account: Account;
   activeBrandId: string | null;
+  // Chi può aprire /admin: le email di ADMIN_EMAILS nell'API.
+  admin: boolean;
 }
 
 export interface BrandSummary {
@@ -737,4 +739,73 @@ export interface CreditUsageResponse {
   used: number;
   categories: { category: CreditCategory; credits: number }[];
   activities: CreditActivity[];
+}
+
+// La sezione admin dello studio (/admin): solo per le email di ADMIN_EMAILS. I costi sono in dollari, quelli veri:
+// claude dai job (ai_jobs.cost_usd), generations dai servizi (ai_usage: clip, immagini, musica, controlli, export).
+export interface AdminCost {
+  claude: number;
+  generations: number;
+}
+
+export interface AdminOverview {
+  accounts: { total: number; newToday: number; new7d: number; active7d: number };
+  brands: number;
+  contents: { total: number; new7d: number };
+  published: number;
+  jobs: { queued: number; running: number; failed24h: number; done24h: number };
+  cost: { today: AdminCost; days7: AdminCost; days30: AdminCost };
+  // Gli ultimi 30 giorni a Roma, dal più vecchio: YYYY-MM-DD.
+  daily: ({ date: string } & AdminCost)[];
+  // I servizi degli ultimi 30 giorni, dal più caro.
+  byTask: { task: string; model: string; count: number; usd: number }[];
+  failures: AdminJob[];
+}
+
+export interface AdminAccount {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+  lastSignInAt: string | null;
+  emailConfirmed: boolean;
+  brands: number;
+  contents: number;
+  jobs: number;
+  // L'ultimo lavoro partito, ISO.
+  lastActivityAt: string | null;
+  cost: AdminCost;
+  creditsMonth: number;
+}
+
+export interface AdminJob {
+  id: string;
+  kind: string;
+  status: 'queued' | 'running' | 'done' | 'failed' | 'stopped';
+  accountId: string;
+  email: string;
+  brandName: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  // Secondi dall'inizio alla fine (o a adesso, se gira); in coda: da quanto aspetta.
+  seconds: number | null;
+  cost: AdminCost;
+  error: string | null;
+  // La richiesta in chat, se il lavoro viene da lì.
+  request: string | null;
+}
+
+export interface AdminAccountDetail {
+  account: AdminAccount;
+  brands: { id: string; name: string; category: string | null; createdAt: string; creditsMonth: number; cost: AdminCost }[];
+  conversations: { id: string; brandName: string | null; title: string; createdAt: string; turns: number; lastTurnAt: string | null }[];
+  contents: (ContentSummary & { brandName: string | null; videoUrl: string | null })[];
+  jobs: AdminJob[];
+}
+
+export interface AdminJobsResponse {
+  active: AdminJob[];
+  failed: AdminJob[];
+  slowest: AdminJob[];
 }

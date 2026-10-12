@@ -48,6 +48,8 @@ const schema = z.object({
   STUDIO_URL: z.url().default('http://localhost:4200'),
   // La firma dei link di conferma; vuoto: la service role, come per i link dei file.
   EMAIL_SECRET: optional,
+  // Le email che aprono /admin nello studio (utenze, consumi, lavori), separate da virgola; vuoto: nessuno.
+  ADMIN_EMAILS: optional,
 });
 
 export type Config = z.infer<typeof schema>;
@@ -69,4 +71,8 @@ export function config(): Config {
 // Stessa profondità di dist/server.mjs: il default resta moonbrand/moonbrand-brands anche dopo la build.
 export function brandsDir(settings: Pick<Config, 'BRANDS_DIR'>): string {
   return path.resolve(settings.BRANDS_DIR ?? fileURLToPath(new URL('../../../moonbrand-brands', import.meta.url)));
+}
+
+export function adminEmails(settings: Pick<Config, 'ADMIN_EMAILS'>): Set<string> {
+  return new Set((settings.ADMIN_EMAILS ?? '').split(',').map((email) => email.trim().toLowerCase()).filter(Boolean));
 }

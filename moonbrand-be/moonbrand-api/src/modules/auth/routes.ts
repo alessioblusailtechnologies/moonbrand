@@ -4,10 +4,10 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import { GOOGLE_SIGN_IN, PASSWORD_MIN, REFRESH_COOKIE, type Session } from '@moonbrand/shared/api/contract';
+import { GOOGLE_SIGN_IN, PASSWORD_MIN, REFRESH_COOKIE, type Me, type Session } from '@moonbrand/shared/api/contract';
 import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
-import type { Config } from '../../config';
+import { adminEmails, type Config } from '../../config';
 import { ApiError } from '../../errors';
 import type { Mailer } from '../email/mailer';
 import { emailLinks } from './email-links';
@@ -50,7 +50,7 @@ export function registerAuthRoutes(
   pool: pg.Pool,
   gateway: AuthGateway,
   mailer: Mailer,
-  settings: Pick<Config, 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'STUDIO_URL' | 'EMAIL_SECRET' | 'SUPABASE_SERVICE_ROLE_KEY'>,
+  settings: Pick<Config, 'COOKIE_SECURE' | 'COOKIE_SAME_SITE' | 'STUDIO_URL' | 'EMAIL_SECRET' | 'SUPABASE_SERVICE_ROLE_KEY' | 'ADMIN_EMAILS'>,
 ): void {
   const links = emailLinks(settings.STUDIO_URL, settings.EMAIL_SECRET ?? settings.SUPABASE_SERVICE_ROLE_KEY);
   const mail = { mailer, links, log: app.log };
@@ -121,7 +121,11 @@ export function registerAuthRoutes(
     return startSession(reply, await signInWithGoogle(pool, gateway, code, verifier, chosen));
   });
 
-  app.get('/v1/me', (request) => me(pool, request.identity));
+  // Lo studio mostra la sezione admin solo a chi è in ADMIN_EMAILS; le rotte /v1/admin lo ricontrollano da sole.
+  const admins = adminEmails(settings);
+  const withAdmin = (result: Omit<Me, 'admin'>): Me => ({ ...result, admin: admins.has(result.account.email.toLowerCase()) });
 
-  app.patch('/v1/me', (request) => updateMe(pool, request.identity, updateMeSchema.parse(request.body)));
+  app.get('/v1/me', async (request) => withAdmin(await me(pool, request.identity)));
+
+  app.patch('/v1/me', async (request) => withAdmin(await updateMe(pool, request.identity, updateMeSchema.parse(request.body))));
 }
