@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { createReadStream, type ReadStream } from 'node:fs';
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import path from 'node:path';
 
 import type pg from 'pg';
@@ -59,10 +60,17 @@ export interface BrandFiles {
   open(brandId: string, relativePath: string): Promise<OpenFile | { redirect: string }>;
   url(brandId: string, relativePath: string): string;
   verify(brandId: string, relativePath: string, signature: string): boolean;
+  // La sessione di Claude Code di un lavoro del brand (il .jsonl), per l'admin; null se non c'è.
+  session(brandId: string, sessionId: string): Promise<string | null>;
 }
 
+export const SESSION_ID = /^[0-9a-f-]{36}$/;
+
 // I file dei brand sul disco di questa macchina: per lo sviluppo, o con API e worker sulla stessa macchina.
-export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR' | 'FILES_SECRET' | 'SUPABASE_SERVICE_ROLE_KEY'>): BrandFiles {
+export function localBrandFiles(
+  pool: pg.Pool,
+  config: Pick<Config, 'BRANDS_DIR' | 'FILES_SECRET' | 'SUPABASE_SERVICE_ROLE_KEY' | 'CLAUDE_CONFIG_DIR'>,
+): BrandFiles {
   const root = brandsDir(config);
   const secret = config.FILES_SECRET ?? config.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -134,6 +142,14 @@ export function localBrandFiles(pool: pg.Pool, config: Pick<Config, 'BRANDS_DIR'
     },
     url,
     verify,
+    // Dove le tiene Claude Code sulla macchina del worker: il percorso della cartella del brand con ogni carattere che
+    // non è una lettera o una cifra cambiato in «-» (come sessionsDir di moonbrand-ai).
+    async session(brandId, sessionId) {
+      if (!SESSION_ID.test(sessionId)) return null;
+      const projects = path.join(config.CLAUDE_CONFIG_DIR ?? path.join(homedir(), '.claude'), 'projects');
+      const folder = path.resolve(brandDir(brandId)).replace(/[^a-zA-Z0-9]/g, '-');
+      return readFile(path.join(projects, folder, `${sessionId}.jsonl`), 'utf8').catch(() => null);
+    },
   };
 }
 

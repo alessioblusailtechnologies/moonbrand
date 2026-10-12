@@ -682,6 +682,7 @@ export interface WelcomeJobInput {
 // crediti non si blocca niente.
 export interface CreditsResponse {
   plan: SubscriptionPlanId;
+  // Quelli del piano più quelli aggiunti nel mese dall'admin.
   monthlyCredits: number;
   // Consumati dal primo del mese (a Roma); remaining può andare sotto zero.
   usedThisMonth: number;
@@ -798,7 +799,7 @@ export interface AdminJob {
 
 export interface AdminAccountDetail {
   account: AdminAccount;
-  brands: { id: string; name: string; category: string | null; createdAt: string; creditsMonth: number; cost: AdminCost }[];
+  brands: { id: string; name: string; category: string | null; plan: string; createdAt: string; creditsMonth: number; cost: AdminCost }[];
   conversations: { id: string; brandName: string | null; title: string; createdAt: string; turns: number; lastTurnAt: string | null }[];
   contents: (ContentSummary & { brandName: string | null; videoUrl: string | null })[];
   jobs: AdminJob[];
@@ -809,3 +810,69 @@ export interface AdminJobsResponse {
   failed: AdminJob[];
   slowest: AdminJob[];
 }
+
+// Tutti i contenuti fatti, per la galleria admin. cost: i lavori sul contenuto più quelli della conversazione da cui è
+// nato (che può averne fatti altri).
+export interface AdminContent extends ContentSummary {
+  brandId: string;
+  brandName: string | null;
+  accountId: string;
+  email: string;
+  createdAt: string;
+  videoUrl: string | null;
+  cost: AdminCost;
+}
+
+export interface AdminContentsResponse {
+  items: AdminContent[];
+  total: number;
+  brands: { id: string; name: string; email: string }[];
+}
+
+export interface AdminCosts {
+  // Ultimi 30 giorni, per tipo di lavoro.
+  byKind: { kind: string; jobs: number; avgUsd: number; avgSeconds: number; totalUsd: number }[];
+  // Ultimi 30 giorni, per formato: il costo medio di un contenuto (vedi AdminContent.cost).
+  byFormat: { format: string; contents: number; avgUsd: number; maxUsd: number }[];
+  // Questo mese, per piano: quanti brand, quanto consumano in media rispetto ai crediti del piano.
+  plans: { plan: string; name: string; monthlyCredits: number; brands: number; avgUsed: number; maxUsed: number; over: number }[];
+  // Questo mese, i brand che costano di più.
+  topBrands: { brandId: string; name: string; accountId: string; email: string; plan: string; used: number; usd: number }[];
+}
+
+export interface AdminHealth {
+  // L'ultimo lavoro partito e finito: se è passato tanto con lavori in coda, il worker è fermo.
+  lastStartedAt: string | null;
+  lastFinishedAt: string | null;
+  oldestQueuedSeconds: number | null;
+  // In corso da più di 30 minuti, o con il lease scaduto.
+  stuck: AdminJob[];
+  lostChannels: { brandId: string; brandName: string; accountId: string; email: string; channel: string }[];
+  failedPublications: { id: string; brandName: string; email: string; channel: string; error: string | null; at: string }[];
+  // Clip e altre generazioni finite in errore, ultimi 7 giorni.
+  failedGenerations: { at: string; task: string; model: string; seconds: number | null; error: string | null; email: string | null }[];
+}
+
+// Dove è andato il tempo di un lavoro, dalla sessione di Claude Code: il modello che pensa e gli strumenti che aspetta.
+// Gli strumenti in parallelo si sovrappongono: la somma dei loro secondi può superare la durata.
+export interface AdminJobTimeline {
+  job: AdminJob;
+  // false: la sessione non c'è (lavoro senza Claude Code, o non ancora copiata sullo storage).
+  available: boolean;
+  modelSeconds: number;
+  tools: { name: string; calls: number; seconds: number; maxSeconds: number }[];
+  steps: { at: string; seconds: number; tool: string; detail: string }[];
+}
+
+export interface AdminCreateAccountRequest {
+  email: string;
+  name: string;
+  password: string;
+}
+
+export interface AdminAddCreditsRequest {
+  amount: number;
+}
+
+// L'header con cui un admin guarda lo studio come un'altra utenza, in sola lettura.
+export const VIEW_AS_HEADER = 'x-moonbrand-view-as';

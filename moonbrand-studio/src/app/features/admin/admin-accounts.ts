@@ -8,6 +8,7 @@ import type { AdminAccount } from '@moonbrand/shared/api/contract';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { Loader } from '../../ui/loader';
+import { ToastService } from '../../ui/toast';
 import { AdminTabs, money, total, when } from './admin-ui';
 
 // Tutte le utenze, dalla più attiva di recente: accessi, brand, contenuti, lavori, crediti del mese e costo vero.
@@ -24,6 +25,17 @@ import { AdminTabs, money, total, when } from './admin-ui';
         </div>
       </header>
       <mb-admin-tabs />
+
+      <details class="panel create" [open]="creating()" (toggle)="creating.set($any($event.target).open)">
+        <summary class="strong">Nuova utenza</summary>
+        <p class="caption">Entra subito con email e password, senza email di conferma. La password dalla a voce o in privato.</p>
+        <form class="form" (submit)="create($event, email.value, name.value, password.value)">
+          <label>Email <input #email type="email" required autocomplete="off" /></label>
+          <label>Nome <input #name type="text" required autocomplete="off" /></label>
+          <label>Password <input #password type="text" required minlength="8" autocomplete="new-password" /></label>
+          <button class="btn btn-primary btn-sm" type="submit" [disabled]="saving()">{{ saving() ? 'Creo…' : 'Crea utenza' }}</button>
+        </form>
+      </details>
 
       @if (loading()) {
         <div class="empty"><mb-loader /></div>
@@ -132,6 +144,31 @@ import { AdminTabs, money, total, when } from './admin-ui';
     .who:hover .strong-sm {
       color: var(--primary);
     }
+    .create summary {
+      cursor: pointer;
+    }
+    .form {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .form label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-body);
+    }
+    .form input {
+      min-height: 36px;
+      padding: 7px 10px;
+      border: 1.5px solid var(--grey-100);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+    }
     .empty {
       display: flex;
       flex-direction: column;
@@ -143,11 +180,14 @@ import { AdminTabs, money, total, when } from './admin-ui';
 })
 export class AdminAccountsPage {
   private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
 
   protected readonly accounts = signal<AdminAccount[] | null>(null);
   protected readonly loading = signal(true);
   protected readonly failed = signal('');
   protected readonly query = signal('');
+  protected readonly creating = signal(false);
+  protected readonly saving = signal(false);
   protected readonly shown = computed(() => {
     const query = this.query().trim().toLowerCase();
     const list = this.accounts() ?? [];
@@ -162,6 +202,22 @@ export class AdminAccountsPage {
   constructor() {
     pageHeader(() => [{ label: 'Admin', link: '/admin' }, { label: 'Utenze' }]);
     void this.load();
+  }
+
+  protected async create(event: Event, email: string, name: string, password: string): Promise<void> {
+    event.preventDefault();
+    this.saving.set(true);
+    try {
+      const account = await firstValueFrom(this.http.post<AdminAccount>('/v1/admin/accounts', { email, name, password }));
+      (event.target as HTMLFormElement).reset();
+      this.creating.set(false);
+      this.toast.show(`Utenza ${account.email} creata: può entrare subito.`);
+      await this.load();
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'L’utenza non si è creata.'));
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   protected async load(): Promise<void> {

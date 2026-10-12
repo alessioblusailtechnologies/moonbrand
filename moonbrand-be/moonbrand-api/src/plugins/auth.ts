@@ -3,6 +3,8 @@ import { createSecretKey } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
+import { VIEW_AS_HEADER } from '@moonbrand/shared/api/contract';
+
 import type { Config } from '../config';
 import type { Identity } from '../db/identity';
 import { ApiError } from '../errors';
@@ -16,6 +18,12 @@ declare module 'fastify' {
 
 export type VerifyToken = (token: string) => Promise<{ sub?: string }>;
 export type AccountExists = (accountId: string) => Promise<boolean>;
+export type IsAdmin = (accountId: string) => Promise<boolean>;
+
+// Un admin guarda lo studio come un'altra utenza con l'header VIEW_AS_HEADER: solo letture. Anche il benvenuto della
+// chat resta fuori, perché leggendolo può far partire il lavoro che lo riscrive.
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const VIEW_AS_BLOCKED = /\/welcome$/;
 
 const PUBLIC_FILES = '/v1/files/';
 // Le rotte dei tool della chat hanno il loro accesso, con il token del job (modules/agent).
@@ -44,7 +52,7 @@ export function supabaseVerifier(config: Pick<Config, 'SUPABASE_URL' | 'SUPABASE
   return async (token) => (await jwtVerify(token, jwks, { audience: 'authenticated' })).payload;
 }
 
-export function registerAuth(app: FastifyInstance, verify: VerifyToken, accountExists: AccountExists): void {
+export function registerAuth(app: FastifyInstance, verify: VerifyToken, accountExists: AccountExists, isAdmin: IsAdmin = async () => false): void {
   app.decorateRequest('identity');
 
   app.addHook('preValidation', async (request) => {
@@ -64,5 +72,14 @@ export function registerAuth(app: FastifyInstance, verify: VerifyToken, accountE
     if (!sub) throw ApiError.unauthenticated();
     if (!(await accountExists(sub))) throw ApiError.forbidden('NO_ACCOUNT', 'Questa email non ha ancora un account: registrati.');
     request.identity = { accountId: sub };
+
+    const viewAs = request.headers[VIEW_AS_HEADER];
+    if (typeof viewAs !== 'string' || viewAs === '') return;
+    if (!(await isAdmin(sub))) throw ApiError.forbidden('NOT_ADMIN', 'Solo un admin può guardare lo studio di un’altra utenza.');
+    if (!UUID.test(viewAs) || !(await accountExists(viewAs))) throw ApiError.notFound('Utenza non trovata.');
+    if ((request.method !== 'GET' && request.method !== 'HEAD') || VIEW_AS_BLOCKED.test(route)) {
+      throw ApiError.forbidden('READ_ONLY', 'Stai guardando lo studio di un’altra utenza: qui si può solo guardare.');
+    }
+    request.identity = { accountId: viewAs };
   });
 }

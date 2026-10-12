@@ -19,7 +19,7 @@ import type pg from 'pg';
 
 import type { Config } from '../../config';
 import { ApiError } from '../../errors';
-import { CONTENT_TYPES, DIR_NAME, fileLinks, OWNER_FILE, RELATIVE_PATH, type BrandFiles } from './files';
+import { CONTENT_TYPES, DIR_NAME, fileLinks, OWNER_FILE, RELATIVE_PATH, SESSION_ID, type BrandFiles } from './files';
 
 // Quanto vale il link allo storage: firmato sull'ora intera, così nella stessa ora il link è lo stesso e il browser
 // tiene in cache il file; vale almeno un'ora da quando l'API lo manda.
@@ -152,6 +152,11 @@ export function s3BrandFiles(
     },
     url,
     verify,
+    // Il worker le copia sullo storage dopo ogni lavoro, in _sessions/<brand>/ (brand-sync di moonbrand-ai).
+    async session(brandId, sessionId) {
+      if (!SESSION_ID.test(sessionId)) return null;
+      return (await get(`_sessions/${brandId}/${sessionId}.jsonl`))?.toString('utf8') ?? null;
+    },
     client,
     bucket: Bucket,
   };

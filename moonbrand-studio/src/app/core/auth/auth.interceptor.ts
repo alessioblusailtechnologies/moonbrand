@@ -3,10 +3,13 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, from, switchMap, throwError } from 'rxjs';
 
+import { VIEW_AS_HEADER } from '@moonbrand/shared/api/contract';
+
 import { AuthService } from './auth.service';
 
-const withToken = (request: HttpRequest<unknown>, token: string | null) =>
-  token ? request.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : request;
+// Con l'admin che guarda un'altra utenza, anche l'header che lo dice all'API.
+const withToken = (request: HttpRequest<unknown>, token: string | null, viewAs: string | null = null) =>
+  token ? request.clone({ setHeaders: { Authorization: `Bearer ${token}`, ...(viewAs && { [VIEW_AS_HEADER]: viewAs }) } }) : request;
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   if (!request.url.startsWith('/v1/')) return next(request);
@@ -15,7 +18,8 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 
   if (request.url.startsWith('/v1/auth/') && !request.url.endsWith('/sign-out')) return next(request);
 
-  return next(withToken(request, auth.token())).pipe(
+  const viewAs = auth.viewingAs()?.id ?? null;
+  return next(withToken(request, auth.token(), viewAs)).pipe(
     catchError((error: unknown) => {
       if (!(error instanceof HttpErrorResponse) || error.status !== 401 || request.url.endsWith('/sign-out')) {
         return throwError(() => error);
@@ -26,7 +30,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
             void router.navigateByUrl('/login');
             return throwError(() => error);
           }
-          return next(withToken(request, token));
+          return next(withToken(request, token, viewAs));
         }),
       );
     }),

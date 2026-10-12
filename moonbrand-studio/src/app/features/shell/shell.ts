@@ -197,6 +197,13 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
         }
       </header>
       <main class="content" #scroller data-page-scroller>
+        @if (auth.viewingAs(); as viewing) {
+          <div class="viewing" role="status">
+            <mb-icon name="eye" [size]="18" />
+            <span class="grow">Stai guardando lo studio di <strong>{{ viewing.email }}</strong>, in sola lettura.</span>
+            <button class="btn btn-primary btn-sm" type="button" (click)="auth.stopViewing()">Torna all'admin</button>
+          </div>
+        }
         @if (lostBanner(); as lost) {
           <div class="lost" role="alert">
             <mb-icon name="repeat" [size]="18" />
@@ -593,6 +600,20 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     .burger,
     .scrim {
       display: none;
+    }
+    .viewing {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius-xl);
+      background: var(--ink);
+      font-size: 14px;
+      color: var(--white);
     }
     .lost {
       display: flex;

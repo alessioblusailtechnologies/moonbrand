@@ -3,7 +3,7 @@ import type { ChannelVariant, Content, ContentFormat, ContentStatus, ContentVisu
 
 import type { Queryable } from '../../db/pool';
 
-interface ContentRow {
+export interface ContentRow {
   id: string;
   brand_id: string;
   idea_id: string | null;
@@ -22,10 +22,10 @@ interface ContentRow {
   approved_at: Date | null;
 }
 
-const COLUMNS =
+export const COLUMNS =
   'id, brand_id, idea_id, slot_id, conversation_id, title, theme_id, channels, format, variants, visual, status, revision, created_at, updated_at, approved_at';
 
-const toContent = (row: ContentRow): Content => ({
+export const toContent = (row: ContentRow): Content => ({
   id: row.id,
   brandId: row.brand_id,
   ideaId: row.idea_id,

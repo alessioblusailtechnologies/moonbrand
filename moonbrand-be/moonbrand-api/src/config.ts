@@ -14,6 +14,8 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   MEDIA_BUCKET: z.string().min(1).default('presenza-media'),
   BRANDS_DIR: optional,
+  // Dove il worker su questa macchina tiene le sessioni di Claude Code (senza S3): come CLAUDE_CONFIG_DIR del worker.
+  CLAUDE_CONFIG_DIR: optional,
   // I file dei brand su Supabase Storage, con il protocollo S3: senza chiavi restano sul disco, in BRANDS_DIR.
   S3_ENDPOINT: optional,
   S3_REGION: z.string().min(1).default('eu-north-1'),

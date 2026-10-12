@@ -5,6 +5,7 @@ import type pg from 'pg';
 
 import type { Config } from './config';
 import { registerErrorHandler } from './errors';
+import { adminCheck } from './modules/admin/queries';
 import { registerAdminRoutes } from './modules/admin/routes';
 import { registerAgentRoutes } from './modules/agent/routes';
 import { registerAiRoutes } from './modules/ai/routes';
@@ -68,7 +69,7 @@ export function buildApp(options: AppOptions) {
   void app.register(cookie);
 
   registerErrorHandler(app);
-  registerAuth(app, options.verifyToken, (id) => accountExists(options.pool, id));
+  registerAuth(app, options.verifyToken, (id) => accountExists(options.pool, id), adminCheck(options.pool, options.settings));
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
@@ -86,7 +87,7 @@ export function buildApp(options: AppOptions) {
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);
-  registerAdminRoutes(app, options.pool, options.files, options.settings);
+  registerAdminRoutes(app, options.pool, options.files, options.auth, options.settings);
   void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
 
   return app;

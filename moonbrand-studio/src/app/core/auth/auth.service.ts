@@ -9,6 +9,23 @@ type Status = 'unknown' | 'signed-in' | 'signed-out';
 
 const REFRESH_MARGIN_SECONDS = 60;
 
+// L'utenza che un admin sta guardando, per questa scheda del browser: l'API risponde come se fosse lei, in sola lettura.
+const VIEW_AS_KEY = 'mb.view-as';
+
+export interface ViewingAs {
+  id: string;
+  email: string;
+}
+
+function storedViewAs(): ViewingAs | null {
+  try {
+    const raw = sessionStorage.getItem(VIEW_AS_KEY);
+    return raw ? (JSON.parse(raw) as ViewingAs) : null;
+  } catch {
+    return null;
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -21,6 +38,7 @@ export class AuthService {
   readonly activeBrandId = signal<string | null>(null);
   // Chi vede la sezione admin (/admin): lo dice l'API, che ricontrolla a ogni richiesta.
   readonly admin = signal(false);
+  readonly viewingAs = signal<ViewingAs | null>(storedViewAs());
   readonly signedIn = computed(() => this.status() === 'signed-in');
 
   token(): string | null {
@@ -108,6 +126,7 @@ export class AuthService {
     this.account.set(null);
     this.activeBrandId.set(null);
     this.admin.set(false);
+    this.forgetViewAs();
     this.status.set('signed-out');
   }
 
@@ -123,6 +142,31 @@ export class AuthService {
     this.account.set(me.account);
     this.activeBrandId.set(me.activeBrandId);
     this.admin.set(me.admin);
+  }
+
+  // Si ricarica lo studio da capo: brand, crediti e conversazioni in memoria sono di chi si guardava prima.
+  viewAs(account: ViewingAs): void {
+    try {
+      sessionStorage.setItem(VIEW_AS_KEY, JSON.stringify(account));
+    } catch {
+      return;
+    }
+    location.assign('/');
+  }
+
+  stopViewing(): void {
+    const account = this.viewingAs();
+    this.forgetViewAs();
+    location.assign(account ? `/admin/utenze/${account.id}` : '/admin');
+  }
+
+  private forgetViewAs(): void {
+    this.viewingAs.set(null);
+    try {
+      sessionStorage.removeItem(VIEW_AS_KEY);
+    } catch {
+      // Niente da togliere.
+    }
   }
 
   private setToken(token: string, expiresIn: number): void {

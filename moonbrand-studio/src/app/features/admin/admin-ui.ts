@@ -40,16 +40,21 @@ export const STATUS_LABELS: Record<AdminJob['status'], string> = {
     <nav class="tabs" aria-label="Sezioni admin">
       <a routerLink="/admin" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">Panoramica</a>
       <a routerLink="/admin/utenze" routerLinkActive="on">Utenze</a>
+      <a routerLink="/admin/contenuti" routerLinkActive="on">Contenuti</a>
       <a routerLink="/admin/lavori" routerLinkActive="on">Lavori</a>
+      <a routerLink="/admin/consumi" routerLinkActive="on">Consumi</a>
+      <a routerLink="/admin/salute" routerLinkActive="on">Salute</a>
     </nav>
   `,
   styles: `
     :host {
       align-self: flex-start;
+      max-width: 100%;
     }
     .tabs {
       display: flex;
       gap: 4px;
+      overflow-x: auto;
       padding: 4px;
       border-radius: 12px;
       background: var(--surface-sunken);
@@ -61,6 +66,7 @@ export const STATUS_LABELS: Record<AdminJob['status'], string> = {
       font-weight: 500;
       color: var(--text-body);
       text-decoration: none;
+      white-space: nowrap;
     }
     a.on {
       background: var(--white);
@@ -104,7 +110,7 @@ export class AdminTabs {}
                   <td class="nowrap"><a [routerLink]="['/admin/utenze', job.accountId]">{{ job.email }}</a></td>
                 }
                 <td class="nowrap">{{ job.brandName ?? '—' }}</td>
-                <td class="nowrap">{{ job.kind }}</td>
+                <td class="nowrap"><a [routerLink]="['/admin/lavori', job.id]" title="Dove è andato il tempo">{{ job.kind }}</a></td>
                 <td><span class="status" [class]="job.status">{{ statusLabels[job.status] }}</span></td>
                 <td class="num nowrap">{{ duration(job.seconds) }}</td>
                 <td class="num nowrap" [title]="'Claude ' + money(job.cost.claude) + ' · servizi ' + money(job.cost.generations)">
@@ -163,7 +169,9 @@ export class AdminTabs {}
     }
     a {
       color: var(--primary);
-      text-decoration: none;
+      text-decoration: underline;
+      text-decoration-color: var(--grey-300);
+      text-underline-offset: 3px;
     }
     .status {
       display: inline-block;

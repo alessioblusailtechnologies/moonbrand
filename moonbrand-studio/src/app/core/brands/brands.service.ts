@@ -67,6 +67,8 @@ export class BrandsService {
   async setActive(brandId: string): Promise<void> {
     const previous = this.auth.activeBrandId();
     this.auth.activeBrandId.set(brandId);
+    // L'admin che guarda un'altra utenza cambia brand solo qui: l'API è in sola lettura.
+    if (this.auth.viewingAs()) return;
     try {
       await firstValueFrom(this.http.put('/v1/me/active-brand', { brandId }));
     } catch (error) {

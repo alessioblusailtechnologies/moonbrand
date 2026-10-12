@@ -4,10 +4,12 @@ import { firstValueFrom } from 'rxjs';
 
 import type { AdminAccountDetail } from '@moonbrand/shared/api/contract';
 
+import { AuthService } from '../../core/auth/auth.service';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { LightboxService } from '../../ui/lightbox';
 import { Loader } from '../../ui/loader';
+import { ToastService } from '../../ui/toast';
 import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
 
 // Un'utenza da vicino: i suoi brand con crediti e costi, i contenuti fatti (con le anteprime e i video), le
@@ -34,6 +36,9 @@ import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
           <div class="stat" [title]="'Claude ' + money(d.account.cost.claude) + ' · servizi ' + money(d.account.cost.generations)">
             <span class="caption">Costo vero</span><span class="heading">{{ money(total(d.account.cost)) }}</span>
           </div>
+          @if (d.brands.length > 0) {
+            <button class="btn btn-secondary btn-sm" type="button" (click)="viewAs(d)">Vedi il suo studio</button>
+          }
         </header>
 
         <div class="panel">
@@ -42,16 +47,28 @@ import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
             <p class="caption">Nessun brand: non ha finito l'onboarding.</p>
           } @else {
             <table>
-              <thead><tr><th>Brand</th><th>Categoria</th><th>Creato</th><th class="num">Crediti mese</th><th class="num">Claude</th><th class="num">Servizi</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Brand</th><th>Categoria</th><th>Piano</th><th>Creato</th><th class="num">Crediti mese</th><th class="num">Claude</th>
+                  <th class="num">Servizi</th><th>Aggiungi crediti</th>
+                </tr>
+              </thead>
               <tbody>
                 @for (brand of d.brands; track brand.id) {
                   <tr>
                     <td class="strong-sm">{{ brand.name }}</td>
                     <td>{{ brand.category ?? '—' }}</td>
+                    <td>{{ brand.plan }}</td>
                     <td>{{ when(brand.createdAt) }}</td>
                     <td class="num">{{ brand.creditsMonth }}</td>
                     <td class="num">{{ money(brand.cost.claude) }}</td>
                     <td class="num">{{ money(brand.cost.generations) }}</td>
+                    <td>
+                      <form class="credits" (submit)="addCredits($event, brand.id, amount.value); amount.value = ''">
+                        <input #amount type="number" min="1" max="100000" step="1" placeholder="crediti" aria-label="Crediti da aggiungere" />
+                        <button class="btn btn-secondary btn-sm" type="submit" [disabled]="adding() === brand.id">Aggiungi</button>
+                      </form>
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -144,6 +161,17 @@ import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
     }
     .title {
       overflow-wrap: anywhere;
+    }
+    .credits {
+      display: flex;
+      gap: 6px;
+    }
+    .credits input {
+      width: 90px;
+      padding: 5px 8px;
+      border: 1.5px solid var(--grey-100);
+      border-radius: 8px;
+      font: inherit;
     }
     .stat .heading {
       font-variant-numeric: tabular-nums;
@@ -238,12 +266,15 @@ import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
 export class AdminAccountPage {
   private readonly http = inject(HttpClient);
   private readonly lightbox = inject(LightboxService);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
 
   readonly accountId = input.required<string>();
 
   protected readonly data = signal<AdminAccountDetail | null>(null);
   protected readonly loading = signal(true);
   protected readonly failed = signal('');
+  protected readonly adding = signal<string | null>(null);
 
   protected readonly money = money;
   protected readonly total = total;
@@ -263,6 +294,30 @@ export class AdminAccountPage {
 
   protected reload(): void {
     void this.load(this.accountId());
+  }
+
+  protected viewAs(detail: AdminAccountDetail): void {
+    this.auth.viewAs({ id: detail.account.id, email: detail.account.email });
+  }
+
+  // Crediti in più per il mese in corso: si sommano a quelli del piano del brand.
+  protected async addCredits(event: Event, brandId: string, value: string): Promise<void> {
+    event.preventDefault();
+    const amount = Number(value);
+    if (!Number.isInteger(amount) || amount < 1) {
+      this.toast.show('Scrivi quanti crediti aggiungere, un numero intero.');
+      return;
+    }
+    this.adding.set(brandId);
+    try {
+      await firstValueFrom(this.http.post(`/v1/admin/brands/${brandId}/credits`, { amount }));
+      this.toast.show(`Aggiunti ${amount} crediti per questo mese.`);
+      await this.load(this.accountId());
+    } catch (error) {
+      this.toast.show(errorMessage(error, 'I crediti non si sono aggiunti.'));
+    } finally {
+      this.adding.set(null);
+    }
   }
 
   protected open(url: string, title: string): void {
