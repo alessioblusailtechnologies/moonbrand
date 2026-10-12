@@ -4,7 +4,7 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import { PASSWORD_MIN, REFRESH_COOKIE, type Session } from '@moonbrand/shared/api/contract';
+import { GOOGLE_SIGN_IN, PASSWORD_MIN, REFRESH_COOKIE, type Session } from '@moonbrand/shared/api/contract';
 import { LOCALES } from '@moonbrand/shared/i18n/locales';
 
 import type { Config } from '../../config';
@@ -105,6 +105,7 @@ export function registerAuthRoutes(
 
   // Lo studio apre questo indirizzo nella pagina: si va da Google passando da Supabase, e si torna su /accesso-google.
   app.get('/v1/auth/google', async (_request, reply) => {
+    if (!GOOGLE_SIGN_IN) return reply.redirect(new URL('/login', settings.STUDIO_URL).toString());
     const verifier = randomBytes(32).toString('base64url');
     const challenge = createHash('sha256').update(verifier).digest('base64url');
     reply.setCookie(OAUTH_COOKIE, verifier, { ...cookieOptions, maxAge: OAUTH_MAX_AGE });
@@ -112,6 +113,7 @@ export function registerAuthRoutes(
   });
 
   app.post('/v1/auth/google/callback', async (request, reply) => {
+    if (!GOOGLE_SIGN_IN) throw new ApiError(403, 'GOOGLE_SOON', 'L’accesso con Google arriva presto: per ora entra con email e password.');
     const { code, locale: chosen } = googleSchema.parse(request.body);
     const verifier = request.cookies[OAUTH_COOKIE];
     reply.clearCookie(OAUTH_COOKIE, cookieOptions);

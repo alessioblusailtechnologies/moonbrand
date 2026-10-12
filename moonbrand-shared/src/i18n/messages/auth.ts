@@ -41,6 +41,7 @@ export const auth = defineMessages({
     },
     google: {
       continue: 'Continua con Google',
+      soon: 'Arriva presto',
       or: 'oppure con l’email',
       signingIn: 'Entro con Google…',
       failedTitle: 'Non sono riuscito a farti entrare',
@@ -132,6 +133,7 @@ export const auth = defineMessages({
     },
     google: {
       continue: 'Continue with Google',
+      soon: 'Coming soon',
       or: 'or with email',
       signingIn: 'Signing in with Google…',
       failedTitle: 'I couldn’t sign you in',
@@ -223,6 +225,7 @@ export const auth = defineMessages({
     },
     google: {
       continue: 'Continuer avec Google',
+      soon: 'Bientôt disponible',
       or: 'ou avec l’e-mail',
       signingIn: 'Connexion avec Google…',
       failedTitle: 'Je n’ai pas pu vous connecter',

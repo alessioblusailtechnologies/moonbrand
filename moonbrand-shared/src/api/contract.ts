@@ -29,6 +29,9 @@ export interface UpdateMeRequest {
   locale: Locale;
 }
 
+// L'accesso con Google, spento per ora (12/10/2026): lo studio mostra il bottone con «arriva presto» e l'API rifiuta il giro.
+export const GOOGLE_SIGN_IN = false;
+
 export interface SignInRequest {
   email: string;
   password: string;
