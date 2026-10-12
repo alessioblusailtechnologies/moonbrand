@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F3F39; --secondario: #B8D8BC; --accento: #7CB68E; --sfondo: #EEEEEE; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --principale-chiaro: color-mix(in srgb, var(--principale) 80%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 40%, var(--sfondo) 100%); color: var(--principale); font-family: var(--font-testo); }
+
+  .autore { position: absolute; left: 0; top: 200px; width: 1080px; display: flex; justify-content: center; align-items: center; gap: 24px; }
+  .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: 50% 30%; display: block; }
+  .nome { font-size: 38px; font-weight: 400; line-height: 1.15; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .nome b { font-weight: 600; }
+  .spunta { width: 32px; height: 32px; }
+  .profilo { font-size: 28px; font-weight: 400; color: color-mix(in srgb, var(--principale) 80%, transparent); }
+
+  .menu { position: absolute; left: 196px; top: 520px; height: 60px; display: flex; border-radius: 12px; color: #FFFFFF; font-size: 24px; font-weight: 400;
+    background: var(--principale); box-shadow: 0 8px 14px rgba(0,0,0,0.2); }
+  .menu span { display: flex; align-items: center; padding: 0 26px; border-left: 2px solid color-mix(in srgb, #FFFFFF 35%, transparent); }
+  .menu span:first-child { border-left: 0; }
+  .menu::after { content: ''; position: absolute; left: 216px; bottom: -16px; width: 32px; height: 18px; background: var(--principale); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+
+  .frase { position: absolute; left: 110px; top: 610px; width: 900px; text-align: center; font-family: var(--font-titoli); letter-spacing: -0.03em; }
+  .riga { display: block; font-size: 104px; font-weight: 300; line-height: 1.24; white-space: nowrap; }
+  .scelta { position: relative; display: inline-block; font-weight: 700; padding: 0 10px; background: var(--secondario); letter-spacing: -0.04em; line-height: 1.12; margin-right: 18px; }
+  .scelta::before, .scelta::after { content: ''; position: absolute; width: 4px; top: 0; bottom: 0; background: var(--principale); }
+  .scelta::before { left: -6px; }
+  .scelta::after { right: -6px; }
+  .scelta i::before, .scelta i::after { content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--principale); }
+  .scelta i::before { left: -15px; bottom: -14px; }
+  .scelta i::after { right: -15px; top: -14px; }
+  .sotto { margin-top: 30px; font-family: var(--font-testo); font-size: 48px; font-weight: 400; letter-spacing: -0.02em; }
+  .sotto b { font-weight: 700; }
+
+  .bottone { position: absolute; left: 50%; top: 1190px; transform: translateX(-50%); height: 72px; padding: 0 56px; border-radius: 36px; display: flex; align-items: center; white-space: nowrap;
+    background: linear-gradient(180deg, var(--principale-chiaro), var(--principale)); color: #FFFFFF; font-size: 30px; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="autore">
+    <!-- avatar: il ritratto di chi firma il pensiero -->
+    <img class="avatar" src="../esempio/autrice.jpg" alt="">
+    <div>
+      <!-- nome: nome e cognome, il cognome in grassetto -->
+      <p class="nome"><span>Giulia <b>Ferraro</b></span><svg class="spunta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="var(--principale)"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
+      <!-- profilo: il nome del profilo -->
+      <p class="profilo">@giuliaferraro</p>
+    </div>
+  </div>
+
+  <!-- menu: il menu di selezione del telefono, tre voci brevi e la freccia -->
+  <p class="menu"><span>Copia</span><span>Seleziona tutto</span><span>Cerca</span><span>›</span></p>
+
+  <!-- frase: due righe; la prima parola selezionata in grassetto (al massimo 9 lettere) + una parola sottile, la seconda riga 2-3 parole -->
+  <h1 class="frase">
+    <span class="riga"><span class="scelta"><i></i>Ascoltare</span>porta</span>
+    <span class="riga">clienti migliori.</span>
+    <!-- sotto: la chiusa, 5-7 parole, la fine in grassetto con <b> -->
+    <p class="sotto">tutto inizia da <b>una domanda.</b></p>
+  </h1>
+
+  <!-- bottone: l'invito, 2-3 parole -->
+  <p class="bottone">Parliamone</p>
+</body>
+</html>

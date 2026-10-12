@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --tenue: color-mix(in oklab, var(--accento) 40%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; color: var(--principale); font-family: var(--font-testo); }
+
+  .cifra { position: absolute; left: 90px; top: 150px; height: 186px; padding: 0 54px; border-radius: 52px; display: flex; align-items: center;
+    background: var(--principale); color: var(--accento); font-family: var(--font-titoli); font-size: 160px; font-weight: 400; letter-spacing: -0.05em; line-height: 1; }
+  .testo { position: absolute; left: 92px; top: 392px; width: 820px; font-size: 44px; font-weight: 400; line-height: 1.22; letter-spacing: -0.005em; }
+  .pannello { position: absolute; left: 42px; top: 650px; width: 996px; height: 628px; border-radius: 56px; background: var(--tenue); }
+  .pannello svg { position: absolute; left: 0; top: 0; width: 996px; height: 628px; overflow: visible; }
+  .pannello text { font-family: var(--font-testo); font-size: 26px; fill: var(--principale); }
+</style>
+</head>
+<body>
+  <!-- cifra: il dato, 3-6 caratteri (€25M, 4.000, +62%) -->
+  <div class="cifra">€3,2M</div>
+  <!-- testo: cosa dice il dato, 22-32 parole -->
+  <p class="testo">Il budget pubblicitario che le aziende ci affidano cresce ogni anno, e con lui i canali da seguire e i risultati da misurare insieme.</p>
+
+  <!-- grafico: quattro anni e quattro valori; i punti seguono i valori veri -->
+  <div class="pannello">
+    <svg viewBox="0 0 996 628">
+      <g stroke="color-mix(in srgb, var(--principale) 12%, transparent)" stroke-width="2">
+        <line x1="140" y1="106" x2="890" y2="106"/><line x1="140" y1="216" x2="890" y2="216"/><line x1="140" y1="326" x2="890" y2="326"/><line x1="140" y1="436" x2="890" y2="436"/>
+      </g>
+      <line x1="140" y1="546" x2="890" y2="546" stroke="color-mix(in srgb, var(--principale) 30%, transparent)" stroke-width="2"/>
+      <g text-anchor="end"><text x="118" y="114">4</text><text x="118" y="224">3</text><text x="118" y="334">2</text><text x="118" y="444">1</text><text x="118" y="554">0</text></g>
+      <g text-anchor="middle"><text x="230" y="590">2023</text><text x="408" y="590">2024</text><text x="586" y="590">2025</text><text x="764" y="590">2026</text></g>
+      <path d="M230 425 C 300 412 360 402 408 381 C 470 350 520 250 586 227 C 650 206 700 198 764 194" fill="none" stroke="var(--principale)" stroke-width="5" stroke-linecap="round"/>
+      <g fill="var(--principale)"><circle cx="230" cy="425" r="18"/><circle cx="408" cy="381" r="18"/><circle cx="586" cy="227" r="18"/><circle cx="764" cy="194" r="18"/></g>
+    </svg>
+  </div>
+</body>
+</html>

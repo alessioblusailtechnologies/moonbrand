@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F3F39; --secondario: #B8D8BC; --accento: #7CB68E; --sfondo: #EEEEEE; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --principale-chiaro: color-mix(in srgb, var(--principale) 80%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, color-mix(in srgb, var(--secondario) 65%, white) 0%, var(--accento) 100%); color: var(--principale); font-family: var(--font-testo); }
+
+  .domanda { position: absolute; font-family: var(--font-titoli); font-weight: 800; color: #FFFFFF; filter: blur(9px); line-height: 1; }
+  .d1 { left: 690px; top: 120px; font-size: 520px; }
+  .d2 { left: 790px; top: 800px; font-size: 400px; }
+
+  .titolo { position: absolute; left: 112px; top: 335px; font-family: var(--font-titoli); font-weight: 700; color: #FFFFFF; text-transform: uppercase; letter-spacing: -0.045em; }
+  .grande { display: block; font-size: 190px; line-height: 0.9; text-shadow: 0 8px 14px rgba(0,0,0,0.14); white-space: nowrap; }
+  .fascia { position: relative; z-index: 2; display: inline-block; margin: -26px 0 -30px -10px; padding: 8px 34px 14px; border-radius: 14px; transform: rotate(-11deg);
+    background: linear-gradient(180deg, var(--principale-chiaro), var(--principale)); box-shadow: 0 14px 22px rgba(0,0,0,0.25);
+    font-size: 112px; line-height: 1; letter-spacing: -0.03em; }
+
+  .sotto { position: absolute; left: 112px; top: 880px; width: 760px; font-family: var(--font-testo); letter-spacing: -0.03em; }
+  .sotto span { display: block; font-size: 68px; font-weight: 300; line-height: 1.25; }
+  .sotto b { display: block; font-size: 68px; font-weight: 700; line-height: 1.2; letter-spacing: -0.045em; }
+
+  .bottone { position: absolute; left: 112px; top: 1236px; height: 86px; padding: 0 64px; border-radius: 14px; display: flex; align-items: center;
+    background: color-mix(in srgb, var(--secondario) 18%, white); font-size: 30px; font-weight: 500; letter-spacing: 0.01em; box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
+</style>
+</head>
+<body>
+  <p class="domanda d1">?</p>
+  <p class="domanda d2">?</p>
+
+  <!-- titolo: tre righe in maiuscolo; la parola di mezzo nella fascia scura inclinata (al massimo 7 lettere), le altre al massimo 5 caratteri -->
+  <h1 class="titolo"><span class="grande">Lo</span><span class="fascia">Sapevi</span><span class="grande">che?</span></h1>
+
+  <!-- sotto: il fatto in due righe, la prima sottile e la seconda in grassetto, 3-4 parole ciascuna -->
+  <p class="sotto"><span>Un piano editoriale</span><b>triplica i contatti</b></p>
+
+  <!-- bottone: l'invito, 2-3 parole -->
+  <p class="bottone">Scopri come</p>
+</body>
+</html>

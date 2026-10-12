@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2B26; --secondario: #7A9024; --accento: #C5DC7E; --sfondo: #E4E3DB; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --inchiostro-tenue: color-mix(in srgb, var(--principale) 72%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 60%, white); color: var(--principale); font-family: var(--font-testo); }
+  .grana::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Il foglio del raccoglitore: il dorso a sinistra e tre anelli. */
+  .dorso { position: absolute; left: 0; top: 0; width: 30px; height: 1350px; background: var(--principale); }
+  .anello-raccoglitore { position: absolute; left: 6px; width: 92px; height: 40px; }
+
+  .timbro { position: absolute; left: 640px; top: 200px; width: 226px; height: 226px; color: var(--inchiostro-tenue); }
+  .anello { position: absolute; inset: 0; border: 2px solid currentColor; border-radius: 50%; }
+  .anello span { position: absolute; left: 50%; top: 12px; width: 24px; margin-left: -12px; height: 101px; transform-origin: 50% 100%; text-align: center; font-family: var(--font-testo); font-size: 24px; line-height: 1; }
+  .timbro .logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-style: italic; font-size: 64px; line-height: 1; }
+
+  .foto { position: absolute; left: 842px; width: 220px; height: 286px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05); }
+
+  .lettera { position: absolute; left: 238px; top: 486px; width: 520px; font-size: 28px; line-height: 1.38; }
+  .lettera p + p { margin-top: 38px; }
+  .lettera .a { text-transform: uppercase; }
+  .lettera .corpo { text-align: justify; }
+  .firma { position: absolute; left: 238px; top: 1220px; font-size: 28px; line-height: 1.38; }
+</style>
+</head>
+<body class="grana">
+  <div class="dorso"></div>
+  <svg class="anello-raccoglitore" style="top: 205px" viewBox="0 0 92 40"><rect x="0" y="12" width="70" height="14" rx="7" fill="#D9D9D6"/><circle cx="72" cy="19" r="17" fill="#1D1C1B"/></svg>
+  <svg class="anello-raccoglitore" style="top: 770px" viewBox="0 0 92 40"><rect x="0" y="12" width="70" height="14" rx="7" fill="#D9D9D6"/><circle cx="72" cy="19" r="17" fill="#1D1C1B"/></svg>
+  <svg class="anello-raccoglitore" style="top: 1300px" viewBox="0 0 92 40"><rect x="0" y="12" width="70" height="14" rx="7" fill="#D9D9D6"/><circle cx="72" cy="19" r="17" fill="#1D1C1B"/></svg>
+
+  <div class="timbro"><div class="anello" data-testo="ORTICA · MARKETING · "></div><div class="logo">O</div></div>
+
+  <!-- foto: due immagini piccole impilate a destra, le persone dello studio, in bianco e nero -->
+  <img class="foto" src="../esempio/coppia.jpg" alt="" style="top: 184px">
+  <img class="foto" src="../esempio/passante.jpg" alt="" style="top: 484px; object-position: 50% 30%">
+
+  <div class="lettera">
+    <!-- destinatario: «A:» e a chi scrivi, in maiuscolo, 8-12 parole -->
+    <p class="a">A:<br>chi ha un'attività e sente che i social non bastano.</p>
+    <!-- corpo: due paragrafi giustificati, 18-24 parole ciascuno -->
+    <p class="corpo">Se i tuoi post sono belli ma non portano richieste, è il momento di rivedere la strategia.</p>
+    <p class="corpo">Questo mese apriamo pochi posti per chi vuole un marketing pensato e misurato.</p>
+    <!-- invito: una domanda breve e come contattarvi, 12-16 parole -->
+    <p>Ne parliamo?<br>Scrivici in DM o prenota una chiamata dal link in bio.</p>
+  </div>
+  <!-- firma: saluto e nome del brand -->
+  <p class="firma">Un caro saluto,<br>Studio Ortica</p>
+
+  <script>
+    for (const anello of document.querySelectorAll('.anello')) {
+      const lettere = [...anello.dataset.testo];
+      lettere.forEach((c, i) => { const s = document.createElement('span'); s.textContent = c; s.style.transform = `rotate(${(i * 360) / lettere.length}deg)`; anello.append(s); });
+    }
+  </script>
+</body>
+</html>

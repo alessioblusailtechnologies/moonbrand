@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 26px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 204px; line-height: 0.84; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; }
+  .riquadro { position: absolute; left: 82px; top: 388px; width: 916px; height: 680px; background: var(--secondario); color: var(--su-secondario); padding: 36px 28px 0; }
+  .foto { display: flex; height: 312px; }
+  .foto img { width: 286px; height: 312px; object-fit: cover; display: block; }
+  .passi { display: flex; margin-top: 50px; }
+  .passo { width: 286px; padding: 0 22px; }
+  .riga { display: flex; justify-content: space-between; align-items: center; }
+  .numero { font-family: var(--font-titoli); font-size: 58px; font-weight: 400; line-height: 1; }
+  .freccia { width: 44px; height: 24px; }
+  .testo { margin-top: 30px; font-size: 24px; font-weight: 500; line-height: 1.38; text-transform: uppercase; letter-spacing: 0.01em; }
+  .logo { position: absolute; left: 0; top: 1180px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 26px; font-weight: 400; letter-spacing: 0.01em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- titolo: due righe in maiuscolo; la prima 2 parole corte vicino al bordo alto, la seconda una parola di 6-7 lettere -->
+  <h1 class="titolo">Il nostro<br>metodo</h1>
+
+  <div class="riquadro">
+    <!-- foto: tre foto dello stesso lavoro, una per passo (persona al lavoro, dettaglio, risultato) -->
+    <div class="foto">
+      <img src="../esempio/scrivania.jpg" alt="" style="object-position: 72% 50%">
+      <img src="../esempio/telefono.jpg" alt="" style="object-position: 50% 40%">
+      <img src="../esempio/tastiera.jpg" alt="" style="object-position: 45% 50%">
+    </div>
+    <div class="passi">
+      <!-- passi: tre, numero a due cifre e una frase in maiuscolo di 7-10 parole -->
+      <div class="passo"><p class="riga"><span class="numero">01</span><svg class="freccia" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 12 H42 M31 1 L42 12 L31 23"/></svg></p>
+        <p class="testo">Ascoltiamo cosa vendi, a chi e perché ti scelgono.</p></div>
+      <div class="passo"><p class="riga"><span class="numero">02</span><svg class="freccia" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 12 H42 M31 1 L42 12 L31 23"/></svg></p>
+        <p class="testo">Scriviamo il piano del mese, post per post.</p></div>
+      <div class="passo"><p class="riga"><span class="numero">03</span><svg class="freccia" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 12 H42 M31 1 L42 12 L31 23"/></svg></p>
+        <p class="testo">Pubblichiamo, misuriamo e correggiamo ogni settimana.</p></div>
+    </div>
+  </div>
+
+  <!-- logo: il nome del brand, piccolo, in basso al centro -->
+  <p class="logo">Studio Bianchi</p>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  .titolo { position: absolute; left: 44px; top: 132px; width: 760px; font-family: var(--font-titoli); font-weight: 400; font-size: 64px; line-height: 1.0; letter-spacing: -0.045em; }
+  .riga { position: absolute; left: 44px; top: 300px; font-family: var(--mono); font-size: 18px; text-transform: uppercase; }
+  .filetto { position: absolute; left: 0; width: 1080px; height: 2px; background: color-mix(in srgb, var(--principale) 22%, transparent); }
+  .voce { position: absolute; width: 270px; }
+  .voce b { display: block; font-family: var(--font-titoli); font-weight: 400; font-size: 156px; line-height: 0.8; letter-spacing: -0.05em; color: var(--accento); }
+  .voce p { margin-top: 44px; font-size: 30px; line-height: 1.06; letter-spacing: -0.045em; }
+  .v1 { left: 44px; top: 494px; } .v2 { left: 404px; top: 494px; } .v3 { left: 404px; top: 884px; } .v4 { left: 748px; top: 884px; }
+
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- logo: il nome del brand, in alto a sinistra -->
+    <span class="logo">Nodo Studio</span>
+    <!-- serie: il nome della rubrica e il numero, 2-4 parole -->
+    <span>Quaderni di marca 6</span>
+  </div>
+
+  <!-- titolo: quanti punti e di cosa, 7-10 parole in due righe -->
+  <h1 class="titolo">4 segnali che la tua strategia va rifatta</h1>
+  <!-- riga: una frase breve in maiuscolo, 6-10 parole -->
+  <p class="riga">Quanti ne riconosci? Due o più: si riparte</p>
+  <div class="filetto" style="top: 386px"></div>
+
+  <!-- voci: quattro, numero a due cifre + 9-14 parole; la griglia è sfalsata (1-2 in alto, 3-4 in basso a destra) -->
+  <div class="voce v1"><b>01</b><p>Nel team ognuno descrive l'azienda a modo suo</p></div>
+  <div class="voce v2"><b>02</b><p>I post prendono like ma quasi mai richieste o contatti</p></div>
+  <div class="voce v3"><b>03</b><p>Fai sconti per chiudere invece di difendere il prezzo</p></div>
+  <div class="voce v4"><b>04</b><p>Dopo un mese i nuovi assunti non sanno dire cosa vi distingue</p></div>
+  <div class="filetto" style="top: 1290px"></div>
+</body>
+</html>

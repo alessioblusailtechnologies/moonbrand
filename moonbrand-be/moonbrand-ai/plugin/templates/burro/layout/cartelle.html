@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+
+  .titolo { position: absolute; left: 440px; top: 300px; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); font-size: 140px; letter-spacing: -0.055em; line-height: 0.98; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .titolo span { display: block; }
+
+  .cartella { position: absolute; width: 180px; display: flex; flex-direction: column; align-items: center; }
+  .cartella svg { width: 180px; height: 140px; display: block; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.18)); }
+  .cartella .dietro { fill: var(--accento); }
+  .cartella .davanti { fill: var(--burro); }
+  .nome { margin-top: 6px; font-size: 24px; white-space: nowrap; font-weight: 600; line-height: 1.1; color: var(--principale); }
+  .c1 { left: 866px; top: 110px; }
+  .c2 { left: 440px; top: 1244px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona appoggiata a un portone o a un muro, a figura intera, nella metà sinistra; il portone dietro il titolo, a destra -->
+  <img class="foto" src="../esempio/portone.jpg" alt="">
+
+  <!-- titolo: da quattro a cinque righe nella metà destra, allineate a sinistra, 1-2 parole ciascuna, al massimo 9 caratteri per riga -->
+  <h1 class="titolo"><span>cose che</span><span>non farei</span><span>mai sui</span><span>social</span></h1>
+
+  <div class="cartella c1">
+    <svg viewBox="0 0 180 140"><path class="dietro" d="M0 18 C0 8 8 0 18 0 L62 0 C70 0 74 4 78 10 L84 18 L162 18 C172 18 180 26 180 36 L180 122 C180 132 172 140 162 140 L18 140 C8 140 0 132 0 122 Z"/><path class="davanti" d="M0 52 C0 42 8 34 18 34 L162 34 C172 34 180 42 180 52 L180 122 C180 132 172 140 162 140 L18 140 C8 140 0 132 0 122 Z"/></svg>
+    <!-- nome: il nome della cartella, una parola con i trattini bassi -->
+    <p class="nome">bozze_ok</p>
+  </div>
+  <div class="cartella c2">
+    <svg viewBox="0 0 180 140"><path class="dietro" d="M0 18 C0 8 8 0 18 0 L62 0 C70 0 74 4 78 10 L84 18 L162 18 C172 18 180 26 180 36 L180 122 C180 132 172 140 162 140 L18 140 C8 140 0 132 0 122 Z"/><path class="davanti" d="M0 52 C0 42 8 34 18 34 L162 34 C172 34 180 42 180 52 L180 122 C180 132 172 140 162 140 L18 140 C8 140 0 132 0 122 Z"/></svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  .retino { position: absolute; left: 0; top: 0; width: 1080px; height: 285px; overflow: hidden; background: #FFFFFF; filter: contrast(8); mix-blend-mode: screen; opacity: 0.9; }
+  .retino img { display: block; width: 1080px; height: 285px; object-fit: cover; object-position: 50% 40%; filter: grayscale(1) brightness(1.25) contrast(1.1) blur(1px); }
+  .retino::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: radial-gradient(circle closest-side, #808080 0%, #9F9F9F 50%, #CFCFCF 70%, #FFFFFF 80%) 0 0 / 8px 8px; mix-blend-mode: multiply; }
+
+  .titolo { position: absolute; left: 110px; top: 392px; font-family: var(--font-titoli); font-weight: 700; font-size: 184px; line-height: 0.8; letter-spacing: -0.035em; text-transform: uppercase; color: var(--sfondo); }
+  .titolo span { display: block; white-space: nowrap; }
+  .fascia { position: absolute; left: 105px; top: 740px; width: 870px; padding: 30px 0 12px 7px; background: var(--accento); color: var(--principale);
+    font-family: var(--font-titoli); font-weight: 700; font-size: 184px; line-height: 0.8; letter-spacing: -0.035em; text-transform: uppercase; }
+  .fascia span { display: block; white-space: nowrap; }
+
+  .piede { position: absolute; left: 105px; right: 108px; top: 1208px; display: flex; justify-content: space-between; font-size: 30px; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
+  .piede .temi { word-spacing: 0.3em; }
+  .logo { color: var(--secondario); letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+  <!-- foto: un volto o una persona a mezzo busto, tagliata in una fascia bassa in alto; diventa a retino -->
+  <div class="retino"><img src="../esempio/volto.jpg" alt=""></div>
+
+  <!-- titolo: due righe di una parola, al massimo 7 caratteri col punto -->
+  <h1 class="titolo"><span>Metodo</span><span>chiaro.</span></h1>
+  <!-- fascia: la risposta in due righe di una parola, al massimo 7 caratteri col punto -->
+  <p class="fascia"><span>Brand</span><span>forte.</span></p>
+
+  <!-- temi: tre parole con le barre davanti; logo: il nome del brand col trattino basso -->
+  <p class="piede"><span class="temi">//Strategia //Design //Sito</span><span class="logo">Nodo Studio_</span></p>
+</body>
+</html>

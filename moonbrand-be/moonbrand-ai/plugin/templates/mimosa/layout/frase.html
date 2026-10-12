@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Work+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0);
+    --grana: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='300' height='300' filter='url(%23g)'/></svg>"); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); }
+  body::before { content: ''; position: absolute; inset: 0; background-image: var(--grana); opacity: 0.12; }
+
+  .testata { position: absolute; left: 108px; right: 108px; top: 38px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .numero { position: absolute; left: 0; width: 1080px; top: 284px; text-align: center; font-family: var(--font-titoli); font-weight: 600; font-variation-settings: 'opsz' 72; font-size: 50px; line-height: 1; }
+
+  .titolo { position: absolute; left: 110px; width: 860px; top: 572px; text-align: center; text-wrap: balance; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 84px; line-height: 0.86; letter-spacing: -0.005em; }
+
+  .testo { position: absolute; left: 190px; width: 700px; top: 884px; text-align: center; text-wrap: pretty; font-size: 29px; font-weight: 400; line-height: 1.08; letter-spacing: 0.015em; }
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- logo: il nome o l'handle del brand -->
+    <span class="logo">@ottobrestudio</span>
+    <!-- rubrica: una parola, il tema della serie -->
+    <span>Strategia</span>
+  </div>
+
+  <!-- numero: la posizione nella serie, due cifre -->
+  <p class="numero">01</p>
+
+  <!-- titolo: una frase netta di 8-12 parole, 2-3 righe -->
+  <h1 class="titolo">Chi ti segue non compra contenuti. Compra fiducia.</h1>
+
+  <!-- testo: lo svolgimento, 30-45 parole -->
+  <p class="testo">Pubblicare con costanza non basta se i post non costruiscono un rapporto. Ogni contenuto deve insegnare qualcosa o avvicinare qualcuno a una scelta. Se non fa nessuna delle due cose, è solo rumore.</p>
+</body>
+</html>

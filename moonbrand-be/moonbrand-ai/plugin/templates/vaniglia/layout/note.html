@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --nota-colore: color-mix(in oklab, var(--secondario) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; }
+
+  .nota { position: absolute; left: 500px; top: 116px; width: 468px; min-height: 504px; padding: 36px 34px 50px 40px; border-radius: 28px;
+    background: color-mix(in srgb, var(--sfondo) 88%, transparent); }
+  .testa { display: flex; align-items: center; color: var(--nota-colore); }
+  .indietro { display: flex; align-items: center; gap: 10px; font-size: 32px; font-weight: 600; letter-spacing: -0.01em; }
+  .indietro svg { width: 20px; height: 32px; }
+  .azioni { margin-left: auto; display: flex; gap: 22px; }
+  .azioni svg { width: 36px; height: 36px; }
+
+  .titolo { margin: 46px 0 0 24px; font-family: var(--font-titoli); font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+  .lista { margin: 18px 0 0 34px; list-style: none; }
+  .lista li { display: flex; align-items: center; gap: 18px; height: 52px; font-size: 25px; font-weight: 400; letter-spacing: -0.01em; color: color-mix(in srgb, var(--principale) 88%, transparent); }
+  .lista svg { flex: none; width: 24px; height: 24px; color: var(--principale); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona di spalle alla scrivania, parete chiara in alto a destra dove sta la nota -->
+  <img class="foto" src="../esempio/scrivania.jpg" alt="">
+
+  <div class="nota">
+    <div class="testa">
+      <!-- app: il nome dell'app delle note, una parola -->
+      <p class="indietro"><svg viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 2 8l6 6"/></svg>Note</p>
+      <div class="azioni">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M7 10H5v11h14V10h-2"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><circle cx="8" cy="12" r="0.6" fill="currentColor"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/><circle cx="16" cy="12" r="0.6" fill="currentColor"/></svg>
+      </div>
+    </div>
+    <!-- titolo: il titolo della nota, 2-4 parole con i due punti -->
+    <p class="titolo">Da fare oggi:</p>
+    <!-- lista: da 3 a 5 voci brevi, 2-4 parole ciascuna, tutte spuntate -->
+    <ul class="lista">
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7 12.4l3.3 3.2L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Rivedere le bozze</li>
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7 12.4l3.3 3.2L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Rispondere ai clienti</li>
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7 12.4l3.3 3.2L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pianificare i post</li>
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7 12.4l3.3 3.2L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Cercare idee nuove</li>
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7 12.4l3.3 3.2L17 9" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Riordinare la scrivania</li>
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+ufficio.jpg    copertina   https://unsplash.com/photos/a-woman-in-a-suit-holding-a-cell-phone-Fw8wriByc9I
+cemento.jpg    servizi     https://unsplash.com/photos/persons-feet-wearing-shoes-on-a-concrete-surface-RAOtBFwWAKU
+luce.jpg       manifesto   https://unsplash.com/photos/woman-in-black-coat-and-black-skirt-standing-on-white-floor-Z9izr6F4D5o
+giacca.jpg     frase       https://unsplash.com/photos/a-man-in-a-suit-eAdq2IvgE9w
+telefono.jpg   evento      https://unsplash.com/photos/young-woman-in-sunglasses-talking-on-corded-phone-SF0WaBtLYk8
+sedia.jpg      prenota     https://unsplash.com/photos/a-woman-sitting-on-top-of-a-chair-next-to-a-wall-vVLYRnAbmng
+telo.jpg       prenota     https://unsplash.com/photos/a-woman-sitting-on-a-chair-in-front-of-a-white-backdrop-6qqXeFSXCXw
+ritratto.jpg   consulenza  https://unsplash.com/photos/a-woman-in-a-black-suit-and-red-lipstick-Ymhslgm3sh8

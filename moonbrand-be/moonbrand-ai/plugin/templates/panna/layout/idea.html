@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B3130; --secondario: #7EC736; --accento: #F7CF3E; --sfondo: #FEFFDF; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: color-mix(in srgb, var(--principale) 55%, transparent); --bordo-stella: color-mix(in srgb, var(--accento) 70%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 18%, transparent); }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; letter-spacing: -0.075em; line-height: 0.86; color: var(--chiaro);
+    text-shadow: 0 0 34px var(--ombra), 0 3px 10px color-mix(in srgb, var(--principale) 30%, transparent); white-space: nowrap; }
+  .titolo span { display: block; }
+  .piccolo { position: absolute; font-size: 44px; font-weight: 400; letter-spacing: -0.055em; line-height: 1.02; color: var(--chiaro);
+    text-shadow: 0 0 18px var(--ombra); white-space: nowrap; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; letter-spacing: 0; color: var(--chiaro); text-shadow: 0 0 24px var(--ombra); white-space: nowrap; }
+  .stella { position: absolute; filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--principale) 40%, transparent)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 4; stroke-linejoin: round; }
+  .stella.bianca path { fill: var(--chiaro); stroke: none; }
+  .cursore { position: absolute; width: 52px; height: 70px; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+  .cursore path { fill: #FFFFFF; stroke: #000000; stroke-width: 2.2; stroke-linejoin: round; }
+</style>
+<style>
+  .foto { object-position: 50% 30%; }
+  .titolo { font-size: 200px; line-height: 0.82; }
+  .titolo.sopra { left: 72px; top: 150px; }
+  .titolo.sotto { left: 0; top: 968px; width: 1080px; text-align: center; font-size: 176px; }
+  .piccolo.lato { right: 92px; top: 178px; text-align: right; font-size: 48px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in piedi contro un muro, al centro, figura fino alle ginocchia; spazio libero in alto a destra -->
+  <img class="foto" src="../esempio/muro.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: due righe di 1-2 parole, in alto a sinistra, al massimo 8 lettere per riga -->
+  <h1 class="titolo sopra"><span>un</span><span>tema</span></h1>
+  <!-- lato: due righe corte in minuscolo, a destra in alto -->
+  <p class="piccolo lato">riusa prima<br>di reinventare</p>
+  <!-- sotto: 2 parole che rispondono al titolo, al massimo 11 lettere -->
+  <p class="titolo sotto">cinque post</p>
+  <svg class="stella" style="left:42px; top:440px; width:48px; height:48px; transform: rotate(-12deg)" viewBox="0 0 100 100"><path d="M50 7 L62.5 36 L94 39 L70 60 L77.5 92 L50 75 L22.5 92 L30 60 L6 39 L37.5 36 Z"/></svg><svg class="stella" style="left:78px; top:1092px; width:44px; height:44px" viewBox="0 0 100 100"><path d="M50 4 C54 36 64 46 96 50 C64 54 54 64 50 96 C46 64 36 54 4 50 C36 46 46 36 50 4 Z"/></svg><svg class="cursore" style="left:940px; top:1110px" viewBox="0 0 30 40"><path d="M3 2 L3 31 L10 24.5 L15 36 L20.5 33.5 L15.5 22.5 L25 22 Z"/></svg>
+</body>
+</html>

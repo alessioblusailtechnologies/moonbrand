@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;800&family=Lekton&family=Corinthia&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2723; --secondario: #E8E6E3; --accento: #F5C02C; --sfondo: #F1EBCF; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --bordo-stella: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 30%, transparent); }
+
+  .titolo { position: absolute; left: 0; top: 400px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-size: 270px; line-height: 0.9; letter-spacing: -0.06em; white-space: nowrap; }
+  .a-mano { position: absolute; left: 60px; top: 600px; width: 1020px; text-align: center; font-family: 'Corinthia', cursive; font-size: 280px; line-height: 1; white-space: nowrap; }
+  .tonde { position: absolute; left: 0; top: 960px; width: 1080px; text-align: center; font-family: 'Lekton', monospace; font-size: 50px; line-height: 1.1; white-space: nowrap; }
+
+  .stella { position: absolute; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 3; stroke-linejoin: round; }
+  .scintilla { position: absolute; display: block; }
+  .scintilla path { fill: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio dall'alto con luce e ombra nette (tazza, quaderno, scarpe sul pavimento); il centro tranquillo per il testo -->
+  <img class="foto" src="../esempio/caffe.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: una parola, 4-6 lettere, minuscola: il verbo della frase -->
+  <h1 class="titolo">crea</h1>
+  <!-- a-mano: la parola che segue, scritta a mano, al massimo 9 lettere; si sovrappone al titolo -->
+  <p class="a-mano">fiducia</p>
+  <!-- tonde: il seguito della frase tra parentesi tonde, 4-6 parole, minuscolo -->
+  <p class="tonde">( il resto arriva da sé )</p>
+
+  <svg class="stella" style="left: 772px; top: 330px; width: 118px; height: 118px; transform: rotate(14deg);" viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36 Z"/></svg>
+  <svg class="scintilla" style="left: 168px; top: 735px; width: 128px; height: 128px; transform: rotate(-12deg);" viewBox="0 0 100 100"><path d="M50 0 C53 30 62 44 100 50 C62 56 53 70 50 100 C47 70 38 56 0 50 C38 44 47 30 50 0 Z"/></svg>
+</body>
+</html>

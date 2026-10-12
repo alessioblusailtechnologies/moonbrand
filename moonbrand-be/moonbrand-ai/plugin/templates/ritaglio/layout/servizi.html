@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=Patrick+Hand&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 55%, white); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 40px; top: 120px; font-family: var(--font-titoli); font-weight: 700; font-size: 226px; line-height: 0.86; letter-spacing: -0.05em;
+    text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+
+  /* capsule disegnate a mano, sovrapposte e girate: ognuna copre quella sotto */
+  .capsula { position: absolute; height: 168px; border: 3px solid var(--principale); border-radius: 84px; background: color-mix(in srgb, var(--sfondo) 55%, white);
+    display: flex; align-items: center; padding: 0 56px; font-family: 'Patrick Hand', cursive; font-size: 66px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- titolo: due righe in maiuscolo, 1-2 parole ciascuna, al massimo 8 lettere per riga -->
+  <h1 class="titolo">I nostri<br>servizi</h1>
+
+  <!-- capsule: da 4 a 6 servizi, 1-2 parole ciascuno (al massimo 13 lettere), scritti a mano -->
+  <p class="capsula" style="left:640px; top:610px; width:520px; transform: rotate(-9deg); padding-left: 150px;">Blog</p>
+  <p class="capsula" style="left:60px; top:700px; width:560px; transform: rotate(-1deg);">Siti web</p>
+  <p class="capsula" style="left:500px; top:820px; width:700px; transform: rotate(24deg);">Fotografia</p>
+  <p class="capsula" style="left:-40px; top:930px; width:640px; transform: rotate(-21deg); padding-left: 110px;">Social media</p>
+  <p class="capsula" style="left:520px; top:1110px; width:620px; transform: rotate(6deg);">Strategia</p>
+  <p class="capsula" style="left:70px; top:1150px; width:470px; transform: rotate(-4deg);">Branding</p>
+</body>
+</html>

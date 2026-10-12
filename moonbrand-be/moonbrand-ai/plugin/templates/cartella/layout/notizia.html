@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #543928; --secondario: #C3D9E7; --accento: #F6DDE0; --sfondo: #F7EEC7; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foglio { position: absolute; left: 108px; top: 118px; width: 874px; height: 1134px; background: #FFFFFF; overflow: hidden; }
+  .testa { height: 176px; padding: 0 70px 0 72px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px dotted color-mix(in srgb, var(--principale) 45%, transparent); }
+  .testa h1 { font-family: var(--font-titoli); font-size: 62px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.005em; line-height: 1; }
+  .testa span { font-size: 28px; font-weight: 500; }
+  .corpo { padding: 52px 72px 0; }
+  .voce h2 { font-size: 30px; font-weight: 700; line-height: 1.3; }
+  .voce p { margin-top: 12px; font-size: 29px; font-weight: 500; line-height: 1.6; color: color-mix(in srgb, var(--principale) 88%, white); }
+  .voce + .voce { margin-top: 44px; }
+  .voce.stretta p { width: 340px; }
+  .piede { position: absolute; left: 0; bottom: 0; width: 100%; height: 182px; background: var(--secondario); border-top: 2px solid color-mix(in srgb, var(--principale) 55%, transparent); padding: 0 0 0 58px; display: flex; align-items: center; font-size: 28px; font-weight: 500; text-transform: uppercase; }
+
+  .polaroid { position: absolute; left: 580px; top: 778px; padding: 20px 20px 22px; background: #FFFFFF; transform: rotate(4deg); box-shadow: 0 8px 22px rgba(0,0,0,0.28); }
+  .polaroid img { display: block; width: 360px; height: 470px; object-fit: cover; }
+  .graffetta { position: absolute; left: 760px; top: 1040px; width: 250px; height: 90px; transform: rotate(-12deg); }
+</style>
+</head>
+<body>
+  <div class="foglio">
+    <div class="testa">
+      <!-- titolo: una parola in maiuscolo (il canale o il tema) e il numero della scheda -->
+      <h1>Instagram</h1><span>01</span>
+    </div>
+    <div class="corpo">
+      <!-- voce-1: titoletto di 3-6 parole e testo di 14-20 parole -->
+      <div class="voce"><h2>Ora i post si ricondividono</h2><p>Instagram ha aggiunto il repost: reel e post pubblici si possono girare ai propri follower.</p></div>
+      <!-- voce-2: titoletto di 2-4 parole e testo di 14-20 parole -->
+      <div class="voce"><h2>Perché conta</h2><p>I tuoi contenuti arrivano a chi non ti segue ancora, attraverso il profilo di qualcun altro.</p></div>
+      <!-- voce-3: titoletto di 1-3 parole e testo di 10-16 parole, stretto accanto alla foto -->
+      <div class="voce stretta"><h2>Cosa fare</h2><p>Pensa a cosa scriverebbe il tuo cliente nella barra di ricerca.</p></div>
+    </div>
+    <!-- piede: il mese e l'anno -->
+    <p class="piede">Ottobre 2026</p>
+  </div>
+
+  <!-- foto: polaroid con la graffetta, un dettaglio dall'alto (scrivania, borsa, tavolino) -->
+  <div class="polaroid"><img src="../esempio/caffe.jpg" alt=""></div>
+  <svg class="graffetta" viewBox="0 0 250 90" fill="none" style="stroke: color-mix(in srgb, var(--principale) 35%, white)" stroke-width="7" stroke-linecap="round">
+    <path d="M10 62 H222 A22 22 0 0 0 222 18 H40 A14 14 0 0 0 40 46 H196"/>
+  </svg>
+</body>
+</html>

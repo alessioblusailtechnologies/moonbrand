@@ -1,0 +1,14 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+seduta.jpg     Unsplash, foto ZNrYwOJKe_M di Dollar Gill («woman in black dress sitting on floor»)
+               https://unsplash.com/photos/woman-in-black-dress-sitting-on-floor-ZNrYwOJKe_M
+cappotto.jpg   Unsplash, foto w4Quk-q747E di Lisa Heeke («a woman in a trench coat»)
+               https://unsplash.com/photos/a-woman-in-a-trench-coat-w4Quk-q747E
+occhiali.jpg   Unsplash, foto CaLzo0tqDIc di Farshad Sheikhzadeh («a woman in a black suit and sunglasses»)
+               https://unsplash.com/photos/a-woman-in-a-black-suit-and-sunglasses-CaLzo0tqDIc
+giacca.jpg     Unsplash, foto KfqwxB0raxU di Estonia Incorporated (donna in giacca a quadri e occhiali da sole)
+               https://unsplash.com/photos/KfqwxB0raxU
+balaustra.jpg  Unsplash, foto FJ7Tm2Y9HEI di victor dasilva («a woman in a white dress leaning on a railing»)
+               https://unsplash.com/photos/a-woman-in-a-white-dress-leaning-on-a-railing-FJ7Tm2Y9HEI
+sciarpa.jpg    Unsplash, foto tKWtNqTdx6c di Amin Naderloei («a woman in a coat and scarf standing on the street»)
+               https://unsplash.com/photos/a-woman-in-a-coat-and-scarf-standing-on-the-street-tKWtNqTdx6c

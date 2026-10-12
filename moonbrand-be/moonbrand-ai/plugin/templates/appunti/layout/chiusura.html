@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(20,16,12,0.46); }
+  .utente { position: absolute; left: 0; top: 116px; width: 1080px; text-align: center; font-size: 32px; }
+  .logo { position: absolute; left: 0; top: 1206px; width: 1080px; text-align: center; font-size: 34px; }
+
+  .titolo { position: absolute; left: 70px; top: 228px; width: 940px; text-align: center; font-family: var(--font-titoli); font-size: 96px; font-weight: 700; line-height: 0.86; letter-spacing: -0.005em; color: var(--accento);
+    text-shadow: 0 0 26px rgba(0,0,0,0.30); }
+
+  .pillola { position: absolute; left: 538px; top: 830px; padding: 12px 52px 10px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); font-size: 34px; transform: rotate(-1deg); }
+  .cartello { position: absolute; left: 370px; top: 896px; width: 600px; padding: 34px 30px; transform: rotate(-6deg); background: #FFFFFF; border: 3px dashed #2A2A2A; color: #111111; text-align: center;
+    font-size: 36px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .cartello i { position: absolute; width: 18px; height: 18px; background: var(--principale); }
+  .cartello .a { left: -11px; top: -11px; } .cartello .b { right: -11px; top: -11px; } .cartello .c { left: -11px; bottom: -11px; } .cartello .d { right: -11px; bottom: -11px; }
+</style>
+</head>
+<body>
+  <!-- foto: un angolo di lavoro chiaro e ordinato (scrivania, tablet, tazza), scurita perché il titolo si legga -->
+  <img class="foto" src="../esempio/tablet.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+
+  <!-- titolo: la domanda finale, 6-9 parole su tre righe -->
+  <h1 class="titolo">Vuoi altre idee per post che portano clienti?</h1>
+
+  <!-- pillola: dove trovare il link, 2-3 parole -->
+  <p class="pillola">Link in bio</p>
+  <!-- cartello: l'invito a commentare, 12-16 parole, con la parola chiave tra virgolette -->
+  <p class="cartello">Commenta «IDEE» e ti mando il link per scaricare tutto il calendario<i class="a"></i><i class="b"></i><i class="c"></i><i class="d"></i></p>
+
+  <!-- logo: il nome del brand -->
+  <p class="logo">Studio Lume</p>
+</body>
+</html>

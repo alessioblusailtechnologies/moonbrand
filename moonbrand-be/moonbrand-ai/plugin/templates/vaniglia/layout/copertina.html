@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  /* Anton è strettissimo: qui è ingrandito, così le misure sotto valgono anche per i font del brand, più larghi. */
+  @font-face { font-family: 'Anton Copertina'; src: url(https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2) format('woff2'); size-adjust: 150%; }
+  :root { --font-titoli: 'Anton Copertina', 'Anton', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -900px; top: -60px; width: 2160px; height: 1440px; object-fit: cover; filter: brightness(0.86); }
+
+  .titolo { position: absolute; left: 186px; top: 250px; width: 880px; }
+  .anno { display: block; font-size: 44px; font-weight: 400; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; color: #FFFFFF; margin-left: -28px; }
+  .parola { display: block; margin-top: -8px; font-family: var(--font-titoli); font-weight: 700; font-synthesis: none; font-size: 150px; line-height: 1.5; letter-spacing: -0.02em;
+    text-transform: uppercase; white-space: nowrap; color: var(--accento); }
+  .righe { position: absolute; right: 196px; top: 584px; text-align: right; font-size: 30px; font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto a mezzo busto seduto, che guarda in camera; il viso sotto il titolo, appena a destra del centro -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <h1 class="titolo">
+    <!-- etichetta: 2-3 parole piccole sopra la parola, in maiuscolo (l'anno, il mese) -->
+    <span class="anno">Il nostro 2026</span>
+    <!-- parola: una sola parola in maiuscolo stretto, al massimo 9 lettere -->
+    <span class="parola">Risultati</span>
+  </h1>
+  <!-- righe: tre righe brevi a destra, 2-4 parole ciascuna -->
+  <p class="righe">Più idee<br>Più clienti<br>Un brand più chiaro</p>
+</body>
+</html>

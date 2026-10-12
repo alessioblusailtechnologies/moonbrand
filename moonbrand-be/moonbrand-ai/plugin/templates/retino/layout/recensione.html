@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testata { position: absolute; left: 105px; right: 108px; top: 110px; display: flex; justify-content: space-between; font-size: 36px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    color: color-mix(in srgb, var(--principale) 72%, transparent); }
+
+  .riquadro { position: absolute; left: 102px; top: 227px; width: 868px; padding: 32px 40px 38px 30px; background: var(--accento); color: var(--principale); }
+  .virgolette { display: block; width: 124px; height: 78px; margin-bottom: 30px; }
+  .frase { font-size: 55px; line-height: 53px; letter-spacing: 0.02em; text-transform: uppercase; }
+
+  .testo { position: absolute; left: 108px; top: 607px; width: 820px; font-size: 44px; line-height: 42px; letter-spacing: 0.03em; text-transform: uppercase; }
+
+  .stelle { position: absolute; left: 103px; top: 852px; width: 258px; height: 76px; background: var(--principale); color: var(--accento); display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .stelle svg { width: 40px; height: 40px; }
+  .orbita { position: absolute; left: 520px; top: 822px; width: 342px; height: 136px; color: var(--principale); }
+
+  .foto { position: absolute; left: 103px; top: 990px; width: 257px; height: 256px; object-fit: cover; object-position: 50% 25%; filter: grayscale(1) contrast(1.15); }
+  .chi { position: absolute; left: 410px; top: 1085px; font-size: 40px; line-height: 42px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .chi b { font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- testata: a sinistra il tipo di post (una parola con le barre), a destra un'etichetta tra quadre con il numero -->
+  <p class="testata"><span>// Recensione</span><span>[Clienti 002]</span></p>
+
+  <div class="riquadro">
+    <svg class="virgolette" viewBox="0 0 124 78"><path fill="currentColor" d="M0 78 V40 C0 14 12 2 38 0 V16 C26 18 22 26 22 36 H52 V78 Z M68 78 V40 C68 14 80 2 106 0 V16 C94 18 90 26 90 36 H120 V78 Z"/></svg>
+    <!-- frase: la frase forte della recensione, 8-12 parole, al massimo tre righe -->
+    <p class="frase">Un lavoro chiaro, puntuale e fatto con la testa.</p>
+  </div>
+
+  <!-- testo: il resto della recensione, 12-18 parole, al massimo tre righe -->
+  <p class="testo">Il sito nuovo ci porta ordini ogni settimana e finalmente ci somiglia.</p>
+
+  <div class="stelle">
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6 Z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6 Z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6 Z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6 Z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6 Z"/></svg>
+  </div>
+  <svg class="orbita" viewBox="0 0 342 136" fill="none" stroke="currentColor" stroke-width="2">
+    <ellipse cx="171" cy="68" rx="136" ry="47"/><path d="M0 68 H342"/>
+    <path fill="currentColor" stroke="none" d="M171 0 C175 49 183 63 213 68 C183 73 175 87 171 136 C167 87 159 73 129 68 C159 63 167 49 171 0 Z"/>
+  </svg>
+
+  <!-- foto: chi scrive, ritratto quadrato in bianco e nero -->
+  <img class="foto" src="../esempio/cliente.jpg" alt="">
+  <!-- chi: nome in grassetto e ruolo, al massimo 18 caratteri ciascuno -->
+  <p class="chi"><b>Giulia Sarti</b><br>Titolare, Forno Alba</p>
+</body>
+</html>

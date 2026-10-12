@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=Noto+Serif+Display:ital,wdth,wght@1,62.5..100,300..400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  /* il corsivo stretto è ingrandito qui, così la misura sotto vale anche per i font del brand, più larghi */
+  @font-face { font-family: 'Noto Corsivo'; src: url(https://fonts.gstatic.com/s/notoserifdisplay/v29/buEpppa9f8_vkXaZLAgP0G5Wi6QmA1QwcJ5OEl4.woff2) format('woff2'); font-style: italic; font-weight: 100 900; font-stretch: 62.5% 100%; size-adjust: 130%; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Noto Corsivo', 'Noto Serif Display', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .apertura { position: absolute; right: 528px; top: 70px; text-align: right; white-space: nowrap; font-style: italic; font-stretch: 70%; font-weight: 300;
+    font-size: 58px; line-height: 1.46; letter-spacing: -0.02em; }
+  .virgolette { position: absolute; left: 566px; top: 64px; width: 500px; height: 424px; color: var(--secondario); }
+
+  .cornice { position: absolute; left: 186px; top: 500px; width: 720px; height: 680px; padding: 38px 44px 46px 50px;
+    background: color-mix(in srgb, var(--principale) 70%, black); }
+  .cornice img { width: 626px; height: 596px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05); }
+
+  .chiusura { position: absolute; left: 186px; top: 1196px; font-family: var(--font-titoli); font-weight: 700; font-size: 84px; line-height: 1; letter-spacing: -0.025em;
+    color: var(--secondario); white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- apertura: l'inizio della frase, 7-10 parole su tre righe con <br>, al massimo 20 caratteri per riga, in corsivo -->
+  <p class="apertura">I reel si fanno<br>notare. I contenuti<br>creano fiducia.</p>
+
+  <!-- virgolette: due grandi virgolette di chiusura, piene -->
+  <svg class="virgolette" viewBox="0 0 500 424" fill="currentColor" aria-hidden="true">
+    <path d="M0 0 C 150 6, 216 120, 218 250 L 218 424 L 66 424 L 66 210 L 0 210 Z"/>
+    <path d="M282 0 C 432 6, 498 120, 500 250 L 500 424 L 348 424 L 348 210 L 282 210 Z"/>
+  </svg>
+
+  <!-- foto: un ritratto in bianco e nero dentro la cornice scura, come un negativo -->
+  <div class="cornice"><img src="../esempio/profilo.jpg" alt=""></div>
+
+  <!-- chiusura: la frase che chiude, 2-3 parole in grassetto, con la virgoletta di chiusura -->
+  <p class="chiusura">Il brand vende.”</p>
+</body>
+</html>

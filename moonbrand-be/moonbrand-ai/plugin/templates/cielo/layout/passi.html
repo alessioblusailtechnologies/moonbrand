@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --tenue: color-mix(in oklab, var(--accento) 40%, var(--sfondo)); --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; color: var(--principale); font-family: var(--font-testo); }
+
+  .passi { position: absolute; left: 58px; top: 122px; width: 980px; display: flex; flex-direction: column; gap: 20px; }
+  .passo { position: relative; height: 372px; border-radius: 64px; background: var(--tenue); padding: 50px 60px 0; }
+  .passo.scuro { background: var(--principale); color: #FFFFFF; }
+  .numero { display: inline-block; height: 118px; padding: 0 22px; border-radius: 26px; line-height: 118px; background: var(--principale); color: var(--accento);
+    font-family: var(--font-titoli); font-size: 78px; font-weight: 400; letter-spacing: -0.05em; }
+  .scuro .numero { background: var(--accento); color: var(--su-accento); }
+  .freccia { position: absolute; right: 56px; top: 50px; width: 100px; height: 100px; border-radius: 50%; border: 2px solid currentColor; display: grid; place-items: center; }
+  .freccia svg { width: 34px; height: 34px; }
+  .testo { position: absolute; left: 60px; bottom: 60px; width: 600px; font-size: 44px; font-weight: 400; line-height: 1.04; letter-spacing: -0.035em; }
+</style>
+</head>
+<body>
+  <div class="passi">
+    <!-- passo 1: numero (01.) e un'azione in 5-7 parole su due righe -->
+    <div class="passo">
+      <span class="numero">01.</span>
+      <span class="freccia"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M27 7 L8 26 M8 26 L8 12 M8 26 L22 26"/></svg></span>
+      <p class="testo">Ascoltare i clienti prima di scrivere.</p>
+    </div>
+    <!-- passo 2: il passo centrale, sul fondo scuro -->
+    <div class="passo scuro">
+      <span class="numero">02.</span>
+      <span class="freccia"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M27 7 L8 26 M8 26 L8 12 M8 26 L22 26"/></svg></span>
+      <p class="testo">Costruire un piano con obiettivi misurabili.</p>
+    </div>
+    <!-- passo 3: numero e azione -->
+    <div class="passo">
+      <span class="numero">03.</span>
+      <span class="freccia"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M27 7 L8 26 M8 26 L8 12 M8 26 L22 26"/></svg></span>
+      <p class="testo">Correggere il tiro ogni mese, dati alla mano.</p>
+    </div>
+  </div>
+</body>
+</html>

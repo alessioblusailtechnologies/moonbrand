@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #15121D; --secondario: #2B2735; --accento: #FFFFFF; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --linea: color-mix(in srgb, var(--accento) 20%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .griglia { position: absolute; left: 4px; top: 4px; width: 764px; height: 764px;
+    background-image: linear-gradient(90deg, var(--linea) 2px, transparent 2px), linear-gradient(180deg, var(--linea) 2px, transparent 2px);
+    background-size: 63.6px 63.6px; border-right: 2px solid var(--linea); border-bottom: 2px solid var(--linea); }
+  .hashtag { position: absolute; font-size: 24px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; }
+  .h1 { right: 78px; top: 68px; }
+  .h2 { left: 90px; top: 1220px; text-transform: none; font-size: 23px; }
+  .foto { position: absolute; left: 688px; top: 264px; width: 320px; height: 242px; object-fit: cover; display: block; }
+
+  .sopra { position: absolute; left: 92px; top: 664px; font-size: 39px; line-height: 1.08; letter-spacing: -0.04em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 92px; top: 792px; width: 800px; font-family: var(--font-titoli); font-weight: 700; font-size: 76px; line-height: 0.98; letter-spacing: -0.04em; text-transform: uppercase; }
+  .logo { position: absolute; right: 62px; top: 1180px; font-family: var(--font-titoli); font-weight: 700; font-size: 62px; line-height: 1; letter-spacing: -0.05em; color: var(--accento); }
+</style>
+</head>
+<body>
+  <div class="griglia"></div>
+  <!-- hashtag-alto: la rubrica, 2-3 parole -->
+  <p class="hashtag h1">#Piano strategico</p>
+  <!-- foto: una persona al lavoro, piccola, a cavallo del bordo destro della griglia -->
+  <img class="foto" src="../esempio/lettura.jpg" alt="">
+
+  <!-- sopra: l'attacco del titolo, 2-4 parole in due righe, sottile -->
+  <p class="sopra">Come si<br>costruisce</p>
+  <!-- titolo: il tema, 2-4 parole in due righe, in maiuscolo -->
+  <h1 class="titolo">Un piano<br>di marketing</h1>
+
+  <!-- hashtag-basso: una parola composta, 12-20 caratteri -->
+  <p class="hashtag h2">#ConsigliPratici</p>
+  <!-- logo: il marchio del brand in basso a destra -->
+  <p class="logo">rotta</p>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,300;1,400&family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 58% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(40,30,20,0.22); }
+
+  .titolo { position: absolute; left: 0; top: 214px; width: 1080px; text-align: center; font-weight: 400; }
+  .numero { display: block; font-family: var(--font-titoli); font-style: italic; font-weight: 300; font-size: 168px; line-height: 1; letter-spacing: -0.04em; }
+  .forte { display: block; margin-top: 22px; font-family: var(--font-testo); font-size: 88px; font-weight: 700; line-height: 1; letter-spacing: -0.035em; }
+  .corsivo { display: block; margin-top: 4px; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-size: 104px; line-height: 1.05; letter-spacing: -0.05em; white-space: nowrap; }
+
+  .riquadro { position: absolute; left: 232px; top: 676px; width: 618px; min-height: 404px; padding: 70px 56px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: color-mix(in srgb, var(--sfondo) 80%, transparent); color: var(--principale); font-size: 39px; line-height: 1.22; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio di vita quotidiana dall'alto o da vicino (tazza, libro, mani), toni caldi e neutri -->
+  <img class="foto" src="../esempio/colazione.jpg" alt="">
+  <div class="velo"></div>
+
+  <h1 class="titolo">
+    <!-- numero: il numero del consiglio nella serie, con il cancelletto (#1, #2, #3) -->
+    <span class="numero">#1</span>
+    <!-- forte: 1-2 parole in grassetto -->
+    <span class="forte">Salvalo</span>
+    <!-- corsivo: il tema, 2-3 parole, al massimo 20 lettere -->
+    <span class="corsivo">per la strategia</span>
+  </h1>
+
+  <!-- riquadro: il consiglio, 22-32 parole -->
+  <p class="riquadro">Scrivi in una riga cosa offri e a chi. Mostra ai clienti il problema che risolvi e perché lo fai meglio di chiunque altro in città.</p>
+</body>
+</html>

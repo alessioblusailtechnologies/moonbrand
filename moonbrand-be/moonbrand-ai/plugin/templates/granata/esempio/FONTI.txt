@@ -1,0 +1,10 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+garage.jpg     Unsplash, foto iQgzdRbxbDI (garage pieno di attrezzi e scaffali)
+               https://unsplash.com/photos/iQgzdRbxbDI
+cardigan.jpg   Unsplash, foto pM5j5QjEHU8 (donna in maglia bordeaux con la mano al collo)
+               https://unsplash.com/photos/pM5j5QjEHU8
+telefono.jpg   Unsplash, foto WZd2guSc2DQ (donna in giacca con un telefono rosso a filo)
+               https://unsplash.com/photos/WZd2guSc2DQ
+scrivania.jpg  Unsplash, foto cckf4TsHAuw (portatile, tazza e telefono su una scrivania di legno)
+               https://unsplash.com/photos/cckf4TsHAuw

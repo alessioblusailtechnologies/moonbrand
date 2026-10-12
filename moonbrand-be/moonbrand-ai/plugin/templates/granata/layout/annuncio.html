@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;1,400&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Libre Caslon Text', serif; --font-testo: 'Poppins', sans-serif; }
+  /* Sul fondo chiaro del modello la seconda riga e le scritte piccole sono bianche; se il fondo del brand è quasi bianco diventano nere. */
+  :root { --chiaro: oklch(from var(--sfondo) calc(clamp(0, (0.88 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .social { position: absolute; left: 52px; right: 52px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 300; color: var(--chiaro); }
+  .social.su { top: 92px; }
+  .social.giu { top: 1236px; }
+
+  .titolo { position: absolute; left: 0; top: 380px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; line-height: 1; }
+  .titolo .dritto { display: block; font-size: 200px; letter-spacing: -0.02em; color: var(--principale); }
+  .titolo .corsivo { display: block; margin-top: -62px; font-size: 228px; font-style: italic; letter-spacing: -0.05em; color: var(--chiaro); }
+
+  .ovale { position: absolute; left: 340px; top: 850px; width: 400px; height: 104px; display: flex; align-items: center; justify-content: center;
+    border: 3px solid var(--principale); border-radius: 50%; transform: rotate(-4deg);
+    font-size: 30px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ovale span { transform: rotate(4deg); }
+  .frase { position: absolute; left: 140px; top: 1080px; width: 800px; text-align: center; font-size: 30px; font-weight: 300; letter-spacing: -0.01em; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- social: in alto e in basso, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <!-- titolo: due righe corte che si toccano, la prima dritta (1-2 parole), la seconda in corsivo (una parola, al massimo 7 lettere) -->
+  <h1 class="titolo"><span class="dritto">Ci siamo</span><span class="corsivo">quasi!</span></h1>
+
+  <!-- ovale: 1-2 parole in maiuscolo dentro l'ovale disegnato -->
+  <p class="ovale"><span>In arrivo</span></p>
+
+  <!-- frase: una riga sotto, 6-9 parole -->
+  <p class="frase">Una strategia senza azione resta solo un desiderio</p>
+
+  <div class="social giu"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+</body>
+</html>

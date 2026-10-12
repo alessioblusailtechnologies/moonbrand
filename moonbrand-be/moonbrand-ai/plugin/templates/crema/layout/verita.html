@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;800&family=Lekton&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2723; --secondario: #E8E6E3; --accento: #F5C02C; --sfondo: #F1EBCF; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --bordo-stella: color-mix(in srgb, var(--accento) 72%, black); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 60% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 22%, transparent); }
+
+  .titolo { position: absolute; right: 96px; top: 150px; width: 900px; text-align: right; font-family: var(--font-titoli); font-weight: 800; font-size: 196px; line-height: 0.84; letter-spacing: -0.06em; }
+  .titolo span { display: block; white-space: nowrap; }
+  .sotto { position: absolute; right: 96px; top: 500px; width: 470px; text-align: right; font-family: 'Lekton', monospace; font-size: 50px; line-height: 1.02; text-transform: uppercase; }
+
+  .fumetto { position: absolute; left: 96px; bottom: 150px; max-width: 520px; padding: 16px 34px 18px; border-radius: 44px; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); font-size: 38px; font-weight: 400; line-height: 1.15; letter-spacing: -0.01em; transform: rotate(-4deg); }
+  .fumetto::after { content: ''; position: absolute; left: 22px; bottom: -16px; width: 30px; height: 26px; background: var(--secondario); clip-path: polygon(0 100%, 40% 0, 100% 0, 60% 30%); }
+
+  .stella { position: absolute; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 3; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona per strada o in un cortile, a figura media, guarda di lato; la parte alta libera per il titolo -->
+  <img class="foto" src="../esempio/vicolo.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: due righe corte, minuscole, allineate a destra, al massimo 8 lettere per riga -->
+  <h1 class="titolo"><span>ecco la</span><span>verità</span></h1>
+  <!-- sotto: di cosa, 3-5 parole in maiuscolo su due righe, allineate a destra -->
+  <p class="sotto">su come crescere su instagram</p>
+  <!-- fumetto: 2-4 parole, minuscole, un'aggiunta detta a voce -->
+  <p class="fumetto">quest'anno (2026)</p>
+
+  <svg class="stella" style="left: 70px; top: 300px; width: 82px; height: 82px; transform: rotate(-12deg);" viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36 Z"/></svg>
+  <svg class="stella" style="left: 930px; top: 640px; width: 78px; height: 78px; transform: rotate(10deg);" viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36 Z"/></svg>
+</body>
+</html>

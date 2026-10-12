@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  /* Noto stretto è strettissimo: qui è ingrandito, così la misura sotto vale anche per i font del brand. */
+  @font-face { font-family: 'Noto Manifesto'; src: url(https://fonts.gstatic.com/s/notoserifdisplay/v29/buEeppa9f8_vkXaZLAgP0G5Wi6QmA1QaeYa94sYvLCDq_ZgK4NHKhA.woff2) format('woff2'); font-style: normal; font-weight: 100 900; font-stretch: 62.5% 100%; size-adjust: 170%; }
+  :root { --font-titoli: 'Noto Manifesto', 'Noto Serif Display', serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #000000; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 40% 50%; display: block; filter: grayscale(1) contrast(1.08) brightness(0.9); }
+  .titolo { position: absolute; right: 44px; top: 120px; width: 1000px; text-align: right; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 400;
+    font-size: 115px; line-height: 1; letter-spacing: -0.035em; color: var(--accento); }
+  .titolo span { display: block; white-space: nowrap; }
+  .titolo span + span { margin-top: 290px; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto in bianco e nero, drammatico, fondo scuro; resta in bianco e nero -->
+  <img class="foto" src="../esempio/bianconero.jpg" alt="">
+
+  <!-- titolo: una frase di 6-8 parole in tre righe allineate a destra e distanti tra loro, la prima la più lunga (al massimo 14 caratteri), l'ultima una parola -->
+  <h1 class="titolo"><span>Fai un brand,</span><span>non solo</span><span>un feed</span></h1>
+</body>
+</html>

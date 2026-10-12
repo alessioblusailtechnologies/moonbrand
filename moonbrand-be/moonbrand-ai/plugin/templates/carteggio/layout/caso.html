@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2B26; --secondario: #7A9024; --accento: #C5DC7E; --sfondo: #E4E3DB; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --inchiostro-tenue: color-mix(in srgb, var(--principale) 72%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+  .grana::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .foglio { position: absolute; left: 170px; top: 158px; width: 888px; height: 1170px; background: color-mix(in srgb, var(--sfondo) 88%, white); }
+  .testata { position: absolute; left: 72px; top: 80px; font-size: 24px; line-height: 1.1; text-transform: uppercase; color: var(--inchiostro-tenue); }
+  .verticale { position: absolute; left: 66px; top: 700px; font-size: 24px; text-transform: uppercase; color: var(--inchiostro-tenue); transform: rotate(-90deg); transform-origin: 0 0; white-space: nowrap; }
+
+  .timbro { position: absolute; left: 160px; top: 150px; width: 226px; height: 226px; color: var(--inchiostro-tenue); }
+  .anello { position: absolute; inset: 0; border: 2px solid currentColor; border-radius: 50%; }
+  .anello span { position: absolute; left: 50%; top: 12px; width: 24px; margin-left: -12px; height: 101px; transform-origin: 50% 100%; text-align: center; font-family: var(--font-testo); font-size: 24px; line-height: 1; }
+  .timbro .logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-style: italic; font-size: 64px; line-height: 1; }
+
+  /* La foto stampata, un po' storta, con dietro un foglio d'accento sfalsato e il cartellino del cliente con la graffetta. */
+  .dietro { position: absolute; left: 352px; top: 34px; width: 504px; height: 660px; background: var(--accento); transform: rotate(1deg); }
+  .stampa { position: absolute; left: 322px; top: 6px; width: 504px; height: 666px; padding: 16px; background: #FFFFFF; transform: rotate(2deg); box-shadow: 0 6px 14px rgba(0,0,0,0.18); }
+  .stampa img { width: 472px; height: 634px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05); }
+  .cartellino { position: absolute; left: 380px; top: -20px; width: 194px; height: 330px; background: #F4F3EF; box-shadow: 0 4px 10px rgba(0,0,0,0.16); }
+  .cartellino .cliente { position: absolute; left: 160px; top: 24px; transform: rotate(90deg); transform-origin: 0 0; white-space: nowrap;
+    font-family: var(--font-testo); font-weight: 700; font-size: 50px; line-height: 1; text-transform: uppercase; color: var(--principale); }
+  .cartellino .sotto { position: absolute; left: 96px; top: 24px; transform: rotate(90deg); transform-origin: 0 0; white-space: nowrap; font-size: 24px; line-height: 1.2; color: #3A3936; }
+  .graffetta { position: absolute; left: 392px; top: -54px; width: 44px; height: 140px; color: #9A9A98; }
+
+  .titolo { position: absolute; left: 72px; top: 818px; width: 440px; font-family: var(--font-titoli); font-weight: 400; font-size: 80px; line-height: 0.98; letter-spacing: -0.015em; }
+  .titolo em { display: block; font-style: italic; color: var(--secondario); }
+  .testo { position: absolute; left: 540px; top: 900px; width: 290px; font-size: 25px; line-height: 1.32; }
+</style>
+</head>
+<body class="grana">
+  <div class="foglio grana">
+    <!-- testata: profilo social e anno, in due righe -->
+    <p class="testata">@studio.ortica<br>Dal 2019</p>
+    <!-- verticale: la rubrica, 1-2 parole lungo il bordo -->
+    <p class="verticale">Casi studio</p>
+
+    <div class="timbro"><div class="anello" data-testo="ORTICA · MARKETING · "></div><div class="logo">O</div></div>
+
+    <div class="dietro"></div>
+    <!-- foto: il lavoro fatto per il cliente (prodotto, campagna), verticale, in bianco e nero -->
+    <div class="stampa"><img src="../esempio/flacone.jpg" alt="" style="object-position: 62% 50%"></div>
+    <!-- cartellino: nome del cliente (al massimo 8 caratteri), sotto il suo profilo e l'anno -->
+    <div class="cartellino">
+      <p class="cliente">Marea&amp;co</p>
+      <p class="sotto">@marea.co<br>2026</p>
+    </div>
+    <svg class="graffetta" viewBox="0 0 44 140" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round">
+      <path d="M12 110 V22 a10 10 0 0 1 20 0 V124 a14 14 0 0 1 -28 0 V46"/>
+    </svg>
+
+    <!-- titolo: 3 righe dritte di 1-2 parole e l'ultima riga in corsivo con <em> -->
+    <h1 class="titolo">La nostra campagna più riuscita <em>raccontata</em></h1>
+    <!-- testo: cosa doveva ottenere la campagna, 18-24 parole -->
+    <p class="testo">L'abbiamo pensata per farci notare, spiegare bene il prodotto e portare richieste vere, non solo qualche like in più.</p>
+  </div>
+
+  <script>
+    for (const anello of document.querySelectorAll('.anello')) {
+      const lettere = [...anello.dataset.testo];
+      lettere.forEach((c, i) => { const s = document.createElement('span'); s.textContent = c; s.style.transform = `rotate(${(i * 360) / lettere.length}deg)`; anello.append(s); });
+    }
+  </script>
+</body>
+</html>

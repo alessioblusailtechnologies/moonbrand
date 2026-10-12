@@ -26,7 +26,9 @@ const TEST_FONTS = { titles: 'Sora', text: 'Work Sans', found: null };
 const STUDIO_DIR = fileURLToPath(new URL('../../../../moonbrand-studio/public/templates/', import.meta.url));
 
 const [id, flag] = process.argv.slice(2);
-const template = findTemplate(id);
+// Un template in costruzione può non essere ancora nel catalogo: basta la sua cartella, e i layout vanno in ordine di nome.
+const template =
+  findTemplate(id) ?? (id && /^[a-z0-9-]+$/.test(id) && (await readdir(path.join(TEMPLATES_DIR, id)).catch(() => null)) ? { id, layouts: [] as string[] } : null);
 if (!template) {
   console.error('Uso: npm run template-anteprime -- <id del template, da moonbrand-shared/src/domain/templates.ts> [--prova]');
   process.exit(1);

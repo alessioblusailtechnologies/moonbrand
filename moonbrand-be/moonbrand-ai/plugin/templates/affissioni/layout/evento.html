@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Jost', sans-serif; --font-testo: 'Jost', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #BDBDBD; color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: -150px; width: 1080px; height: 1620px; object-fit: cover; display: block; filter: grayscale(1) brightness(0.74) contrast(1.05); }
+
+  .blocco { position: absolute; left: 310px; top: 440px; text-shadow: 0 1px 12px rgba(0,0,0,0.18); }
+  .etichetta { margin-left: 292px; font-size: 27px; font-weight: 400; letter-spacing: 0.01em; }
+  .titolo { margin-top: 26px; font-family: var(--font-titoli); font-weight: 400; font-size: 116px; line-height: 1; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .quando { margin-left: 292px; margin-top: 8px; font-size: 40px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; }
+  .dettagli { margin-left: 292px; margin-top: 34px; font-size: 28px; font-weight: 400; line-height: 1.22; }
+</style>
+</head>
+<body>
+  <!-- foto: in bianco e nero e un po' scurita, persone che attraversano uno spazio chiaro e vuoto; il testo bianco sta sulla parete libera -->
+  <img class="foto" src="../esempio/galleria.jpg" alt="">
+
+  <div class="blocco">
+    <!-- etichetta: che cosa è, 2-3 parole -->
+    <p class="etichetta">Serata aperta</p>
+    <!-- titolo: una o due parole in maiuscolo, al massimo 8 lettere -->
+    <h1 class="titolo">Open day</h1>
+    <!-- quando: il mese o la stagione, breve -->
+    <p class="quando">Ott 2026</p>
+    <!-- dettagli: ora, data, luogo e una nota, una riga ciascuno -->
+    <p class="dettagli">ore 18:30<br>23.10.2026<br>Via Sparano 41, Bari<br>posti limitati</p>
+  </div>
+</body>
+</html>

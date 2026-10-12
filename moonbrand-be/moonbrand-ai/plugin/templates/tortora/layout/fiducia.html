@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=IBM+Plex+Mono:wght@400&family=Italianno&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161414; --secondario: #E9E9EB; --accento: #F4C542; --sfondo: #F3EED0; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'IBM Plex Mono', monospace; }
+  :root { --crema: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--crema); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; filter: saturate(0.72) brightness(0.74) contrast(1.05); }
+
+  .blocco { position: absolute; left: 0; top: 330px; width: 1080px; text-align: center; }
+  .grande { display: block; font-family: var(--font-titoli); font-weight: 700; font-size: 270px; line-height: 0.8; letter-spacing: -0.07em; white-space: nowrap; }
+  .corsivo { display: block; margin-top: 6px; margin-left: 60px; font-family: 'Italianno', cursive; font-size: 300px; line-height: 0.8; white-space: nowrap; }
+  .sotto { position: absolute; left: 0; top: 920px; width: 1080px; text-align: center; font-size: 46px; letter-spacing: -0.01em; white-space: nowrap; }
+
+  .stella { position: absolute; left: 792px; top: 266px; width: 120px; height: 120px; transform: rotate(8deg); }
+  .scintilla { position: absolute; left: 196px; top: 640px; width: 130px; height: 130px; transform: rotate(-12deg); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio dall'alto (piedi, tavolo, caffè, quaderno), ombre nette; il centro calmo per la scritta -->
+  <img class="foto" src="../esempio/caffe.jpg" alt="">
+
+  <svg class="stella" viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color: color-mix(in srgb, var(--accento) 35%, white)"/><stop offset="0.5" style="stop-color: var(--accento)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--accento) 72%, black)"/></radialGradient></defs>
+    <path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+
+  <p class="blocco">
+    <!-- grande: una parola corta, al massimo 6 lettere -->
+    <span class="grande">crea</span>
+    <!-- corsivo: la parola che completa, scritta a mano, al massimo 9 lettere -->
+    <span class="corsivo">fiducia</span>
+  </p>
+  <svg class="scintilla" viewBox="0 0 100 100"><path d="M50 2 C53 36 64 47 98 50 C64 53 53 64 50 98 C47 64 36 53 2 50 C36 47 47 36 50 2 Z" style="fill: var(--secondario)" opacity="0.92"/></svg>
+
+  <!-- sotto: la frase tra parentesi, 4-6 parole -->
+  <p class="sotto">( e il resto verrà da sé )</p>
+</body>
+</html>

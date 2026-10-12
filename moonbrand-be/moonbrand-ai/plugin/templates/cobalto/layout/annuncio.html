@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo);
+    background: linear-gradient(115deg, var(--principale) 25%, var(--secondario) 100%); }
+
+  .bianco { position: absolute; inset: 0; background: var(--sfondo); clip-path: polygon(0 165px, 548px 1350px, 0 1350px); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1012px; object-fit: cover; object-position: 60% 50%; display: block;
+    clip-path: polygon(546px 0, 1080px 0, 1080px 1012px, 588px 1012px, 342px 472px); }
+
+  .titolo { position: absolute; left: 44px; bottom: 150px; width: 360px; font-family: var(--font-titoli); font-weight: 700; color: var(--principale);
+    text-transform: uppercase; font-size: 48px; line-height: 1.02; letter-spacing: 0.005em; }
+</style>
+</head>
+<body>
+  <div class="bianco"></div>
+  <!-- foto: un dettaglio di lavoro (mani al portatile, scrivania), luminoso; il soggetto a destra -->
+  <img class="foto" src="../esempio/portatile.jpg" alt="">
+
+  <!-- titolo: la notizia in due righe, al massimo 12 lettere per riga -->
+  <h1 class="titolo">Nuovo caso<br>studio online</h1>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.36), 0 1px 4px rgba(0,0,0,0.22); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: saturate(0.6) brightness(0.7) contrast(0.95); }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(30,28,26,0.26); }
+
+  .titolo { position: absolute; left: 0; top: 418px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 146px; line-height: 1; letter-spacing: -0.05em; text-shadow: var(--ombra); white-space: nowrap; }
+  .corsivo { position: absolute; left: 0; top: 572px; width: 1080px; text-align: center; font-family: 'Pinyon Script', cursive; font-weight: 400; font-size: 200px; line-height: 1; letter-spacing: -0.01em; text-shadow: var(--ombra); white-space: nowrap; }
+
+  .parentesi { position: absolute; font-size: 50px; font-weight: 300; letter-spacing: -0.04em; text-shadow: var(--ombra); white-space: nowrap; }
+  .p1 { right: 160px; top: 176px; }
+  .p2 { left: 168px; top: 976px; }
+
+  .cartella { position: absolute; left: 690px; top: 920px; width: 176px; height: 138px; }
+  .didascalia { position: absolute; left: 638px; top: 1080px; width: 280px; text-align: center; font-size: 26px; font-weight: 400; letter-spacing: -0.04em; text-shadow: var(--ombra); }
+
+  .stella { position: absolute; width: 56px; height: 56px; }
+  .stella.bianca { width: 44px; height: 44px; }
+</style>
+</head>
+<body>
+  <!-- foto: dall'alto, oggetti di tutti i giorni su un letto o un tavolo (libro, occhiali, tazza, borsa); colori spenti -->
+  <img class="foto" src="../esempio/letto.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- parentesi-1: 2-3 parole tra parentesi quadre, in alto a destra -->
+  <p class="parentesi p1">[ controllo veloce ]</p>
+
+  <!-- titolo: una parola minuscola, al massimo 10 lettere -->
+  <h1 class="titolo">instagram</h1>
+  <!-- corsivo: 1-2 parole scritte a mano sotto il titolo, al massimo 12 lettere -->
+  <p class="corsivo">Passi Falsi</p>
+
+  <!-- parentesi-2: 2-4 parole tra parentesi quadre, in basso a sinistra -->
+  <p class="parentesi p2">[ da sistemare prima ]</p>
+
+  <svg class="cartella" viewBox="0 0 176 138">
+    <path d="M8 12 Q8 4 16 4 L62 4 Q68 4 72 9 L80 18 L160 18 Q168 18 168 26 L168 40 L8 40 Z" fill="color-mix(in srgb, var(--secondario) 82%, black)"/>
+    <rect x="8" y="30" width="160" height="104" rx="10" fill="var(--secondario)"/>
+    <rect x="8" y="30" width="160" height="8" rx="4" fill="color-mix(in srgb, var(--secondario) 70%, white)"/>
+  </svg>
+  <!-- didascalia: 3-4 parole sotto la cartella -->
+  <p class="didascalia">cosa noto per primo</p>
+
+  <svg class="stella" style="left:180px; top:236px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella" style="left:954px; top:506px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella" style="left:322px; top:1180px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella bianca" style="left:614px; top:62px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="#FFFFFF" stroke-linejoin="round"/></svg>
+  <svg class="stella bianca" style="left:94px; top:858px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="#FFFFFF" stroke-linejoin="round"/></svg>
+  <svg class="stella bianca" style="left:912px; top:1190px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="#FFFFFF" stroke-linejoin="round"/></svg>
+</body>
+</html>

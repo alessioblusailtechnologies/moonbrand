@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  .foto { position: absolute; left: 36px; top: 36px; width: 1008px; height: 1278px; object-fit: cover; object-position: 50% 30%; border-radius: 34px; display: block; filter: brightness(0.8) contrast(1.05); }
+  .blocco { position: absolute; left: 88px; bottom: 300px; width: 900px; }
+  .titolo { color: #FFFFFF; font-family: var(--font-titoli); font-weight: 400; font-size: 82px; line-height: 1.02; letter-spacing: -0.045em; }
+  .titolo em { display: block; font-family: var(--corsivo); font-style: italic; font-weight: 300; font-size: 92px; line-height: 1.12; letter-spacing: -0.01em; }
+  .sotto { margin: 22px 0 0 2px; width: 520px; color: #FFFFFF; font-size: 34px; line-height: 1.08; letter-spacing: -0.035em; }
+  .scheda { position: absolute; right: 80px; bottom: 82px; width: 420px; padding: 26px 30px 30px; border-radius: 26px; background: var(--accento); color: var(--su-accento); }
+  .scheda b { display: block; font-size: 28px; font-weight: 600; line-height: 1.12; letter-spacing: -0.03em; }
+  .scheda p { margin-top: 12px; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; }
+
+</style>
+</head>
+<body>
+  <!-- foto: una persona ritratta da vicino, dal basso, con carattere (moda, editoriale); il viso nella metà alta -->
+  <img class="foto" src="../esempio/donna.jpg" alt="">
+
+  <!-- titolo: la domanda o la tesi in due righe dritte (6-9 parole) + la chiusa in corsivo nell'em (3-5 parole) -->
+  <div class="blocco">
+  <h1 class="titolo">I tuoi prezzi nascono dal valore o dalla paura <em>di perdere il cliente?</em></h1>
+  <!-- sotto: una frase di 8-12 parole -->
+  <p class="sotto">Molti listini non sono strategici. Sono difensivi.</p>
+  </div>
+
+  <div class="scheda">
+    <!-- scheda-titolo: 5-8 parole in grassetto -->
+    <b>Fai lo sconto prima che te lo chiedano?</b>
+    <!-- scheda-testo: 8-14 parole -->
+    <p>Quella è paura travestita da trattativa, e il cliente se ne accorge.</p>
+  </div>
+</body>
+</html>

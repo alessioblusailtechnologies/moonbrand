@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,500;0,800;1,500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161414; --secondario: #E9E9EB; --accento: #F4C542; --sfondo: #F3EED0; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'IBM Plex Mono', monospace; }
+  :root { --crema: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.05) h); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--crema); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 62%; display: block; filter: saturate(0.62) brightness(0.84) contrast(1.04) sepia(0.15); }
+
+  .blocco { position: absolute; left: 0; top: 150px; width: 1080px; text-align: center; font-family: var(--font-titoli); }
+  .riga { display: block; font-weight: 500; font-size: 84px; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
+  .riga.sotto { font-style: italic; }
+  .perline { display: flex; justify-content: center; margin: 18px 0 14px; }
+  .perlina { width: 176px; height: 176px; margin: 0 -6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal;
+    background: radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--secondario) 30%, white) 0%, var(--secondario) 62%, color-mix(in srgb, var(--secondario) 82%, black) 100%);
+    color: var(--su-secondario); font-weight: 800; font-size: 104px; line-height: 1; box-shadow: 0 6px 14px rgba(0,0,0,0.25); }
+
+  .stella { position: absolute; left: 92px; top: 470px; width: 64px; height: 64px; transform: rotate(-8deg); }
+  .brilli { position: absolute; left: 820px; top: 120px; width: 90px; height: 90px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona seduta al bar o a un tavolo, con una tazza o un bicchiere; la parte alta libera -->
+  <img class="foto" src="../esempio/tazza.jpg" alt="">
+
+  <h1 class="blocco">
+    <!-- sopra: il tema, 1-2 parole -->
+    <span class="riga">social media</span>
+    <!-- perline: una parola di 3-5 lettere, una lettera per pallina -->
+    <span class="perline"><span class="perlina">M</span><span class="perlina">I</span><span class="perlina">T</span><span class="perlina">I</span></span>
+    <!-- sotto: una parola che chiude, in corsivo -->
+    <span class="riga sotto">sfatati</span>
+  </h1>
+
+  <svg class="stella" viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color: color-mix(in srgb, var(--accento) 35%, white)"/><stop offset="0.5" style="stop-color: var(--accento)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--accento) 72%, black)"/></radialGradient></defs>
+    <path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+  <svg class="brilli" viewBox="0 0 100 100" style="fill: var(--accento)">
+    <path d="M62 8 C64 30 70 36 92 38 C70 40 64 46 62 68 C60 46 54 40 32 38 C54 36 60 30 62 8 Z"/>
+    <path d="M24 52 C25 64 28 67 40 68 C28 69 25 72 24 84 C23 72 20 69 8 68 C20 67 23 64 24 52 Z"/>
+    <path d="M30 10 C31 17 32 18 38 19 C32 20 31 21 30 28 C29 21 28 20 22 19 C28 18 29 17 30 10 Z"/>
+  </svg>
+</body>
+</html>

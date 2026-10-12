@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --tenue: color-mix(in oklab, var(--accento) 40%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .carta { position: absolute; left: 74px; top: 140px; width: 934px; height: 1106px; border-radius: 52px; background: var(--tenue); }
+  .frase { position: absolute; left: 74px; top: 210px; width: 934px; text-align: center; font-family: var(--font-titoli); font-size: 112px; font-weight: 400; line-height: 1.07; letter-spacing: -0.05em; }
+  .frase .chiara, .frase .scura { display: inline-block; padding: 0 34px 6px; border-radius: 60px; line-height: 1.04; }
+  .frase .chiara { background: #FFFFFF; }
+  .frase .scura { background: var(--principale); color: var(--accento); }
+  .anno { position: absolute; height: 102px; padding: 0 36px; border-radius: 34px; display: flex; align-items: center; font-family: var(--font-testo); font-size: 36px; font-weight: 500; letter-spacing: -0.02em; }
+  .anno.su { left: 880px; top: 228px; background: var(--secondario); color: var(--su-secondario); border-radius: 34px 0 0 34px; padding-right: 72px; }
+  .anno.giu { left: 42px; top: 920px; background: var(--principale); color: #FFFFFF; }
+  .freccia { position: absolute; left: 898px; top: 470px; width: 104px; height: 104px; border-radius: 50%; background: #FFFFFF; display: grid; place-items: center; }
+  .freccia svg { width: 36px; height: 36px; }
+</style>
+</head>
+<body>
+  <div class="carta"></div>
+  <!-- frase: una dichiarazione in due tempi, 14-18 parole su 8 righe corte; la fine della prima parte nella forma chiara, l'ultima parola nella forma scura -->
+  <p class="frase">Siamo fieri<br>di quello che<br>abbiamo<br><span class="chiara">fatto.</span><br>Lo siamo<br>di più per<br>quello che<br><span class="scura">arriva.</span></p>
+  <!-- anni: i due momenti della frase, 4 caratteri ciascuno -->
+  <div class="anno su">2026</div>
+  <div class="anno giu">2027</div>
+  <div class="freccia"><svg viewBox="0 0 36 36" fill="none" stroke="var(--principale)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M29 7 L8 28 M8 28 L8 13 M8 28 L23 28"/></svg></div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.2); }
+
+  .titolo { position: absolute; left: 60px; top: 650px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 700;
+    font-size: 116px; line-height: 0.98; letter-spacing: -0.05em; }
+  .titolo > span { display: block; }
+  /* la parola selezionata, come un testo evidenziato sul telefono: fondo accento e due maniglie */
+  .evidenza { position: relative; display: inline-block; padding: 0 14px 6px; background: var(--accento); }
+  .evidenza::before, .evidenza::after { content: ''; position: absolute; width: 5px; background: var(--accento-scuro); }
+  .evidenza::before { left: -2px; top: 0; bottom: 0; }
+  .evidenza::after { right: -2px; top: 0; bottom: 0; }
+  .maniglia { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: var(--accento-scuro); }
+  .maniglia.su { left: -14px; top: -24px; }
+  .maniglia.giu { right: -14px; bottom: -24px; }
+
+  .nota { position: absolute; font-family: var(--font-testo); font-weight: 300; font-size: 34px; line-height: 1.02; letter-spacing: -0.03em; text-align: center; }
+  .nota.a { right: 120px; top: 120px; width: 230px; }
+  .nota.b { left: 110px; top: 440px; width: 300px; }
+  .nota.c { left: 330px; top: 1090px; width: 280px; }
+  .nota.d { right: 110px; top: 1130px; width: 230px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona vera in un momento quotidiano (selfie, caffè, ufficio), toni caldi e chiari; il viso nella metà alta -->
+  <img class="foto" src="../esempio/selfie.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- note: quattro frasi corte sparse agli angoli, 4-9 parole ciascuna -->
+  <p class="nota a">Il tuo profilo deve lavorare mentre tu lavori.</p>
+  <p class="nota b">Un piano che funziona per te</p>
+  <p class="nota c">Piccoli passi, risultati che restano.</p>
+  <p class="nota d">Pubblica con un'idea, cresci con un metodo.</p>
+
+  <h1 class="titolo">
+    <!-- titolo: 6-9 parole su tre righe; una parola della seconda riga sta nell'evidenza -->
+    <span>Costruiamo un</span>
+    <span><span class="evidenza"><i class="maniglia su"></i>profilo<i class="maniglia giu"></i></span> che ti</span>
+    <span>porta clienti</span>
+  </h1>
+</body>
+</html>

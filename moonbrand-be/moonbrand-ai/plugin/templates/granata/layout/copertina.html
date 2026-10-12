@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Libre Caslon Condensed', serif; --font-testo: 'PT Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  .social { position: absolute; left: 52px; right: 52px; display: flex; justify-content: space-between; font-size: 24px; color: color-mix(in srgb, #FFFFFF 88%, transparent); }
+  .social.su { top: 84px; }
+  .social.giu { top: 1236px; }
+
+  .titolo { position: absolute; left: 0; top: 236px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 150px; line-height: 130px; letter-spacing: -0.035em; }
+  .titolo span { display: block; white-space: nowrap; }
+  .prima { z-index: 1; color: var(--sfondo); }
+  .seconda { position: absolute; left: 0; top: 800px; width: 1080px; z-index: 3; text-align: center; color: var(--accento); }
+
+  .polaroid { position: absolute; left: 352px; top: 484px; width: 366px; height: 400px; z-index: 2; padding: 18px 18px 74px; background: var(--sfondo); transform: rotate(-3.2deg); }
+  .polaroid img { display: block; width: 330px; height: 308px; object-fit: cover; }
+
+  .bottone { position: absolute; left: 280px; top: 1092px; width: 520px; height: 70px; border-radius: 35px; display: flex; align-items: center; justify-content: center;
+    background: var(--sfondo); border: 4px solid color-mix(in srgb, var(--sfondo) 25%, white); color: var(--principale); font-size: 27px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+</style>
+</head>
+<body>
+  <!-- social: in alto e in basso, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <!-- titolo: una domanda divisa in due; prima parte 2 righe di 10-13 caratteri, seconda parte 2 righe di 8-12 caratteri -->
+  <h1 class="titolo prima"><span>Vuoi portare</span><span>il tuo brand</span></h1>
+
+  <!-- foto: una foto vera nella cornice a polaroid inclinata, tra le due parti del titolo -->
+  <div class="polaroid"><img src="../esempio/garage.jpg" alt=""></div>
+
+  <h1 class="titolo seconda"><span>a un livello</span><span>più alto?</span></h1>
+
+  <!-- bottone: l'invito, 2-3 parole -->
+  <p class="bottone">Lavoriamo insieme</p>
+
+  <div class="social giu"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+</body>
+</html>

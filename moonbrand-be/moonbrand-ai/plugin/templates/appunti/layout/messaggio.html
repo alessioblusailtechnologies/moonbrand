@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --mirino: color-mix(in oklab, var(--accento) 55%, #D9A520); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.72 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.10); }
+  .utente { position: absolute; left: 0; top: 118px; width: 1080px; text-align: center; font-size: 32px; }
+  .logo { position: absolute; left: 0; top: 1206px; width: 1080px; text-align: center; font-size: 34px; }
+
+  .mirino { position: absolute; left: 470px; top: 372px; width: 290px; height: 290px; border: 3px solid var(--mirino); }
+  .mirino i { position: absolute; background: var(--mirino); }
+  .mirino .n { left: 50%; top: 0; width: 3px; height: 18px; } .mirino .s { left: 50%; bottom: 0; width: 3px; height: 18px; }
+  .mirino .o { top: 50%; left: 0; width: 18px; height: 3px; } .mirino .e { top: 50%; right: 0; width: 18px; height: 3px; }
+
+  .emoji { font-family: 'Noto Color Emoji', sans-serif; }
+  .fumetto { position: absolute; left: 84px; top: 400px; width: 250px; padding: 14px 20px 12px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); font-size: 32px; line-height: 1.2; text-align: center; }
+  .fumetto::after { content: ''; position: absolute; left: 18px; bottom: -14px; width: 26px; height: 24px; background: var(--secondario); clip-path: polygon(0 0, 100% 0, 10% 100%); }
+
+  .menu { position: absolute; left: 574px; top: 688px; display: flex; border-radius: 14px; background: #FFFFFF; color: #1A1A1A; font-size: 26px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .menu span { padding: 16px 22px 14px; }
+  .menu span + span { border-left: 1px solid #D6D6D6; }
+  .menu::after { content: ''; position: absolute; left: 132px; bottom: -14px; width: 26px; height: 15px; background: #FFFFFF; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+
+  .finestra { position: absolute; left: 228px; top: 786px; width: 696px; border-radius: 14px; overflow: hidden; background: #FFFFFF; color: #1A1A1A; box-shadow: 0 6px 20px rgba(0,0,0,0.14); }
+  .barra { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; background: #E9E9E9; border-bottom: 1px solid #D0D0D0; }
+  .punti { display: flex; gap: 9px; } .punti i { width: 13px; height: 13px; border-radius: 50%; background: #555555; }
+  .barra svg { width: 66px; height: 28px; }
+  .messaggio { padding: 40px 50px 52px; font-size: 34px; line-height: 1.18; text-align: center; }
+  .ciliegia { position: absolute; left: 398px; top: 752px; font-size: 46px; }
+  .cuori { position: absolute; left: 878px; top: 1010px; font-size: 52px; }
+
+  .invia { position: absolute; left: 258px; top: 1074px; width: 324px; height: 58px; border-radius: 14px; background: var(--secondario); color: var(--su-secondario); font-size: 27px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+  .cursore { position: absolute; left: 520px; top: 1098px; width: 46px; height: 52px; transform: rotate(-20deg); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona all'aperto o al bar, sorride o guarda il telefono; il viso in alto al centro -->
+  <img class="foto" src="../esempio/bibita.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+  <div class="mirino"><i class="n"></i><i class="s"></i><i class="o"></i><i class="e"></i></div>
+
+  <!-- fumetto: l'aggancio da chat, 2-4 parole, con due emoji -->
+  <p class="fumetto">mai fare così <span class="emoji">👀🫠</span></p>
+
+  <div class="menu"><span>Taglia</span><span>Copia</span><span>Incolla</span></div>
+  <div class="finestra">
+    <div class="barra"><span class="punti"><i></i><i></i><i></i></span>
+      <svg viewBox="0 0 66 28"><circle cx="8" cy="14" r="3.5" fill="#8A8A8A"/><circle cx="22" cy="6" r="3.5" fill="#8A8A8A"/><circle cx="22" cy="22" r="3.5" fill="#8A8A8A"/><path d="M8 14 L22 6 M8 14 L22 22" stroke="#8A8A8A" stroke-width="2"/><path d="M58 8 A9 9 0 1 0 60 18" fill="none" stroke="#8A8A8A" stroke-width="2.4"/><path d="M53 4 L58 8 L53 12" fill="none" stroke="#8A8A8A" stroke-width="2.4"/></svg>
+    </div>
+    <!-- messaggio: la confessione o l'errore da evitare, 12-18 parole -->
+    <p class="messaggio">Ho smesso di comprare follower finti e di scambiare like solo per far salire i numeri</p>
+  </div>
+  <span class="emoji ciliegia">🍒</span>
+  <span class="emoji cuori">🥰</span>
+
+  <!-- invia: il bottone, 2 parole in maiuscolo -->
+  <p class="invia">Invia messaggio</p>
+  <svg class="cursore" viewBox="0 0 46 52"><path d="M4 4 L42 26 L25 30 L16 48 Z" fill="#FFFFFF" stroke="#BBBBBB" stroke-width="1.5"/></svg>
+
+  <!-- logo: il nome del brand -->
+  <p class="logo">Studio Lume</p>
+</body>
+</html>

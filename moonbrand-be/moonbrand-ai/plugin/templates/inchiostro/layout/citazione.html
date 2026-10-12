@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=Archivo:wdth,wght@125,700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testata { position: absolute; left: 94px; top: 98px; width: 900px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 700; font-stretch: 125%; letter-spacing: 0.16em; text-transform: uppercase; }
+  .frase { position: absolute; left: 0; top: 470px; width: 1080px; text-align: center; }
+  .maiuscolo { display: block; font-family: var(--font-titoli); font-size: 112px; font-weight: 400; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap; }
+  /* la parola scritta a mano, fissa: è un dettaglio, non il titolo */
+  .corsivo { display: block; margin: 4px 0 10px; font-family: 'Pinyon Script', cursive; font-size: 118px; line-height: 0.9; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- testata: due parti di 1-2 parole, a sinistra e a destra -->
+  <div class="testata"><span>Il pensiero</span><span>del lunedì</span></div>
+
+  <!-- frase: tre righe; prima e terza in maiuscolo, al massimo 12 caratteri; in mezzo 2-3 parole scritte a mano -->
+  <h1 class="frase">
+    <span class="maiuscolo">Ogni cosa</span>
+    <span class="corsivo">che vale</span>
+    <span class="maiuscolo">chiede tempo</span>
+  </h1>
+</body>
+</html>

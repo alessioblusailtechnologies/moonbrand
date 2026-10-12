@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=Patrick+Hand&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  :root { --riga: color-mix(in srgb, var(--principale) 16%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la griglia del foglio: quattro colonne e tre righe orizzontali, come nel modello */
+  .griglia { position: absolute; inset: 0; }
+  .griglia i { position: absolute; background: var(--riga); }
+  .v { top: 0; bottom: 0; width: 2px; }
+  .o { left: 48px; right: 48px; height: 2px; }
+
+  .numero { position: absolute; left: 34px; top: 52px; font-family: var(--font-titoli); font-weight: 700; font-size: 420px; line-height: 1; letter-spacing: -0.06em; color: var(--accento); }
+  .mano { position: absolute; right: 60px; top: 420px; width: 720px; text-align: right; font-family: 'Patrick Hand', cursive; font-size: 74px; line-height: 1.08;
+    letter-spacing: 0.16em; color: var(--accento); }
+  .testo { position: absolute; right: 60px; top: 800px; width: 600px; text-align: right; font-size: 25px; line-height: 1.36; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <div class="griglia">
+    <i class="v" style="left:48px"></i><i class="v" style="left:294px"></i><i class="v" style="left:540px"></i><i class="v" style="left:786px"></i><i class="v" style="left:1030px"></i>
+    <i class="o" style="top:108px"></i><i class="o" style="top:560px"></i><i class="o" style="top:660px"></i><i class="o" style="top:1262px"></i>
+  </div>
+
+  <!-- numero: il numero del passo, due cifre (01, 02, 03) -->
+  <p class="numero">01</p>
+  <!-- titolo a mano: la tesi del passo, 4-7 parole su 4-5 righe corte, allineato a destra -->
+  <h1 class="mano">Senza<br>strategia,<br>i social sono<br>solo post.</h1>
+  <!-- testo: la spiegazione, 30-45 parole -->
+  <p class="testo">Chi gestisce i social non pubblica e basta. Costruisce la strategia, studia il pubblico e i concorrenti, pianifica i contenuti con un'intenzione. Al posto dei post a caso, contenuti mirati che portano risultati veri.</p>
+</body>
+</html>

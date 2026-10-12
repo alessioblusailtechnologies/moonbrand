@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Roboto', sans-serif; --font-testo: 'Roboto', sans-serif; }
+  /* il secondario schiarito, così si legge sulla stampa scura anche se il brand lo ha scuro */
+  :root { --su-scuro: color-mix(in oklab, var(--secondario) 65%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #CFC8BC; font-family: var(--font-testo); }
+
+  .muro { position: absolute; left: 0; top: -135px; width: 1080px; height: 1620px; object-fit: cover; display: block; }
+
+  /* il foglio incollato al muro: bordo bianco, stampa scura, leggere onde della carta */
+  .foglio { position: absolute; left: 106px; top: 122px; width: 868px; height: 1110px; transform: rotate(-0.8deg);
+    background: color-mix(in srgb, var(--sfondo) 45%, white); box-shadow: 0 6px 14px rgba(0,0,0,0.22); }
+  .stampa { position: absolute; left: 62px; top: 84px; width: 744px; height: 912px; overflow: hidden; background: var(--principale); }
+  .stampa img { position: absolute; left: 120px; top: -30px; width: 680px; height: 1012px; object-fit: cover; object-position: 50% 20%; display: block;
+    filter: grayscale(1) contrast(1.1); opacity: 0.4; mix-blend-mode: luminosity; }
+  .onde { position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(0,0,0,0.10) 0%, rgba(255,255,255,0.10) 9%, rgba(0,0,0,0.05) 22%, rgba(255,255,255,0.12) 48%, rgba(0,0,0,0.10) 70%, rgba(255,255,255,0.08) 88%, rgba(0,0,0,0.12) 100%); }
+
+  .testi { position: absolute; left: 62px; width: 744px; text-align: center; }
+  .titolo { top: 446px; font-family: var(--font-titoli); font-weight: 500; font-size: 62px; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; white-space: nowrap; color: var(--su-scuro); }
+  .sotto { top: 548px; font-size: 38px; font-weight: 500; letter-spacing: -0.01em; text-transform: uppercase; color: #FFFFFF; }
+  .invito { top: 790px; font-size: 26px; font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; color: var(--su-scuro); }
+</style>
+</head>
+<body>
+  <!-- muro: pietra chiara a blocchi, il foglio ci è incollato sopra -->
+  <img class="muro" src="../esempio/calcare.jpg" alt="">
+
+  <div class="foglio">
+    <div class="stampa">
+      <!-- foto: un ritratto in bianco e nero, il volto a destra e tagliato dal bordo -->
+      <img src="../esempio/occhiali.jpg" alt="">
+    </div>
+    <!-- titolo: l'annuncio in maiuscolo, 2-3 parole, al massimo 17 lettere -->
+    <h1 class="testi titolo">Stiamo assumendo</h1>
+    <!-- sotto: il ruolo e il posto, 3-6 parole in maiuscolo -->
+    <p class="testi sotto">Social media manager a Bari</p>
+    <!-- invito: cosa fare, 3-5 parole -->
+    <p class="testi invito">Scorri per i dettagli &gt;</p>
+    <div class="onde"></div>
+  </div>
+</body>
+</html>

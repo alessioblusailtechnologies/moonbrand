@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 100%; display: block; }
+
+  .didascalia { position: absolute; left: 42px; top: 26px; width: 1000px; font-size: 31px; font-weight: 400; line-height: 1.34; letter-spacing: -0.035em; }
+  .didascalia b { font-weight: 700; color: var(--accento); }
+  .didascalia em { white-space: nowrap; color: var(--accento); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+  .testo { position: absolute; left: 42px; top: 594px; width: 790px; font-family: var(--font-titoli); font-size: 29px; font-weight: 500; line-height: 1.08;
+    letter-spacing: -0.01em; text-align: justify; text-align-last: left; color: var(--accento); }
+
+  .titolo { position: absolute; left: 30px; top: 742px; width: 1030px; font-family: var(--font-titoli); font-size: 134px; font-weight: 500;
+    line-height: 0.88; letter-spacing: -0.05em; text-transform: uppercase; }
+  .titolo u { color: var(--accento); text-decoration: underline; text-decoration-thickness: 9px; text-underline-offset: 10px; text-decoration-skip-ink: none; }
+
+  .sito { position: absolute; right: 70px; top: 1282px; font-size: 22px; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in piedi in uno studio o un ufficio, guarda in camera; il busto scuro nella metà bassa -->
+  <img class="foto" src="../esempio/giacca.jpg" alt="">
+
+  <!-- didascalia: 20-26 parole; l'inizio in grassetto con <b>, due pezzi in corsivo sottolineato con <em> -->
+  <p class="didascalia"><b>Le idee migliori nascono</b> dal <em>lavoro insieme</em>, e il nostro compito è essere un <em>partner di fiducia</em> per la tua crescita.</p>
+
+  <!-- testo: cosa fa lo studio, 18-24 parole, giustificato -->
+  <p class="testo">Costruiamo identità, racconti visivi e direzione creativa su misura, per aiutare imprese e professionisti a trovare la loro voce.</p>
+
+  <!-- titolo: 7-9 parole in maiuscolo su quattro righe; due parole di fila evidenziate con <u> -->
+  <h1 class="titolo">Uno <u>spazio vivo</u> dove ogni idea prende forma.</h1>
+
+  <!-- sito: l'indirizzo del sito -->
+  <p class="sito">studioottobre.it</p>
+</body>
+</html>

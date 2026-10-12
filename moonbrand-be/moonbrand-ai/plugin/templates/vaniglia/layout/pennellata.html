@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; filter: brightness(0.78); }
+
+  .titolo { position: absolute; left: 226px; top: 150px; font-family: var(--font-titoli); font-size: 112px; font-weight: 700; line-height: 0.98; letter-spacing: -0.045em; color: #FFFFFF; white-space: nowrap; }
+  .piccolo { position: absolute; left: 228px; top: 414px; font-size: 38px; font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; }
+
+  .pennello { position: absolute; left: 392px; top: 446px; width: 560px; height: 196px; color: var(--secondario); transform: rotate(-2deg); }
+  .pennello svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .corsivo { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding-bottom: 8px;
+    font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; font-size: 118px; letter-spacing: -0.01em; color: #FFFFFF; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: mani al lavoro su un tavolo (quaderno, portatile, telefono), dall'alto o di tre quarti; zona tranquilla in alto -->
+  <img class="foto" src="../esempio/taccuino.jpg" alt="">
+
+  <!-- titolo: due righe in grassetto minuscolo, una parola ciascuna (al massimo 10 lettere) -->
+  <h1 class="titolo">contenuti<br>che hanno</h1>
+  <!-- piccolo: due righe brevi che portano alla parola nel pennello, 2-3 parole ciascuna -->
+  <p class="piccolo">finalmente<br>la tua</p>
+  <!-- pennellata: una parola in corsivo sulla pennellata, al massimo 8 lettere -->
+  <div class="pennello">
+    <svg viewBox="0 0 560 196" preserveAspectRatio="none" fill="currentColor">
+      <path d="M22 44 C 60 30, 120 34, 170 28 C 240 20, 300 30, 360 22 C 420 16, 480 24, 528 18 L 536 30 L 522 40 L 548 52 L 530 64 L 540 80 L 526 96 L 544 110 L 524 126 L 534 140 L 512 150 C 450 156, 380 150, 320 158 C 250 166, 170 156, 110 166 C 80 170, 52 168, 30 172 L 40 158 L 18 146 L 34 132 L 10 118 L 30 102 L 14 88 L 32 74 L 12 60 Z"/>
+      <path d="M30 172 C 22 176, 12 182, 4 186 L 8 180 C 16 176, 24 172, 30 168 Z" opacity="0.8"/>
+      <g opacity="0.85">
+        <rect x="40" y="168" width="120" height="3" rx="1.5"/><rect x="70" y="175" width="80" height="2" rx="1"/><rect x="24" y="180" width="60" height="2" rx="1"/>
+        <rect x="130" y="172" width="40" height="2" rx="1"/><rect x="96" y="183" width="30" height="2" rx="1"/>
+        <circle cx="16" cy="170" r="2.4"/><circle cx="58" cy="188" r="1.8"/><circle cx="178" cy="166" r="2"/><circle cx="34" cy="192" r="1.4"/><circle cx="120" cy="190" r="1.6"/>
+      </g>
+      <rect x="400" y="14" width="110" height="3" rx="1.5" opacity="0.7"/><rect x="460" y="8" width="60" height="2" rx="1" opacity="0.6"/>
+    </svg>
+    <span class="corsivo">voce</span>
+  </div>
+</body>
+</html>

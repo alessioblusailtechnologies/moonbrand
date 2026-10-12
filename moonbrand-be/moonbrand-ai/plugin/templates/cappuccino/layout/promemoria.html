@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Open Sans', sans-serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); color: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+
+  /* la campanella sopra la notifica */
+  .campanella { position: absolute; left: 445px; top: 470px; width: 196px; height: 92px; border-radius: 46px; display: flex; align-items: center; justify-content: center; gap: 30px;
+    background: color-mix(in srgb, var(--sfondo) 92%, transparent); color: var(--principale); }
+  .campanella svg { width: 46px; height: 46px; }
+  .campanella svg.giu { width: 34px; height: 34px; }
+
+  /* la notifica: vetro chiaro, titolo maiuscolo, due bottoni nell'accento */
+  .notifica { position: absolute; left: 230px; top: 590px; width: 640px; border-radius: 52px; overflow: hidden;
+    background: color-mix(in srgb, var(--sfondo) 88%, transparent); text-align: center; }
+  .corpo { padding: 36px 44px 30px; }
+  .tipo { font-family: var(--font-titoli); font-weight: 700; font-size: 38px; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.1; }
+  .messaggio { margin-top: 12px; font-size: 31px; line-height: 1.32; }
+  .bottoni { display: flex; border-top: 2px solid color-mix(in srgb, var(--principale) 14%, transparent); }
+  .bottoni span { flex: 1; padding: 26px 0 30px; font-size: 36px; font-weight: 500; color: var(--accento); }
+  .bottoni span + span { border-left: 2px solid color-mix(in srgb, var(--principale) 14%, transparent); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio dall'alto (gambe, scarpe, maglione, tavolino), colori morbidi; niente viso -->
+  <img class="foto" src="../esempio/scarpe.jpg" alt="">
+
+  <div class="campanella">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+    <svg class="giu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 9l7 7 7-7"/></svg>
+  </div>
+
+  <div class="notifica">
+    <div class="corpo">
+      <!-- tipo: una parola, il genere di avviso (Promemoria, Avviso, Nota) -->
+      <p class="tipo">Promemoria</p>
+      <!-- messaggio: il consiglio, 14-22 parole -->
+      <p class="messaggio">Il tuo profilo non deve crescere in una notte. Pubblicare poco ma con costanza è già un passo avanti.</p>
+    </div>
+    <!-- bottoni: due risposte brevi, 1-2 parole ciascuna -->
+    <div class="bottoni"><span>Va bene!</span><span>Ricevuto!</span></div>
+  </div>
+</body>
+</html>

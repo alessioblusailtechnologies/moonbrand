@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  /* Oswald è strettissimo: qui è ingrandito, così le misure sotto valgono anche per i font del brand, più larghi. */
+  @font-face { font-family: 'Oswald Gigante'; font-weight: 200 700; src: url(https://fonts.gstatic.com/s/oswald/v57/TK3iWkUHHAIjg752GT8G.woff2) format('woff2'); size-adjust: 150%; }
+  :root { --font-titoli: 'Oswald Gigante', 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); }
+
+  /* la foto in bianco e nero, spenta: grigio medio, il titolo ci sta sopra */
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block;
+    filter: grayscale(1) contrast(0.82) brightness(0.78); }
+
+  .titolo { position: absolute; left: 40px; top: 24px; width: 1000px; height: 1302px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    font-family: var(--font-titoli); font-weight: 600; text-transform: uppercase; color: var(--accento); text-align: center; }
+  .riga { display: block; font-size: 184px; line-height: 0.92; letter-spacing: -0.005em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona a mezzo busto, di fronte, su fondo neutro; resa in bianco e nero dal CSS -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <!-- titolo: quattro righe, una parola corta per riga (al massimo 6-7 lettere), riempiono la pagina dall'alto in basso -->
+  <h1 class="titolo">
+    <span class="riga">Brand</span>
+    <span class="riga">che</span>
+    <span class="riga">fanno</span>
+    <span class="riga">rumore</span>
+  </h1>
+</body>
+</html>

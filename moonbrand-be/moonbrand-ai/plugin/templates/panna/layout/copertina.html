@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B3130; --secondario: #7EC736; --accento: #F7CF3E; --sfondo: #FEFFDF; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: color-mix(in srgb, var(--principale) 55%, transparent); --bordo-stella: color-mix(in srgb, var(--accento) 70%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 18%, transparent); }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; letter-spacing: -0.075em; line-height: 0.86; color: var(--chiaro);
+    text-shadow: 0 0 34px var(--ombra), 0 3px 10px color-mix(in srgb, var(--principale) 30%, transparent); white-space: nowrap; }
+  .titolo span { display: block; }
+  .piccolo { position: absolute; font-size: 44px; font-weight: 400; letter-spacing: -0.055em; line-height: 1.02; color: var(--chiaro);
+    text-shadow: 0 0 18px var(--ombra); white-space: nowrap; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; letter-spacing: 0; color: var(--chiaro); text-shadow: 0 0 24px var(--ombra); white-space: nowrap; }
+  .stella { position: absolute; filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--principale) 40%, transparent)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 4; stroke-linejoin: round; }
+  .stella.bianca path { fill: var(--chiaro); stroke: none; }
+  .cursore { position: absolute; width: 52px; height: 70px; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+  .cursore path { fill: #FFFFFF; stroke: #000000; stroke-width: 2.2; stroke-linejoin: round; }
+</style>
+<style>
+  .foto { object-position: 50% 30%; }
+  .titolo { left: 0; top: 96px; width: 1080px; text-align: center; font-size: 168px; }
+  .titolo .sotto { margin-top: -6px; }
+  .piccolo.uno { right: 118px; top: 438px; text-align: right; font-size: 50px; }
+  .piccolo.due { left: 0; top: 862px; width: 1080px; text-align: center; padding-left: 120px; font-size: 48px; }
+  .interruttore { position: absolute; left: 812px; top: 932px; width: 102px; height: 58px; border-radius: 29px; background: var(--secondario); box-shadow: 0 2px 8px color-mix(in srgb, var(--principale) 35%, transparent); }
+  .interruttore::after { content: ''; position: absolute; right: 5px; top: 5px; width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona vera in un posto vero (selfie allo specchio, bar), il volto o la figura sotto il titolo -->
+  <img class="foto" src="../esempio/selfie.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: due righe corte in minuscolo, 2-3 parole ciascuna, al massimo 11 lettere per riga -->
+  <h1 class="titolo"><span>il tuo feed</span><span class="sotto">non vende</span></h1>
+  <!-- sottotitolo: 2-4 parole che chiudono il titolo, a destra sotto -->
+  <p class="piccolo uno">e il motivo è uno</p>
+  <svg class="stella" style="left:118px; top:318px; width:70px; height:70px" viewBox="0 0 100 100"><path d="M50 4 C54 36 64 46 96 50 C64 54 54 64 50 96 C46 64 36 54 4 50 C36 46 46 36 50 4 Z"/></svg><svg class="stella" style="left:92px; top:384px; width:40px; height:40px" viewBox="0 0 100 100"><path d="M50 4 C54 36 64 46 96 50 C64 54 54 64 50 96 C46 64 36 54 4 50 C36 46 46 36 50 4 Z"/></svg><svg class="stella" style="left:906px; top:540px; width:84px; height:84px; transform: rotate(-8deg)" viewBox="0 0 100 100"><path d="M50 7 L62.5 36 L94 39 L70 60 L77.5 92 L50 75 L22.5 92 L30 60 L6 39 L37.5 36 Z"/></svg>
+  <!-- frase: 4-6 parole a metà foto -->
+  <p class="piccolo due">l'attenzione si guadagna subito</p>
+  <!-- interruttore: acceso, nel secondario -->
+  <div class="interruttore"></div>
+</body>
+</html>

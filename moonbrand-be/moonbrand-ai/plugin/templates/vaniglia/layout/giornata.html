@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --etichetta: color-mix(in oklab, var(--secondario) 52%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 56% 50%; filter: brightness(0.66) saturate(0.9); }
+
+  .riga { position: absolute; font-family: var(--font-titoli); font-size: 138px; font-weight: 600; line-height: 1; letter-spacing: -0.04em; color: var(--accento); white-space: nowrap; }
+  .r1 { left: 90px; top: 520px; }
+  .r2 { left: 168px; top: 778px; }
+  .etichetta { position: absolute; padding: 6px 18px 8px; background: var(--etichetta); color: var(--accento); font-size: 38px; font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; white-space: nowrap; }
+  .e1 { left: 66px; top: 700px; }
+  .e2 { left: 520px; top: 956px; }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio del lavoro da vicino (mani sulla tastiera, sul taccuino), toni chiari e caldi -->
+  <img class="foto" src="../esempio/tastiera.jpg" alt="">
+
+  <!-- riga-1: l'inizio del titolo, 2-3 parole, al massimo 10 caratteri -->
+  <h1 class="riga r1">un giorno</h1>
+  <!-- etichetta-1: tra parentesi quadre, chi parla, 2-4 parole -->
+  <p class="etichetta e1">[ da social media manager ]</p>
+  <!-- riga-2: la fine del titolo, 2 parole, al massimo 10 caratteri -->
+  <h1 class="riga r2">in agenzia</h1>
+  <!-- etichetta-2: tra parentesi quadre, dove o quando, 2-3 parole -->
+  <p class="etichetta e2">[ a Bologna ]</p>
+</body>
+</html>

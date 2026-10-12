@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); color: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+
+  /* la nota del telefono: foglio chiaro velato, angoli vivi, intestazione nell'accento */
+  .nota { position: absolute; left: 106px; top: 344px; width: 864px; height: 688px; background: color-mix(in srgb, var(--sfondo) 86%, transparent); }
+  .barra { position: absolute; left: 24px; right: 40px; top: 22px; display: flex; align-items: center; color: var(--accento-scuro); }
+  .indietro { display: flex; align-items: center; gap: 6px; font-family: var(--font-testo); font-weight: 500; font-size: 32px; }
+  .indietro svg { width: 30px; height: 30px; }
+  .icone { margin-left: auto; display: flex; gap: 40px; }
+  .icone svg { width: 44px; height: 44px; }
+
+  .titolo { position: absolute; left: 76px; top: 118px; display: inline-block; padding: 4px 120px 4px 10px; background: var(--secondario); color: var(--su-secondario);
+    font-family: var(--font-titoli); font-weight: 700; font-size: 58px; line-height: 1.15; letter-spacing: -0.01em; white-space: nowrap; }
+  .titolo::before, .titolo::after { content: ''; position: absolute; top: 0; bottom: 0; width: 3px; background: var(--accento); }
+  .titolo::before { left: 0; }
+  .titolo::after { right: 0; }
+  .titolo i { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--accento); }
+  .titolo i.su { left: -4px; top: -8px; }
+  .titolo i.giu { right: -4px; bottom: -8px; }
+
+  .voci { position: absolute; left: 78px; top: 228px; list-style: none; }
+  .voci li { display: flex; align-items: center; gap: 30px; height: 87px; font-size: 38px; font-weight: 300; letter-spacing: -0.01em; }
+  .voci svg { width: 54px; height: 54px; flex: none; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in un ambiente chiaro e sobrio, colori tenui; resta in parte visibile sotto la nota -->
+  <img class="foto" src="../esempio/tailleur.jpg" alt="">
+
+  <div class="nota">
+    <div class="barra">
+      <!-- app: il nome della cartella in alto a sinistra (Note) -->
+      <span class="indietro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l-8 8 8 8"/></svg>Note</span>
+      <span class="icone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 9H6v12h12V9h-2"/><path d="M12 15V2M8 6l4-4 4 4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><circle cx="7.5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="16.5" cy="12" r="1.2" fill="currentColor"/></svg>
+      </span>
+    </div>
+
+    <!-- titolo: il nome della lista, 2-4 parole, al massimo 24 caratteri -->
+    <h1 class="titolo"><i class="su"></i>La lista del lancio<i class="giu"></i></h1>
+
+    <!-- voci: cinque cose da spuntare, 2-3 parole ciascuna -->
+    <ul class="voci">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="16" height="16" rx="1"/><path d="M6.5 12.5l4 5L21 2.5"/></svg>Obiettivo chiaro</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="16" height="16" rx="1"/><path d="M6.5 12.5l4 5L21 2.5"/></svg>Offerta definita</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="16" height="16" rx="1"/><path d="M6.5 12.5l4 5L21 2.5"/></svg>Cliente ideale</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="16" height="16" rx="1"/><path d="M6.5 12.5l4 5L21 2.5"/></svg>Calendario dei post</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="16" height="16" rx="1"/><path d="M6.5 12.5l4 5L21 2.5"/></svg>Risposte entro un'ora</li>
+    </ul>
+  </div>
+</body>
+</html>

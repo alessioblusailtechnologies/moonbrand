@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -250px; top: -300px; width: 1320px; height: 1985px; object-fit: cover; display: block; }
+
+  .angolo { position: absolute; font-size: 19px; font-weight: 500; letter-spacing: -0.04em; text-transform: uppercase; white-space: nowrap; }
+  .angolo.a1 { left: 28px; top: 10px; } .angolo.a2 { right: 28px; top: 10px; }
+  .angolo.a3 { left: 28px; top: 1314px; } .angolo.a4 { right: 28px; top: 1314px; }
+  .logo { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 34px; font-weight: 500; letter-spacing: -0.03em; white-space: nowrap; }
+  .logo.su { top: 6px; } .logo.giu { top: 1302px; }
+
+  .titolo { position: absolute; left: 20px; top: 64px; width: 1040px; font-family: var(--font-titoli); font-size: 140px; font-weight: 300; font-stretch: 118%;
+    line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; white-space: nowrap; }
+  .titolo span { display: block; }
+  .titolo span + span { margin-left: 18px; }
+
+  .centro { position: absolute; left: 0; width: 1080px; text-align: center; }
+  .posti { top: 836px; font-family: var(--font-titoli); font-size: 54px; font-weight: 500; line-height: 1.04; letter-spacing: -0.04em; }
+  .quando { top: 990px; font-size: 34px; font-weight: 500; line-height: 1.12; letter-spacing: -0.04em; text-transform: uppercase; color: var(--accento); }
+  .cosa { top: 1100px; font-size: 21px; font-weight: 500; line-height: 1.2; letter-spacing: -0.03em; text-transform: uppercase; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona seduta, di tre quarti, guarda in camera; parete di un colore medio in alto, il corpo scuro al centro -->
+  <img class="foto" src="../esempio/telefono.jpg" alt="">
+
+  <!-- angoli: che cosa è, 2-3 parole uguali nei quattro angoli -->
+  <p class="angolo a1">Evento dal vivo/Workshop</p><p class="angolo a2">Evento dal vivo/Workshop</p>
+  <p class="angolo a3">Evento dal vivo/Workshop</p><p class="angolo a4">Evento dal vivo/Workshop</p>
+  <!-- logo: il nome dello studio, in alto e in basso al centro -->
+  <p class="logo su">Studio Ottobre</p><p class="logo giu">Studio Ottobre</p>
+
+  <!-- titolo: la stessa parola ripetuta su due righe, al massimo 9 lettere -->
+  <h1 class="titolo"><span>Work shop</span><span>Work shop</span></h1>
+
+  <!-- posti: 3 parole su due righe, una tra parentesi -->
+  <p class="centro posti">Posti (limitati)<br>disponibili!</p>
+  <!-- quando: giorno e orario, due righe brevi -->
+  <p class="centro quando">Domenica 15 giugno 2026<br>dalle 15 alle 19</p>
+  <!-- cosa: una frase di 10-14 parole su due righe -->
+  <p class="centro cosa">Uno spazio creativo per conoscersi, provare<br>e costruire qualcosa che resti.</p>
+</body>
+</html>

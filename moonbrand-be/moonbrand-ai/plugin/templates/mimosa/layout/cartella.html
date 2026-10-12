@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #2A2826; color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 62%; display: block; }
+
+  /* La cartella: il retro nell'accento con la linguetta a destra, il davanti nel fondo con la linguetta a sinistra. */
+  .cartella { position: absolute; left: 118px; top: 333px; width: 846px; height: 686px; }
+  .cartella svg { position: absolute; inset: 0; width: 846px; height: 686px; }
+  .retro { fill: var(--accento); }
+  .davanti { fill: var(--sfondo); }
+
+  .etichetta { position: absolute; left: 50px; top: 86px; font-size: 24px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 84px; top: 228px; width: 700px; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 100px; line-height: 0.92; letter-spacing: -0.035em; }
+  .testo { position: absolute; left: 82px; top: 466px; width: 712px; font-size: 29px; font-weight: 400; line-height: 1.12; letter-spacing: 0.01em; }
+
+  .segno { position: absolute; left: -6px; top: 1108px; width: 350px; height: 80px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona vestita di scuro in strada, inquadrata dal busto in giù o di spalle, con un pavimento o un muro materico -->
+  <img class="foto" src="../esempio/cappotto.jpg" alt="">
+
+  <div class="cartella">
+    <svg viewBox="0 0 846 686" preserveAspectRatio="none">
+      <path class="retro" d="M0 50 Q0 27 22 27 L548 27 Q566 27 572 14 Q578 0 596 0 L826 0 Q846 0 846 20 L846 686 L0 686 Z"/>
+      <path class="davanti" d="M0 90 Q0 67 22 67 L548 67 Q574 67 584 88 Q592 107 616 107 L826 107 Q846 107 846 127 L846 686 L0 686 Z"/>
+    </svg>
+    <!-- etichetta: il numero della serie, 1-2 parole e un numero -->
+    <p class="etichetta">Tendenza 01</p>
+    <!-- titolo: 4-6 parole su 2 righe -->
+    <h1 class="titolo">Il ritorno del micro-esperto</h1>
+    <!-- testo: la spiegazione, 30-40 parole -->
+    <p class="testo">Non servono un milione di follower per vendere. Un pubblico piccolo che si fida compra più di uno grande e distratto. Le nicchie rendono, e l’ultimo anno lo ha dimostrato.</p>
+  </div>
+
+  <svg class="segno" viewBox="0 0 350 80" fill="none" stroke="var(--accento)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 52 C 90 46, 200 42, 330 40" stroke-width="7" opacity="0.95"/>
+    <path d="M10 58 C 120 50, 220 48, 326 44" stroke-width="3" opacity="0.7"/>
+    <path d="M262 14 C 290 26, 312 34, 334 41 C 306 52, 280 62, 250 74" stroke-width="7"/>
+  </svg>
+</body>
+</html>

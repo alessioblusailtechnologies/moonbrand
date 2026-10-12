@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 62% 50%; filter: brightness(0.8) saturate(0.9); }
+
+  .icone { position: absolute; left: 158px; top: 150px; display: flex; gap: 14px; color: #FFFFFF; }
+  .icone svg { width: 30px; height: 30px; }
+
+  .titolo { position: absolute; left: 152px; top: 190px; width: 880px; }
+  .forte { display: block; font-family: var(--font-titoli); font-size: 100px; font-weight: 700; line-height: 1.08; letter-spacing: -0.04em; color: var(--accento); white-space: nowrap; }
+  .corsivo { display: block; margin-top: -6px; font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; font-size: 112px; line-height: 1.05; letter-spacing: -0.02em; color: #FFFFFF; white-space: nowrap; }
+  .nota { position: absolute; right: 112px; top: 450px; text-align: right; font-size: 24px; font-weight: 400; line-height: 1.36; letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona all'aperto che lavora (portatile, quaderno), seduta in basso al centro; alberi o cielo in alto per il titolo -->
+  <img class="foto" src="../esempio/prato.jpg" alt="">
+
+  <!-- icone: le quattro icone del post (salva, mi piace, commenta, invia), restano così -->
+  <div class="icone">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h12v18l-6-5-6 5z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 20s-8-4.9-8-10.6C4 6.4 6.2 4.5 8.6 4.5c1.6 0 2.7.8 3.4 2 .7-1.2 1.8-2 3.4-2 2.4 0 4.6 1.9 4.6 4.9C20 15.1 12 20 12 20z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 4h16v12H9l-5 4z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M21 3 3 10.5l7.5 2.5L13 21z"/><path d="M21 3 10.5 13"/></svg>
+  </div>
+
+  <h1 class="titolo">
+    <!-- titolo-forte: 2-3 parole in minuscolo, al massimo 14 caratteri -->
+    <span class="forte">la verità sul</span>
+    <!-- titolo-corsivo: 2 parole in corsivo, al massimo 16 caratteri -->
+    <span class="corsivo">lavoro in agenzia</span>
+  </h1>
+  <!-- nota: tre righe brevi in maiuscolo, allineate a destra -->
+  <p class="nota">Il bello,<br>il brutto<br>e le scadenze</p>
+</body>
+</html>

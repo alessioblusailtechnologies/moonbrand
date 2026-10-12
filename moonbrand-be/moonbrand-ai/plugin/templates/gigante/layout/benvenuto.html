@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  /* Oswald è strettissimo: qui è ingrandito, così le misure sotto valgono anche per i font del brand, più larghi. */
+  @font-face { font-family: 'Oswald Gigante'; font-weight: 200 700; src: url(https://fonts.gstatic.com/s/oswald/v57/TK3iWkUHHAIjg752GT8G.woff2) format('woff2'); size-adjust: 150%; }
+  :root { --font-titoli: 'Oswald Gigante', 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); }
+
+  /* la foto al centro, un rettangolo verticale stretto; la parola le passa davanti a metà altezza */
+  .foto { position: absolute; left: 296px; top: 272px; width: 488px; height: 806px; object-fit: cover; object-position: 50% 60%; display: block; }
+
+  .parola { position: absolute; left: 34px; top: 500px; width: 1012px; text-align: center; font-family: var(--font-titoli); font-weight: 700; text-transform: uppercase;
+    color: #FFFFFF; font-size: 206px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona intera seduta o in piedi, al centro, su fondo chiaro e neutro -->
+  <img class="foto" src="../esempio/sedia.jpg" alt="">
+
+  <!-- parola: una sola, al massimo 7 lettere (un saluto, un annuncio), larga quanto la pagina -->
+  <h1 class="parola">Eccoci</h1>
+</body>
+</html>

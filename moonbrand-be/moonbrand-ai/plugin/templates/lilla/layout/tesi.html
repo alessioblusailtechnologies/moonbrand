@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  .titolo { position: absolute; left: 48px; top: 140px; width: 960px; font-family: var(--font-titoli); font-weight: 400; font-size: 86px; line-height: 1.0; letter-spacing: -0.05em; }
+  .titolo em { display: block; margin-top: 6px; font-family: var(--corsivo); font-style: italic; font-weight: 300; font-size: 94px; letter-spacing: -0.01em; }
+  .col { position: absolute; top: 498px; font-size: 25px; line-height: 1.06; letter-spacing: -0.045em; }
+  .c1 { left: 48px; width: 320px; } .c2 { left: 528px; width: 450px; }
+  .c2 b { display: block; margin-top: 22px; font-weight: 600; }
+  .foto { position: absolute; left: 36px; top: 718px; width: 1008px; height: 560px; object-fit: cover; object-position: 50% 40%; border-radius: 30px; display: block; }
+  .scheda { position: absolute; left: 72px; top: 1040px; width: 530px; padding: 28px 30px 34px; border-radius: 26px; background: var(--accento); color: var(--su-accento); }
+  .scheda b { display: block; font-size: 28px; font-weight: 600; letter-spacing: -0.035em; }
+  .scheda p { margin-top: 14px; font-size: 24px; line-height: 1.12; letter-spacing: -0.03em; }
+
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- logo: il nome del brand, in alto a sinistra -->
+    <span class="logo">Nodo Studio</span>
+    <!-- serie: il nome della rubrica e il numero, 2-4 parole -->
+    <span>Quaderni di marca 6</span>
+  </div>
+
+  <!-- titolo: la tesi in due righe dritte (6-9 parole) + la chiusa in corsivo nell'em (2-3 parole) -->
+  <h1 class="titolo">Un post virale vale quanto un biglietto <em>della lotteria.</em></h1>
+  <!-- colonna sinistra: 14-18 parole -->
+  <p class="col c1">Inseguire il momento virale è diverso dal costruire un marchio di cui la gente si fida per anni.</p>
+  <!-- colonna destra: 22-30 parole + una chiusa in grassetto di 3-5 parole -->
+  <p class="col c2">Un post esploso porta un picco di persone che la settimana dopo ti hanno già dimenticato: nessuno ha capito perché valga la pena ricordarsi di te.<b>Gioca sul lungo periodo</b></p>
+
+  <!-- foto: architettura con curve e luce calda, senza persone -->
+  <img class="foto" src="../esempio/archi.jpg" alt="">
+  <div class="scheda">
+    <!-- scheda-titolo: 4-7 parole -->
+    <b>Fatti vedere con un messaggio chiaro</b>
+    <!-- scheda-testo: 10-14 parole -->
+    <p>I marchi che durano sono quelli che si fanno riconoscere, non quelli fortunati una volta.</p>
+  </div>
+</body>
+</html>

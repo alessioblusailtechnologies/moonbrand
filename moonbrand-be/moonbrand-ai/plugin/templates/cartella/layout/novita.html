@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@115,900&family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #543928; --secondario: #C3D9E7; --accento: #F6DDE0; --sfondo: #F7EEC7; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  :root { --filo: color-mix(in srgb, var(--principale) 70%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foglio { position: absolute; height: 520px; border: 2px solid var(--filo); padding: 46px 40px 0 34px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .foglio::after { content: ''; position: absolute; left: 0; right: 0; top: 168px; border-top: 3px dotted color-mix(in srgb, var(--principale) 45%, transparent); }
+  .foglio b { font-size: 50px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.005em; line-height: 1; }
+  .foglio span { font-size: 26px; font-weight: 500; margin-top: 4px; }
+  .f3 { left: 110px; top: 170px; width: 800px; background: var(--accento); transform: rotate(-1.2deg); }
+  .f2 { left: 186px; top: 262px; width: 798px; background: var(--sfondo); transform: rotate(1deg); }
+  .f1 { left: 144px; top: 378px; width: 800px; background: #FFFFFF; transform: rotate(0.6deg); }
+
+  .polaroid { position: absolute; background: #FFFFFF; padding: 12px 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .polaroid img { display: block; object-fit: cover; }
+  .p1 { left: 96px; top: 556px; transform: rotate(-5deg); }
+  .p1 img { width: 300px; height: 170px; }
+  .p2 { left: 668px; top: 476px; transform: rotate(3deg); }
+  .p2 img { width: 262px; height: 240px; }
+
+  .tasca { position: absolute; left: 103px; top: 700px; width: 874px; height: 472px; }
+  .titolo { position: absolute; left: 184px; top: 852px; width: 640px; font-family: var(--font-titoli); font-weight: 900; font-stretch: 115%; font-size: 100px; line-height: 0.88; text-transform: uppercase; letter-spacing: -0.01em; }
+  .vai { position: absolute; left: 866px; top: 1026px; width: 54px; height: 54px; }
+</style>
+</head>
+<body>
+  <!-- fogli: tre schede che escono dalla tasca, dietro la prima; ognuna una parola in maiuscolo (un canale, un tema) e il suo numero -->
+  <div class="foglio f3"><b>Pinterest</b><span>03</span></div>
+  <div class="foglio f2"><b>TikTok</b><span>02</span></div>
+  <div class="foglio f1"><b>Instagram</b><span>01</span></div>
+
+  <!-- foto: due polaroid infilate nella tasca, dettagli del lavoro (una scrivania, una rivista, un prodotto) -->
+  <div class="polaroid p1"><img src="../esempio/latte.jpg" alt=""></div>
+  <div class="polaroid p2"><img src="../esempio/rivista.jpg" alt=""></div>
+
+  <svg class="tasca" viewBox="0 0 874 472"><path style="fill: var(--secondario); stroke: var(--filo); stroke-width: 2" d="M1 1 L360 1 A88 88 0 0 0 536 1 L873 1 L873 471 L1 471 Z"/></svg>
+
+  <!-- titolo: tre righe in maiuscolo, al massimo 10 lettere per riga -->
+  <h1 class="titolo">Le novità<br>che devi<br>sapere</h1>
+  <svg class="vai" viewBox="0 0 54 54"><circle cx="27" cy="27" r="25" style="fill: var(--principale)"/><path d="M14 27 H38 M28 17 L38 27 L28 37" fill="none" stroke="#FFFFFF" stroke-width="5" style="stroke: var(--secondario)"/></svg>
+</body>
+</html>

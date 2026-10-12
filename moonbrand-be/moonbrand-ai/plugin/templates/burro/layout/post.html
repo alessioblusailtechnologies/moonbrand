@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); letter-spacing: -0.055em; line-height: 0.92; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .titolo span { display: block; }
+  .sigla { left: 80px; top: 100px; font-size: 380px; letter-spacing: -0.03em; }
+  .basso { right: 46px; bottom: 54px; text-align: right; font-size: 166px; }
+
+  .post { position: absolute; left: 662px; top: 92px; width: 380px; border-radius: 30px; padding: 22px 0 18px; transform: rotate(7deg);
+    background: var(--burro); color: var(--principale); }
+  .chi { display: flex; align-items: center; gap: 14px; padding: 0 22px 16px; }
+  .avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; display: block; border: 3px solid var(--accento); }
+  .logo { font-size: 24px; font-weight: 600; }
+  .scatto { width: 380px; height: 400px; object-fit: cover; display: block; }
+  .azioni { display: flex; align-items: center; gap: 14px; padding: 14px 22px 8px; }
+  .azioni svg { width: 26px; height: 26px; }
+  .azioni .salva { margin-left: auto; }
+  .didascalia { padding: 0 22px; font-size: 24px; white-space: nowrap; font-weight: 500; }
+  .didascalia b { font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona a mezzo busto con una tazza o un telefono, nella metà sinistra; l'angolo in alto a destra libero per il post -->
+  <img class="foto" src="../esempio/tazza.jpg" alt="">
+
+  <!-- sigla: una parola cortissima o una sigla in grande, 2-3 lettere (IA, SEO, ADV) -->
+  <h1 class="titolo sigla">IA</h1>
+
+  <div class="post">
+    <div class="chi">
+      <img class="avatar" src="../esempio/finestra.jpg" alt="">
+      <!-- logo: il nome dell'account del brand -->
+      <span class="logo">studio.brina</span>
+    </div>
+    <!-- scatto: la foto del post dentro il riquadro, verticale -->
+    <img class="scatto" src="../esempio/finestra.jpg" alt="">
+    <div class="azioni">
+      <svg viewBox="0 0 26 26" fill="currentColor"><path d="M13 23 C13 23 2 16 2 8.5 C2 5 4.7 2.5 8 2.5 C10.2 2.5 12 3.8 13 5.5 C14 3.8 15.8 2.5 18 2.5 C21.3 2.5 24 5 24 8.5 C24 16 13 23 13 23 Z"/></svg>
+      <svg viewBox="0 0 26 26" fill="currentColor"><path d="M13 2.5 C6.6 2.5 1.5 7 1.5 12.6 C1.5 15.3 2.7 17.8 4.6 19.6 L3.5 24 L8.4 22 C9.8 22.5 11.4 22.8 13 22.8 C19.4 22.8 24.5 18.3 24.5 12.6 C24.5 7 19.4 2.5 13 2.5 Z"/></svg>
+      <svg viewBox="0 0 26 26" fill="currentColor"><path d="M15 3 L25 12 L15 21 L15 15.5 C9 15.5 5 17.5 2 22 C3 15 7 10 15 9 Z"/></svg>
+      <svg class="salva" viewBox="0 0 26 26" fill="currentColor"><path d="M5 2 L21 2 L21 24 L13 18 L5 24 Z"/></svg>
+    </div>
+    <!-- didascalia: il nome dell'account e 2-4 parole -->
+    <p class="didascalia"><b>studio.brina</b> nuovo post</p>
+  </div>
+
+  <!-- basso: due righe a destra, 1-2 parole ciascuna, al massimo 10 caratteri per riga -->
+  <h2 class="titolo basso"><span>ha cambiato</span><span>tutto</span></h2>
+</body>
+</html>

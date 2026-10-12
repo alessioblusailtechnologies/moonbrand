@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo); background: var(--sfondo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 636px; object-fit: cover; object-position: 50% 60%; display: block; }
+  .pannello { position: absolute; left: 0; top: 646px; width: 1080px; height: 704px;
+    background: linear-gradient(180deg, var(--principale) 0%, var(--secondario) 100%); }
+
+  .domanda { position: absolute; left: 70px; width: 940px; top: 760px; text-align: center; color: #FFFFFF; font-family: var(--font-titoli);
+    font-size: 46px; font-weight: 400; line-height: 1.2; }
+  .risposte { position: absolute; left: 80px; width: 920px; top: 920px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 74px; row-gap: 70px; }
+  .risposta { height: 120px; background: #FFFFFF; color: var(--principale); display: flex; align-items: center; gap: 18px; padding: 0 22px;
+    font-size: 30px; line-height: 1.15; }
+  .risposta b { color: var(--accento); font-family: var(--font-titoli); font-size: 38px; font-weight: 700; flex: none; }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio di lavoro luminoso (schermo con grafici, scrivania) -->
+  <img class="foto" src="../esempio/schermo.jpg" alt="">
+  <div class="pannello"></div>
+
+  <!-- domanda: una domanda al pubblico, 6-10 parole, una riga o due -->
+  <p class="domanda">Quanto spesso pubblichi sui tuoi social?</p>
+  <div class="risposte">
+    <!-- risposte: quattro risposte di 1-3 parole, con la lettera davanti -->
+    <p class="risposta"><b>A:</b>Ogni giorno</p>
+    <p class="risposta"><b>B:</b>Due volte a settimana</p>
+    <p class="risposta"><b>C:</b>Quando capita</p>
+    <p class="risposta"><b>D:</b>Mai, per ora</p>
+  </div>
+</body>
+</html>

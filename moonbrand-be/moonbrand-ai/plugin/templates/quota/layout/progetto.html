@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #15121D; --secondario: #2B2735; --accento: #FFFFFF; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .scheda { position: absolute; left: 497px; width: 524px; }
+  .s1 { top: 110px; } .s2 { top: 374px; }
+  .voce { font-size: 22px; font-weight: 700; line-height: 1; padding-bottom: 22px; border-bottom: 3px solid color-mix(in srgb, var(--accento) 85%, var(--principale)); text-transform: uppercase; letter-spacing: 0.005em; }
+  .valore { font-size: 22px; line-height: 1.2; padding: 38px 0 36px; border-bottom: 3px solid color-mix(in srgb, var(--accento) 85%, var(--principale)); text-transform: uppercase; letter-spacing: 0.005em; }
+
+  .titolo { position: absolute; left: 66px; top: 390px; font-family: var(--font-titoli); font-weight: 700; font-size: 62px; line-height: 1; letter-spacing: -0.05em; text-transform: uppercase; }
+  .corsivo { position: absolute; left: 66px; top: 452px; font-family: 'Newsreader', serif; font-style: italic; font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; }
+  .foto { position: absolute; left: 62px; top: 597px; width: 958px; height: 692px; object-fit: cover; display: block; }
+</style>
+</head>
+<body>
+  <!-- scheda: due voci in maiuscolo (cliente, ambito) con il loro valore, al massimo 36 caratteri per valore -->
+  <div class="scheda s1"><p class="voce">Cliente</p><p class="valore">Forno Gentile, Bari</p></div>
+  <div class="scheda s2"><p class="voce">Ambito</p><p class="valore">Identità visiva e social</p></div>
+
+  <!-- titolo: una parola in maiuscolo, al massimo 9 lettere -->
+  <h1 class="titolo">Scopri</h1>
+  <!-- corsivo: una parola in corsivo sotto il titolo -->
+  <p class="corsivo">i nostri lavori</p>
+
+  <!-- foto: il lavoro o la squadra al lavoro, orizzontale, larga quanto la pagina meno i margini -->
+  <img class="foto" src="../esempio/squadra.jpg" alt="">
+</body>
+</html>

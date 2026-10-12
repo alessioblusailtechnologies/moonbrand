@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; filter: brightness(0.82); }
+
+  .titolo { position: absolute; left: 0; top: 176px; width: 1080px; text-align: center; }
+  .forte { display: block; font-family: var(--font-titoli); font-size: 106px; font-weight: 600; line-height: 1.0; letter-spacing: -0.04em; color: var(--accento); white-space: nowrap; }
+  .corsivo { display: block; margin-top: -22px; font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; font-size: 104px; line-height: 1.1; letter-spacing: -0.03em; white-space: nowrap; }
+
+  .voci { position: absolute; top: 976px; display: flex; flex-direction: column; gap: 44px; font-size: 24px; font-weight: 400; line-height: 1.0; letter-spacing: -0.01em; }
+  .voci.sinistra { left: 64px; }
+  .voci.destra { right: 62px; text-align: right; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona seduta al centro (legge, lavora), su un fondo fitto e scuro (piante, muro); il soggetto sotto il titolo -->
+  <img class="foto" src="../esempio/giornale.jpg" alt="">
+
+  <h1 class="titolo">
+    <!-- titolo-forte: due righe in minuscolo, 1-2 parole ciascuna (al massimo 10 caratteri) -->
+    <span class="forte">cose che<br>facciamo</span>
+    <!-- titolo-corsivo: 2-3 parole in corsivo che chiudono il titolo -->
+    <span class="corsivo">per i clienti</span>
+  </h1>
+
+  <!-- voci: sei voci brevi, tre a sinistra e tre a destra, ognuna di due parole su due righe -->
+  <div class="voci sinistra"><p>risposte<br>rapide</p><p>report<br>chiari</p><p>idee<br>nuove</p></div>
+  <div class="voci destra"><p>post<br>puntuali</p><p>dati<br>veri</p><p>meno<br>stress</p></div>
+</body>
+</html>

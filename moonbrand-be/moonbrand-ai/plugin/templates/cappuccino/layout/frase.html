@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;800&family=Hanken+Grotesk:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Montserrat', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); color: #FFFFFF; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.18); }
+
+  /* etichette su carta: fondo secondario, testo piccolo */
+  .carta { position: absolute; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); font-weight: 400; font-size: 38px;
+    letter-spacing: -0.03em; line-height: 1; padding: 12px 14px 14px; white-space: nowrap; }
+  .carta.sopra { left: 280px; top: 196px; }
+  .carta.sotto { right: 90px; top: 1166px; }
+
+  /* il titolo a pesi alterni: righe sottili e righe nerissime, a scalare verso destra */
+  .titolo { position: absolute; left: 140px; top: 560px; width: 820px; font-family: var(--font-titoli); }
+  .titolo span { display: block; white-space: nowrap; }
+  .sottile { font-weight: 300; font-size: 100px; line-height: 1; letter-spacing: -0.02em; }
+  .pieno { font-weight: 800; font-size: 168px; line-height: 0.9; letter-spacing: -0.06em; }
+  .a-destra { text-align: right; }
+  .chiaro { color: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in un locale o a casa, con un caffè; luce naturale, il soggetto in alto o di lato -->
+  <img class="foto" src="../esempio/balcone.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- etichetta-sopra: la frase d'aggancio, 4-6 parole -->
+  <p class="carta sopra">Sorpresa: non è solo talento</p>
+
+  <h1 class="titolo">
+    <!-- titolo: quattro righe; sottili 1-2 parole, piene una parola di al massimo 9 lettere; l'ultima nel secondario -->
+    <span class="sottile">Cosa fa</span>
+    <span class="pieno">girare</span>
+    <span class="sottile a-destra">davvero</span>
+    <span class="pieno chiaro">l'agenzia</span>
+  </h1>
+
+  <!-- etichetta-sotto: chi parla, tra parentesi quadre, 3-5 parole -->
+  <p class="carta sotto">[ detto da chi la guida! ]</p>
+</body>
+</html>

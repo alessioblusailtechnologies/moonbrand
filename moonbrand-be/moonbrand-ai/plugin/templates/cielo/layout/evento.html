@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 476px; border-radius: 0 0 24px 24px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .titolo { position: absolute; left: 100px; top: 432px; width: 900px; font-family: var(--font-titoli); font-size: 128px; font-weight: 400; line-height: 0.98; letter-spacing: -0.05em; }
+  .titolo .forma { display: inline-block; margin: 26px 0 0 -6px; padding: 0 46px 8px; border-radius: 60px; line-height: 1.0; background: var(--accento); color: var(--su-accento); }
+  .testo { position: absolute; left: 102px; top: 872px; width: 780px; font-size: 36px; font-weight: 400; line-height: 1.32; letter-spacing: -0.025em; }
+  .ospite { position: absolute; left: 102px; top: 1018px; font-size: 34px; letter-spacing: -0.03em; }
+  .ospite b { font-weight: 700; margin-right: 14px; }
+  .freccia { position: absolute; left: 878px; top: 972px; width: 116px; height: 116px; border-radius: 50%; background: var(--accento); display: grid; place-items: center; color: var(--su-accento); }
+  .freccia svg { width: 40px; height: 40px; }
+  .data { position: absolute; left: 78px; top: 1132px; width: 932px; height: 106px; border-radius: 53px; border: 1.5px solid color-mix(in srgb, #FFFFFF 70%, transparent);
+    display: flex; align-items: center; justify-content: center; font-size: 38px; letter-spacing: -0.03em; }
+  .data svg { position: absolute; left: 52px; top: 26px; width: 54px; height: 54px; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: un edificio o una sala, inquadratura in alto; il titolo ne copre il bordo basso -->
+  <img class="foto" src="../esempio/sede.jpg" alt="">
+  <!-- titolo: nome dell'evento, 2-3 parole corte su due righe + una parola nella forma chiara, al massimo 12 lettere -->
+  <h1 class="titolo">Reel per<br>negozi<br><span class="forma">Laboratorio</span></h1>
+  <!-- testo: di cosa si parla, 12-18 parole -->
+  <p class="testo">Come girare e montare video brevi che portano clienti, con gli strumenti che hai già.</p>
+  <!-- ospite: chi lo tiene, nome e cognome -->
+  <p class="ospite"><b>Con</b>Chiara Bertoli</p>
+  <div class="freccia"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M31 31 L10 10 M10 10 L10 27 M10 10 L27 10"/></svg></div>
+  <!-- data: giorno e ora, 3-5 parole -->
+  <div class="data"><svg viewBox="0 0 54 54" fill="currentColor"><path d="M14 4 h6 v6 h14 V4 h6 v6 h4 a8 8 0 0 1 8 8 v24 a8 8 0 0 1 -8 8 H10 a8 8 0 0 1 -8 -8 V18 a8 8 0 0 1 8 -8 h4 Z M8 22 v20 a2 2 0 0 0 2 2 h34 a2 2 0 0 0 2 -2 V22 Z"/></svg>Giovedì 5 marzo, ore 15</div>
+</body>
+</html>

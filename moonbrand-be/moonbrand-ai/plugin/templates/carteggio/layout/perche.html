@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2B26; --secondario: #7A9024; --accento: #C5DC7E; --sfondo: #E4E3DB; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --inchiostro-tenue: color-mix(in srgb, var(--principale) 72%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+  .grana::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Il fondo: una materia scura in bianco e nero (acqua, roccia, plastica), tagliata in diagonale sul nero in alto. */
+  .materia { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.1) brightness(1.05);
+    clip-path: polygon(0 16%, 40% 22%, 100% 40%, 100% 100%, 0 100%); }
+
+  .foglio { position: absolute; left: 170px; top: 160px; width: 818px; height: 1176px; background: color-mix(in srgb, var(--sfondo) 88%, white); }
+  .testata { position: absolute; top: 50px; font-size: 24px; line-height: 1.05; text-transform: uppercase; color: var(--inchiostro-tenue); }
+
+  .righe { position: absolute; top: 228px; font-size: 24px; color: color-mix(in srgb, var(--principale) 55%, transparent); }
+  .righe p { height: 94px; }
+  .titolo { position: absolute; left: 179px; top: 182px; width: 460px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 88px; line-height: 1.07; letter-spacing: -0.015em; }
+  .titolo em { font-style: italic; }
+
+  .foto { position: absolute; left: 210px; top: 806px; width: 398px; height: 246px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05); }
+  .scorri { position: absolute; right: 74px; bottom: 50px; font-size: 24px; text-transform: uppercase; color: var(--secondario); }
+</style>
+</head>
+<body class="grana">
+  <!-- materia: una foto di superficie (schiuma del mare, roccia, acqua), si stampa in bianco e nero -->
+  <img class="materia" src="../esempio/schiuma.jpg" alt="">
+
+  <div class="foglio grana">
+    <!-- testata: profilo social, rubrica in due righe brevi, anno -->
+    <p class="testata" style="left: 40px">@studio.ortica</p>
+    <p class="testata" style="left: 0; width: 818px; text-align: center">Consigli<br>di marketing</p>
+    <p class="testata" style="right: 40px">Dal 2019</p>
+
+    <!-- righe: i numeri di riga ai due lati del titolo, uno per riga (al massimo 5) -->
+    <div class="righe" style="left: 40px"><p>01.</p><p>02.</p><p>03.</p><p>04.</p><p>05.</p></div>
+    <div class="righe" style="right: 40px; text-align: right"><p>.01</p><p>.02</p><p>.03</p><p>.04</p><p>.05</p></div>
+
+    <!-- titolo: la domanda o la tesi del carosello in 5-6 righe brevi centrate (al massimo 11 lettere per riga), l'ultima parola in corsivo con <em> -->
+    <h1 class="titolo">Perché il tuo negozio merita un vero <em>metodo</em></h1>
+
+    <!-- foto: le persone dello studio, piccola e orizzontale, in bianco e nero -->
+    <img class="foto" src="../esempio/squadra.jpg" alt="">
+
+    <!-- scorri: invito a scorrere, 1-2 parole -->
+    <p class="scorri">Scorri →</p>
+  </div>
+</body>
+</html>

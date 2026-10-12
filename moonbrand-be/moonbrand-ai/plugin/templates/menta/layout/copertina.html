@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F3F39; --secondario: #B8D8BC; --accento: #7CB68E; --sfondo: #EEEEEE; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --principale-chiaro: color-mix(in srgb, var(--principale) 80%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 55%, var(--sfondo) 100%); color: var(--principale); font-family: var(--font-testo); }
+
+  .pannello { position: absolute; left: 140px; top: 236px; width: 660px; height: 930px; border-radius: 44px; overflow: hidden;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--secondario) 55%, white), color-mix(in srgb, var(--accento) 75%, white)); }
+  .foto { position: absolute; left: 0; top: 0; width: 660px; height: 930px; object-fit: cover; object-position: 46% 30%; display: block; mix-blend-mode: darken; }
+
+  .parola { position: absolute; left: 136px; top: 1170px; transform-origin: 0 0; transform: rotate(-90deg); white-space: nowrap;
+    font-family: var(--font-titoli); font-size: 222px; font-weight: 700; line-height: 0.74; letter-spacing: -0.03em; color: #FFFFFF; }
+
+  .scheda { position: absolute; left: 628px; width: 390px; border-radius: 40px; padding: 48px 40px 48px 44px; color: #FFFFFF;
+    background: linear-gradient(180deg, var(--principale-chiaro), var(--principale)); box-shadow: 0 18px 34px rgba(0,0,0,0.22); }
+  .s1 { top: 300px; }
+  .s1 p { font-family: var(--font-titoli); font-size: 54px; font-weight: 300; line-height: 1.16; letter-spacing: -0.02em; }
+  .s1 b { display: block; font-weight: 700; color: color-mix(in srgb, var(--accento) 70%, white); letter-spacing: -0.035em; }
+  .s2 { top: 716px; height: 370px; display: flex; flex-direction: column; justify-content: center; }
+  .s2 p { font-family: var(--font-titoli); font-size: 104px; line-height: 1.12; letter-spacing: -0.03em; }
+  .s2 b { display: block; font-weight: 700; }
+  .s2 span { display: block; font-weight: 300; }
+
+  .contatti { position: absolute; left: 176px; top: 1200px; display: flex; gap: 70px; }
+  .contatto { display: flex; align-items: center; gap: 20px; }
+  .icona { width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none;
+    background: linear-gradient(180deg, var(--principale-chiaro), var(--principale)); color: #FFFFFF; }
+  .icona svg { width: 32px; height: 32px; }
+  .contatto p { font-size: 26px; line-height: 1.3; letter-spacing: -0.01em; }
+  .contatto b { display: block; font-weight: 500; }
+  .contatto span { font-weight: 300; }
+</style>
+</head>
+<body>
+  <div class="pannello">
+    <!-- foto: una persona dell'agenzia a mezzo busto, sorridente, braccia conserte, fondo chiaro; il viso nella metà alta -->
+    <img class="foto" src="../esempio/consulente.jpg" alt="">
+  </div>
+  <!-- parola: una parola corta in verticale sul bordo sinistro della foto, minuscola, al massimo 6 lettere -->
+  <p class="parola">social</p>
+
+  <div class="scheda s1">
+    <!-- scheda-1: 4 righe brevi; le prime due sottili, le ultime due in grassetto colorato nel <b> -->
+    <p>La tua<br>strategia <b>sempre in movimento</b></p>
+  </div>
+  <div class="scheda s2">
+    <!-- scheda-2: una parola spezzata in due, prima metà in grassetto, seconda sottile, al massimo 5 lettere per riga -->
+    <p><b>Solu</b><span>zioni</span></p>
+  </div>
+
+  <div class="contatti">
+    <div class="contatto">
+      <div class="icona"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></div>
+      <!-- telefono: etichetta e numero -->
+      <p><b>Chiamaci</b><span>02 4567 8910</span></p>
+    </div>
+    <div class="contatto">
+      <div class="icona"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></div>
+      <!-- indirizzo: etichetta e via, al massimo 24 caratteri -->
+      <p><b>Dove siamo</b><span>Via Tortona 27, Milano</span></p>
+    </div>
+  </div>
+</body>
+</html>

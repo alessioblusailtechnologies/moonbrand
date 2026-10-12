@@ -1,0 +1,12 @@
+Foto d'esempio, licenza gratuita (Unsplash License), scaricate a 1600 px:
+
+finestra.jpg   copertina  https://unsplash.com/photos/a-young-woman-in-black-stands-before-a-bright-window-kuXpsWs9OtU
+caffe.jpg      frase      https://unsplash.com/photos/person-wearing-brown-and-white-sneakers-n8KBSBUHm6g
+vicolo.jpg     verita     https://unsplash.com/photos/woman-in-white-dress-shirt-and-gray-pants-standing-beside-green-and-brown-trash-bin-V534LEXyFZA
+cappello.jpg   domanda    https://unsplash.com/photos/woman-in-black-hat-holding-white-and-blue-cup-maWZzXWJFc4
+porta.jpg      segreto    https://unsplash.com/photos/a-woman-looking-at-her-cell-phone-in-a-mirror-jvwiYztbLMo
+occhiali.jpg   persona    https://unsplash.com/photos/young-woman-with-braided-hair-wearing-sunglasses-gnIhnLwiCjc
+piatto.jpg     collage    https://unsplash.com/photos/person-taking-photo-of-food-Ao-JI_CCft0
+scrivania.jpg  collage    https://unsplash.com/photos/a-laptop-on-a-table-i_p7K1S2xmA
+candela.jpg    collage    https://unsplash.com/photos/a-laptop-computer-sitting-on-top-of-a-table-next-to-a-candle-oLaEXuX4fM8
+tondo.jpg      casa       https://unsplash.com/photos/a-woman-taking-a-picture-of-herself-in-a-mirror-fDMTtczsAZ4

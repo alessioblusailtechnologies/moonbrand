@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700&family=Arimo:wght@400&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 20%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.30); }
+  .logo { position: absolute; left: 0; top: 1206px; width: 1080px; text-align: center; font-size: 34px; color: color-mix(in srgb, #FFFFFF 88%, transparent); }
+
+  .blocco { position: absolute; right: 104px; top: 170px; width: 640px; display: flex; flex-direction: column; align-items: flex-end; }
+  .titolo { font-family: var(--font-titoli); font-size: 92px; font-weight: 700; line-height: 0.86; letter-spacing: -0.01em; text-align: right; color: var(--accento); }
+  .fumetto { position: relative; margin-top: 26px; margin-right: -8px; padding: 14px 44px 12px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); font-size: 38px; line-height: 1.15; white-space: nowrap; }
+  .fumetto::after { content: ''; position: absolute; left: 22px; bottom: -16px; width: 30px; height: 28px; background: var(--secondario); clip-path: polygon(0 0, 100% 0, 10% 100%); }
+  .emoji { font-family: 'Noto Color Emoji', sans-serif; font-size: 0.9em; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto spontaneo davanti allo specchio o in casa, la persona nella metà sinistra, sopra a destra una zona tranquilla -->
+  <img class="foto" src="../esempio/asciugamano.jpg" alt="">
+  <div class="velo"></div>
+
+  <div class="blocco">
+    <!-- titolo: il consiglio in 3 righe corte, 4-6 parole, allineato a destra -->
+    <h1 class="titolo">Parla di un<br>problema<br>alla volta</h1>
+    <!-- fumetto: l'invito in 3-4 parole, con un'emoji alla fine -->
+    <p class="fumetto">seguici per altri <span class="emoji">✨</span></p>
+  </div>
+
+  <!-- logo: il nome del brand -->
+  <p class="logo">Studio Lume</p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@75,300&family=Yesteryear&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2724; --secondario: #F682A6; --accento: #FCAC30; --sfondo: #F2EDCE; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --fumetto: color-mix(in srgb, var(--chiaro) 45%, #FFFFFF); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 30%, transparent); }
+
+  .fumetto { position: absolute; left: 650px; top: 228px; max-width: 400px; padding: 15px 36px 16px; border-radius: 40px; background: var(--fumetto);
+    color: color-mix(in srgb, var(--principale) 85%, transparent); font-family: var(--font-testo); font-size: 26px; font-weight: 500; line-height: 1.2; white-space: nowrap; }
+  .fumetto::after { content: ''; position: absolute; left: 12px; bottom: -13px; width: 22px; height: 18px; background: var(--fumetto); clip-path: polygon(0 0, 100% 0, 10% 100%); }
+
+  .titolo { position: absolute; left: 90px; top: 560px; width: 900px; text-align: center; }
+  .titolo .serif { display: block; font-family: var(--font-titoli); font-stretch: 75%; font-size: 118px; font-weight: 300; line-height: 1; letter-spacing: -0.04em; }
+  /* La parola scritta a mano è un dettaglio decorativo: resta Yesteryear anche con i font del brand. */
+  .titolo .mano { display: block; margin-top: -30px; font-family: 'Yesteryear', cursive; font-size: 236px; font-weight: 400; line-height: 1; transform: rotate(-3deg); }
+  .sotto { position: absolute; left: 0; top: 958px; width: 1080px; text-align: center; font-family: var(--font-testo); font-size: 40px; font-weight: 400; }
+</style>
+</head>
+<body>
+  <!-- foto: un angolo di lavoro tranquillo (letto, scrivania, tessuti chiari) con un oggetto vero, il portatile o un quaderno, in alto a destra -->
+  <img class="foto" src="../esempio/letto.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- fumetto: il commento sopra l'oggetto della foto, 2-4 parole -->
+  <p class="fumetto">Oltre il post</p>
+
+  <!-- titolo: una riga in serif di 2-3 parole e sotto una parola scritta a mano, al massimo 8 lettere -->
+  <h1 class="titolo"><span class="serif">Ragiona da</span><span class="mano">Impresa</span></h1>
+
+  <!-- sotto: una frase breve, 3-5 parole -->
+  <p class="sotto">Ogni post ha un obiettivo</p>
+</body>
+</html>

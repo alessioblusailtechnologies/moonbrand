@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo); color: #FFFFFF; background: #2A3640; }
+
+  .foto { position: absolute; left: 190px; top: 0; width: 900px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .triangolo { position: absolute; inset: 0; background: color-mix(in srgb, var(--secondario) 90%, transparent);
+    clip-path: polygon(0 0, 180px 0, 776px 1350px, 0 1350px); }
+
+  .stelle { position: absolute; left: 44px; top: 596px; display: flex; gap: 14px; }
+  .stelle svg { width: 62px; height: 62px; fill: #FFFFFF; }
+  .testo { position: absolute; left: 44px; width: 440px; top: 716px; font-size: 31px; line-height: 1.38; }
+  .nome { position: absolute; left: 44px; top: 1150px; width: 520px; font-family: var(--font-titoli); font-size: 48px; font-weight: 700; text-transform: uppercase; line-height: 1.1; }
+</style>
+</head>
+<body>
+  <!-- foto: ritratto di chi lascia la recensione, a mezzo busto, sulla metà destra -->
+  <img class="foto" src="../esempio/cliente.jpg" alt="">
+  <div class="triangolo"></div>
+
+  <div class="stelle">
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3 1.7 9.3l7.2-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3 1.7 9.3l7.2-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3 1.7 9.3l7.2-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3 1.7 9.3l7.2-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3 1.7 9.3l7.2-.9z"/></svg>
+  </div>
+  <!-- testo: la recensione vera, 30-40 parole -->
+  <p class="testo">Avevamo una pagina ferma da due anni. In sei mesi con loro le richieste di preventivo sono raddoppiate, e finalmente sappiamo cosa pubblicare e perché. Puntuali, chiari sui costi, sempre raggiungibili.</p>
+  <!-- nome: nome e cognome di chi scrive, una riga -->
+  <p class="nome">Chiara Bellini</p>
+</body>
+</html>

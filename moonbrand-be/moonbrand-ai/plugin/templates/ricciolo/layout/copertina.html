@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,500..700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #000000; --secondario: #1C1C1C; --accento: #39FF14; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  /* testo sopra accento e secondario: nero o bianco da solo; grigio dei perni e dei testi secondari */
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+          --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+          --grigio: color-mix(in srgb, var(--sfondo) 45%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); font-stretch: 112%; font-weight: 600; }
+  h1, h2, h3, .titolo { font-family: var(--font-titoli); font-stretch: 112%; font-weight: 660; letter-spacing: -0.055em; }
+
+  .logo { position: absolute; left: 68px; top: 44px; z-index: 5; display: flex; align-items: center; gap: 12px; font-family: var(--font-titoli); font-size: 33px; line-height: 37px; letter-spacing: -0.03em; color: var(--sfondo); }
+  .marchio { width: 32px; height: 40px; flex: none; }
+  .hashtag { position: absolute; right: 66px; top: 62px; z-index: 5; font-size: 28px; letter-spacing: -0.02em; }
+  .piede { position: absolute; left: 66px; right: 66px; bottom: 50px; z-index: 5; display: flex; align-items: center; gap: 16px; }
+  .piede .tag { border: 2.5px solid var(--accento); border-radius: 30px; padding: 7px 20px 9px; font-size: 27px; letter-spacing: -0.02em; }
+  .piede .account { margin-left: auto; font-size: 30px; letter-spacing: -0.02em; }
+  .foto { display: block; object-fit: cover; filter: grayscale(1) contrast(1.06); }
+  .linea { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; pointer-events: none; }
+  .linea path { fill: none; stroke: var(--accento); stroke-width: 44; stroke-linecap: round; }
+  .asterisco line { stroke-linecap: butt; }
+</style>
+<style>
+  .barre { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .barre path { stroke: var(--accento); stroke-width: 52; fill: none; }
+  .ast-lato { position: absolute; left: -130px; top: 520px; width: 300px; height: 300px; transform: rotate(-8deg); }
+  .f1 { position: absolute; left: 84px; top: 172px; width: 352px; height: 478px; border-radius: 0 46px 0 46px; z-index: 2; }
+  .f2 { position: absolute; left: 472px; top: 172px; width: 526px; height: 478px; border-radius: 46px 0 46px 0; z-index: 2; }
+  .titolo { position: absolute; left: 0; top: 700px; width: 1080px; display: flex; flex-direction: column; align-items: center; z-index: 3; }
+  .titolo span { display: block; white-space: nowrap; }
+  .uno { background: var(--secondario); color: var(--accento); font-size: 94px; line-height: 1; padding: 34px 34px 42px; transform: rotate(1.6deg); margin-left: -60px; }
+  .due { background: var(--accento); color: var(--su-accento); font-size: 98px; line-height: 1; padding: 34px 36px 42px; transform: rotate(-0.9deg); margin-top: -6px; }
+  .testo { position: absolute; left: 140px; width: 800px; top: 1100px; text-align: center; font-size: 30px; line-height: 1.42; letter-spacing: -0.03em; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand su due righe (o il file del logo) -->
+  <div class="logo"><svg class="marchio" viewBox="0 0 32 40"><path d="M6 2h20a6 6 0 0 1 0 12H12a6 6 0 0 1 0-12z M6 26h14a6 6 0 0 1 6 6v0a6 6 0 0 1-6 6H6a6 6 0 0 1 0-12z M10 14h12v12H10z" fill="var(--accento)"/></svg><span>Spazio<br>Nove</span></div>
+  <svg class="barre" viewBox="0 0 1080 1350"><path d="M846 -20 L 884 200 M 960 404 L 1100 382" /></svg>
+  <svg class="asterisco ast-lato" viewBox="0 0 100 100"><g stroke="var(--accento)" stroke-width="11"><line x1="50" y1="50" x2="50.00" y2="2.00" /><line x1="50" y1="50" x2="83.94" y2="16.06" /><line x1="50" y1="50" x2="98.00" y2="50.00" /><line x1="50" y1="50" x2="83.94" y2="83.94" /><line x1="50" y1="50" x2="50.00" y2="98.00" /><line x1="50" y1="50" x2="16.06" y2="83.94" /><line x1="50" y1="50" x2="2.00" y2="50.00" /><line x1="50" y1="50" x2="16.06" y2="16.06" /></g></svg>
+
+  <!-- foto 1 e 2: due momenti dello stesso lavoro (riprese, set, persone); vanno in bianco e nero -->
+  <img class="foto f1" src="../esempio/cucina.jpg" alt="">
+  <img class="foto f2" src="../esempio/riprese.jpg" alt="">
+
+  <h1 class="titolo">
+    <!-- etichetta 1: la cosa da scartare, domanda e risposta secca, al massimo 14 caratteri -->
+    <span class="uno">Virale? Bah.</span>
+    <!-- etichetta 2: la cosa giusta, domanda e risposta, al massimo 16 caratteri -->
+    <span class="due">Memorabile? Sì!</span>
+  </h1>
+
+  <!-- testo: una frase di 14-22 parole, su due righe -->
+  <p class="testo">Contenuti che restano rilevanti e fanno parlare di te per anni, non per un pomeriggio. Li facciamo insieme.</p>
+
+  <!-- piede: da uno a tre hashtag nei contorni e l'account (o «Spazio Nove») -->
+  <div class="piede"><span class="tag">#squadra</span><span class="account">@spazionove</span></div>
+</body>
+</html>

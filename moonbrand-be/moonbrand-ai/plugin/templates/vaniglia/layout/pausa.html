@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 16% 50%; filter: brightness(0.9); }
+
+  .cerca { position: absolute; left: 264px; top: 108px; width: 552px; height: 82px; padding: 0 30px; border-radius: 41px; background: var(--sfondo);
+    display: flex; align-items: center; gap: 18px; color: var(--principale); font-size: 26px; font-weight: 400; letter-spacing: -0.01em; }
+  .cerca svg { flex: none; width: 30px; height: 30px; }
+  .cerca .microfono { margin-left: auto; }
+
+  .arco { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; overflow: visible; }
+  .arco text { font-family: var(--font-titoli); font-size: 100px; font-weight: 600; letter-spacing: 0.01em; fill: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: dall'alto, un oggetto rotondo al centro (un bicchiere, una tazza), con luce e ombre forti -->
+  <img class="foto" src="../esempio/te.jpg" alt="">
+
+  <div class="cerca">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+    <!-- ricerca: la frase nella barra di ricerca, 4-6 parole con il punto di domanda -->
+    <span>Cosa ti passa per la testa?</span>
+    <svg class="microfono" viewBox="0 0 24 24" fill="currentColor"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
+
+  <svg class="arco" viewBox="0 0 1080 1350">
+    <defs><path id="curva" d="M 118 713 A 400 400 0 0 0 918 713"/></defs>
+    <!-- frase: 2-3 parole con il punto, al massimo 15 caratteri, scritte lungo l'arco sotto l'oggetto -->
+    <text><textPath href="#curva" startOffset="50%" text-anchor="middle">fai una pausa.</textPath></text>
+  </svg>
+</body>
+</html>

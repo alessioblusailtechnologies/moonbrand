@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2B26; --secondario: #7A9024; --accento: #C5DC7E; --sfondo: #E4E3DB; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --inchiostro-tenue: color-mix(in srgb, var(--principale) 72%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+  .grana::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Foglio a puntini: occupa tutto tranne una fascia scura in alto e una a destra in basso. */
+  .foglio { position: absolute; left: 0; top: 70px; width: 1010px; height: 1280px;
+    background: color-mix(in srgb, var(--sfondo) 45%, white); }
+  .puntini { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 30%, transparent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='1.5'/%3E%3C/svg%3E") 0 0 / 24px 24px repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='1.5'/%3E%3C/svg%3E") 0 0 / 24px 24px repeat; }
+  .testata { position: absolute; font-size: 24px; line-height: 1.05; text-transform: uppercase; color: var(--inchiostro-tenue); }
+
+  .foto { position: absolute; left: 370px; top: 92px; width: 300px; height: 830px; object-fit: cover; object-position: 30% 50%; display: block; transform: rotate(-2.5deg); filter: grayscale(1) contrast(1.05); }
+  .carta { position: absolute; left: 584px; top: 92px; width: 496px; height: 1000px; background: var(--accento); color: var(--su-accento); }
+  .carta .piega { position: absolute; background: rgba(0,0,0,0.06); box-shadow: 1px 1px 0 rgba(255,255,255,0.14); }
+  .carta .testata { top: 50px; color: color-mix(in srgb, currentColor 70%, transparent); }
+  .graffetta { position: absolute; left: 650px; top: 46px; width: 50px; height: 150px; color: color-mix(in srgb, var(--secondario) 80%, black); }
+
+  .d { position: absolute; left: 70px; top: 410px; font-family: var(--font-titoli); font-size: 70px; line-height: 1; }
+  .domanda { position: absolute; left: 70px; top: 530px; width: 380px; font-family: var(--font-titoli); font-weight: 400; font-size: 68px; line-height: 1.04; letter-spacing: -0.015em; }
+  .domanda em { font-style: italic; }
+
+  .timbro { position: absolute; left: 236px; top: 590px; width: 226px; height: 226px; color: var(--inchiostro-tenue); }
+  .anello { position: absolute; inset: 0; border: 2px solid currentColor; border-radius: 50%; }
+  .anello span { position: absolute; left: 50%; top: 12px; width: 24px; margin-left: -12px; height: 101px; transform-origin: 50% 100%; text-align: center; font-family: var(--font-testo); font-size: 24px; line-height: 1; }
+  .timbro .logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-style: italic; font-size: 64px; line-height: 1; }
+
+  .r { position: absolute; left: 130px; top: 900px; font-family: var(--font-titoli); font-size: 70px; line-height: 1; }
+  .colonna { position: absolute; width: 356px; font-size: 26px; line-height: 1.3; text-align: justify; }
+</style>
+</head>
+<body>
+  <div class="foglio grana">
+    <div class="puntini"></div>
+    <!-- testata: la rubrica in due righe brevi -->
+    <p class="testata" style="left: 130px; top: 72px">Chiedi,<br>ti rispondiamo</p>
+
+    <!-- foto: una persona al telefono o in un momento di dialogo, verticale, in bianco e nero -->
+    <img class="foto" src="../esempio/telefono.jpg" alt="">
+
+    <div class="timbro"><div class="anello" data-testo="ORTICA · MARKETING · "></div><div class="logo">O</div></div>
+
+    <p class="r">R:</p>
+    <!-- risposta: due colonne giustificate, 28-34 parole la prima e 20-26 la seconda -->
+    <p class="colonna" style="left: 130px; top: 990px">È una chiacchierata senza fretta: ci racconti la tua attività, cosa ti preoccupa e dove vuoi arrivare. Noi ti diamo un parere sincero e i primi passi.</p>
+    <p class="colonna" style="left: 562px; top: 1090px">Nessun impegno e nessuna pressione. Serve solo a capire se siamo fatti per lavorare insieme.</p>
+  </div>
+
+  <div class="carta grana">
+    <div class="piega" style="left: 247px; top: 0; width: 2px; height: 1000px"></div>
+    <div class="piega" style="left: 0; top: 333px; width: 496px; height: 2px"></div>
+    <div class="piega" style="left: 0; top: 666px; width: 496px; height: 2px"></div>
+    <!-- testata: profilo social e anno -->
+    <p class="testata" style="left: 70px">@studio.ortica</p>
+    <p class="testata" style="right: 36px">Dal 2019</p>
+    <p class="d">D:</p>
+    <!-- domanda: la domanda del cliente in 4-6 righe brevi (al massimo 10 lettere per riga), le ultime parole in corsivo con <em> -->
+    <h1 class="domanda">Cosa succede nella prima <em>telefonata?</em></h1>
+  </div>
+  <svg class="graffetta" viewBox="0 0 50 150" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+    <path d="M14 120 V24 a11 11 0 0 1 22 0 V136 a16 16 0 0 1 -32 0 V50"/>
+  </svg>
+
+  <script>
+    for (const anello of document.querySelectorAll('.anello')) {
+      const lettere = [...anello.dataset.testo];
+      lettere.forEach((c, i) => { const s = document.createElement('span'); s.textContent = c; s.style.transform = `rotate(${(i * 360) / lettere.length}deg)`; anello.append(s); });
+    }
+  </script>
+</body>
+</html>

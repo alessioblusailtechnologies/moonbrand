@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Roboto:wght@400&family=Oswald:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #253A33; --secondario: #E4E1CE; --accento: #D8F0CE; --sfondo: #F8F8F8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Roboto', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .firma { position: absolute; left: 44px; top: 90px; font-family: 'Oswald', sans-serif; font-size: 27px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+  .asterisco { position: absolute; right: 30px; top: 68px; width: 78px; height: 78px; color: var(--principale); }
+  .titolo { position: absolute; left: 42px; top: 196px; width: 760px; font-family: var(--font-titoli); font-weight: 400; font-size: 84px; line-height: 0.95; letter-spacing: -0.035em; }
+
+  .scheda { position: absolute; top: 432px; width: 646px; height: 854px; border-radius: 40px; overflow: hidden; }
+  .scheda img { position: absolute; left: 0; top: 0; width: 646px; height: 480px; object-fit: cover; display: block; }
+  .scheda .riquadro { position: absolute; left: 0; top: 420px; width: 646px; height: 434px; border-radius: 40px; padding: 76px 60px 0 62px; background: var(--principale); color: #FFFFFF; }
+  .stelle { display: flex; gap: 22px; height: 30px; color: var(--accento); }
+  .stelle svg { width: 30px; height: 30px; fill: currentColor; }
+  .testo { margin-top: 44px; font-family: var(--font-testo); font-size: 42px; font-weight: 400; line-height: 1.17; letter-spacing: -0.015em; }
+  .nome { position: absolute; left: 62px; bottom: 50px; font-family: 'Oswald', sans-serif; font-size: 29px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+  .s1 { left: 42px; }
+  /* la seconda scheda esce dal bordo e resta sbiadita: dice che si scorre */
+  .s2 { left: 712px; opacity: 0.55; }
+  .s2 .riquadro { background: #FFFFFF; color: var(--principale); }
+  .s2 .stelle { color: var(--principale); }
+  .s2 .testo { width: 300px; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand tra parentesi quadre -->
+  <p class="firma">[ <span class="logo">Studio Ardesia</span> ]</p>
+  <svg class="asterisco" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="9"><path d="M40 2V78M2 40H78M13 13L67 67M67 13L13 67"/></svg>
+
+  <!-- titolo: 4-6 parole su due righe -->
+  <h1 class="titolo">Cosa dicono di noi i clienti</h1>
+
+  <div class="scheda s1">
+    <!-- foto: chi scrive la recensione, toni caldi, inquadrata dal petto in su -->
+    <img src="../esempio/cliente.jpg" alt="" style="left: -230px; top: -40px; width: 1100px; height: 825px">
+    <div class="riquadro">
+      <div class="stelle"><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg></div>
+      <!-- testo: la recensione, 12-18 parole, al massimo tre righe -->
+      <p class="testo">Squadra eccezionale. In 90 giorni le richieste sono triplicate. Grazie davvero!</p>
+      <!-- nome: nome e cognome di chi scrive -->
+      <p class="nome">Laura Serra</p>
+    </div>
+  </div>
+
+  <div class="scheda s2">
+    <!-- foto e testo della seconda recensione, tagliata dal bordo -->
+    <img src="../esempio/cliente-2.jpg" alt="">
+    <div class="riquadro">
+      <div class="stelle"><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z"/></svg></div>
+      <p class="testo">Chiari e presenti dal primo giorno.</p>
+      <p class="nome">Marco Donati</p>
+    </div>
+  </div>
+</body>
+</html>

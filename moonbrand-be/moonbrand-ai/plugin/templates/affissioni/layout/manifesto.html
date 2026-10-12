@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Playfair+Display:ital,wght@1,400&family=Archivo:wght@600&family=Gilda+Display&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #8E8C86; color: var(--principale); font-family: var(--font-testo); }
+
+  .muro { position: absolute; left: -473px; top: 0; width: 2026px; height: 1350px; object-fit: cover; display: block; filter: saturate(0.6); }
+
+  .manifesto { position: absolute; left: 82px; top: 60px; width: 916px; height: 1166px; border: 9px solid #3B3B39;
+    background: color-mix(in srgb, var(--sfondo) 55%, white); box-shadow: 0 18px 30px rgba(0,0,0,0.32), inset 0 0 0 2px rgba(255,255,255,0.5); }
+  .striscia { position: absolute; left: 20px; right: 20px; top: 20px; height: 54px; background: var(--secondario); color: var(--su-secondario);
+    display: flex; justify-content: space-between; align-items: center; padding: 0 22px; }
+  .striscia p { font-family: var(--font-testo); font-size: 15px; font-weight: 600; line-height: 1.15; text-transform: uppercase; letter-spacing: 0.01em; }
+  .striscia p:nth-child(2) { text-align: center; }
+  .striscia p:nth-child(3) { text-align: right; }
+
+  .titolo { position: absolute; left: 0; top: 100px; width: 898px; text-align: center; font-weight: 400; }
+  .corsivo { display: block; font-family: 'Playfair Display', serif; font-style: italic; font-size: 108px; line-height: 1; letter-spacing: -0.03em; }
+  .forte { display: block; margin-top: 2px; font-family: var(--font-titoli); font-weight: 600; font-size: 140px; line-height: 1; text-transform: uppercase; letter-spacing: -0.005em; }
+
+  .foto { position: absolute; left: 148px; top: 372px; width: 602px; height: 650px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .logo { position: absolute; left: 0; top: 1046px; width: 898px; text-align: center; font-family: 'Gilda Display', serif; font-size: 62px; line-height: 1; letter-spacing: -0.03em; }
+</style>
+</head>
+<body>
+  <!-- muro: pietra o intonaco, il manifesto ci sta appeso nella sua cornice -->
+  <img class="muro" src="../esempio/pietra.jpg" alt="">
+
+  <div class="manifesto">
+    <!-- striscia: tre note piccole in maiuscolo, due righe brevi ciascuna (chi siamo, cosa facciamo, dove trovarci) -->
+    <div class="striscia">
+      <p>Agenzia di<br>comunicazione</p>
+      <p>Strategia, social<br>e identità visiva</p>
+      <p>Bari, dal 2014<br>studiofaro.it</p>
+    </div>
+    <h1 class="titolo">
+      <!-- corsivo: 2 parole in corsivo, al massimo 12 lettere -->
+      <span class="corsivo">Pensata per</span>
+      <!-- forte: una parola in maiuscolo con il punto, al massimo 8 lettere -->
+      <span class="forte">durare.</span>
+    </h1>
+    <!-- foto: un ritratto di profilo su fondo chiaro, il soggetto al centro -->
+    <img class="foto" src="../esempio/ritratto.jpg" alt="">
+    <!-- logo: il nome del brand in fondo al manifesto -->
+    <p class="logo">studio faro</p>
+  </div>
+</body>
+</html>

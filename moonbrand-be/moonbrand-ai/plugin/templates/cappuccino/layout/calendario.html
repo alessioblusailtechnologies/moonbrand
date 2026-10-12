@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Open Sans', sans-serif; --font-testo: 'Open Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.86 - l) * 1000, 1)) 0 0); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 42% 50%; display: block; }
+
+  /* la vista di un giorno del calendario: due orari a sinistra, l'impegno pieno nell'accento */
+  .giorno { position: absolute; left: 150px; top: 640px; width: 790px; height: 212px; border-radius: 36px; background: var(--sfondo); }
+  .ora { position: absolute; left: 34px; font-size: 32px; font-weight: 300; color: color-mix(in srgb, var(--principale) 55%, transparent); line-height: 1; }
+  .ora.inizio { top: 34px; }
+  .ora.fine { bottom: 30px; }
+  .riga-ora { position: absolute; left: 172px; right: 0; top: 30px; height: 2px; background: color-mix(in srgb, var(--principale) 20%, transparent); }
+  .impegno { position: absolute; left: 172px; right: 14px; top: 40px; bottom: 34px; background: var(--accento); color: var(--su-accento); padding: 22px 26px 0; }
+  .impegno::after { content: ''; position: absolute; left: 0; right: -14px; bottom: -6px; height: 2px; background: color-mix(in srgb, var(--principale) 20%, transparent); }
+  .cosa { font-family: var(--font-titoli); font-weight: 700; font-size: 38px; line-height: 1.1; letter-spacing: -0.005em; white-space: nowrap; }
+  .quando { margin-top: 6px; display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 400; opacity: 0.9; }
+  .quando svg { width: 22px; height: 22px; }
+
+  /* il fumetto del luogo, con la codina in basso a sinistra */
+  .luogo { position: absolute; left: 490px; top: 900px; width: 450px; padding: 20px 26px 22px 80px; border-radius: 28px; background: var(--secondario); color: var(--su-secondario); }
+  .luogo::after { content: ''; position: absolute; left: 60px; bottom: -44px; border-left: 0 solid transparent; border-right: 46px solid transparent; border-top: 46px solid var(--secondario); }
+  .luogo svg { position: absolute; left: 28px; top: 50%; width: 30px; height: 40px; transform: translateY(-50%); }
+  .luogo p { font-family: 'Source Serif 4', serif; font-size: 27px; line-height: 1.32; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona al lavoro al bar o alla scrivania, col telefono o il portatile; il busto al centro, le mani in basso -->
+  <img class="foto" src="../esempio/telefono.jpg" alt="">
+
+  <div class="giorno">
+    <!-- ora-inizio e ora-fine: gli orari dell'impegno -->
+    <span class="ora inizio">9:00</span>
+    <span class="ora fine">11:00</span>
+    <div class="riga-ora"></div>
+    <div class="impegno">
+      <!-- impegno: cosa si fa, 3-5 parole, al massimo 26 caratteri -->
+      <p class="cosa">Piano editoriale di maggio</p>
+      <p class="quando"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>9:00 - 11:00</p>
+    </div>
+  </div>
+
+  <div class="luogo">
+    <svg viewBox="0 0 24 32" fill="currentColor"><path d="M12 0C5.4 0 0 5.2 0 11.7 0 20.4 12 32 12 32s12-11.6 12-20.3C24 5.2 18.6 0 12 0zm0 16.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg>
+    <!-- luogo: nome dello studio e indirizzo, due righe corte -->
+    <p>Studio Forma<br>Via Sparano 41, Bari</p>
+  </div>
+</body>
+</html>

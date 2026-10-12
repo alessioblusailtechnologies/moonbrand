@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  .retino { position: absolute; left: 688px; top: 230px; width: 392px; height: 1120px; overflow: hidden; background: #FFFFFF; filter: contrast(8); mix-blend-mode: screen; opacity: 0.95; }
+  .retino img { display: block; width: 392px; height: 1120px; object-fit: cover; object-position: 50% 50%; filter: grayscale(1) brightness(1.5) contrast(1.05) blur(1px); }
+  .retino::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: radial-gradient(circle closest-side, #808080 0%, #9F9F9F 50%, #CFCFCF 70%, #FFFFFF 80%) 0 0 / 9px 9px; mix-blend-mode: multiply; }
+
+  .testata { position: absolute; left: 105px; right: 108px; top: 108px; display: flex; justify-content: space-between; font-size: 36px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+
+  .dati { position: absolute; left: 107px; top: 246px; width: 538px; }
+  .dato { height: 263px; padding-top: 52px; border-bottom: 2px solid color-mix(in srgb, var(--sfondo) 32%, transparent); }
+  .cifra { font-family: var(--font-testo); font-weight: 700; font-size: 104px; line-height: 1; letter-spacing: -0.02em; color: var(--accento); white-space: nowrap; }
+  .voce { margin-top: 18px; font-size: 40px; letter-spacing: 0.04em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto a mezza figura con un fondo pieno di segni (muro, scritte); diventa una colonna a retino a destra -->
+  <div class="retino"><img src="../esempio/cappello.jpg" alt=""></div>
+
+  <!-- testata: a sinistra il tipo di post (2 parole con le barre), a destra il nome del cliente tra quadre -->
+  <p class="testata"><span>// Caso studio</span><span>[Forno Alba]</span></p>
+
+  <div class="dati">
+    <!-- dati: quattro risultati; la cifra al massimo 4 caratteri (+90%, 3x, 1), la voce dopo «> » al massimo 18 caratteri -->
+    <div class="dato"><p class="cifra">+90%</p><p class="voce">&gt; Ordini online</p></div>
+    <div class="dato"><p class="cifra">+70%</p><p class="voce">&gt; Visite al sito</p></div>
+    <div class="dato"><p class="cifra">1</p><p class="voce">&gt; Marchio nuovo</p></div>
+    <div class="dato"><p class="cifra">+60%</p><p class="voce">&gt; Clienti fissi</p></div>
+  </div>
+</body>
+</html>

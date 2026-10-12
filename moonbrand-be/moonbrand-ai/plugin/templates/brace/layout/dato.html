@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #1E1E1E; --accento: #F85A15; --sfondo: #F5F5F3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 88%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+  .grana { position: absolute; inset: 0; box-shadow: inset 0 0 260px rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035' numOctaves='5' seed='8'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.2 0 0 0 -1.05'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3 0 0 0 -1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='0.16'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.12'/%3E%3C/svg%3E"); }
+
+  .titolo { position: absolute; left: 90px; top: 300px; width: 900px; text-align: center; font-family: var(--font-titoli); font-size: 104px; font-weight: 700; line-height: 132px; letter-spacing: -0.04em; }
+  .titolo .riga { display: block; white-space: nowrap; }
+  .titolo .fascia { display: inline-block; position: relative; z-index: 1; padding: 0 44px 6px; line-height: 150px; margin: -8px 0 -10px;
+    background: linear-gradient(180deg, var(--accento), var(--accento-scuro)); transform: rotate(-2deg); box-shadow: 0 10px 22px rgba(0,0,0,0.4); }
+  .titolo .punto { color: var(--accento); }
+  .domanda { position: absolute; left: 90px; top: 900px; width: 900px; text-align: center; font-size: 74px; font-style: italic; font-weight: 400; letter-spacing: -0.03em; }
+
+  .contatti { position: absolute; left: 0; top: 1218px; width: 1080px; display: flex; justify-content: center; gap: 44px; }
+  .contatto { display: flex; align-items: center; gap: 18px; font-size: 32px; font-weight: 400; letter-spacing: -0.02em; }
+  .icona { width: 66px; height: 66px; border-radius: 50%; background: var(--accento); color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex: none; }
+  .icona svg { width: 36px; height: 36px; }
+</style>
+</head>
+<body>
+  <div class="grana"></div>
+
+  <!-- titolo: un dato in quattro righe corte (al massimo 13 caratteri ciascuna); la seconda, col numero, nella fascia; chiude con un punto in accento -->
+  <h1 class="titolo">
+    <span class="riga">Solo il</span>
+    <span class="riga"><span class="fascia">5% dei</span></span>
+    <span class="riga">negozi posta</span>
+    <span class="riga">ogni giorno<span class="punto">.</span></span>
+  </h1>
+  <!-- domanda: la domanda a chi legge, 2-4 parole, in corsivo -->
+  <p class="domanda">…e tu?</p>
+
+  <!-- contatti: tre profili social con la loro icona, lo stesso nome -->
+  <div class="contatti">
+    <p class="contatto"><span class="icona"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="0.6" fill="currentColor"/></svg></span>@fiammalab</p>
+    <p class="contatto"><span class="icona"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h3.6v11H4zM5.8 3.6a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zM9.8 9h3.4v1.6c.5-.9 1.7-1.9 3.6-1.9 3.6 0 4.2 2.3 4.2 5.4V20h-3.6v-5.2c0-1.3 0-2.9-1.8-2.9s-2.1 1.4-2.1 2.8V20H9.8z"/></svg></span>@fiammalab</p>
+    <p class="contatto"><span class="icona"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 3c.3 2.3 1.9 3.9 4.4 4.1v3.1c-1.6 0-3-.5-4.3-1.3v6.2c0 3.4-2.6 5.9-5.8 5.9S3.1 18.5 3.1 15.3c0-3.4 2.9-6 6.5-5.6v3.2c-1.6-.4-3.2.8-3.2 2.4 0 1.4 1.1 2.6 2.6 2.6 1.6 0 2.6-1.2 2.6-2.8V3z"/></svg></span>@fiammalab</p>
+  </div>
+</body>
+</html>

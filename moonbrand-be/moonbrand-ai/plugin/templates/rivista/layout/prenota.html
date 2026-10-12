@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Newsreader', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testa { position: absolute; top: 50px; font-family: var(--font-titoli); font-size: 21px; font-weight: 500; letter-spacing: -0.02em; text-transform: uppercase; white-space: nowrap; }
+  .logo { left: 96px; } .stagione { right: 96px; }
+
+  .foto { position: absolute; top: 152px; width: 327px; height: 429px; object-fit: cover; display: block; }
+  .f1 { left: 183px; object-position: 50% 30%; } .f2 { left: 555px; object-position: 60% 50%; }
+
+  .filetto { position: absolute; left: 0; top: 682px; width: 1080px; height: 2px; background: var(--secondario); }
+
+  .parentesi { position: absolute; left: 0; top: 786px; width: 1080px; text-align: center; font-family: var(--font-testo); font-size: 150px; font-weight: 300;
+    font-optical-sizing: auto; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+  .titolo { position: absolute; left: 0; top: 928px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 178px; font-weight: 600;
+    line-height: 1; letter-spacing: -0.065em; white-space: nowrap; }
+
+  .motto { position: absolute; left: 108px; top: 1186px; font-size: 23px; font-weight: 500; line-height: 0.82; letter-spacing: -0.01em; text-transform: uppercase; }
+  .nota { position: absolute; left: 383px; top: 1182px; width: 520px; font-size: 22px; font-weight: 400; line-height: 1; letter-spacing: -0.01em; }
+  .nota b { display: block; margin-top: 14px; font-size: 23px; font-weight: 500; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome dello studio, in alto a sinistra -->
+  <p class="testa logo">Studio Ottobre</p>
+  <!-- stagione: 1-2 parole in alto a destra (periodo, sigla) -->
+  <p class="testa stagione">Autunno 2026</p>
+
+  <!-- foto: due ritratti verticali chiari, fondo bianco o grigio, persone in movimento o sedute -->
+  <img class="foto f1" src="../esempio/sedia.jpg" alt="">
+  <img class="foto f2" src="../esempio/telo.jpg" alt="">
+
+  <div class="filetto"></div>
+
+  <!-- parentesi: una parola tra parentesi, in serif chiaro (al massimo 8 lettere) -->
+  <p class="parentesi">(agenda)</p>
+  <!-- titolo: una parola in minuscolo, al massimo 7 lettere -->
+  <h1 class="titolo">aperta</h1>
+
+  <!-- motto: 4-6 parole in maiuscolo, una o due per riga -->
+  <p class="motto">Dove il<br>design<br>ha uno<br>scopo.</p>
+  <!-- nota: una frase di 10-14 parole, poi una riga in maiuscolo con <b> -->
+  <p class="nota">più di uno studio di branding: uno spazio da condividere<b>Diamo forma a idee coraggiose.</b></p>
+</body>
+</html>

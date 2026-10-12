@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@700&family=PT+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'PT Sans', sans-serif; }
+  /* Sul fondo chiaro del modello i titoli sono bianchi; se il fondo del brand è quasi bianco diventano neri. */
+  :root { --su-sfondo: oklch(from var(--sfondo) calc(clamp(0, (0.88 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--su-sfondo); font-family: var(--font-testo); }
+
+  .righe { position: absolute; left: 0; width: 1080px; height: 172px;
+    background: repeating-linear-gradient(90deg, var(--principale) 0 44px, var(--sfondo) 44px 84px); background-position: 14px 0; }
+  .righe.su { top: 0; }
+  .righe.giu { bottom: 0; }
+  .bordo { position: absolute; top: 0; bottom: 0; width: 22px; background: var(--principale); }
+  .bordo.sx { left: 14px; }
+  .bordo.dx { right: 14px; }
+
+  .social { position: absolute; left: 52px; right: 52px; display: flex; justify-content: space-between; font-size: 24px; color: #FFFFFF; text-shadow: 0 1px 4px color-mix(in srgb, var(--principale) 80%, transparent); }
+  .social.su { top: 92px; }
+  .social.giu { top: 1236px; }
+
+  .titolo { position: absolute; left: 90px; top: 262px; width: 900px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 84px; line-height: 0.96; letter-spacing: -0.045em; text-transform: uppercase; }
+  .sotto { position: absolute; left: 170px; top: 640px; width: 740px; text-align: center; font-size: 32px; line-height: 1.2; letter-spacing: -0.03em; }
+  .foto { position: absolute; left: 318px; top: 742px; width: 444px; height: 400px; object-fit: cover; object-position: 50% 62%; display: block; }
+</style>
+</head>
+<body>
+  <div class="righe su"></div>
+  <div class="righe giu"></div>
+  <div class="bordo sx"></div>
+  <div class="bordo dx"></div>
+
+  <!-- social: in alto e in basso, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <!-- titolo: il tema della guida, 4 righe in maiuscolo, 5-8 parole in tutto -->
+  <h1 class="titolo">Il ruolo delle storie nei contenuti del brand</h1>
+  <!-- sotto: una frase che dice cosa c'è nel carosello, 6-10 parole -->
+  <p class="sotto">Consigli per raccontare bene il tuo brand</p>
+
+  <!-- foto: un dettaglio di una persona, ravvicinato, quasi quadrato -->
+  <img class="foto" src="../esempio/cardigan.jpg" alt="">
+
+  <div class="social giu"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+</body>
+</html>

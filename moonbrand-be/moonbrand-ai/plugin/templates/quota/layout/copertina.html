@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #15121D; --secondario: #2B2735; --accento: #FFFFFF; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .angolo { position: absolute; font-family: 'Newsreader', serif; font-style: italic; font-size: 38px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+  .angolo::before { content: ''; display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: currentColor; margin-right: 20px; vertical-align: 0.18em; }
+  .a1 { left: 80px; top: 104px; } .a2 { right: 86px; top: 104px; } .a3 { left: 80px; top: 1250px; } .a4 { right: 86px; top: 1250px; }
+
+  .foto { position: absolute; left: 614px; top: 384px; width: 404px; height: 584px; object-fit: cover; display: block; }
+  .titolo { position: absolute; left: 90px; top: 278px; width: 900px; text-align: center; font-family: var(--font-titoli); font-weight: 700;
+    font-size: 116px; line-height: 138px; letter-spacing: -0.035em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- angoli: quattro parole o frasi brevi in corsivo, una per angolo, 1-2 parole col punto finale -->
+  <p class="angolo a1">Insieme.</p>
+  <p class="angolo a2">Visione chiara.</p>
+  <p class="angolo a3">Crescita.</p>
+  <p class="angolo a4">Marketing.</p>
+
+  <!-- foto: architettura dal basso su cielo grigio (o il soggetto del brand), rettangolo verticale a destra dietro il titolo -->
+  <img class="foto" src="../esempio/torre.jpg" alt="">
+
+  <!-- titolo: 5-6 righe di 1-2 parole, al massimo 9 lettere per riga, in maiuscolo; si sovrappone alla foto -->
+  <h1 class="titolo"><span>Ogni</span><span>crescita</span><span>nasce</span><span>da scelte</span><span>più</span><span>lucide</span></h1>
+</body>
+</html>

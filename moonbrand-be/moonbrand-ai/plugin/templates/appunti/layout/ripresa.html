@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --mirino: color-mix(in oklab, var(--accento) 55%, #D9A520); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0.14) 72%, rgba(0,0,0,0.62) 100%); }
+  .griglia { position: absolute; inset: 0; }
+  .griglia i { position: absolute; background: color-mix(in srgb, #FFFFFF 55%, transparent); }
+  .griglia .v1 { left: 324px; top: 0; width: 2px; height: 1350px; } .griglia .v2 { left: 756px; top: 0; width: 2px; height: 1350px; }
+  .griglia .h1 { top: 428px; left: 0; height: 2px; width: 1080px; } .griglia .h2 { top: 942px; left: 0; height: 2px; width: 1080px; }
+  .utente { position: absolute; left: 0; top: 40px; width: 1080px; text-align: center; font-size: 30px; }
+
+  .scatto { position: absolute; left: 330px; top: 196px; width: 500px; text-align: center; font-size: 54px; font-weight: 400; letter-spacing: 0.02em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 2px var(--mirino); }
+  .mirino { position: absolute; left: 418px; top: 296px; width: 330px; height: 318px; border: 3px solid var(--mirino); }
+  .mirino i { position: absolute; background: var(--mirino); }
+  .mirino .n { left: 50%; top: 0; width: 3px; height: 26px; } .mirino .s { left: 50%; bottom: 0; width: 3px; height: 26px; }
+  .mirino .o { top: 50%; left: 0; width: 26px; height: 3px; } .mirino .e { top: 50%; right: 0; width: 26px; height: 3px; }
+
+  .emoji { position: absolute; font-family: 'Noto Color Emoji', sans-serif; line-height: 1; }
+  .stella { left: 100px; top: 712px; font-size: 52px; }
+  .titolo { position: absolute; left: 96px; top: 784px; width: 640px; font-family: var(--font-titoli); font-size: 78px; font-weight: 700; line-height: 0.92; letter-spacing: -0.05em; }
+  .testo { position: absolute; left: 98px; top: 968px; width: 470px; font-size: 31px; line-height: 1.4; letter-spacing: -0.01em; color: color-mix(in srgb, #FFFFFF 92%, transparent); }
+
+  .durate { position: absolute; left: 0; top: 1240px; width: 1080px; display: flex; justify-content: center; align-items: center; gap: 34px; font-size: 28px; }
+  .durate .scelta { padding: 8px 18px; border-radius: 30px; background: color-mix(in srgb, #FFFFFF 26%, transparent); }
+</style>
+</head>
+<body>
+  <!-- foto: un selfie allo specchio o un momento davanti alla fotocamera; il soggetto (viso o oggetto) dentro il mirino in alto al centro -->
+  <img class="foto" src="../esempio/accappatoio.jpg" alt="">
+  <div class="velo"></div>
+  <div class="griglia"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+  <!-- scatto: una parola sul mirino, in maiuscolo -->
+  <p class="scatto">Preso</p>
+  <div class="mirino"><i class="n"></i><i class="s"></i><i class="o"></i><i class="e"></i></div>
+
+  <span class="emoji stella">🌟</span>
+  <!-- titolo: il consiglio in 2 righe, 5-7 parole -->
+  <h1 class="titolo">La luce fa il 90% della foto</h1>
+  <!-- testo: la spiegazione, 14-20 parole -->
+  <p class="testo">Mettiti sempre di fronte a una finestra grande. La luce morbida del giorno migliora subito ogni video.</p>
+
+  <!-- durate: le durate della fotocamera, la terza scelta -->
+  <div class="durate"><span>3m</span><span>60s</span><span class="scelta">15s</span></div>
+</body>
+</html>

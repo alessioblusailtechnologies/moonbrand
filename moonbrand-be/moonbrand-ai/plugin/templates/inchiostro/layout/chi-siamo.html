@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .logo { position: absolute; left: 330px; top: 150px; font-size: 32px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; }
+  .titolo { font-family: var(--font-titoli); font-weight: 800; text-transform: uppercase; letter-spacing: -0.045em; line-height: 0.8; white-space: nowrap; }
+  .uno { position: absolute; left: 50px; top: 236px; font-size: 258px; }
+  .due { position: absolute; left: 540px; top: 452px; font-size: 258px; }
+  .foto { position: absolute; left: 56px; top: 452px; width: 470px; height: 868px; object-fit: cover; object-position: 30% 50%; display: block; }
+  .testo { position: absolute; left: 552px; top: 678px; width: 410px; font-size: 31px; font-weight: 700; font-style: italic; line-height: 1.02; letter-spacing: -0.03em; text-align: justify; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand in maiuscolo, sopra il titolo -->
+  <p class="logo">Studio Bianchi</p>
+  <!-- titolo: due parole in maiuscolo; la prima di 4-5 lettere a tutta larghezza, la seconda di 2-3 lettere accanto alla foto -->
+  <h1><span class="titolo uno">Siamo</span><span class="titolo due">noi</span></h1>
+  <!-- foto: una persona del team al lavoro in un interno chiaro, verticale -->
+  <img class="foto" src="../esempio/divano.jpg" alt="">
+  <!-- testo: chi siete e cosa fate, 40-55 parole, giustificato -->
+  <p class="testo">Due grafiche e un copywriter a Bologna. Seguiamo i social di negozi, studi e ristoranti che vogliono farsi trovare senza sembrare un altro. Partiamo sempre da una chiacchierata in sede, con le persone che ci lavorano ogni giorno.</p>
+</body>
+</html>

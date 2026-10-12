@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo);
+    background: linear-gradient(90deg, var(--principale) 0%, var(--secondario) 100%); }
+
+  .foto { position: absolute; left: 62px; top: 128px; width: 550px; height: 1090px; object-fit: cover; object-position: 50% 50%; display: block; }
+
+  .logo { position: absolute; left: 614px; width: 466px; top: 360px; text-align: center; color: #FFFFFF; font-family: var(--font-titoli);
+    font-size: 34px; font-weight: 700; letter-spacing: 0.04em; }
+
+  .fascia { position: absolute; left: 614px; top: 480px; width: 466px; height: 537px; background: var(--sfondo); color: var(--principale);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 44px; }
+  .titolo { font-family: var(--font-titoli); font-size: 60px; font-weight: 700; line-height: 1.02; text-transform: uppercase; letter-spacing: 0.005em; }
+  .testo { margin-top: 30px; font-size: 30px; line-height: 1.4; }
+  .invito { margin-top: 44px; width: 326px; padding: 18px 10px; background: var(--accento); color: #FFFFFF;
+    font-size: 25px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: verticale, architettura o un ambiente di lavoro, colori freddi -->
+  <img class="foto" src="../esempio/grattacielo.jpg" alt="">
+
+  <!-- logo: il nome del brand, sopra la fascia bianca -->
+  <p class="logo">NODO DIGITALE</p>
+
+  <div class="fascia">
+    <!-- titolo: il servizio, 1-2 parole, al massimo 11 lettere per riga -->
+    <h1 class="titolo">Sito nuovo</h1>
+    <!-- testo: cosa ottiene il cliente, 8-12 parole -->
+    <p class="testo">Veloce, chiaro e pronto a portarti richieste ogni settimana.</p>
+    <!-- invito: 2-3 parole -->
+    <p class="invito">Scrivici ora</p>
+  </div>
+</body>
+</html>

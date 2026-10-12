@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600&family=PT+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Lexend', sans-serif; --font-testo: 'PT Sans', sans-serif; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 14%, #F4F4F2); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  /* Carta strappata in alto e in basso, con un filo d'ombra sul bordo. */
+  .carta { position: absolute; left: 0; width: 1080px; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
+  .carta div { width: 100%; height: 100%; background: var(--carta); }
+  .carta.su { top: 0; height: 80px; }
+  .carta.su div { clip-path: polygon(0px 0px, 1080px 0px, 1080px 58px, 1076px 60px, 1065px 59px, 1056px 46px, 1050px 46px, 1041px 61px, 1033px 41px, 1024px 48px, 1013px 68px, 1003px 67px, 992px 66px, 979px 65px, 966px 75px, 951px 74px, 943px 60px, 928px 68px, 916px 65px, 900px 44px, 889px 52px, 884px 65px, 870px 77px, 857px 65px, 848px 48px, 840px 53px, 830px 54px, 825px 62px, 813px 68px, 801px 65px, 786px 60px, 779px 52px, 770px 45px, 764px 54px, 757px 60px, 751px 44px, 742px 46px, 737px 37px, 722px 44px, 713px 61px, 707px 45px, 693px 53px, 678px 69px, 673px 61px, 663px 67px, 649px 59px, 644px 58px, 634px 64px, 623px 72px, 615px 57px, 605px 53px, 600px 49px, 587px 59px, 580px 60px, 564px 61px, 559px 73px, 545px 59px, 536px 51px, 522px 53px, 509px 58px, 496px 76px, 483px 68px, 478px 62px, 471px 66px, 460px 65px, 446px 66px, 437px 61px, 432px 66px, 422px 74px, 409px 70px, 403px 64px, 391px 60px, 375px 70px, 359px 64px, 349px 68px, 338px 67px, 322px 58px, 317px 60px, 304px 69px, 292px 59px, 283px 54px, 268px 70px, 257px 82px, 244px 79px, 228px 71px, 222px 68px, 206px 56px, 200px 74px, 187px 63px, 182px 74px, 170px 62px, 162px 55px, 149px 70px, 137px 53px, 124px 67px, 113px 62px, 102px 55px, 87px 51px, 82px 74px, 76px 66px, 68px 68px, 59px 65px, 54px 59px, 43px 65px, 38px 47px, 30px 63px, 18px 59px, 6px 44px, 0px 46px); }
+  .carta.giu { top: 1120px; height: 400px; }
+  .carta.giu div { clip-path: polygon(0px 36px, 5px 16px, 15px 29px, 31px 35px, 40px 20px, 48px 24px, 62px 29px, 73px 30px, 89px 37px, 102px 44px, 115px 47px, 128px 27px, 133px 36px, 143px 28px, 153px 38px, 164px 42px, 177px 21px, 184px 13px, 189px 7px, 196px 3px, 209px 8px, 222px 20px, 229px 37px, 241px 39px, 257px 31px, 267px 35px, 277px 24px, 289px 12px, 300px 24px, 312px 28px, 320px 24px, 332px 23px, 342px 27px, 354px 37px, 366px 25px, 382px 36px, 398px 28px, 413px 16px, 423px 29px, 430px 37px, 444px 22px, 456px 16px, 472px 29px, 485px 26px, 500px 27px, 511px 18px, 519px 20px, 529px 34px, 543px 40px, 553px 38px, 561px 46px, 567px 19px, 582px 6px, 596px 5px, 602px 21px, 609px 33px, 617px 38px, 622px 27px, 638px 33px, 643px 23px, 650px 14px, 655px 4px, 661px -1px, 677px 23px, 687px 14px, 694px 25px, 707px 30px, 718px 28px, 726px 14px, 731px 2px, 745px 16px, 761px 6px, 771px 14px, 780px 16px, 794px 26px, 803px 32px, 817px 33px, 829px 42px, 835px 37px, 845px 40px, 850px 29px, 857px 26px, 868px 23px, 878px 11px, 888px 9px, 902px 30px, 917px 10px, 930px 31px, 945px 12px, 950px 5px, 957px 0px, 972px 2px, 988px 26px, 996px 15px, 1008px 5px, 1014px 16px, 1028px 28px, 1042px 31px, 1051px 32px, 1060px 28px, 1065px 13px, 1076px 15px, 1080px 22px, 1080px 400px, 0px 400px); }
+
+  .social { position: absolute; left: 110px; right: 52px; display: flex; justify-content: space-between; font-size: 24px; color: color-mix(in srgb, #FFFFFF 85%, transparent); }
+  .social.su { top: 92px; }
+
+  .ripetuto { position: absolute; left: 112px; top: 168px; width: 1000px; font-family: var(--font-titoli); font-weight: 600; font-size: 178px; line-height: 0.92; letter-spacing: -0.055em; color: var(--secondario); white-space: nowrap; }
+  .ripetuto span { display: block; }
+
+  .foto { position: absolute; left: 230px; top: 590px; width: 660px; height: 760px; object-fit: cover; object-position: 50% 12%; display: block; clip-path: polygon(0px 11px, 16px 7px, 38px 13px, 56px 16px, 73px 7px, 94px 11px, 110px 9px, 129px 12px, 150px 15px, 164px 18px, 174px 12px, 184px 20px, 200px 16px, 208px 19px, 217px 11px, 234px 5px, 254px 2px, 275px 5px, 292px 15px, 314px 13px, 334px 22px, 348px 23px, 365px 18px, 387px 10px, 400px 6px, 410px 11px, 422px 22px, 436px 23px, 457px 15px, 473px 21px, 490px 16px, 507px 14px, 518px 22px, 536px 26px, 544px 27px, 561px 24px, 571px 23px, 584px 27px, 606px 22px, 615px 22px, 626px 21px, 643px 14px, 652px 7px, 660px 16px, 660px 900px, 0px 900px); }
+</style>
+</head>
+<body>
+  <!-- social: in alto, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <!-- ripetuto: una parola o due (al massimo 10 lettere) ripetuta su cinque righe, la foto copre le ultime -->
+  <h1 class="ripetuto"><span>Parliamone</span><span>Parliamone</span><span>Parliamone</span><span>Parliamone</span><span>Parliamone</span></h1>
+
+  <div class="carta su"><div></div></div>
+  <div class="carta giu"><div></div></div>
+
+  <!-- foto: una persona al telefono o che parla, verticale, con il viso nella parte alta -->
+  <img class="foto" src="../esempio/telefono.jpg" alt="">
+</body>
+</html>

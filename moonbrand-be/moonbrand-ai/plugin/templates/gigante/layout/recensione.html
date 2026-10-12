@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&family=Allison&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; }
+
+  /* il tondo: la foto in bianco e nero stampata sul colore, con un filo chiaro intorno */
+  .tondo { position: absolute; left: 330px; top: 244px; width: 450px; height: 450px; border-radius: 50%; overflow: hidden; background: var(--accento);
+    border: 4px solid var(--secondario); }
+  .tondo img { width: 442px; height: 442px; object-fit: cover; object-position: 50% 30%; display: block; filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
+
+  /* le virgolette, grandi, a cavallo del bordo basso del tondo */
+  .virgolette { position: absolute; left: 480px; top: 646px; width: 150px; height: 104px; }
+
+  .parla { position: absolute; left: 220px; top: 870px; width: 640px; }
+  .citazione { width: 640px; text-align: center; font-family: var(--font-testo); font-weight: 400; font-size: 32px; line-height: 1.32; }
+  .firma { margin-top: 28px; text-align: center; font-family: 'Allison', cursive; font-size: 92px; line-height: 1; }
+</style>
+</head>
+<body>
+  <!-- foto: il volto di chi parla, di fronte, su fondo chiaro (il fondo prende il colore) -->
+  <div class="tondo"><img src="../esempio/telefono.jpg" alt=""></div>
+
+  <svg class="virgolette" viewBox="0 0 150 104" fill="var(--accento)" aria-hidden="true">
+    <path d="M36 0 C58 0 70 16 70 38 C70 70 46 96 10 104 L6 94 C28 84 38 70 40 58 C18 58 2 46 2 29 C2 12 16 0 36 0 Z"/>
+    <path d="M114 0 C136 0 148 16 148 38 C148 70 124 96 88 104 L84 94 C106 84 116 70 118 58 C96 58 80 46 80 29 C80 12 94 0 114 0 Z"/>
+  </svg>
+
+  <!-- citazione: le parole del cliente, 18-28 parole, tra virgolette -->
+  <div class="parla">
+  <p class="citazione">«Con Studio Marea il negozio è cambiato. Ormai divido la storia della mia bottega in prima e dopo il loro arrivo.»</p>
+
+  <!-- firma: il nome di chi parla, scritto a mano -->
+  <div class="firma">Giulia</div>
+  </div>
+</body>
+</html>

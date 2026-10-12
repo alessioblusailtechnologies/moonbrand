@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 88%, var(--principale)); color: var(--principale); font-family: var(--font-testo); }
+
+  .campo { position: absolute; left: 106px; top: 142px; width: 870px; height: 1052px; background: var(--accento); }
+  .foto { position: absolute; left: 345px; top: 469px; width: 390px; height: 588px; object-fit: cover; object-position: 45% 50%; display: block; }
+
+  .titolo { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 140px; font-weight: 500;
+    line-height: 0.96; letter-spacing: -0.045em; text-transform: uppercase; white-space: nowrap; }
+  .titolo.alto { top: 104px; }
+  .titolo.basso { top: 1006px; }
+  .titolo span { display: block; }
+
+  .sito { position: absolute; left: 0; top: 1296px; width: 1080px; text-align: center; font-size: 20px; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <div class="campo"></div>
+  <!-- foto: una persona in piedi, intera, in una stanza chiara con luce e ombre di finestra; verticale, piccola al centro -->
+  <img class="foto" src="../esempio/luce.jpg" alt="">
+
+  <!-- titolo-alto: tre righe corte in maiuscolo (al massimo 10 lettere ciascuna); l'ultima tocca la foto -->
+  <h1 class="titolo alto"><span>Più di uno</span><span>studio di</span><span>branding</span></h1>
+  <!-- titolo-basso: due righe che chiudono la frase (al massimo 12 lettere), sopra il bordo basso del riquadro -->
+  <p class="titolo basso"><span>È uno spazio</span><span>condiviso</span></p>
+
+  <!-- sito: l'indirizzo del sito -->
+  <p class="sito">studioottobre.it</p>
+</body>
+</html>

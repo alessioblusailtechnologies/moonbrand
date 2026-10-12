@@ -1,0 +1,16 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+scala.jpg      Unsplash, foto ZUpaoIOO_Hw di Lefteris kallergis (donna in nero su una scala bianca)
+               https://unsplash.com/photos/woman-in-black-coat-holding-drinking-glass-ZUpaoIOO_Hw
+divano.jpg     Unsplash, foto p6BMEqBSwS4 di Raspopova Marina (donna con il portatile su un divano bianco)
+               https://unsplash.com/photos/a-woman-sitting-on-a-couch-with-a-laptop-p6BMEqBSwS4
+scrivania.jpg  Unsplash, foto CrW-TbykPBQ di Icons8 Team (donna al portatile su una scrivania bianca)
+               https://unsplash.com/photos/woman-sitting-while-using-laptop-CrW-TbykPBQ
+telefono.jpg   Unsplash, foto mpzYWN5xQqc di Олег Мороз (mano con lo smartphone su fondo bianco)
+               https://unsplash.com/photos/person-holding-black-android-smartphone-mpzYWN5xQqc
+tastiera.jpg   Unsplash, foto 9yCYGgPe5Kg di Luke Southern (mani sulla tastiera, scrivania bianca)
+               https://unsplash.com/photos/woman-in-blue-long-sleeve-shirt-using-macbook-pro-9yCYGgPe5Kg
+libreria.jpg   Unsplash, foto FH4mEYg9D9E di pure julia (libreria scura con libri)
+               https://unsplash.com/photos/a-shelf-with-books-on-it-FH4mEYg9D9E
+ritratto.jpg   Unsplash, foto sq7qVjPpclk di Kateryna Hliznitsova (donna in completo nero su un divano di pelle)
+               https://unsplash.com/photos/a-woman-sitting-on-a-couch-with-a-glass-of-wine-sq7qVjPpclk

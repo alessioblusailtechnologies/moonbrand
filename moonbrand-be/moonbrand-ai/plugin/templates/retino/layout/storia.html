@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--accento); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 720px; top: 470px; width: 360px; height: 880px; object-fit: cover; object-position: 50% 30%; }
+
+  .occhiello { position: absolute; left: 108px; top: 108px; font-size: 40px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .orbita { position: absolute; left: 635px; top: 172px; width: 340px; height: 134px; color: var(--principale); }
+
+  .titolo { position: absolute; left: 107px; top: 222px; font-family: var(--font-titoli); font-weight: 700; font-size: 222px; line-height: 0.82; letter-spacing: -0.03em; text-transform: uppercase; z-index: 1; }
+  .titolo span { display: block; white-space: nowrap; padding-left: 10px; }
+  .titolo .fondo { display: inline-block; margin-top: 54px; padding: 26px 24px 2px 20px; background: var(--principale); color: var(--accento); }
+
+  .testo { position: absolute; left: 108px; top: 806px; width: 590px; font-size: 37px; line-height: 40px; letter-spacing: 0.01em; }
+  .bottone { position: absolute; left: 107px; top: 1142px; height: 101px; padding: 0 58px; display: flex; align-items: center; gap: 30px; background: var(--principale); color: var(--sfondo);
+    font-size: 38px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; z-index: 1; }
+  .bottone svg { width: 26px; height: 26px; }
+</style>
+</head>
+<body>
+  <!-- foto: la persona (fondatrice, titolare) a colori, in piedi e in movimento, su un fondo chiaro e semplice; esce dal bordo destro e da quello basso -->
+  <img class="foto" src="../esempio/fondatrice.jpg" alt="">
+
+  <!-- occhiello: con le due barre davanti, 2-4 parole -->
+  <p class="occhiello">//Chi c'è dietro</p>
+
+  <svg class="orbita" viewBox="0 0 340 134" fill="none" stroke="currentColor" stroke-width="2">
+    <ellipse cx="170" cy="67" rx="135" ry="47"/><path d="M0 67 H340"/>
+    <path fill="currentColor" stroke="none" d="M170 0 C174 48 182 62 212 67 C182 72 174 86 170 134 C166 86 158 72 128 67 C158 62 166 48 170 0 Z"/>
+  </svg>
+
+  <!-- titolo: due parole corte, la seconda nel riquadro scuro; al massimo 4 lettere ciascuna -->
+  <h1 class="titolo"><span>Chi</span><span class="fondo">sono</span></h1>
+
+  <!-- testo: la storia in breve, 20-26 parole -->
+  <p class="testo">Ho aperto Nodo nel 2019 dopo dieci anni in agenzia. Oggi aiutiamo piccole aziende ad avere un marchio chiaro e un sito che lavora.</p>
+
+  <!-- bottone: l'invito, 2-3 parole in maiuscolo con la freccia -->
+  <p class="bottone">Lavoriamo insieme<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 3 L23 23 M23 9 V23 H9"/></svg></p>
+</body>
+</html>

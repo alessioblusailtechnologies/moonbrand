@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #1C1B1A; color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; display: block; filter: brightness(0.85); }
+
+  .testata { position: absolute; left: 108px; right: 108px; top: 38px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .scheda { position: absolute; left: 240px; top: 318px; width: 602px; min-height: 714px; padding: 58px 40px 80px; border-radius: 30px; background: var(--sfondo); color: var(--principale);
+    outline: 2px dotted color-mix(in srgb, var(--principale) 35%, transparent); outline-offset: -4px; }
+  .titolo { text-align: center; font-family: var(--font-titoli); font-weight: 400; font-variation-settings: 'opsz' 72; font-size: 76px; line-height: 0.95; letter-spacing: -0.025em; text-wrap: balance; }
+  .titolo mark { position: relative; z-index: 0; background: none; color: inherit; }
+  .titolo mark::before { content: ''; position: absolute; z-index: -1; left: -4px; right: -10px; bottom: 0.06em; height: 0.3em; background: var(--accento); border-radius: 2px 8px 4px 10px; transform: rotate(-1.2deg); }
+  .filetto { width: 150px; height: 1.5px; margin: 44px auto 38px; background: color-mix(in srgb, var(--principale) 60%, transparent); }
+  .lista { list-style: none; margin-left: 70px; display: flex; flex-direction: column; gap: 17px; }
+  .lista li { display: flex; align-items: center; gap: 14px; font-size: 25px; line-height: 1.15; letter-spacing: 0.01em; }
+  .lista li::before { content: ''; flex: none; width: 26px; height: 28px; border-radius: 5px; border: 1.5px solid color-mix(in srgb, var(--principale) 75%, transparent); }
+
+  .adesivo { position: absolute; left: -108px; bottom: -86px; width: 316px; padding: 22px 26px; border-radius: 30px; background: var(--accento); color: var(--su-accento);
+    border: 2px solid var(--principale); transform: rotate(15deg); text-align: center; font-size: 24px; line-height: 1.1; letter-spacing: 0.02em; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in strada su un fondo scuro (vetrina, portone), di lato a destra; il centro libero per la scheda -->
+  <img class="foto" src="../esempio/sciarpa.jpg" alt="">
+
+  <div class="testata">
+    <!-- logo: il nome o l'handle del brand -->
+    <span class="logo">@ottobrestudio</span>
+    <!-- rubrica: una parola, il tema della serie -->
+    <span>Routine</span>
+  </div>
+
+  <div class="scheda">
+    <!-- titolo: 3-4 parole su 2 righe; la parola che conta nel mark, sottolineata a evidenziatore -->
+    <h1 class="titolo">La <mark>nostra</mark> routine dei post</h1>
+    <div class="filetto"></div>
+    <!-- lista: 5-7 voci da spuntare, al massimo 26 caratteri ciascuna -->
+    <ul class="lista">
+      <li>Rivedere il calendario</li>
+      <li>Aprire la cartella idee</li>
+      <li>Girare i video del giorno</li>
+      <li>Scrivere le didascalie</li>
+      <li>Programmare un post</li>
+      <li>15 minuti di commenti</li>
+      <li>Spegnere le notifiche</li>
+    </ul>
+    <!-- adesivo: una frase di 8-12 parole sul risultato, inclinata sul bordo della scheda -->
+    <p class="adesivo">Così risparmiamo ore di lavoro ogni settimana.</p>
+  </div>
+
+</body>
+</html>

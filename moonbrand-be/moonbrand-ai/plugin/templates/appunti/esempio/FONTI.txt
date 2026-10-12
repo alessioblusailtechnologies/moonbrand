@@ -1,0 +1,18 @@
+Foto d'esempio del template «appunti», licenza gratuita (Pexels License / Unsplash License), scaricate a 1600 px.
+
+letto.jpg        Pexels, foto 11329845 (donna sul letto con portatile e caffè)
+                 https://www.pexels.com/photo/woman-lying-in-bed-with-laptop-and-cup-of-coffee-11329845/
+colazione.jpg    Unsplash, foto OI47P-7TtBc (tazza e libro aperto sul letto)
+                 https://unsplash.com/photos/a-cup-of-coffee-and-a-book-on-a-bed-OI47P-7TtBc
+asciugamano.jpg  Pexels, foto 3764007 (donna con l'asciugamano in testa)
+                 https://www.pexels.com/photo/woman-with-white-towel-on-head-3764007/
+divano.jpg       Unsplash, foto hIbdbaQWJ1s (donna che legge sul divano)
+                 https://unsplash.com/photos/woman-sitting-on-sofa-while-reading-book-inside-room-hIbdbaQWJ1s
+bibita.jpg       Pexels, foto 33684884 (ragazza con occhiali da sole, bibita e telefono)
+                 https://www.pexels.com/photo/young-woman-with-drink-using-smartphone-indoors-33684884/
+accappatoio.jpg  Pexels, foto 18787600 (accappatoio bianco e tazzina)
+                 https://www.pexels.com/photo/woman-in-white-bath-robe-holding-a-cup-of-coffee-on-a-saucer-18787600/
+specchio.jpg     Unsplash, foto 4WgM7hTHBSk (selfie allo specchio)
+                 https://unsplash.com/photos/4WgM7hTHBSk
+tablet.jpg       Unsplash, foto pl9DrjAMV6I (tablet e tazza su scrivania bianca)
+                 https://unsplash.com/photos/pl9DrjAMV6I

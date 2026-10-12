@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@115,900&family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #543928; --secondario: #C3D9E7; --accento: #F6DDE0; --sfondo: #F7EEC7; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--principale); font-family: var(--font-testo); }
+
+  .quadro { position: absolute; left: 58px; top: 72px; width: 966px; height: 1202px; background: var(--sfondo); border: 2px solid color-mix(in srgb, var(--principale) 70%, transparent); }
+  .foto { position: absolute; left: 0; top: 0; width: 962px; height: 612px; object-fit: cover; display: block; }
+  .testata { position: absolute; left: 50px; top: 44px; width: 862px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 500; }
+  .etichetta { position: absolute; left: 50%; top: 568px; transform: translateX(-50%); height: 90px; padding: 0 70px; border-radius: 45px; background: var(--accento); border: 2px solid var(--principale);
+    display: flex; align-items: center; white-space: nowrap; font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .titolo { position: absolute; left: 30px; top: 735px; width: 902px; text-align: center; font-family: var(--font-titoli); font-weight: 900; font-stretch: 115%; font-size: 100px; line-height: 0.92; text-transform: uppercase; letter-spacing: -0.005em; }
+  .voci { position: absolute; left: 150px; top: 990px; width: 662px; text-align: center; font-size: 32px; font-weight: 500; line-height: 1.45; }
+</style>
+</head>
+<body>
+  <div class="quadro">
+    <!-- foto: il lavoro per il cliente (prodotti, locale, persone), metà alta del riquadro -->
+    <img class="foto" src="../esempio/prodotti.jpg" alt="">
+    <!-- testata: il nome del brand a sinistra (class logo) e il profilo a destra -->
+    <div class="testata"><span class="logo">studio vetrina</span><span>@studiovetrina</span></div>
+    <!-- etichetta: il nome del cliente, 2-3 parole -->
+    <p class="etichetta">Linea Alba Cosmetici</p>
+    <!-- titolo: due righe in maiuscolo, al massimo 12 lettere per riga -->
+    <h1 class="titolo">Storia di<br>un cliente</h1>
+    <!-- voci: cosa abbiamo fatto, 3-4 voci brevi, ognuna preceduta da un punto a metà altezza -->
+    <p class="voci">· Gestione dei social · Strategia dei contenuti · Reel · Influencer</p>
+  </div>
+</body>
+</html>

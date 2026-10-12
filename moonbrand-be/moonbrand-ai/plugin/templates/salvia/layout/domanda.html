@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Roboto:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #253A33; --secondario: #E4E1CE; --accento: #D8F0CE; --sfondo: #F8F8F8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Roboto', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--accento) 88%, var(--principale)); color: var(--principale); font-family: var(--font-testo); }
+
+  .riquadro { position: absolute; left: 108px; top: 170px; width: 878px; height: 1002px; border-radius: 22px; background: var(--principale);
+    display: flex; align-items: center; justify-content: center; padding: 0 70px; }
+  .titolo { max-width: 640px; text-align: center; color: #FFFFFF; font-family: var(--font-titoli); font-weight: 400; font-size: 116px; line-height: 1.0; letter-spacing: -0.035em; }
+  .titolo em { display: block; font-style: italic; color: var(--accento); }
+
+  /* adesivi: bordo bianco, ombra piena nel principale, dentro l'accento */
+  .adesivo { position: absolute; overflow: visible; }
+  .adesivo .bordo { fill: #FFFFFF; stroke: #FFFFFF; stroke-width: 16; stroke-linejoin: round; }
+  .adesivo .ombra { fill: var(--principale); }
+  .adesivo .pieno { fill: var(--accento); stroke: var(--principale); stroke-width: 7; stroke-linejoin: round; }
+  .adesivo .scuro { fill: var(--principale); }
+  .fulmine { left: 40px; top: 130px; width: 140px; height: 226px; transform: rotate(-4deg); }
+  .megafono { left: 862px; top: 112px; width: 164px; height: 164px; transform: rotate(-24deg); }
+  .fuoco { left: 70px; top: 1052px; width: 150px; height: 160px; }
+  .cursore { left: 890px; top: 1124px; width: 146px; height: 160px; }
+</style>
+</head>
+<body>
+  <div class="riquadro">
+    <!-- titolo: una domanda di 7-10 parole su 5 righe; la fine in corsivo con <em> -->
+    <h1 class="titolo">Quale KPI conta davvero <em>per i brand piccoli?</em></h1>
+  </div>
+
+  <!-- adesivi: quattro disegni agli angoli del riquadro (fulmine, megafono, fuoco, cursore); si tengono -->
+  <svg class="adesivo fulmine" viewBox="-14 -14 148 230">
+    <path class="bordo" transform="translate(5,5)" d="M44 4H104L72 84H102L28 204L50 112H18Z"/>
+    <path class="ombra" transform="translate(8,8)" d="M44 4H104L72 84H102L28 204L50 112H18Z"/>
+    <path class="pieno" d="M44 4H104L72 84H102L28 204L50 112H18Z"/>
+  </svg>
+  <svg class="adesivo megafono" viewBox="-14 -14 148 148">
+    <path class="bordo" transform="translate(4,4)" d="M14 44L70 16V96L14 70Z M70 16A15 40 0 0 1 70 96Z M26 70L44 74L48 108L32 108Z"/>
+    <path class="ombra" transform="translate(7,7)" d="M14 44L70 16V96L14 70Z M70 16A15 40 0 0 1 70 96Z M26 70L44 74L48 108L32 108Z"/>
+    <path class="pieno" d="M26 70L44 74L48 108L32 108Z"/>
+    <path class="pieno" d="M14 44L70 16V96L14 70Z"/>
+    <ellipse class="scuro" cx="72" cy="56" rx="16" ry="40"/>
+    <ellipse class="pieno" cx="72" cy="56" rx="7" ry="22"/>
+  </svg>
+  <svg class="adesivo fuoco" viewBox="-14 -14 148 158">
+    <path class="bordo" transform="translate(3,3)" d="M60 6C64 30 98 46 98 82C98 106 80 122 58 122C36 122 18 106 18 84C18 62 34 54 38 32C46 42 48 52 50 60C56 42 62 28 60 6Z"/>
+    <path class="scuro" d="M60 6C64 30 98 46 98 82C98 106 80 122 58 122C36 122 18 106 18 84C18 62 34 54 38 32C46 42 48 52 50 60C56 42 62 28 60 6Z"/>
+    <path class="pieno" style="stroke: none" d="M58 112C46 112 38 102 38 92C38 80 48 74 52 62C60 76 80 84 80 96C80 106 70 112 58 112Z"/>
+  </svg>
+  <svg class="adesivo cursore" viewBox="-14 -14 148 158">
+    <path class="bordo" transform="translate(5,5)" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+    <path class="ombra" transform="translate(8,8)" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+    <path class="pieno" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+  </svg>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Lato', sans-serif; --font-testo: 'Lato', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #8A8780; color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto è specchiata: i passanti entrano dal bordo destro */
+  .muro { position: absolute; left: -1100px; top: 0; width: 2560px; height: 1707px; object-fit: cover; display: block; transform: scaleX(-1); filter: saturate(0.35); }
+
+  /* il manifesto incollato: carta stropicciata tinta con lo sfondo */
+  .manifesto { position: absolute; left: 186px; top: 126px; width: 560px; height: 776px; overflow: hidden; background: var(--sfondo);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
+  .carta { position: absolute; left: 0; top: 0; width: 560px; height: 776px; object-fit: cover; display: block; mix-blend-mode: multiply; filter: brightness(1.12) contrast(1.15); opacity: 0.9; }
+
+  .titolo { position: absolute; left: 46px; top: 54px; width: 480px; font-family: var(--font-titoli); font-weight: 400; font-size: 106px; line-height: 0.92; letter-spacing: -0.04em; text-transform: uppercase; }
+  .testo { position: absolute; left: 48px; top: 486px; width: 460px; font-size: 38px; font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; text-transform: uppercase; color: color-mix(in srgb, var(--principale) 78%, transparent); }
+  .testo b { font-weight: 700; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- muro: cemento o pietra con qualcuno che passa sul bordo; il manifesto sta nella parte libera -->
+  <img class="muro" src="../esempio/muro.jpg" alt="">
+
+  <div class="manifesto">
+    <!-- carta: la grana della carta stropicciata, resta -->
+    <img class="carta" src="../esempio/carta.jpg" alt="">
+    <!-- titolo: due parole in maiuscolo, una per riga, al massimo 7 lettere ciascuna -->
+    <h1 class="titolo">Black<br>Friday</h1>
+    <!-- testo: l'offerta in 4-5 righe brevi in maiuscolo; la riga con la cifra in grassetto con <b> -->
+    <p class="testo">Sconti<br><b>dal 20% al 40%</b><br>su tutti i<br>pacchetti<br>social.</p>
+  </div>
+</body>
+</html>

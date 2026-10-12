@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,800&family=Hanken+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 40% 50%; display: block; }
+  /* il foglio trasparente appoggiato sulla foto: schiarisce e sfoca appena quello che c'è sotto */
+  .velo { position: absolute; left: 212px; top: 250px; width: 660px; height: 800px; background: color-mix(in srgb, white 26%, transparent);
+    border: 2px solid color-mix(in srgb, white 45%, transparent); backdrop-filter: blur(2px) brightness(1.06); }
+
+  .titolo { position: absolute; left: 212px; top: 790px; width: 760px; font-family: var(--font-titoli); font-stretch: 125%; font-weight: 800; font-size: 70px;
+    line-height: 1.12; letter-spacing: 0.005em; text-transform: uppercase; }
+  .chiusa { position: absolute; right: 208px; top: 1078px; font-weight: 700; font-size: 42px; letter-spacing: -0.01em; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio del volto molto da vicino (occhio, pelle), riempie tutta la pagina -->
+  <img class="foto" src="../esempio/occhio.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: tre righe in maiuscolo largo, 4-5 parole in tutto, al massimo 12 caratteri per riga; finisce sul bordo basso del foglio -->
+  <h1 class="titolo">Senza piano,<br>senza<br>analisi.</h1>
+  <!-- chiusa: 2-3 parole che chiudono la frase, con la virgoletta -->
+  <p class="chiusa">Solo rumore.”</p>
+</body>
+</html>

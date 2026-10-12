@@ -1,0 +1,21 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+ritratto.jpg   Unsplash, foto XJ6_VaJjQK8 (donna con il telefono, bianco e nero)
+               https://unsplash.com/photos/XJ6_VaJjQK8
+finestra.jpg   Unsplash, foto M-D1_jjL4-A (donna seduta davanti a una finestra)
+               https://unsplash.com/photos/M-D1_jjL4-A
+capelli.jpg    Unsplash, foto 505taQz4CgE (capelli nel vento)
+               https://unsplash.com/photos/505taQz4CgE
+sedia.jpg      Unsplash, foto SXbIg0fWVmg (donna seduta su una sedia, fondo bianco)
+               https://unsplash.com/photos/SXbIg0fWVmg
+telefono.jpg   Unsplash, foto GUDTJaTEjqA (persona con lo smartphone davanti al volto)
+               https://unsplash.com/photos/GUDTJaTEjqA
+giacca.jpg     Unsplash, foto xGSUPkqiWdg (giovane donna in giacca nera, fondo bianco)
+               https://unsplash.com/photos/xGSUPkqiWdg
+volto-1.jpg    Unsplash, foto IF9TK5Uy-KI   https://unsplash.com/photos/IF9TK5Uy-KI
+volto-2.jpg    Unsplash, foto y3kC_7Qhmjk   https://unsplash.com/photos/y3kC_7Qhmjk
+volto-3.jpg    Unsplash, foto mXFcQsECFWw   https://unsplash.com/photos/mXFcQsECFWw
+volto-4.jpg    Unsplash, foto lXk02i7y4C8   https://unsplash.com/photos/lXk02i7y4C8
+volto-5.jpg    Unsplash, foto WvydkSRf6_A   https://unsplash.com/photos/WvydkSRf6_A
+volto-6.jpg    Unsplash, foto l93bkSGsScw   https://unsplash.com/photos/l93bkSGsScw
+volto-7.jpg    Unsplash, foto Pt7ScUFirRE   https://unsplash.com/photos/Pt7ScUFirRE

@@ -1,0 +1,18 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+caffe.jpg      Unsplash, foto LD7odPzfFQw di Dollar Gill (ragazza al bar con la tazza e il telefono)
+               https://unsplash.com/photos/woman-in-brown-sweater-holding-white-ceramic-mug-LD7odPzfFQw
+letto.jpg      Unsplash, foto toN1mQ33Gkw di Sincerely Media (libro aperto, occhiali e caffè sul letto)
+               https://unsplash.com/photos/black-framed-eyeglasses-on-opened-book-toN1mQ33Gkw
+tazza.jpg      Unsplash, foto RuKRytt52Ko di sconnet moayedi (maglione verde e tazza, parete grigia)
+               https://unsplash.com/photos/a-woman-in-a-green-sweater-holding-a-coffee-cup-RuKRytt52Ko
+maglia.jpg     Unsplash, foto 33dYR-N79aY di Aleksandra Sapozhnikova (busto, maglia color cammello e pantaloni chiari)
+               https://unsplash.com/photos/a-woman-sitting-on-a-chair-with-her-legs-crossed-33dYR-N79aY
+tablet.jpg     Unsplash, foto 9gHym1WiAL0 di Lasse Jensen (tablet con tastiera su tavolo grigio)
+               https://unsplash.com/photos/black-and-white-laptop-computer-on-white-table-9gHym1WiAL0
+tavolino.jpg   Unsplash, foto Y_VtaY71Ve4 di Maddi Bazzocco (cappuccino, vaso e occhiali su legno chiaro)
+               https://unsplash.com/photos/white-round-ceramic-plate-beside-black-framed-eyeglasses-Y_VtaY71Ve4
+libro.jpg      Unsplash, foto QgCNcHLpPok di Jessica Da Rosa (mani con anelli che sfogliano un libro)
+               https://unsplash.com/photos/woman-flipping-over-pages-of-a-book-QgCNcHLpPok
+scrivania.jpg  Unsplash, foto cckf4TsHAuw di Andrew Neel (portatile, tazza e taccuino su legno vicino alla finestra)
+               https://unsplash.com/photos/macbook-pro-white-ceramic-mugand-black-smartphone-on-table-cckf4TsHAuw

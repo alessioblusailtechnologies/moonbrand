@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -520px; top: -560px; width: 2120px; height: 1910px; object-fit: cover; display: block; }
+
+  .didascalia { position: absolute; left: 40px; top: 24px; width: 1000px; font-size: 30px; font-weight: 700; line-height: 1.28; letter-spacing: -0.01em; color: var(--accento); }
+  .didascalia em { white-space: nowrap; font-weight: 400; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+  .foglio { position: absolute; left: 164px; top: 138px; width: 775px; height: 1068px; transform: rotate(-5deg); padding: 64px 50px 0;
+    background: var(--accento); color: var(--su-accento); box-shadow: 0 22px 40px rgba(0,0,0,0.38); text-align: center; }
+  .logo { font-family: var(--font-titoli); font-size: 22px; font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; }
+  .titolo { margin-top: 6px; font-family: var(--font-titoli); font-size: 132px; font-weight: 900; font-stretch: 125%; line-height: 1; letter-spacing: -0.045em; text-transform: uppercase; white-space: nowrap; }
+  .voci { margin-top: 58px; list-style: none; font-family: var(--font-titoli); font-size: 60px; font-weight: 600; font-stretch: 112%; line-height: 1.6; letter-spacing: -0.035em; white-space: nowrap; }
+  .sito { position: absolute; left: 0; bottom: 42px; width: 100%; font-size: 20px; font-weight: 400; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: un pavimento o un muro di cemento, in alto i piedi o le gambe di qualcuno; resta quasi tutta sotto il foglio -->
+  <img class="foto" src="../esempio/cemento.jpg" alt="">
+
+  <!-- didascalia: la stessa frase della copertina, 14-20 parole, due pezzi in corsivo sottolineato con <em> -->
+  <p class="didascalia">Benvenuti in Studio Ottobre: <em>qui la creatività è</em> la base, e <em>il lavoro insieme</em> è il motore.</p>
+
+  <div class="foglio">
+    <!-- logo: il nome dello studio, piccolo in cima al foglio -->
+    <p class="logo">Studio Ottobre</p>
+    <!-- titolo: una parola, al massimo 8 lettere -->
+    <h1 class="titolo">Servizi</h1>
+    <!-- voci: 5-7 servizi, ognuno di 1-3 parole, al massimo 18 caratteri -->
+    <ul class="voci">
+      <li>Identità di marca</li>
+      <li>Direzione creativa</li>
+      <li>Strategia</li>
+      <li>Contenuti social</li>
+      <li>Siti web</li>
+      <li>Rebranding</li>
+      <li>Consulenza</li>
+    </ul>
+    <!-- sito: l'indirizzo del sito -->
+    <p class="sito">studioottobre.it</p>
+  </div>
+</body>
+</html>

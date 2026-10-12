@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.36), 0 1px 4px rgba(0,0,0,0.22); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.16); }
+
+  .titolo { position: absolute; left: 150px; top: 66px; width: 900px; font-family: var(--font-titoli); font-weight: 700; font-size: 186px; line-height: 0.78; letter-spacing: -0.055em; text-shadow: var(--ombra); white-space: nowrap; }
+  .titolo span { display: block; }
+  .titolo .r2 { margin-left: 150px; }
+  .sotto { position: absolute; right: 108px; top: 420px; font-weight: 600; font-size: 54px; letter-spacing: -0.045em; text-shadow: var(--ombra); white-space: nowrap; }
+  .frase { position: absolute; left: 0; width: 1080px; padding-left: 290px; top: 860px; font-size: 46px; font-weight: 400; letter-spacing: -0.04em; text-shadow: var(--ombra); white-space: nowrap; }
+
+  .scintille { position: absolute; left: 248px; top: 312px; width: 110px; height: 110px; }
+  .stella { position: absolute; left: 912px; top: 528px; width: 84px; height: 84px; }
+  .interruttore { position: absolute; left: 812px; top: 930px; width: 100px; height: 54px; border-radius: 27px; background: var(--secondario); box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+  .interruttore::after { content: ''; position: absolute; right: 5px; top: 5px; width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona al bar o in un posto vero, foto da telefono con luce calda; il soggetto al centro, sopra un fondo tranquillo per il titolo -->
+  <img class="foto" src="../esempio/caffe.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: due righe minuscole, 7-10 lettere ciascuna; la seconda rientra a destra -->
+  <h1 class="titolo"><span class="r1">perché il</span><span class="r2">tuo post</span></h1>
+  <!-- sotto: la fine del titolo, 2-3 parole, allineata a destra -->
+  <p class="sotto">viene saltato</p>
+
+  <svg class="scintille" viewBox="0 0 110 110"><g fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="2" stroke-linejoin="round">
+    <path d="M62 14 C65 40 74 50 100 54 C74 58 65 68 62 96 C59 68 50 58 24 54 C50 50 59 40 62 14Z"/>
+    <path d="M24 70 C25 80 29 84 38 86 C29 88 25 92 24 104 C23 92 19 88 10 86 C19 84 23 80 24 70Z"/>
+    <path d="M28 2 C29 11 32 14 40 15 C32 16 29 19 28 28 C27 19 24 16 16 15 C24 14 27 11 28 2Z"/>
+  </g></svg>
+  <svg class="stella" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+
+  <!-- frase: una frase corta di 4-6 parole, con l'interruttore acceso sotto la fine -->
+  <p class="frase">l’attenzione si gioca subito</p>
+  <div class="interruttore"></div>
+</body>
+</html>

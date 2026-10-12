@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@700&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #15121D; --secondario: #2B2735; --accento: #FFFFFF; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Arimo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; filter: brightness(0.62) contrast(1.12) saturate(0.8); }
+
+  .angolo { position: absolute; font-family: 'Newsreader', serif; font-style: italic; font-size: 38px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+  .angolo::before { content: ''; display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: currentColor; margin-right: 20px; vertical-align: 0.18em; }
+  .a1 { left: 80px; top: 104px; } .a2 { right: 86px; top: 104px; } .a3 { left: 80px; top: 1250px; } .a4 { right: 86px; top: 1250px; }
+
+  .stella { position: absolute; left: 490px; width: 100px; height: 100px; color: var(--accento); }
+  .s1 { top: 282px; } .s2 { top: 968px; }
+  .titolo { position: absolute; left: 240px; top: 0; width: 600px; height: 1350px; display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: var(--font-titoli); font-weight: 700; font-size: 84px; line-height: 0.98; letter-spacing: -0.035em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: scorcio di città dal basso, scuro, con un edificio in luce al centro (o un luogo del brand in penombra) -->
+  <img class="foto" src="../esempio/vicolo.jpg" alt="">
+
+  <!-- angoli: quattro parole brevi in corsivo, una per angolo -->
+  <p class="angolo a1">Insieme.</p>
+  <p class="angolo a2">Visione chiara.</p>
+  <p class="angolo a3">Crescita.</p>
+  <p class="angolo a4">Marketing.</p>
+
+  <!-- stelle: due bagliori a otto punte, sopra e sotto il titolo -->
+  <svg class="stella s1" viewBox="0 0 100 100"><path fill="currentColor" d="M50 0 L54 40 L80 12 L59 44 L100 50 L59 56 L80 88 L54 60 L50 100 L46 60 L20 88 L41 56 L0 50 L41 44 L20 12 L46 40 Z"/></svg>
+  <svg class="stella s2" viewBox="0 0 100 100"><path fill="currentColor" d="M50 0 L54 40 L80 12 L59 44 L100 50 L59 56 L80 88 L54 60 L50 100 L46 60 L20 88 L41 56 L0 50 L41 44 L20 12 L46 40 Z"/></svg>
+
+  <!-- titolo: una convinzione in due frasi brevi, 7-10 parole in tutto, in maiuscolo -->
+  <h1 class="titolo">La fiducia non si rincorre. Si costruisce.</h1>
+</body>
+</html>

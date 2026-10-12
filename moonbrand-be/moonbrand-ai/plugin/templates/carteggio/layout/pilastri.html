@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2B26; --secondario: #7A9024; --accento: #C5DC7E; --sfondo: #E4E3DB; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --inchiostro-tenue: color-mix(in srgb, var(--principale) 72%, transparent); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 92%, var(--principale)); color: var(--principale); font-family: var(--font-testo); }
+  .grana::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Le pieghe del foglio: una orizzontale sotto il paragrafo, una verticale a metà. */
+  .piega { position: absolute; background: color-mix(in srgb, var(--principale) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, white 35%, transparent); }
+  .testata { position: absolute; top: 64px; font-size: 24px; line-height: 1.05; text-transform: uppercase; color: var(--inchiostro-tenue); }
+  .etichetta { position: absolute; left: 60px; font-size: 24px; line-height: 1.05; text-transform: uppercase; color: var(--inchiostro-tenue); }
+
+  .frase { position: absolute; left: 238px; top: 150px; width: 780px; font-family: var(--font-titoli); font-weight: 400; font-size: 50px; line-height: 1.1; text-align: justify; }
+  .frase mark { background: var(--accento); color: var(--su-accento); font-style: italic; padding: 0 10px; }
+  .voce { position: absolute; top: 494px; width: 320px; font-family: var(--font-titoli); font-size: 38px; line-height: 1.12; }
+  .elenco { position: absolute; left: 238px; top: 672px; width: 420px; list-style: none; font-size: 27px; line-height: 1.2; }
+  .elenco li + li { margin-top: 14px; }
+
+  .timbro { position: absolute; left: 812px; top: 744px; width: 226px; height: 226px; color: var(--inchiostro-tenue); }
+  .anello { position: absolute; inset: 0; border: 2px solid currentColor; border-radius: 50%; }
+  .anello span { position: absolute; left: 50%; top: 12px; width: 24px; margin-left: -12px; height: 101px; transform-origin: 50% 100%; text-align: center; font-family: var(--font-testo); font-size: 24px; line-height: 1; }
+  .timbro .logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-style: italic; font-size: 64px; line-height: 1; }
+
+  .foto { position: absolute; top: 956px; height: 394px; object-fit: cover; display: block; }
+</style>
+</head>
+<body class="grana">
+  <div class="piega" style="left: 0; top: 452px; width: 1080px; height: 3px"></div>
+  <div class="piega" style="left: 560px; top: 0; width: 2px; height: 1350px"></div>
+
+  <!-- testata: anno, profilo, rubrica, «oggi»; quattro voci brevi in riga -->
+  <p class="testata" style="left: 60px">Dal<br>2019</p>
+  <p class="testata" style="left: 238px">studio.ortica</p>
+  <p class="testata" style="left: 590px">Idee social</p>
+  <p class="testata" style="right: 60px">Oggi</p>
+
+  <!-- frase: l'idea in 22-28 parole, giustificata; 1-2 parole chiave evidenziate con <mark> -->
+  <h1 class="frase">Pensa ai <mark>temi fissi</mark> come alle conversazioni del tuo brand: tutto quello che pubblichi entra in uno di loro.</h1>
+
+  <!-- etichette e voci: a sinistra una parola, poi due definizioni di 5-8 parole; a destra un'etichetta di 2 parole -->
+  <p class="etichetta" style="top: 500px">Cosa</p>
+  <p class="voce" style="left: 238px">Da tre a cinque argomenti fissi</p>
+  <p class="voce" style="left: 590px; width: 280px">Ripetuti con costanza nel tempo</p>
+  <p class="etichetta" style="top: 500px; left: auto; right: 60px; text-align: right">Voce del<br>brand</p>
+
+  <!-- esempi: cinque voci brevi, al massimo 22 caratteri ciascuna -->
+  <p class="etichetta" style="top: 676px">Esempi</p>
+  <ul class="elenco">
+    <li>Consigli pratici</li>
+    <li>Dietro le quinte</li>
+    <li>Casi e risultati</li>
+    <li>Novità del settore</li>
+    <li>Offerte e servizi</li>
+  </ul>
+
+  <div class="timbro"><div class="anello" data-testo="ORTICA · MARKETING · "></div><div class="logo">O</div></div>
+
+  <!-- foto: due immagini affiancate in basso, un ritratto e un oggetto o una natura morta -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="" style="left: 40px; width: 490px; object-position: 50% 30%">
+  <img class="foto" src="../esempio/vaso.jpg" alt="" style="left: 568px; width: 472px; object-position: 30% 50%">
+
+  <script>
+    for (const anello of document.querySelectorAll('.anello')) {
+      const lettere = [...anello.dataset.testo];
+      lettere.forEach((c, i) => { const s = document.createElement('span'); s.textContent = c; s.style.transform = `rotate(${(i * 360) / lettere.length}deg)`; anello.append(s); });
+    }
+  </script>
+</body>
+</html>

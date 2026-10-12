@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); --accento-scuro: color-mix(in srgb, var(--accento) 55%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); font-size: 172px; letter-spacing: -0.055em; line-height: 0.92; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .titolo span { display: block; }
+  .alto { left: 120px; top: 150px; }
+  .basso { right: 48px; bottom: 50px; }
+
+  .giorno { position: absolute; left: 72px; top: 780px; width: 380px; padding: 30px 30px 30px; border-radius: 30px; transform: rotate(4deg);
+    background: var(--burro); color: var(--principale); }
+  .nome { font-size: 25px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; color: var(--accento-scuro); }
+  .numero { font-size: 92px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; margin-top: 4px; }
+  .impegno { margin-top: 22px; padding: 14px 18px; border-left: 6px solid var(--accento); background: color-mix(in srgb, var(--accento) 18%, var(--burro)); }
+  .cosa { font-size: 25px; font-weight: 700; color: var(--accento-scuro); }
+  .ore { margin-top: 4px; font-size: 24px; font-weight: 600; color: color-mix(in srgb, var(--principale) 72%, transparent); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona seduta a un tavolino con un caffè o il computer, nella metà destra; il tavolo in basso a sinistra -->
+  <img class="foto" src="../esempio/tavolino.jpg" alt="">
+
+  <!-- titolo-alto: due righe in alto a sinistra, 1-2 parole ciascuna, al massimo 9 caratteri per riga -->
+  <h1 class="titolo alto"><span>il primo</span><span>cliente</span></h1>
+
+  <div class="giorno">
+    <!-- giorno: il giorno della settimana e il numero -->
+    <p class="nome">Lunedì</p>
+    <p class="numero">13</p>
+    <!-- impegno: cosa c'è in agenda, 2-4 parole, e l'orario -->
+    <div class="impegno"><p class="cosa">Lancio del sito</p><p class="ore">09:00-18:30</p></div>
+  </div>
+
+  <!-- titolo-basso: una o due parole in fondo a destra, al massimo 10 caratteri -->
+  <h2 class="titolo basso">il piano</h2>
+</body>
+</html>

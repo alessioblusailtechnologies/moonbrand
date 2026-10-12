@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; filter: saturate(0.55); }
+
+  .sopra { position: absolute; left: 640px; top: 712px; font-size: 22px; font-weight: 500; letter-spacing: -0.03em; white-space: nowrap; }
+
+  .titolo { position: absolute; left: 0; top: 842px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 134px; font-weight: 400;
+    font-optical-sizing: auto; line-height: 0.74; letter-spacing: -0.055em; text-transform: uppercase; white-space: nowrap; }
+  .titolo span { display: block; }
+
+  .firma { position: absolute; left: 92px; top: 1222px; width: 280px; text-align: center; }
+  .logo, .logo-servizio { font-size: 27px; font-weight: 700; line-height: 0.9; letter-spacing: -0.01em; text-transform: uppercase; }
+  .profilo { margin-top: 14px; font-size: 16px; font-style: italic; font-weight: 500; letter-spacing: -0.01em; text-transform: uppercase; }
+
+  .nota { position: absolute; left: 568px; top: 1232px; width: 440px; font-family: var(--font-titoli); font-size: 21px; line-height: 1.05; letter-spacing: -0.01em; opacity: 0.92; }
+  .nota b { display: block; margin-top: 8px; font-family: var(--font-testo); font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto a figura media, toni freddi o spenti, la parte bassa scura (giacca, ombra) -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <!-- sopra: una frase breve, 4-6 parole -->
+  <p class="sopra">Fai crescere il tuo progetto.</p>
+
+  <!-- titolo: tre righe in maiuscolo, la prima e l'ultima di 8-10 lettere, quella in mezzo corta -->
+  <h1 class="titolo"><span>Consulenza</span><span>che</span><span>trasforma</span></h1>
+
+  <div class="firma">
+    <!-- logo: il nome dello studio, sotto il servizio in una parola -->
+    <p class="logo">Studio Ottobre</p><p class="logo-servizio">Consulenza</p>
+    <!-- profilo: il nome del profilo social -->
+    <p class="profilo">@studioottobre</p>
+  </div>
+
+  <!-- nota: 18-24 parole in serif, poi l'invito in grassetto con <b> -->
+  <p class="nota">Che ti serva chiarezza, una strategia o una mano: ci siamo. Il tuo marchio, la tua visione, il nostro mestiere.<b>Prenota la prima chiamata gratuita.</b></p>
+</body>
+</html>

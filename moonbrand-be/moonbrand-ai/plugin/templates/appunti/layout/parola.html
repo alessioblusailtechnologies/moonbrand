@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Arimo:wght@400&family=League+Spartan:wght@800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --rosa-chiaro: color-mix(in srgb, var(--secondario) 62%, white); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.16); }
+  .utente { position: absolute; left: 0; top: 112px; width: 1080px; text-align: center; font-size: 30px; }
+
+  .titolo { position: absolute; left: 0; top: 196px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 226px; font-weight: 500; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
+  .pillola { position: absolute; left: 700px; top: 118px; padding: 10px 26px 8px; border-radius: 50%; background: var(--rosa-chiaro); color: var(--su-secondario); transform: rotate(-8deg); font-family: 'League Spartan', sans-serif; font-size: 34px; font-weight: 800; text-transform: uppercase; }
+  .sotto { position: absolute; left: 104px; top: 470px; width: 330px; font-size: 44px; line-height: 1.05; letter-spacing: -0.02em; }
+  .adesivo { position: absolute; right: 70px; top: 880px; text-align: center; font-family: 'League Spartan', sans-serif; font-size: 46px; font-weight: 800; line-height: 0.92; letter-spacing: -0.02em; color: var(--principale);
+    -webkit-text-stroke: 12px #FFFFFF; paint-order: stroke fill; }
+  .filo { position: absolute; left: 846px; top: 856px; width: 210px; height: 2px; background: var(--rosa-chiaro); }
+  .filo::before { content: ''; position: absolute; left: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--secondario); }
+  .emoji { position: absolute; font-family: 'Noto Color Emoji', sans-serif; line-height: 1; }
+  .stella.a { left: 236px; top: 150px; font-size: 52px; } .stella.b { left: 224px; top: 1080px; font-size: 52px; } .stella.c { left: 912px; top: 990px; font-size: 34px; }
+</style>
+</head>
+<body>
+  <!-- foto: un selfie allo specchio o un ritratto in piedi, la persona al centro sotto la parola -->
+  <img class="foto" src="../esempio/specchio.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+
+  <!-- titolo: una parola sola in minuscolo, al massimo 9 lettere -->
+  <h1 class="titolo">strategia</h1>
+  <!-- pillola: un aggettivo in maiuscolo, una parola corta -->
+  <p class="pillola">furba</p>
+  <!-- sotto: la frase che completa la parola, 4-6 parole su tre righe -->
+  <p class="sotto">che porta clienti senza pubblicità</p>
+  <!-- adesivo: la rubrica, 2 parole su due righe -->
+  <i class="filo"></i>
+  <p class="adesivo">idee per<br>freelance</p>
+
+  <span class="emoji stella a">⭐</span>
+  <span class="emoji stella b">⭐</span>
+  <span class="emoji stella c">⭐</span>
+</body>
+</html>

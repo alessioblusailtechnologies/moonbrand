@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=IBM+Plex+Mono:wght@400&family=Italianno&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161414; --secondario: #E9E9EB; --accento: #F4C542; --sfondo: #F3EED0; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'IBM Plex Mono', monospace; }
+  :root { --crema: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--crema); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 60% 50%; display: block; filter: saturate(0.6) brightness(0.8) contrast(1.05); }
+
+  .titolo { position: absolute; left: 110px; top: 150px; width: 900px; font-family: var(--font-titoli); font-weight: 700; font-size: 128px; line-height: 0.9; letter-spacing: -0.06em; }
+  .titolo span { display: block; white-space: nowrap; }
+  .corsivo { position: absolute; left: 330px; top: 770px; width: 700px; font-family: 'Italianno', cursive; font-size: 220px; line-height: 0.76; }
+  .corsivo span { display: block; white-space: nowrap; }
+  .corsivo span + span { margin-left: 110px; }
+
+  .stella { position: absolute; width: 74px; height: 74px; }
+  .s1 { left: 52px; top: 150px; transform: rotate(-12deg); }
+  .s2 { left: 860px; top: 400px; width: 88px; height: 88px; transform: rotate(10deg); }
+  .freccia { position: absolute; left: 120px; top: 600px; width: 270px; height: 300px; color: var(--crema); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona di cui non si vede il viso (telefono, tazza, cappello davanti), luce morbida -->
+  <img class="foto" src="../esempio/telefono.jpg" alt="">
+
+  <svg class="stella s1" viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color: color-mix(in srgb, var(--accento) 35%, white)"/><stop offset="0.5" style="stop-color: var(--accento)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--accento) 72%, black)"/></radialGradient></defs>
+    <path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+
+  <!-- titolo: il tema della domanda, due righe di 1-2 parole, al massimo 13 lettere per riga -->
+  <h1 class="titolo"><span>il marketing</span><span>senza volto</span></h1>
+  <svg class="stella s2" viewBox="0 0 100 100"><path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+
+  <svg class="freccia" viewBox="0 0 270 300" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 10 C 20 40, 10 120, 60 150 C 110 180, 120 110, 80 110 C 40 110, 30 200, 120 240 C 160 258, 210 262, 250 258"/>
+    <path d="M226 236 L252 258 L224 278"/>
+  </svg>
+  <!-- corsivo: la domanda, scritta a mano su due righe (2 parole + 2 parole al massimo) -->
+  <p class="corsivo"><span>Ne vale</span><span>la pena?</span></p>
+</body>
+</html>

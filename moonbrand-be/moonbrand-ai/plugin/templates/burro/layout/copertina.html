@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  /* il giallo burro dei titoli e degli adesivi: il secondario schiarito, così sulla foto si legge sempre */
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 4%; display: block; filter: brightness(0.94); }
+
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); letter-spacing: -0.055em; line-height: 1; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .alto { left: 0; width: 1080px; top: 330px; text-align: center; font-size: 168px; }
+  .basso { right: 40px; bottom: 34px; font-size: 168px; }
+
+  .menu { position: absolute; left: 300px; top: 150px; height: 82px; display: flex; align-items: center; background: var(--burro); border-radius: 16px; color: var(--principale);
+    font-size: 36px; font-weight: 500; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .menu span { padding: 0 42px; line-height: 82px; }
+  .menu span + span { border-left: 2px solid color-mix(in srgb, var(--principale) 14%, transparent); }
+  .menu::after { content: ''; position: absolute; left: 50%; bottom: -22px; width: 40px; height: 24px; transform: translateX(-50%); background: var(--burro); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+
+  .stelle { position: absolute; left: 770px; top: 610px; width: 150px; height: 190px; color: var(--burro); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in piedi in un locale o in strada, a figura intera o a mezzo busto, il viso al centro della pagina -->
+  <img class="foto" src="../esempio/asporto.jpg" alt="">
+
+  <!-- menu: le tre voci del menu che compare quando si seleziona un testo sul telefono, una parola ciascuna -->
+  <p class="menu"><span>Copia</span><span>Seleziona</span><span>Condividi</span></p>
+
+  <!-- titolo-alto: la prima metà del titolo, 2-3 parole corte, al massimo 13 caratteri -->
+  <h1 class="titolo alto">il mio errore</h1>
+
+  <svg class="stelle" viewBox="0 0 150 190" fill="currentColor">
+    <path d="M44 20 C47 52 56 61 86 64 C56 67 47 76 44 108 C41 76 32 67 2 64 C32 61 41 52 44 20 Z"/>
+    <path d="M112 0 C114 22 120 28 142 30 C120 32 114 38 112 60 C110 38 104 32 82 30 C104 28 110 22 112 0 Z"/>
+    <path d="M100 112 C102 138 109 145 134 147 C109 149 102 156 100 182 C98 156 91 149 66 147 C91 145 98 138 100 112 Z"/>
+  </svg>
+
+  <!-- titolo-basso: la seconda metà, 1-2 parole, al massimo 11 caratteri, in fondo a destra -->
+  <h2 class="titolo basso">più grande</h2>
+</body>
+</html>

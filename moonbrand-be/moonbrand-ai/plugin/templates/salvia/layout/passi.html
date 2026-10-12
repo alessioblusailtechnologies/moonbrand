@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Roboto:wght@400;700&family=Oswald:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #253A33; --secondario: #E4E1CE; --accento: #D8F0CE; --sfondo: #F8F8F8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Roboto', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--accento); color: var(--principale); font-family: var(--font-testo); }
+
+  .pillola { position: absolute; left: 68px; top: 74px; height: 95px; display: flex; align-items: center; gap: 24px; padding: 0 48px 0 44px; border-radius: 48px;
+    background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); font-weight: 700; font-size: 28px; letter-spacing: 0.01em; text-transform: uppercase; white-space: nowrap; }
+  .pillola::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF; flex: none; }
+  .firma { position: absolute; right: 54px; top: 103px; font-family: 'Oswald', sans-serif; font-size: 29px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+
+  .titolo { position: absolute; left: 70px; top: 296px; width: 640px; font-family: var(--font-titoli); font-weight: 400; font-size: 88px; line-height: 1.04; letter-spacing: -0.03em; }
+  .cursore-titolo { display: inline-block; width: 100px; height: 112px; margin-left: 30px; vertical-align: -0.7em; overflow: visible; }
+  .adesivo .bordo { fill: #FFFFFF; stroke: #FFFFFF; stroke-width: 16; stroke-linejoin: round; }
+  .adesivo .ombra { fill: var(--principale); }
+  .adesivo .pieno { fill: color-mix(in srgb, var(--accento) 88%, var(--principale)); stroke: var(--principale); stroke-width: 7; stroke-linejoin: round; }
+
+  .passi { position: absolute; left: 72px; top: 612px; width: 900px; list-style: none; }
+  .passi li { display: flex; align-items: flex-start; height: 254px; }
+  .numero { flex: none; width: 280px; font-family: var(--font-titoli); font-size: 132px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
+  .testo { padding-top: 28px; width: 600px; font-family: var(--font-testo); font-size: 40px; font-weight: 400; line-height: 1.16; letter-spacing: -0.015em; }
+</style>
+</head>
+<body>
+  <!-- pillola: l'invito, 2-3 parole -->
+  <p class="pillola">Da salvare</p>
+  <!-- logo: il nome del brand tra parentesi quadre -->
+  <p class="firma">[ <span class="logo">Studio Ardesia</span> ]</p>
+
+  <!-- titolo: 3-5 parole su due righe; il cursore disegnato chiude la seconda riga -->
+  <h1 class="titolo">Da fare prima del lancio<svg class="adesivo cursore-titolo" viewBox="-14 -14 148 158">
+    <path class="bordo" transform="translate(5,5)" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+    <path class="ombra" transform="translate(8,8)" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+    <path class="pieno" d="M10 6L104 52L62 62L92 104L74 118L46 76L20 106Z"/>
+  </svg></h1>
+
+  <!-- passi: tre, numerati 01. 02. 03.; ogni testo 6-10 parole, al massimo due righe -->
+  <ol class="passi">
+    <li><span class="numero">01.</span><p class="testo">Scegli un solo obiettivo per la campagna in arrivo.</p></li>
+    <li><span class="numero">02.</span><p class="testo">Prepara gli strumenti per misurare ogni risultato.</p></li>
+    <li><span class="numero">03.</span><p class="testo">Programma le anteprime su tutti i canali per tempo.</p></li>
+  </ol>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Archivo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 300px; width: 1080px; height: 1050px; object-fit: cover; object-position: 50% 62%; display: block;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%); mask-image: linear-gradient(180deg, transparent 0%, #000 30%); }
+  /* il velo chiaro: la foto resta sotto, schiarita come una pagina di rivista */
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: color-mix(in srgb, var(--sfondo) 50%, transparent); }
+
+  .filetto { position: absolute; left: 70px; top: 112px; width: 420px; height: 2px; background: var(--accento); }
+  .titolo { position: absolute; left: 18px; top: 40px; width: 1062px; font-family: var(--font-titoli); font-weight: 500; font-size: 262px; line-height: 0.82; letter-spacing: -0.045em; white-space: nowrap; }
+  .logo { position: absolute; left: 46px; top: 560px; font-family: var(--font-titoli); font-size: 26px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in un interno chiaro e vuoto, piccola e in basso; la parte alta della foto chiara e tranquilla -->
+  <img class="foto" src="../esempio/scala.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- filetto sottile sopra il titolo: resta così -->
+  <div class="filetto"></div>
+  <!-- titolo: due righe di una parola ciascuna, al massimo 7 lettere per riga -->
+  <h1 class="titolo">Storie<br>vere</h1>
+  <!-- logo: il nome del brand, piccolo, sotto il titolo -->
+  <p class="logo">Studio Bianchi</p>
+</body>
+</html>

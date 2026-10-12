@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  /* Oswald è strettissimo: qui è ingrandito, così le misure sotto valgono anche per i font del brand, più larghi. */
+  @font-face { font-family: 'Oswald Gigante'; font-weight: 200 700; src: url(https://fonts.gstatic.com/s/oswald/v57/TK3iWkUHHAIjg752GT8G.woff2) format('woff2'); size-adjust: 150%; }
+  :root { --font-titoli: 'Oswald Gigante', 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; }
+
+  .parola { position: absolute; left: 30px; top: 22px; width: 1020px; text-align: center; font-family: var(--font-titoli); font-weight: 700; text-transform: uppercase;
+    color: var(--principale); font-size: 196px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+
+  /* la foto copre la metà bassa della parola */
+  .foto { position: absolute; left: 130px; top: 262px; width: 592px; height: 900px; object-fit: cover; object-position: 50% 40%; display: block; }
+
+  /* al posto dell'adesivo del modello, il marchio del brand girato di traverso, a cavallo del bordo della foto */
+  .marchio { position: absolute; left: 600px; top: 520px; width: 236px; height: 236px; border-radius: 50%; background: var(--principale); border: 8px solid #FFFFFF;
+    display: flex; align-items: center; justify-content: center; transform: rotate(-12deg); }
+  .logo { font-family: var(--font-titoli); font-weight: 700; font-size: 44px; line-height: 0.9; text-transform: uppercase; text-align: center; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- parola: una sola parola, al massimo 7 lettere, riempie la testata -->
+  <h1 class="parola">Agenzia</h1>
+
+  <!-- foto: verticale, una persona al lavoro in una stanza chiara (telefono, divano, scrivania), luce naturale -->
+  <img class="foto" src="../esempio/finestra.jpg" alt="">
+
+  <!-- logo: il marchio del brand nel tondo; senza un file, il nome in due righe corte -->
+  <div class="marchio"><div class="logo">Studio<br>Marea</div></div>
+</body>
+</html>

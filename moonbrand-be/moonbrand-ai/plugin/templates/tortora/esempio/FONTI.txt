@@ -1,0 +1,22 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+caffe.jpg      Unsplash, foto n8KBSBUHm6g di Valeriia Miller
+               https://unsplash.com/photos/person-wearing-brown-and-white-sneakers-n8KBSBUHm6g
+portatile.jpg  Unsplash, foto Uz0uW-hcd5M di Kateryna Hliznitsova
+               https://unsplash.com/photos/a-woman-drinking-from-a-cup-while-holding-a-laptop-Uz0uW-hcd5M
+bevanda.jpg    Unsplash, foto 3u0nE0E1utM di Aida Tavakkoli
+               https://unsplash.com/photos/woman-drinking-iced-coffee-3u0nE0E1utM
+tazza.jpg      Unsplash, foto cv5y21YCia8 di Oksana Demenko
+               https://unsplash.com/photos/woman-drinking-glass-outdoors-cv5y21YCia8
+scrivania.jpg  Unsplash, foto kw0z6RyvC0s di Mikey Harris
+               https://unsplash.com/photos/macbook-pro-on-brown-wooden-table-kw0z6RyvC0s
+letto.jpg      Unsplash, foto 7T08drMmH3k di Robbi
+               https://unsplash.com/photos/a-laptop-computer-sitting-on-top-of-a-bed-7T08drMmH3k
+tavola.jpg     Unsplash, foto m8pYWJQnRs0 di Priscilla Du Preez 🇨🇦
+               https://unsplash.com/photos/a-woman-taking-a-picture-of-food-on-her-phone-m8pYWJQnRs0
+candele.jpg    Unsplash, foto oLaEXuX4fM8 di Marisa Garrido
+               https://unsplash.com/photos/a-laptop-computer-sitting-on-top-of-a-table-next-to-a-candle-oLaEXuX4fM8
+telefono.jpg   Unsplash, foto vsAd6PFDhbc di Laura Chouette
+               https://unsplash.com/photos/woman-in-white-tank-top-and-blue-denim-jeans-sitting-on-yellow-chair-vsAd6PFDhbc
+porta.jpg      Unsplash, foto JewhsDeQqO8 di Nick Kimel
+               https://unsplash.com/photos/woman-in-white-dress-standing-in-front-of-black-wooden-door-JewhsDeQqO8

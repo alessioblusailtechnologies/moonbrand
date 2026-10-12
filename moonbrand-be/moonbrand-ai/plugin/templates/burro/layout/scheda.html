@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600&family=Hanken+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); --pois: color-mix(in srgb, var(--accento) 55%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo); color: var(--principale);
+    background-color: var(--pois);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84'%3E%3Ccircle cx='21' cy='21' r='9.5' fill='white'/%3E%3Ccircle cx='63' cy='63' r='9.5' fill='white'/%3E%3C/svg%3E");
+    background-size: 84px 84px; }
+
+  .foto { position: absolute; object-fit: cover; display: block; box-shadow: 0 12px 28px rgba(0,0,0,0.22); }
+  .f1 { left: 680px; top: 110px; width: 330px; height: 420px; transform: rotate(6deg); }
+  .f2 { left: 60px; top: 760px; width: 300px; height: 440px; transform: rotate(-4deg); }
+
+  .finestra { position: absolute; left: 196px; top: 360px; width: 690px; z-index: 1; }
+  .vetro { position: relative; padding: 80px 60px 70px; background: var(--burro); border: 3px solid var(--principale); border-radius: 22px 22px 0 0; }
+  .puntini { position: absolute; left: 26px; top: 22px; width: 64px; height: 18px; color: var(--principale); }
+  .titolo { text-align: center; font-family: var(--font-titoli); font-size: 58px; font-weight: 700; line-height: 1.12; letter-spacing: -0.02em; }
+  .testo { margin-top: 30px; font-size: 32px; font-weight: 500; line-height: 1.38; }
+  .punti { margin-top: 18px; list-style: none; font-size: 32px; font-weight: 500; line-height: 1.38; }
+  .punti li::before { content: '✓'; margin-right: 12px; font-weight: 600; }
+  .freccia { position: absolute; right: 44px; bottom: 34px; width: 110px; height: 60px; color: var(--principale); }
+  .barra { position: relative; height: 26px; background: var(--principale); border-radius: 0 0 6px 6px; }
+  .barra::after { content: ''; position: absolute; right: 8px; top: 5px; width: 14px; height: 16px; background: var(--burro); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+</style>
+</head>
+<body>
+  <!-- foto-1: un dettaglio dall'alto (scrivania, computer, caffè), in alto a destra -->
+  <img class="foto f1" src="../esempio/scrivania.jpg" alt="">
+  <!-- foto-2: una persona o un oggetto in mano, in basso a sinistra -->
+  <img class="foto f2" src="../esempio/freddo.jpg" alt="">
+
+  <div class="finestra">
+    <div class="vetro">
+      <svg class="puntini" viewBox="0 0 64 18" fill="currentColor"><circle cx="9" cy="9" r="8"/><circle cx="32" cy="9" r="8"/><circle cx="55" cy="9" r="8"/></svg>
+      <!-- titolo: il servizio o il punto della slide, 2-4 parole -->
+      <h1 class="titolo">Reel per locali</h1>
+      <!-- testo: una frase di 12-20 parole -->
+      <p class="testo">Video brevi girati nel tuo locale, montati e pubblicati da noi ogni settimana.</p>
+      <!-- punti: tre righe brevi, 3-5 parole ciascuna -->
+      <ul class="punti">
+        <li>Riprese in mezza giornata</li>
+        <li>Testi e musica inclusi</li>
+        <li>Report a fine mese</li>
+      </ul>
+      <svg class="freccia" viewBox="0 0 110 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 8">
+        <path d="M6 52 C2 30 30 26 30 42 C30 56 10 50 22 32 C36 14 70 14 96 18"/>
+      </svg>
+      <svg class="freccia" viewBox="0 0 110 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M88 10 L98 18 L87 26"/></svg>
+    </div>
+    <div class="barra"></div>
+  </div>
+</body>
+</html>

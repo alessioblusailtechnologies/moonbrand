@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--accento); color: var(--principale); }
+
+  /* un blocco solo, in alto a sinistra, largo poco più di metà pagina: frasi in maiuscolo stretto, chiaro e grassetto alternati */
+  .testo { position: absolute; left: 108px; top: 150px; width: 760px; font-family: var(--font-titoli); font-weight: 200; text-transform: uppercase;
+    font-size: 54px; line-height: 1.02; letter-spacing: -0.025em; }
+  .testo span { display: block; }
+  .apre { font-weight: 600; color: #FFFFFF; }
+  .forte { font-weight: 600; }
+
+  .logo { position: absolute; left: 108px; top: 1190px; font-family: var(--font-testo); font-weight: 800; font-size: 25px; letter-spacing: 0.04em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- testo: 35-50 parole in 5 pezzi, ognuno a capo; la prima frase in bianco, due pezzi in grassetto, gli altri chiari -->
+  <p class="testo">
+    <span class="apre">La tua storia merita spazio.</span>
+    <span class="forte">Aiutiamo le imprese locali</span>
+    <span>a trovare una voce chiara e a</span>
+    <span class="forte">farsi scegliere online,</span>
+    <span>trasformando il lavoro di ogni giorno in contenuti che la gente salva e ricorda a lungo.</span>
+  </p>
+
+  <!-- logo: il profilo del brand in basso a sinistra (o il file del logo, piccolo) -->
+  <div class="logo">@studiomarea</div>
+</body>
+</html>

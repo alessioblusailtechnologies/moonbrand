@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2622; --secondario: #ECD084; --accento: #FFF0C5; --sfondo: #F7F5F0; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; filter: brightness(0.8); }
+
+  .titolo { position: absolute; left: 0; top: 470px; width: 1080px; text-align: center; }
+  .sopra { position: absolute; left: 330px; top: -46px; font-size: 38px; font-weight: 400; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap; }
+  .grande { display: block; font-family: var(--font-titoli); font-size: 178px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+  .corsivo { position: absolute; left: 186px; top: 180px; font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; font-size: 150px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+
+  .sotto { position: absolute; left: 60px; top: 1146px; width: 960px; text-align: center; font-size: 31px; font-weight: 400; line-height: 1.5; letter-spacing: -0.02em; }
+  .sotto b { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 8px; }
+</style>
+</head>
+<body>
+  <!-- foto: un oggetto al centro su un tavolo (una bevanda, un taccuino), fondo sfocato e tranquillo -->
+  <img class="foto" src="../esempio/matcha.jpg" alt="">
+
+  <h1 class="titolo">
+    <!-- sopra: 2-3 parole piccole in maiuscolo, l'inizio della domanda -->
+    <span class="sopra">Che cosa</span>
+    <!-- grande: una parola in maiuscolo, al massimo 7 lettere -->
+    <span class="grande">Aspetti</span>
+    <!-- corsivo: una parola con il punto di domanda -->
+    <span class="corsivo">ancora?</span>
+  </h1>
+
+  <!-- sotto: due frasi di 6-10 parole; nella prima la parte che conta in grassetto sottolineato con <b> -->
+  <p class="sotto">C’è sempre <b>una storia da raccontare</b>.<br>La tua giornata può diventare il prossimo post.</p>
+</body>
+</html>

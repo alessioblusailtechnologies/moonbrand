@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); letter-spacing: -0.055em; line-height: 0.92; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .titolo span { display: block; }
+  .sigla { left: 90px; top: 90px; font-size: 330px; letter-spacing: -0.04em; }
+  .basso { right: 48px; bottom: 50px; text-align: right; font-size: 176px; }
+
+  .luogo { position: absolute; left: 92px; top: 620px; height: 70px; padding: 0 30px 0 22px; display: flex; align-items: center; gap: 10px; border-radius: 35px; transform: rotate(-14deg);
+    background: var(--burro); color: var(--principale); font-family: var(--font-testo); font-size: 34px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; }
+  .luogo svg { width: 26px; height: 34px; flex: none; }
+
+  .ricerche { position: absolute; left: 70px; top: 830px; width: 440px; padding: 34px 0 30px; border-radius: 24px; transform: rotate(-2.5deg);
+    background: var(--burro); color: var(--principale); }
+  .riga { display: flex; align-items: center; gap: 20px; height: 54px; padding: 0 24px; font-size: 24px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+  .riga svg { width: 26px; height: 26px; flex: none; }
+  .riga.scelta { background: var(--accento); color: var(--su-accento); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in strada che mangia o beve, il viso a metà altezza; spazio libero in basso a sinistra -->
+  <img class="foto" src="../esempio/gelato.jpg" alt="">
+
+  <!-- sigla: una parola cortissima o una sigla in grande, 2-4 lettere (SEO, ADV, IA) -->
+  <h1 class="titolo sigla">SEO</h1>
+
+  <!-- luogo: l'adesivo della posizione, 2 parole -->
+  <p class="luogo"><svg viewBox="0 0 26 34" fill="currentColor"><path d="M13 0 C5.8 0 0 5.8 0 13 C0 22 13 34 13 34 C13 34 26 22 26 13 C26 5.8 20.2 0 13 0 Z M13 18 A5 5 0 1 1 13 8 A5 5 0 1 1 13 18 Z"/></svg>Sotto casa</p>
+
+  <div class="ricerche">
+    <!-- ricerche: cinque ricerche come le scrive la gente, 2-4 parole; quella che conta con la classe scelta -->
+    <p class="riga"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M17 17 L24 24"/></svg>pizzeria aperta ora</p>
+    <p class="riga"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M17 17 L24 24"/></svg>parrucchiere vicino</p>
+    <p class="riga"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M17 17 L24 24"/></svg>colazione in centro</p>
+    <p class="riga scelta"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M17 17 L24 24"/></svg>fioraio a Bologna</p>
+    <p class="riga"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M17 17 L24 24"/></svg>dentista sabato</p>
+  </div>
+
+  <!-- basso: due righe a destra, una parola corta ciascuna, al massimo 6 caratteri -->
+  <h2 class="titolo basso"><span>resa</span><span>facile</span></h2>
+</body>
+</html>

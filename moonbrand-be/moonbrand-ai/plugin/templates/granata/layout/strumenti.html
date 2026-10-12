@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* La didascalia sulla scheda: bianca se il principale è scuro, nera se è chiaro, con un velo del secondario. */
+  :root { --su-principale: oklch(from var(--principale) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* La scacchiera ai due lati: due colonne di quadrati sfalsati. */
+  .scacchi { position: absolute; top: 0; width: 108px; height: 1350px;
+    background-image: conic-gradient(var(--principale) 0 25%, transparent 0 50%, var(--principale) 0 75%, transparent 0);
+    background-size: 108px 108px; }
+  .scacchi.sx { left: 0; background-position: 0 -20px; }
+  .scacchi.dx { right: 0; background-position: 0 34px; }
+
+  .social { position: absolute; left: 140px; right: 140px; display: flex; justify-content: space-between; font-size: 24px; }
+  .social.su { top: 92px; }
+  .social.giu { top: 1232px; }
+
+  .scheda { position: absolute; left: 252px; top: 262px; width: 576px; height: 770px; border-radius: 54px; padding: 52px 46px 0;
+    background: var(--principale); box-shadow: 0 24px 48px color-mix(in srgb, var(--principale) 35%, transparent); }
+  .titolo { font-family: var(--font-titoli); color: var(--accento); line-height: 0.95; }
+  .titolo .grande { display: block; font-size: 112px; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
+  .titolo .piccolo { display: block; margin-top: 4px; font-size: 58px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+  .freccia { position: absolute; right: 44px; top: 214px; width: 46px; height: 46px; color: var(--secondario); }
+  .foto { display: block; margin-top: 30px; width: 484px; height: 270px; object-fit: cover; }
+  .cuore { display: block; margin-top: 24px; width: 40px; height: 36px; color: var(--secondario); }
+  .profilo { margin-top: 16px; font-size: 24px; font-weight: 600; color: color-mix(in srgb, var(--secondario) 30%, var(--su-principale)); }
+  .testo { margin-top: 2px; font-size: 24px; font-weight: 500; line-height: 1.28; text-align: justify; color: color-mix(in srgb, var(--secondario) 30%, var(--su-principale)); }
+</style>
+</head>
+<body>
+  <div class="scacchi sx"></div>
+  <div class="scacchi dx"></div>
+
+  <!-- social: in alto e in basso, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <!-- scheda: un consiglio come se fosse un post dentro il post -->
+  <div class="scheda">
+    <!-- titolo: una parola grande (al massimo 6 lettere) e sotto 2-3 parole, al massimo 16 caratteri -->
+    <h1 class="titolo"><span class="grande">Top</span><span class="piccolo">strumenti &amp; app</span></h1>
+    <svg class="freccia" viewBox="0 0 46 46" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M40 6 L8 38"/><path d="M8 16 L8 38 L30 38"/></svg>
+    <!-- foto: un oggetto o un luogo legato al consiglio, orizzontale -->
+    <img class="foto" src="../esempio/scrivania.jpg" alt="">
+    <svg class="cuore" viewBox="0 0 40 36" fill="currentColor"><path d="M20 35 C 8 26, 0 19, 0 10 C 0 4, 5 0, 10.5 0 C 14.5 0, 18 2.5, 20 6 C 22 2.5, 25.5 0, 29.5 0 C 35 0, 40 4, 40 10 C 40 19, 32 26, 20 35 Z"/></svg>
+    <!-- profilo: il nome del profilo -->
+    <p class="profilo">@studiogranata</p>
+    <!-- testo: la didascalia del consiglio, 16-22 parole -->
+    <p class="testo">Le app che usiamo ogni giorno per programmare i post e leggere i numeri: ti fanno risparmiare ore di lavoro.</p>
+  </div>
+
+  <div class="social giu"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+</body>
+</html>

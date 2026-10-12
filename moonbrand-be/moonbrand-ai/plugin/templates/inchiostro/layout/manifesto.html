@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Anton', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .colonna { position: absolute; left: 80px; top: 30px; width: 922px; }
+  .titolo { width: 570px; font-family: var(--font-titoli); font-weight: 400; font-size: 150px; line-height: 0.9; letter-spacing: -0.012em; text-transform: uppercase; }
+  .lato { position: absolute; left: 596px; top: 62px; width: 330px; }
+  .lato h2 { font-size: 27px; font-weight: 600; line-height: 1.12; text-transform: uppercase; letter-spacing: -0.01em; }
+  .lato p { margin-top: 30px; font-size: 24px; line-height: 1.32; letter-spacing: -0.01em; }
+  .sotto { margin-top: 52px; padding-left: 2px; }
+  .sotto h2 { font-size: 32px; font-weight: 600; text-transform: uppercase; letter-spacing: -0.01em; color: var(--secondario); }
+  .sotto p { margin-top: 14px; font-size: 30px; line-height: 1.36; letter-spacing: -0.015em; }
+</style>
+</head>
+<body>
+  <!-- titolo: una frase in maiuscolo di 3-5 parole, al massimo 9 lettere per riga, chiusa dal punto -->
+  <div class="colonna">
+  <h1 class="titolo">Un piano chiaro cambia tutto.</h1>
+
+  <div class="lato">
+    <!-- occhiello: 3-5 parole in maiuscolo -->
+    <h2>Il caso del mese.</h2>
+    <!-- lato: 18-26 parole -->
+    <p>Una pasticceria di quartiere, tre post a settimana e nessun euro in pubblicità. In novanta giorni sono cambiate parecchie cose.</p>
+  </div>
+
+  <div class="sotto">
+    <!-- sottotitolo: 2-4 parole in maiuscolo -->
+    <h2>Cosa abbiamo fatto</h2>
+    <!-- testo: 50-70 parole -->
+    <p>Prima abbiamo tolto: niente più offerte ogni giorno, niente foto prese dal web. Poi abbiamo scelto i temi e li abbiamo tenuti per tre mesi: il laboratorio all'alba, i dolci della stagione, le persone che entrano. Le torte su ordinazione sono passate da quattro a diciassette al mese, e metà delle richieste arriva da chi non era mai entrato.</p>
+  </div>
+  </div>
+</body>
+</html>

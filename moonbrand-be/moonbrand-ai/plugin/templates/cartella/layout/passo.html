@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@115,900&family=Hanken+Grotesk:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #543928; --secondario: #C3D9E7; --accento: #F6DDE0; --sfondo: #F7EEC7; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .carta { position: absolute; left: 66px; top: 68px; width: 950px; height: 1214px; background: #FFFFFF; }
+  .fori { position: absolute; left: 935px; top: 0; width: 46px; height: 1350px; }
+  .fori i { position: absolute; left: 0; width: 46px; height: 46px; border-radius: 50%; background: var(--principale); }
+  .pagina { position: absolute; left: 110px; top: 110px; width: 776px; height: 1128px; background: var(--accento); }
+  .numero { position: absolute; left: 222px; top: 278px; font-family: var(--font-titoli); font-weight: 900; font-stretch: 115%; font-size: 66px; line-height: 1; letter-spacing: -0.01em; }
+  .foto { position: absolute; left: 383px; top: 270px; width: 396px; height: 386px; object-fit: cover; border-radius: 36px; border: 2px solid var(--principale); display: block; object-position: 85% 0%; }
+  .titolo { position: absolute; left: 222px; top: 732px; width: 560px; font-family: var(--font-titoli); font-weight: 900; font-stretch: 115%; font-size: 68px; line-height: 0.86; text-transform: uppercase; letter-spacing: -0.01em; }
+  .testo { position: absolute; left: 222px; top: 950px; width: 530px; font-size: 28px; font-weight: 500; line-height: 1.62; }
+</style>
+</head>
+<body>
+  <div class="carta"></div>
+  <div class="pagina"></div>
+  <div class="fori"><i style="top:186px"></i><i style="top:349px"></i><i style="top:513px"></i><i style="top:794px"></i><i style="top:956px"></i><i style="top:1119px"></i></div>
+
+  <!-- numero: il passo, due cifre -->
+  <p class="numero">03</p>
+  <!-- foto: quadrata con gli angoli arrotondati, un dettaglio del lavoro -->
+  <img class="foto" src="../esempio/laptop.jpg" alt="">
+  <!-- titolo: tre righe in maiuscolo, al massimo 14 lettere per riga -->
+  <h1 class="titolo">Gestiamo<br>tutti i tuoi<br>messaggi</h1>
+  <!-- testo: cosa comprende il passo, 16-24 parole -->
+  <p class="testo">Commenti, direct e recensioni: rispondiamo ogni giorno con la voce del tuo brand, entro poche ore.</p>
+</body>
+</html>

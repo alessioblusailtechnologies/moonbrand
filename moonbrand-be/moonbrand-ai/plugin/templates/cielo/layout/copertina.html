@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 96px; top: 150px; width: 900px; font-family: var(--font-titoli); font-size: 158px; font-weight: 400; line-height: 0.98; letter-spacing: -0.045em; }
+  .cifra { position: absolute; left: 92px; top: 528px; height: 170px; padding: 0 56px; border-radius: 85px; display: flex; align-items: center;
+    background: var(--accento); color: var(--su-accento); font-family: var(--font-titoli); font-size: 136px; font-weight: 400; letter-spacing: -0.05em; line-height: 1; }
+  .freccia { position: absolute; left: 790px; top: 534px; width: 160px; height: 160px; border-radius: 50%; border: 2px solid #FFFFFF; display: grid; place-items: center; }
+  .freccia svg { width: 50px; height: 50px; }
+  .testo { position: absolute; left: 96px; top: 940px; width: 680px; font-size: 50px; font-weight: 400; line-height: 1.38; letter-spacing: -0.02em; }
+  .grafico { position: absolute; left: 826px; top: 1020px; width: 166px; height: 172px; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- titolo: il tema, 2 parole su 2 righe, al massimo 10 lettere per riga -->
+  <h1 class="titolo">Crescita<br>in numeri</h1>
+
+  <!-- cifra: il dato che apre, al massimo 5 caratteri (+145%, 3x, 12k) -->
+  <div class="cifra">+145%</div>
+  <div class="freccia"><svg viewBox="0 0 50 50" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 40 L12 12 M12 12 L12 34 M12 12 L34 12"/></svg></div>
+
+  <!-- testo: cosa ha prodotto il risultato, 14-22 parole -->
+  <p class="testo">Un anno di lavoro costante sui canali dei clienti ha portato risultati misurabili in ogni fase.</p>
+
+  <svg class="grafico" viewBox="0 0 166 172" fill="currentColor"><rect x="6" y="104" width="38" height="68"/><rect x="62" y="82" width="38" height="90"/><rect x="118" y="58" width="42" height="114"/><path d="M4 86 C 50 66 98 44 140 14" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"/><path d="M118 6 L160 2 L150 42 Z"/></svg>
+</body>
+</html>

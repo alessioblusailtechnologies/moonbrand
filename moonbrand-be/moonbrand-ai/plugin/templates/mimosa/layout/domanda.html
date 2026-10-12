@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0); --su-secondario: oklch(from var(--secondario) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #1A1816; color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -100px; top: -250px; width: 1280px; height: 1600px; object-fit: cover; object-position: 50% 0%; display: block; filter: brightness(0.78) saturate(0.85); }
+  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.8) 100%); }
+
+  .testata { position: absolute; left: 108px; top: 38px; font-size: 24px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .titolo { position: absolute; left: 240px; width: 600px; top: 352px; text-align: center; text-wrap: balance; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 84px; line-height: 0.86; letter-spacing: -0.02em; color: var(--accento); }
+
+  .blocco { position: absolute; left: 244px; width: 594px; }
+  .riquadro { text-wrap: pretty; padding: 52px 36px 28px; background: var(--secondario); color: var(--su-secondario); text-align: center; font-size: 25px; font-weight: 400; line-height: 1.12; letter-spacing: 0.02em; }
+  .lettera { position: absolute; left: 50%; top: -52px; width: 104px; height: 104px; margin-left: -52px; border-radius: 50%; background: var(--accento); color: var(--su-accento);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-style: italic; font-size: 76px; line-height: 1; padding-bottom: 6px; }
+  .domanda { top: 727px; }
+  .risposta { top: 970px; }
+  .domanda .riquadro { min-height: 142px; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto a figura intera o a mezzo busto, in città, viso nella metà alta e busto tranquillo sotto -->
+  <img class="foto" src="../esempio/occhiali.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- logo: il nome o l'handle del brand -->
+  <p class="testata"><span class="logo">@ottobrestudio</span></p>
+
+  <!-- titolo: l'invito alle domande, 2-3 parole su 2 righe -->
+  <h1 class="titolo">chiedici qualsiasi cosa</h1>
+
+  <div class="blocco domanda">
+    <!-- lettera-domanda: l'iniziale di «domanda», una lettera -->
+    <span class="lettera">D</span>
+    <!-- domanda: la domanda di un cliente, 8-14 parole -->
+    <p class="riquadro">Quanto devo spendere ogni mese in pubblicità sui social?</p>
+  </div>
+  <div class="blocco risposta">
+    <!-- lettera-risposta: l'iniziale di «risposta», una lettera -->
+    <span class="lettera">R</span>
+    <!-- risposta: la risposta, 30-40 parole -->
+    <p class="riquadro">Parti dal 10-20% di quello che incassi in un mese. Se hai appena aperto, prova con 5-10 euro al giorno per due settimane. La pubblicità amplifica quello che funziona, non salva un’offerta debole.</p>
+  </div>
+</body>
+</html>

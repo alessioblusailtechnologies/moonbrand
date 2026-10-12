@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,500&family=Lato:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Lato', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #6F8DB0; color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: -40px; width: 1080px; height: 1440px; object-fit: cover; display: block; }
+
+  /* le schede entrano nella tasca: tutto quello che sta sotto l'orlo è tagliato */
+  .tasca { position: absolute; inset: 0; clip-path: polygon(0 0, 1080px 0, 1080px 537px, 936px 537px, 880px 550px, 840px 562px, 760px 561px, 700px 548px, 432px 529px, 0 506px); filter: drop-shadow(-6px 10px 14px rgba(0,0,0,0.35)); }
+  .scheda { position: absolute; left: 404px; top: 96px; width: 392px; height: 680px; border-radius: 16px; transform-origin: 30% 130%;
+    background: color-mix(in srgb, var(--sfondo) 70%, white); }
+  .scheda.dietro { box-shadow: inset 10px 0 12px -8px rgba(0,0,0,0.22); }
+  .s1 { transform: rotate(12deg); }
+  .s2 { transform: rotate(8.5deg); }
+  .s3 { transform: rotate(5deg); }
+  .s4 { transform: rotate(1.5deg); }
+  .davanti { transform: rotate(-2deg); }
+
+  .logo { position: absolute; left: 50px; top: 40px; font-family: var(--font-testo); font-size: 18px; letter-spacing: -0.01em; }
+  .titolo { position: absolute; left: 0; top: 112px; width: 392px; text-align: center; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 500;
+    font-size: 80px; line-height: 0.9; letter-spacing: -0.035em; }
+</style>
+</head>
+<body>
+  <!-- foto: una tasca di jeans vista da vicino, l'orlo della tasca a poco meno di metà altezza -->
+  <img class="foto" src="../esempio/tasca.jpg" alt="">
+
+  <div class="tasca">
+    <div class="scheda dietro s1"></div>
+    <div class="scheda dietro s2"></div>
+    <div class="scheda dietro s3"></div>
+    <div class="scheda dietro s4"></div>
+    <div class="scheda davanti">
+      <!-- logo: il nome del brand o l'account, piccolo in alto a sinistra -->
+      <p class="logo">@studiofaro</p>
+      <!-- titolo: 4 righe brevi centrate, al massimo 9 lettere per riga, chiuso dal punto -->
+      <h1 class="titolo">Il tuo<br>marketing,<br>sempre<br>in tasca.</h1>
+    </div>
+  </div>
+</body>
+</html>

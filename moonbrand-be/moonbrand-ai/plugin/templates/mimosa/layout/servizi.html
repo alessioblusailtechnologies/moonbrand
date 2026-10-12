@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testata { position: absolute; left: 108px; right: 108px; top: 38px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .titolo { position: absolute; left: 80px; width: 920px; top: 150px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 176px; line-height: 0.82; letter-spacing: -0.03em; }
+
+  .cornice { position: absolute; left: 279px; top: 523px; width: 368px; height: 520px; padding: 14px; background: #FFFFFF; box-shadow: 4px 14px 22px rgba(0,0,0,0.22); }
+  .cornice img { display: block; width: 340px; height: 492px; object-fit: cover; object-position: 50% 30%; }
+
+  .cartelle { position: absolute; left: 676px; top: 558px; width: 148px; display: flex; flex-direction: column; gap: 30px; }
+  .cartella { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 24px; font-weight: 500; line-height: 1; letter-spacing: 0; }
+  .cartella svg { width: 116px; height: 92px; }
+  .cartella .retro { fill: color-mix(in srgb, var(--secondario) 82%, var(--principale)); }
+  .cartella .davanti { fill: var(--secondario); }
+
+  .filetto { position: absolute; left: 146px; top: 1146px; width: 788px; height: 1.5px; background: color-mix(in srgb, var(--principale) 70%, transparent); }
+  .contatto { position: absolute; left: 0; width: 1080px; top: 1188px; text-align: center; font-size: 24px; font-weight: 700; line-height: 1.08; letter-spacing: 0.01em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- logo: il nome o l'handle del brand -->
+    <span class="logo">@ottobrestudio</span>
+    <!-- rubrica: una parola, il tema della serie -->
+    <span>Servizi</span>
+  </div>
+
+  <!-- titolo: 2 parole su 2 righe, al massimo 9 lettere per riga -->
+  <h1 class="titolo">I nostri servizi</h1>
+
+  <!-- foto: un ritratto a figura intera, verticale, in una cornice bianca -->
+  <div class="cornice"><img src="../esempio/giacca.jpg" alt=""></div>
+
+  <div class="cartelle">
+    <!-- servizi: tre cartelle, una parola ciascuna in minuscolo -->
+    <div class="cartella"><svg viewBox="0 0 116 92"><path class="retro" d="M2 6 Q2 0 8 0 L40 0 Q46 0 48 5 L50 10 L108 10 Q114 10 114 16 L114 30 L2 30 Z"/><path class="davanti" d="M0 22 Q0 16 6 16 L110 16 Q116 16 116 22 L116 86 Q116 92 110 92 L6 92 Q0 92 0 86 Z"/></svg><span>contenuti</span></div>
+    <div class="cartella"><svg viewBox="0 0 116 92"><path class="retro" d="M2 6 Q2 0 8 0 L40 0 Q46 0 48 5 L50 10 L108 10 Q114 10 114 16 L114 30 L2 30 Z"/><path class="davanti" d="M0 22 Q0 16 6 16 L110 16 Q116 16 116 22 L116 86 Q116 92 110 92 L6 92 Q0 92 0 86 Z"/></svg><span>grafica</span></div>
+    <div class="cartella"><svg viewBox="0 0 116 92"><path class="retro" d="M2 6 Q2 0 8 0 L40 0 Q46 0 48 5 L50 10 L108 10 Q114 10 114 16 L114 30 L2 30 Z"/><path class="davanti" d="M0 22 Q0 16 6 16 L110 16 Q116 16 116 22 L116 86 Q116 92 110 92 L6 92 Q0 92 0 86 Z"/></svg><span>community</span></div>
+  </div>
+
+  <div class="filetto"></div>
+  <!-- contatto: l'invito e l'indirizzo, 2 righe in maiuscolo -->
+  <p class="contatto">Scrivici a<br>ciao@ottobrestudio.it</p>
+</body>
+</html>

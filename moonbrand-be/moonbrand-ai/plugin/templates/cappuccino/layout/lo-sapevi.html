@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Figtree', sans-serif; --font-testo: 'Figtree', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); color: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 45%; display: block; }
+
+  /* il fumetto: scheda chiara con la gobba in alto a destra per i punti di domanda e la codina in basso */
+  .fumetto { position: absolute; left: 150px; top: 370px; width: 770px; height: 640px; border-radius: 46px; background: var(--sfondo); }
+  .gobba { position: absolute; left: 560px; top: 240px; width: 300px; height: 230px; border-radius: 115px 115px 0 0; background: var(--sfondo); }
+  .gobba::before { content: ''; position: absolute; left: -46px; top: 84px; width: 46px; height: 46px;
+    background: radial-gradient(circle at 0 0, transparent 45px, var(--sfondo) 46px); }
+  .codina { position: absolute; left: 500px; top: 1006px; width: 0; height: 0; border-left: 34px solid transparent; border-right: 34px solid transparent; border-top: 40px solid var(--sfondo); }
+
+  .punti { position: absolute; left: 574px; top: 236px; font-family: var(--font-titoli); font-weight: 800; color: var(--accento); line-height: 1; }
+  .punti b { position: absolute; left: 0; top: 0; font-size: 240px; transform: rotate(8deg); }
+  .punti i { position: absolute; left: 178px; top: 58px; font-style: normal; font-size: 170px; transform: rotate(12deg); }
+  .avanti { position: absolute; left: 930px; top: 390px; width: 26px; height: 26px; color: var(--accento); }
+
+  .tondo { position: absolute; left: 182px; top: 405px; width: 84px; height: 84px; border-radius: 50%; background: color-mix(in srgb, var(--principale) 9%, transparent);
+    color: var(--sfondo); font-weight: 800; font-size: 54px; line-height: 84px; text-align: center; }
+
+  .dentro { position: absolute; left: 228px; top: 570px; width: 620px; }
+  .titolo { font-family: var(--font-titoli); font-weight: 600; font-size: 80px; line-height: 1.05; letter-spacing: -0.02em; padding-bottom: 32px;
+    border-bottom: 2px solid color-mix(in srgb, var(--principale) 25%, transparent); }
+  .testo { margin-top: 36px; font-size: 33px; line-height: 1.45; font-weight: 400; }
+  .firma { position: absolute; left: 228px; top: 935px; font-size: 25px; color: color-mix(in srgb, var(--principale) 70%, transparent); }
+  .piu { position: absolute; left: 852px; top: 925px; width: 34px; height: 34px; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio di stoffe e accessori in toni neutri (cappotto, borsa, maglia); niente viso -->
+  <img class="foto" src="../esempio/cappotto.jpg" alt="">
+
+  <div class="gobba"></div>
+  <div class="fumetto"></div>
+  <div class="codina"></div>
+  <div class="punti"><b>?</b><i>?</i></div>
+  <svg class="avanti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 4l8 8-8 8"/></svg>
+  <div class="tondo">?</div>
+
+  <div class="dentro">
+    <!-- titolo: la domanda d'apertura, 2-3 parole -->
+    <h1 class="titolo">Lo sapevi?</h1>
+    <!-- testo: la curiosità o il consiglio, 14-22 parole -->
+    <p class="testo">Un post salvato vale più di dieci like: chi salva tornerà a leggerti quando avrà bisogno di te.</p>
+  </div>
+  <!-- firma: il profilo del brand -->
+  <p class="firma logo">@studioforma</p>
+  <svg class="piu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+</body>
+</html>

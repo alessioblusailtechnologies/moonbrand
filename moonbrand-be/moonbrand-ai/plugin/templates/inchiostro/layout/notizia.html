@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .fascia { position: absolute; left: 0; top: 0; width: 1080px; height: 116px; background: var(--secondario); color: var(--su-secondario);
+    display: flex; justify-content: space-between; align-items: center; padding: 0 58px 0 54px; font-size: 32px; letter-spacing: -0.01em; }
+  .fascia .rubrica { font-weight: 700; text-transform: uppercase; }
+  .titolo { position: absolute; left: 52px; top: 236px; width: 540px; font-family: var(--font-titoli); font-weight: 400; font-size: 100px; line-height: 0.92; letter-spacing: -0.06em; }
+  .testo { position: absolute; left: 604px; top: 200px; width: 430px; font-size: 27px; line-height: 1.2; letter-spacing: -0.02em; }
+  .foto { position: absolute; left: 0; top: 590px; width: 1080px; height: 760px; object-fit: cover; object-position: 50% 45%; display: block; }
+  .logo { position: absolute; right: 44px; top: 1282px; font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; color: #FFFFFF; }
+</style>
+</head>
+<body>
+  <!-- fascia: a sinistra la rubrica (1-2 parole), a destra la data in cifre -->
+  <div class="fascia"><span class="rubrica">Novità</span><span>14.10.2026</span></div>
+
+  <!-- titolo: due frasi brevi chiuse dal punto, 4-6 parole in tutto, al massimo 11 lettere per riga -->
+  <h1 class="titolo">Prima il piano. Poi i numeri.</h1>
+  <!-- testo: 45-60 parole -->
+  <p class="testo">Da questo mese ogni cliente riceve il piano editoriale entro il 25 del mese prima: temi, giorni di uscita, foto da scattare. Così chi lavora in negozio sa cosa preparare, e noi sappiamo cosa misurare. Le prime tre attività che lo hanno provato hanno pubblicato il doppio, senza rincorse.</p>
+
+  <!-- foto: un interno o un dettaglio scuro e ordinato, orizzontale, a tutta larghezza -->
+  <img class="foto" src="../esempio/libreria.jpg" alt="">
+  <!-- logo: il nome del brand in bianco, in basso a destra sulla foto -->
+  <p class="logo">Studio Bianchi</p>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.36), 0 1px 4px rgba(0,0,0,0.22); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; filter: saturate(0.8); }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.28); }
+
+  .sopra { position: absolute; right: 180px; top: 146px; text-align: right; font-size: 54px; font-weight: 400; line-height: 1.12; letter-spacing: -0.045em; text-shadow: var(--ombra); }
+  .titolo { position: absolute; left: 0; top: 508px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 132px; line-height: 0.92; letter-spacing: -0.055em; text-shadow: var(--ombra); white-space: nowrap; }
+
+  .scelte { position: absolute; left: 50%; top: 916px; transform: translateX(-50%); display: flex; height: 80px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 4px 16px rgba(0,0,0,0.22); }
+  .scelte::before { content: ''; position: absolute; left: 50%; top: -16px; width: 34px; height: 18px; transform: translateX(-50%); background: #FFFFFF; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .scelte span { display: flex; align-items: center; padding: 0 42px; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: var(--principale); white-space: nowrap; }
+  .scelte span + span { border-left: 2px solid color-mix(in srgb, var(--principale) 18%, white); }
+
+  .stella { position: absolute; width: 82px; height: 82px; }
+</style>
+</head>
+<body>
+  <!-- foto: un piano di lavoro chiaro con un tablet o un portatile, toni grigi e spenti -->
+  <img class="foto" src="../esempio/tablet.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: 3-5 parole su due righe, allineate a destra -->
+  <p class="sopra">niente più<br>tentativi</p>
+
+  <!-- titolo: tre righe brevi, 9-14 caratteri ciascuna, con il numero dei punti all'inizio -->
+  <h1 class="titolo">3 controlli<br>prima di<br>pubblicare</h1>
+
+  <!-- scelte: i tre punti, una o due parole ciascuno -->
+  <p class="scelte"><span>il gancio</span><span>l’invito</span><span>lo scopo</span></p>
+
+  <svg class="stella" style="left:162px; top:426px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella" style="left:852px; top:884px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+</body>
+</html>

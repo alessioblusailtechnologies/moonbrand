@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400&family=Libre+Caslon+Condensed:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  /* Libre Caslon Condensed è strettissimo: qui è ingrandito, così le misure sotto valgono per i font del brand, più larghi. */
+  @font-face { font-family: 'Caslon Guida'; src: url(https://fonts.gstatic.com/s/librecasloncondensed/v3/flUURrasxYEyVwtcWIsbLunUPow3bHNaxvyEdaQClLYatgOE7C0S4xuvgM0.woff2) format('woff2'); size-adjust: 122%; }
+  :root { --font-titoli: 'Caslon Guida', 'Libre Caslon Condensed', serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.30), 0 1px 4px rgba(0,0,0,0.18); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: saturate(0.7); }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(40,30,20,0.30); }
+
+  .titolo { position: absolute; left: 0; top: 196px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 190px; line-height: 1.12; letter-spacing: -0.03em; text-shadow: var(--ombra); white-space: nowrap; }
+  .anno { position: absolute; left: 0; top: 1062px; width: 1080px; text-align: center; font-size: 52px; font-weight: 400; letter-spacing: 0; text-shadow: var(--ombra); }
+  .stella { position: absolute; width: 82px; height: 82px; }
+</style>
+</head>
+<body>
+  <!-- foto: una natura morta chiara dall'alto o di tre quarti (tazza, borsa, vaso, occhiali), toni beige -->
+  <img class="foto" src="../esempio/tavolino.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: tre righe corte, una parola per riga o due brevi, al massimo 9 lettere per riga -->
+  <h1 class="titolo">Reel<br>da girare<br>a ottobre</h1>
+  <!-- anno: l'anno o una parola sotto il titolo -->
+  <p class="anno">2026</p>
+
+  <svg class="stella" style="left:192px; top:330px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella" style="left:910px; top:600px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="stella" style="left:96px; top:862px" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+</body>
+</html>

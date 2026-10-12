@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,400&family=IBM+Plex+Mono:wght@400&family=Hanken+Grotesk:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161414; --secondario: #E9E9EB; --accento: #F4C542; --sfondo: #F3EED0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'IBM Plex Mono', monospace; }
+  :root { --crema: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--crema); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; filter: saturate(0.55) brightness(0.8) contrast(1.02) sepia(0.15); }
+
+  .piccolo { position: absolute; left: 190px; top: 236px; font-size: 32px; line-height: 1; letter-spacing: -0.01em; }
+  .titolo { position: absolute; left: 330px; top: 300px; width: 700px; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 400; font-size: 220px; line-height: 1.12; letter-spacing: -0.035em; }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .luogo { position: absolute; left: 0; top: 1206px; width: 1080px; display: flex; justify-content: center; }
+  .luogo span { display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; border-radius: 12px; background: color-mix(in srgb, var(--secondario) 42%, transparent);
+    color: #FFFFFF; font-family: 'Hanken Grotesk', sans-serif; font-weight: 500; font-size: 28px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .luogo svg { width: 22px; height: 28px; }
+
+  .stella { position: absolute; width: 70px; height: 70px; }
+  .s1 { left: 846px; top: 270px; transform: rotate(10deg); }
+  .s2 { left: 210px; top: 1060px; width: 64px; height: 64px; transform: rotate(-12deg); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in casa o allo specchio, in piedi, a figura intera; il titolo le passa sopra -->
+  <img class="foto" src="../esempio/bevanda.jpg" alt="">
+
+  <!-- piccolo: l'invito, 2-3 parole -->
+  <p class="piccolo">vieni con me</p>
+  <!-- titolo: tre righe di una parola, al massimo 7 lettere ciascuna -->
+  <h1 class="titolo"><span>lavoro</span><span>da</span><span>casa</span></h1>
+
+  <svg class="stella s1" viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color: color-mix(in srgb, var(--accento) 35%, white)"/><stop offset="0.5" style="stop-color: var(--accento)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--accento) 72%, black)"/></radialGradient></defs>
+    <path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+  <svg class="stella s2" viewBox="0 0 100 100"><path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+
+  <!-- luogo: una data o un posto, 1-2 parole -->
+  <p class="luogo"><span><svg viewBox="0 0 22 28" fill="currentColor"><path d="M11 0 C4.9 0 0 4.9 0 11 C0 19 11 28 11 28 C11 28 22 19 22 11 C22 4.9 17.1 0 11 0 Z M11 15 A4 4 0 1 1 11 7 A4 4 0 1 1 11 15 Z"/></svg>12 ott</span></p>
+</body>
+</html>

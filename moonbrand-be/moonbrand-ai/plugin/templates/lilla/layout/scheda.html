@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: grayscale(0.4) brightness(0.86) contrast(1.15); }
+  .testata { color: #FFFFFF; }
+  .scheda { position: absolute; left: 106px; top: 172px; width: 830px; height: 974px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); text-align: center; }
+  .scheda .stella { position: absolute; left: 368px; top: 62px; width: 94px; height: 94px; }
+  .titolo { position: absolute; left: 60px; right: 60px; top: 172px; font-family: var(--font-titoli); font-weight: 400; font-size: 80px; line-height: 1.02; letter-spacing: -0.05em; }
+  .sotto { position: absolute; left: 60px; right: 60px; top: 494px; font-size: 30px; letter-spacing: -0.045em; }
+  .scelte { position: absolute; left: 92px; top: 546px; width: 646px; display: flex; flex-direction: column; gap: 22px; }
+  .scelte p { height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 50px; background: var(--accento); color: var(--su-accento);
+    font-family: var(--corsivo); font-weight: 300; font-size: 50px; letter-spacing: -0.02em; white-space: nowrap; }
+
+</style>
+</head>
+<body>
+  <!-- foto: forme chiare e morbide, sfocate, che non distraggono -->
+  <img class="foto" src="../esempio/forme.jpg" alt="">
+  <div class="testata">
+    <!-- logo: il nome del brand, in alto a sinistra -->
+    <span class="logo">Nodo Studio</span>
+    <!-- serie: il nome della rubrica e il numero, 2-4 parole -->
+    <span>Quaderni di marca 6</span>
+  </div>
+
+  <div class="scheda">
+    <svg class="stella" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M58 50L98 50M57.4 53.1L94.3 68.4M55.7 55.7L83.9 83.9M53.1 57.4L68.4 94.3M50 58L50 98M46.9 57.4L31.6 94.3M44.3 55.7L16.1 83.9M42.6 53.1L5.7 68.4M42 50L2 50M42.6 46.9L5.7 31.6M44.3 44.3L16.1 16.1M46.9 42.6L31.6 5.7M50 42L50 2M53.1 42.6L68.4 5.7M55.7 44.3L83.9 16.1M57.4 46.9L94.3 31.6"/></svg>
+    <!-- titolo: 6-9 parole in tre righe -->
+    <h1 class="titolo">Non tutti i contatti meritano la tua offerta migliore</h1>
+    <!-- sotto: l'attacco della lista, 5-8 parole -->
+    <p class="sotto">Prima di investire energie, controlla che sia:</p>
+    <!-- scelte: tre, 2-4 parole ciascuna, al massimo 24 caratteri -->
+    <div class="scelte">
+      <p>Pronto a comprare</p>
+      <p>Giusto per il tuo settore</p>
+      <p>Da richiamare davvero</p>
+    </div>
+  </div>
+</body>
+</html>

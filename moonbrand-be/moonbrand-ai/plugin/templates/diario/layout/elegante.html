@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Noto+Serif+Display:wdth,wght@62.5,400&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2724; --secondario: #F682A6; --accento: #FCAC30; --sfondo: #F2EDCE; }
+  /* Noto Serif Display stretto è molto più stretto dei font dei brand: qui è ingrandito, così le misure sotto valgono per i font del brand, più larghi. */
+  @font-face { font-family: 'Noto Stretta'; src: url(https://fonts.gstatic.com/s/notoserifdisplay/v29/buErppa9f8_vkXaZLAgP0G5Wi6QmA1Qwda5M.woff2) format('woff2'); font-style: normal; font-weight: 100 900; font-stretch: 62.5% 100%; size-adjust: 150%; }
+  :root { --font-titoli: 'Noto Stretta', 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 45%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 30%, transparent); }
+
+  /* La riga scritta a mano è un dettaglio decorativo: resta Pinyon Script anche con i font del brand. */
+  .corsivo { position: absolute; left: 60px; top: 330px; width: 960px; text-align: center; font-family: 'Pinyon Script', cursive; font-size: 192px; font-weight: 400; line-height: 0.95; }
+  .titolo { position: absolute; left: 80px; top: 742px; width: 920px; text-align: center; font-family: var(--font-titoli); font-stretch: 62.5%; font-size: 83px; font-weight: 400; line-height: 124px; letter-spacing: -0.04em; }
+  .sotto { position: absolute; left: 0; top: 968px; width: 1080px; text-align: center; font-family: var(--font-testo); font-size: 40px; font-weight: 400; }
+  .stella { position: absolute; width: 50px; height: 50px; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: un look o un gesto ripreso dall'alto o da vicino, colori tenui; il centro abbastanza calmo per tre righe -->
+  <img class="foto" src="../esempio/caffe-freddo.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- corsivo: la parte scritta a mano, due righe di 1-2 parole, al massimo 12 lettere per riga -->
+  <p class="corsivo">Scrivi<br>ganci forti</p>
+
+  <!-- titolo: una riga sotto il corsivo, 3-4 parole, al massimo 18 caratteri -->
+  <h1 class="titolo">Ferma chi scorre</h1>
+
+  <!-- sotto: una frase breve, 3-4 parole -->
+  <p class="sotto">Copia lo schema</p>
+
+  <!-- stelle: quattro stelline sottili ai lati del testo, nel colore dei testi -->
+  <svg class="stella" style="left: 218px; top: 444px;" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round" d="M12.00 0.00 L12.99 9.60 L16.60 7.40 L14.40 11.01 L24.00 12.00 L14.40 12.99 L16.60 16.60 L12.99 14.40 L12.00 24.00 L11.01 14.40 L7.40 16.60 L9.60 12.99 L0.00 12.00 L9.60 11.01 L7.40 7.40 L11.01 9.60Z"/></svg>
+  <svg class="stella" style="left: 826px; top: 336px;" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round" d="M12.00 0.00 L12.99 9.60 L16.60 7.40 L14.40 11.01 L24.00 12.00 L14.40 12.99 L16.60 16.60 L12.99 14.40 L12.00 24.00 L11.01 14.40 L7.40 16.60 L9.60 12.99 L0.00 12.00 L9.60 11.01 L7.40 7.40 L11.01 9.60Z"/></svg>
+  <svg class="stella" style="left: 794px; top: 926px;" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round" d="M12.00 0.00 L12.99 9.60 L16.60 7.40 L14.40 11.01 L24.00 12.00 L14.40 12.99 L16.60 16.60 L12.99 14.40 L12.00 24.00 L11.01 14.40 L7.40 16.60 L9.60 12.99 L0.00 12.00 L9.60 11.01 L7.40 7.40 L11.01 9.60Z"/></svg>
+  <svg class="stella" style="left: 140px; top: 1090px;" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round" d="M12.00 0.00 L12.99 9.60 L16.60 7.40 L14.40 11.01 L24.00 12.00 L14.40 12.99 L16.60 16.60 L12.99 14.40 L12.00 24.00 L11.01 14.40 L7.40 16.60 L9.60 12.99 L0.00 12.00 L9.60 11.01 L7.40 7.40 L11.01 9.60Z"/></svg>
+</body>
+</html>

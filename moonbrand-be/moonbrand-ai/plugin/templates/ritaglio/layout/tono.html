@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la carta stropicciata sotto tutto, tinta dal fondo del brand */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; opacity: 0.9; }
+  /* il ritaglio di foto in alto a destra, con il bordo basso strappato in diagonale */
+  .ritaglio { position: absolute; left: 584px; top: 18px; width: 482px; height: 540px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.2);
+    clip-path: polygon(0 0, 100% 0, 100% 44%, 82% 58%, 60% 74%, 34% 88%, 4% 100%, 2% 50%); }
+
+  .titolo { position: absolute; left: 44px; top: 760px; width: 992px; font-family: var(--font-titoli); font-weight: 600; font-size: 176px; line-height: 0.92;
+    letter-spacing: -0.035em; text-transform: uppercase; color: var(--secondario); }
+  .titolo span { display: flex; justify-content: space-between; white-space: nowrap; }
+  .titolo .destra { justify-content: flex-end; }
+  .nota { position: absolute; left: 0; top: 1278px; width: 1080px; text-align: center; font-size: 24px; letter-spacing: 0.05em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <img class="carta" src="../esempio/carta.jpg" alt="">
+  <!-- foto: un dettaglio materico (pietra, tessuto, ombra), resta in bianco e nero, ritagliato in alto a destra -->
+  <img class="ritaglio" src="../esempio/roccia.jpg" alt="">
+
+  <!-- titolo: tre righe in maiuscolo; la prima a destra, la seconda con una parola a sinistra e "&" a destra, la terza a sinistra; al massimo 6 lettere per riga -->
+  <h1 class="titolo"><span class="destra">Tono</span><span><b style="font-weight:inherit">Voce</b><b style="font-weight:inherit">&amp;</b></span><span>Stile</span></h1>
+  <!-- nota: una frase tra virgolette, 6-10 parole, in maiuscolo piccolo -->
+  <p class="nota">«Più chiaro è il tono, più forte è il brand.»</p>
+</body>
+</html>

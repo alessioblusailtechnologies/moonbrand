@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #2B2622; color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%); }
+
+  .testata { position: absolute; left: 108px; right: 108px; top: 38px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .avvisi { position: absolute; left: 110px; top: 262px; width: 500px; display: flex; flex-direction: column; gap: 19px; }
+  .avviso { display: flex; align-items: center; gap: 24px; min-height: 96px; padding: 12px 30px 12px 34px; border-radius: 48px; background: var(--sfondo); color: var(--principale);
+    border: 2px solid var(--principale); font-size: 24px; line-height: 1.3; letter-spacing: -0.005em; }
+  .avviso svg { flex: none; width: 34px; height: 34px; fill: none; stroke: var(--principale); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .avviso b { display: block; font-weight: 500; }
+
+  .pillola { position: absolute; left: 50%; top: 1019px; transform: translateX(-50%); min-width: 310px; padding: 13px 34px 12px; border-radius: 30px; background: var(--accento); color: var(--su-accento);
+    border: 1.5px solid var(--principale); text-align: center; font-size: 24px; font-weight: 700; line-height: 1.2; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .parola { position: absolute; left: 0; width: 1080px; top: 1088px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 176px; line-height: 1.05; letter-spacing: -0.03em; color: #FFFFFF; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in luce calda, inquadrata dal busto in giù, con un fondo materico (pietra, balaustra, muro); in alto a sinistra una zona tranquilla per gli avvisi -->
+  <img class="foto" src="../esempio/balaustra.jpg" alt="">
+  <div class="velo"></div>
+
+  <div class="testata">
+    <!-- logo: il nome o l'handle del brand -->
+    <span class="logo">@ottobrestudio</span>
+    <!-- rubrica: una parola, il tema della serie -->
+    <span>Visibilità</span>
+  </div>
+
+  <div class="avvisi">
+    <!-- avvisi: tre notifiche, un titolo di 1-2 parole e una frase di 3-6 parole ciascuna -->
+    <div class="avviso"><svg viewBox="0 0 34 34"><path d="M9 24 L9 15 Q9 7 17 7 Q25 7 25 15 L25 24 L28 27 L6 27 Z"/><path d="M14 30 Q17 33 20 30"/><path d="M17 4 L17 7"/></svg><p><b>Promemoria</b>Basta rimandare. Pubblica.</p></div>
+    <div class="avviso"><svg viewBox="0 0 34 34"><path d="M5 16 L17 5 L29 16"/><path d="M8 13 L8 29 L26 29 L26 13"/><path d="M14 29 L14 21 L20 21 L20 29"/></svg><p><b>Oggi</b>Prima crea, poi correggi.</p></div>
+    <div class="avviso"><svg viewBox="0 0 34 34"><path d="M3 17 L3 17 M6 14 L6 20 M9 11 L9 23 M12 15 L12 19 M15 8 L15 26 M18 12 L18 22 M21 15 L21 19 M24 10 L24 24 M27 14 L27 20 M30 16 L30 18"/></svg><p><b>In ascolto</b>La tua prossima idea.</p></div>
+  </div>
+
+  <!-- pillola: l'attacco della parola, 2-3 parole in maiuscolo -->
+  <p class="pillola">La chiave della</p>
+  <!-- parola: una sola parola, al massimo 10 lettere -->
+  <h1 class="parola">visibilità</h1>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;800&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B3130; --secondario: #7EC736; --accento: #F7CF3E; --sfondo: #FEFFDF; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: color-mix(in srgb, var(--principale) 55%, transparent); --bordo-stella: color-mix(in srgb, var(--accento) 70%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 18%, transparent); }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-weight: 800; letter-spacing: -0.075em; line-height: 0.86; color: var(--chiaro);
+    text-shadow: 0 0 34px var(--ombra), 0 3px 10px color-mix(in srgb, var(--principale) 30%, transparent); white-space: nowrap; }
+  .titolo span { display: block; }
+  .piccolo { position: absolute; font-size: 44px; font-weight: 400; letter-spacing: -0.055em; line-height: 1.02; color: var(--chiaro);
+    text-shadow: 0 0 18px var(--ombra); white-space: nowrap; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; letter-spacing: 0; color: var(--chiaro); text-shadow: 0 0 24px var(--ombra); white-space: nowrap; }
+  .stella { position: absolute; filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--principale) 40%, transparent)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 4; stroke-linejoin: round; }
+  .stella.bianca path { fill: var(--chiaro); stroke: none; }
+  .cursore { position: absolute; width: 52px; height: 70px; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+  .cursore path { fill: #FFFFFF; stroke: #000000; stroke-width: 2.2; stroke-linejoin: round; }
+</style>
+<style>
+  .foto { object-position: 40% 50%; }
+  .piccolo.sopra { left: 94px; top: 166px; font-size: 52px; }
+  .titolo { left: 0; top: 410px; width: 1080px; text-align: center; font-size: 168px; line-height: 0.88; padding-right: 30px; }
+  .corsivo { position: absolute; left: 0; top: 888px; width: 1080px; text-align: center; font-size: 190px; line-height: 1; padding-right: 30px; }
+  .bottone { position: absolute; left: 50%; top: 1136px; transform: translateX(-50%); height: 72px; padding: 0 22px 0 16px; display: flex; align-items: center; gap: 8px;
+    border-radius: 12px; background: color-mix(in srgb, var(--chiaro) 34%, transparent); border: 2px solid color-mix(in srgb, var(--chiaro) 50%, transparent);
+    font-size: 40px; font-weight: 400; letter-spacing: -0.06em; text-transform: uppercase; color: var(--chiaro); white-space: nowrap; }
+  .bottone svg { width: 30px; height: 40px; }
+  .bottone path { fill: var(--chiaro); }
+  .alone { position: absolute; left: 732px; top: 390px; width: 110px; height: 60px; }
+  .alone path { fill: none; stroke: var(--accento); stroke-width: 7; stroke-linecap: round; }
+</style>
+</head>
+<body>
+  <!-- foto: un tavolo di lavoro vero dall'alto o di tre quarti (caffè, portatile), luce calda -->
+  <img class="foto" src="../esempio/caffe.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: due righe corte in minuscolo, in alto a sinistra -->
+  <p class="piccolo sopra">strategia prima<br>del prossimo post</p>
+  <!-- titolo: tre righe in minuscolo, al massimo 10 lettere per riga -->
+  <h1 class="titolo"><span>il tuo</span><span>profilo</span><span>chiede una</span></h1>
+  <!-- corsivo: una parola scritta a mano che chiude il titolo -->
+  <p class="corsivo">svolta</p>
+  <svg class="alone" viewBox="0 0 110 60"><path d="M20 40 C 8 30, 30 12, 66 10 C 98 8, 108 26, 84 38 C 70 45, 50 48, 34 46"/></svg>
+  <svg class="stella" style="left:738px; top:396px; width:62px; height:62px; transform: rotate(6deg)" viewBox="0 0 100 100"><path d="M50 7 L62.5 36 L94 39 L70 60 L77.5 92 L50 75 L22.5 92 L30 60 L6 39 L37.5 36 Z"/></svg>
+  <!-- bottone: l'invito, 1-2 parole in maiuscolo, con il segnaposto della mappa -->
+  <p class="bottone"><svg viewBox="0 0 30 40"><path d="M15 2 C7 2 2 8 2 15 C2 25 15 38 15 38 C15 38 28 25 28 15 C28 8 23 2 15 2 Z M15 10 A5 5 0 1 1 15 20 A5 5 0 1 1 15 10 Z" fill-rule="evenodd"/></svg>Prenota ora</p>
+</body>
+</html>

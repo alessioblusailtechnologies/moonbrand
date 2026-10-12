@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo); color: #FFFFFF; background: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 40% 50%; display: block; filter: grayscale(1); }
+  .velo { position: absolute; inset: 0;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--principale) 88%, transparent) 0%, color-mix(in srgb, var(--secondario) 80%, transparent) 100%); }
+
+  .titolo { position: absolute; left: 90px; width: 900px; top: 250px; text-align: center; font-family: var(--font-titoli);
+    font-size: 66px; font-weight: 700; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.005em; }
+  .filetto { position: absolute; left: 366px; width: 348px; top: 450px; height: 3px; background: color-mix(in srgb, #FFFFFF 85%, transparent); }
+  .testo { position: absolute; left: 190px; width: 700px; top: 540px; text-align: center; font-size: 33px; line-height: 1.5; }
+
+  .linea { position: absolute; left: 0; width: 840px; top: 1150px; height: 2px; background: color-mix(in srgb, #FFFFFF 85%, transparent); }
+  .numero { position: absolute; left: 840px; top: 1151px; width: 162px; height: 92px; background: #FFFFFF; color: var(--accento);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-size: 50px; font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- foto: un tavolo di lavoro con fogli o portatile, sfocata sotto il velo -->
+  <img class="foto" src="../esempio/tavolo.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: il tema della pagina, 2-4 parole -->
+  <h1 class="titolo">Prima il pubblico</h1>
+  <div class="filetto"></div>
+  <!-- testo: il punto spiegato, 40-55 parole, due frasi o tre -->
+  <p class="testo">Prima di scegliere i canali chiediti chi deve leggerti. Una pasticceria di quartiere e uno studio di commercialisti parlano a persone diverse, in orari diversi. Scrivi tre righe sul tuo cliente ideale: ogni post nascerà da lì, e smetterai di inseguire numeri che non diventano clienti.</p>
+
+  <div class="linea"></div>
+  <!-- numero: il numero della pagina nel carosello -->
+  <div class="numero">1</div>
+</body>
+</html>

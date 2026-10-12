@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Roboto:wght@400;700&family=Oswald:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #253A33; --secondario: #E4E1CE; --accento: #D8F0CE; --sfondo: #F8F8F8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Roboto', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto è un'ellisse alta che entra dal bordo destro */
+  .ovale { position: absolute; left: 620px; top: -300px; width: 1060px; height: 2000px; border-radius: 50%; overflow: hidden; }
+  .foto { position: absolute; left: 0; top: 300px; width: 460px; height: 1350px; object-fit: cover; object-position: 58% 50%; display: block; }
+
+  .pillola { position: absolute; left: 26px; top: 20px; height: 95px; display: flex; align-items: center; gap: 24px; padding: 0 60px 0 46px; border-radius: 48px;
+    background: var(--principale); color: var(--accento); font-family: var(--font-testo); font-weight: 700; font-size: 28px; letter-spacing: 0.01em; text-transform: uppercase; white-space: nowrap; }
+  .pillola::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: var(--accento); flex: none; }
+  .asterisco { position: absolute; left: 672px; top: 30px; width: 78px; height: 78px; color: var(--principale); }
+
+  .cifra { position: absolute; left: 36px; top: 236px; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-size: 330px; line-height: 1; letter-spacing: -0.08em; white-space: nowrap; }
+  .testo { position: absolute; left: 38px; top: 620px; width: 440px; font-family: var(--font-testo); font-size: 62px; font-weight: 400; line-height: 1.21; letter-spacing: -0.02em; }
+
+  .freccia { position: absolute; left: 28px; top: 1214px; width: 136px; height: 76px; color: var(--principale); }
+  .firma { position: absolute; left: 330px; top: 1232px; font-family: 'Oswald', sans-serif; font-size: 27px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona di spalle o di profilo, toni caldi e un fondo pieno; ne resta la metà sinistra nell'ellisse -->
+  <div class="ovale"><img class="foto" src="../esempio/spalle.jpg" alt=""></div>
+
+  <!-- pillola: da dove viene il dato, 1-2 parole -->
+  <p class="pillola">Dati veri</p>
+  <svg class="asterisco" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="9"><path d="M40 2V78M2 40H78M13 13L67 67M67 13L13 67"/></svg>
+
+  <!-- cifra: il numero in corsivo, al massimo 3 caratteri (94%, 3x, 70%) -->
+  <p class="cifra">94%</p>
+  <!-- testo: cosa dice il numero e cosa fare, 12-16 parole, righe corte -->
+  <p class="testo">dei clienti giudica un’attività dal sito. Rinnova il tuo oggi.</p>
+
+  <svg class="freccia" viewBox="0 0 136 76" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="130" height="70" rx="35"/><path d="M30 38H104M86 21L104 38L86 55"/></svg>
+  <!-- logo: il nome del brand tra parentesi quadre -->
+  <p class="firma">[ <span class="logo">Studio Ardesia</span> ]</p>
+</body>
+</html>

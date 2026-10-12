@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@115,900&family=Hanken+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #543928; --secondario: #C3D9E7; --accento: #F6DDE0; --sfondo: #F7EEC7; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .logo { position: absolute; left: 0; top: 74px; width: 1080px; text-align: center; font-size: 27px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; }
+  .titolo { position: absolute; left: 60px; top: 186px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 900; font-stretch: 115%; font-size: 96px; line-height: 0.86; text-transform: uppercase; letter-spacing: -0.01em; }
+  .lista { position: absolute; left: 123px; top: 503px; width: 834px; list-style: none; }
+  .lista li { height: 88px; margin-bottom: 27px; border-radius: 44px; border: 2px solid color-mix(in srgb, var(--principale) 70%, transparent); background: #FFFFFF;
+    display: flex; align-items: center; gap: 22px; padding-left: 20px; font-size: 29px; font-weight: 500; white-space: nowrap; }
+  .lista li::before { content: ''; flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--secondario); border: 2px solid var(--principale); }
+  .piede { position: absolute; left: 46px; top: 1238px; width: 990px; display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; text-transform: uppercase; }
+  .piede span { display: flex; align-items: center; gap: 18px; }
+  .piede svg { width: 32px; height: 34px; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome o il sito del brand, in maiuscolo -->
+  <p class="logo">studiovetrina.it</p>
+  <!-- titolo: tre righe in maiuscolo, al massimo 13 lettere per riga -->
+  <h1 class="titolo">La checklist<br>social di<br>ogni giorno</h1>
+  <!-- voci: sei cose da spuntare, 4-8 parole ciascuna, su una riga -->
+  <ul class="lista">
+    <li>Le storie in evidenza sono aggiornate?</li>
+    <li>Il link in bio porta alla pagina giusta</li>
+    <li>Rispondi ai commenti nuovi</li>
+    <li>Controlla che tutti i link funzionino</li>
+    <li>Guarda le statistiche del giorno</li>
+    <li>Cerca chi parla del tuo brand</li>
+  </ul>
+  <!-- piede: i due inviti fissi, condividi a sinistra e salva a destra -->
+  <div class="piede">
+    <span><svg viewBox="0 0 32 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M2 3 L30 3 L15 31 L13 17 Z M13 17 L30 3"/></svg>Condividi il post</span>
+    <span>Salva per dopo<svg viewBox="0 0 32 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M6 2 H26 V32 L16 23 L6 32 Z"/></svg></span>
+  </div>
+</body>
+</html>

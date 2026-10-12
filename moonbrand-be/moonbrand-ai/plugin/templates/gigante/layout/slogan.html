@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  :root { --font-titoli: 'Archivo Black', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; }
+
+  .sopra { position: absolute; left: 0; top: 296px; width: 1080px; text-align: center; font-family: var(--font-testo); font-weight: 800; font-size: 25px;
+    letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* la parola, minuscola e pesantissima; la «o» è un anello con la foto dentro */
+  .parola { position: absolute; left: 40px; top: 470px; width: 1000px; text-align: center; font-family: var(--font-titoli); font-weight: 900; font-size: 330px;
+    line-height: 1; letter-spacing: -0.045em; white-space: nowrap; }
+  .o { display: inline-block; position: relative; width: 0.6em; height: 0.56em; margin: 0 0.01em -0.01em; vertical-align: baseline;
+    border-radius: 50%; background: currentColor; }
+  .o img { position: absolute; left: 0.13em; top: 0.08em; width: 0.34em; height: 0.4em; border-radius: 50%; object-fit: cover; object-position: 50% 22%; display: block; }
+
+  .logo { position: absolute; left: 0; top: 1240px; width: 1080px; text-align: center; font-family: var(--font-testo); font-weight: 600; font-size: 25px; }
+</style>
+</head>
+<body>
+  <!-- sopra: la frase che porta alla parola, 4-6 parole -->
+  <div class="sopra">Il tuo marchio merita una</div>
+
+  <!-- parola: una sola, minuscola, 4-6 lettere con una «o» (o un'altra vocale tonda) che diventa l'anello con la foto -->
+  <!-- foto: un volto piccolo, di tre quarti, su fondo chiaro -->
+  <h1 class="parola">v<span class="o"><img src="../esempio/giacca.jpg" alt=""></span>ce</h1>
+
+  <!-- logo: il profilo del brand in basso al centro (o il file del logo, piccolo) -->
+  <div class="logo">@studiomarea</div>
+</body>
+</html>

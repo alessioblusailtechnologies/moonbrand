@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  /* Retino su fondo scuro: in «screen» il nero diventa il fondo del brand, restano i punti chiari. */
+  .retino { position: absolute; left: 0; top: 200px; width: 1080px; height: 950px; overflow: hidden; background: #FFFFFF; filter: contrast(8); mix-blend-mode: screen; opacity: 0.78; }
+  .retino img { position: absolute; left: -100px; top: -800px; width: 1700px; height: 2550px; object-fit: cover; filter: grayscale(1) contrast(1.1) blur(1px); }
+  .retino::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: radial-gradient(circle closest-side, #808080 0%, #9F9F9F 50%, #CFCFCF 70%, #FFFFFF 80%) 0 0 / 8px 8px; mix-blend-mode: multiply; }
+
+  .testata { position: absolute; left: 105px; right: 108px; top: 108px; display: flex; justify-content: space-between; font-size: 36px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+
+  .sopra { position: absolute; left: 105px; top: 600px; font-family: var(--font-titoli); font-weight: 700; font-size: 80px; line-height: 0.88; letter-spacing: -0.035em; text-transform: uppercase; color: var(--sfondo); }
+  .sopra span { display: block; white-space: nowrap; }
+  .nome { position: absolute; left: 105px; top: 768px; padding: 26px 76px 6px 6px; background: var(--accento); color: var(--principale);
+    font-family: var(--font-titoli); font-weight: 700; font-size: 182px; line-height: 0.79; letter-spacing: -0.035em; text-transform: uppercase; }
+  .nome span { display: block; white-space: nowrap; }
+
+  .servizi { position: absolute; left: 105px; top: 1212px; font-size: 30px; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; word-spacing: 0.3em; }
+  .freccia { position: absolute; left: 920px; top: 1188px; width: 56px; height: 57px; background: var(--accento); color: var(--principale); display: flex; align-items: center; justify-content: center; }
+  .freccia svg { width: 32px; height: 20px; }
+</style>
+</head>
+<body>
+  <!-- foto: il cliente o il suo lavoro, una persona in posa su fondo scuro, con abiti chiari; diventa una fascia a retino -->
+  <div class="retino"><img src="../esempio/camicia.jpg" alt=""></div>
+
+  <!-- testata: a sinistra il tipo di post (2 parole con le barre), a destra il nome del cliente tra quadre -->
+  <p class="testata"><span>// Caso studio</span><span>[Forno Alba]</span></p>
+
+  <!-- sopra: due righe che annunciano, 2-3 parole ciascuna, al massimo 15 caratteri per riga -->
+  <h1 class="sopra"><span>Il nuovo volto</span><span>digitale di</span></h1>
+  <!-- nome: il cliente nella fascia, due righe di una parola, al massimo 6 lettere -->
+  <p class="nome"><span>Forno</span><span>Alba</span></p>
+
+  <!-- servizi: tre parole con le barre davanti -->
+  <p class="servizi">//Strategia //Design //Sito</p>
+  <div class="freccia"><svg viewBox="0 0 32 20" fill="none" stroke="currentColor" stroke-width="3"><path d="M0 10 H29 M20 1 L29 10 L20 19"/></svg></div>
+</body>
+</html>

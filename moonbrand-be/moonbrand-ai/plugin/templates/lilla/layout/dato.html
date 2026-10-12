@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  body { background: var(--principale); color: var(--accento); }
+  .titolo { position: absolute; left: 50px; top: 316px; width: 760px; font-family: var(--font-titoli); font-weight: 400; font-size: 74px; line-height: 1.0; letter-spacing: -0.045em; }
+  .titolo em { font-style: italic; }
+  .dato { position: absolute; left: 44px; top: 560px; display: flex; align-items: flex-end; gap: 34px; }
+  .cifra { font-family: var(--font-titoli); font-weight: 400; font-size: 380px; line-height: 0.8; letter-spacing: -0.06em; padding-top: 40px; }
+  .dopo { width: 300px; padding-bottom: 6px; font-size: 40px; line-height: 1.0; letter-spacing: -0.04em; }
+  .riga { position: absolute; left: 50px; top: 972px; width: 900px; font-family: var(--mono); font-size: 19px; line-height: 1.3; text-transform: uppercase; }
+  .barra { position: absolute; left: 50px; top: 1062px; width: 706px; height: 76px; border: 3px solid var(--accento); border-radius: 38px; }
+  .barra svg { position: absolute; left: 36px; top: 26px; width: 34px; height: 20px; }
+
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- logo: il nome del brand, in alto a sinistra -->
+    <span class="logo">Nodo Studio</span>
+    <!-- serie: il nome della rubrica e il numero, 2-4 parole -->
+    <span>Quaderni di marca 6</span>
+  </div>
+
+  <!-- titolo: la frase che porta al numero, 9-14 parole, una parola in corsivo nell'em -->
+  <h1 class="titolo">Quando il messaggio è <em>coerente</em> su ogni canale, chi ti segue ha</h1>
+  <div class="dato">
+    <!-- cifra: 1-3 caratteri (3x, 70%, 12) -->
+    <p class="cifra">3x</p>
+    <!-- dopo: cosa misura il numero, 3-5 parole -->
+    <p class="dopo">più probabilità di comprare</p>
+  </div>
+  <!-- riga: una frase breve in maiuscolo, 6-10 parole -->
+  <p class="riga">Una storia chiara, ripetuta ovunque. Controlla i tuoi canali.</p>
+  <div class="barra"><svg viewBox="0 0 34 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M1 10H32M23 1.5L32 10L23 18.5"/></svg></div>
+</body>
+</html>

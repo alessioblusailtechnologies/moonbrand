@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2724; --secondario: #F682A6; --accento: #FCAC30; --sfondo: #F2EDCE; }
+  :root { --font-titoli: 'Montserrat', sans-serif; --font-testo: 'Montserrat', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --fumetto: color-mix(in srgb, var(--chiaro) 45%, #FFFFFF); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 26%, transparent); }
+
+  .fumetto { position: absolute; right: 36px; top: 150px; max-width: 420px; padding: 16px 40px 17px; border-radius: 40px; background: var(--fumetto);
+    color: color-mix(in srgb, var(--principale) 80%, transparent); font-family: var(--font-testo); font-size: 25px; font-weight: 500; line-height: 1.2; white-space: nowrap; }
+  .fumetto::after { content: ''; position: absolute; left: 14px; bottom: -13px; width: 22px; height: 18px; background: var(--fumetto); clip-path: polygon(0 0, 100% 0, 10% 100%); }
+
+  .titolo { position: absolute; left: 70px; top: 456px; width: 940px; text-align: center; font-family: var(--font-titoli); font-size: 136px; font-weight: 700; line-height: 0.96; letter-spacing: -0.01em; }
+  .sotto { position: absolute; left: 60px; top: 880px; width: 960px; text-align: center; font-family: 'DotGothic16', monospace; font-size: 46px; letter-spacing: 0.14em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: un selfie spontaneo, viso o mezzo busto al centro, luce naturale; il titolo ci passa sopra -->
+  <img class="foto" src="../esempio/selfie.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- fumetto: il commento in alto a destra, 2-4 parole -->
+  <p class="fumetto">Parti da qui</p>
+
+  <!-- titolo: 3 righe corte e centrate, 2-4 parole in tutto, al massimo 10 lettere per riga -->
+  <h1 class="titolo">Rendi chiara<br>la tua<br>offerta</h1>
+
+  <!-- sotto: la riga a pixel in maiuscolo, 3-4 parole -->
+  <p class="sotto">Di' cosa fai meglio</p>
+</body>
+</html>

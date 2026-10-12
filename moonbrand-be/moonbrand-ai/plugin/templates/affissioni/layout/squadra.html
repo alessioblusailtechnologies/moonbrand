@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Lato', sans-serif; --font-testo: 'Lato', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #9A9A98; color: var(--principale); font-family: var(--font-testo); }
+
+  .muro { position: absolute; left: -473px; top: 0; width: 2026px; height: 1351px; object-fit: cover; display: block; filter: grayscale(0.85) brightness(0.92); }
+
+  /* il cartellone: cornice nera, esce dal bordo destro */
+  .cartellone { position: absolute; left: 158px; top: 168px; width: 1000px; height: 884px; border: 16px solid #151515;
+    background: color-mix(in srgb, var(--sfondo) 40%, white); box-shadow: 0 10px 22px rgba(0,0,0,0.30); }
+  .logo { position: absolute; left: 62px; top: 78px; font-family: var(--font-testo); font-size: 30px; font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+  .logo b { font-weight: 700; }
+
+  .titolo { position: absolute; left: 196px; top: 286px; width: 700px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 70px; line-height: 1.04;
+    text-transform: uppercase; letter-spacing: -0.02em; }
+  .titolo em { font-style: italic; color: var(--accento); }
+  .sotto { position: absolute; left: 196px; top: 572px; width: 700px; text-align: center; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- muro: cemento a vista, il cartellone ci è appeso -->
+  <img class="muro" src="../esempio/cemento.jpg" alt="">
+
+  <div class="cartellone">
+    <!-- logo: il nome del brand, in alto a sinistra nel cartellone -->
+    <p class="logo">studio <b>faro</b></p>
+    <!-- titolo: tre righe in maiuscolo, la seconda tra parentesi; 1-2 parole in corsivo con <em>; al massimo 15 lettere per riga -->
+    <h1 class="titolo">La <em>squadra</em><br>(dietro)<br>il tuo <em>successo</em></h1>
+    <!-- sotto: cosa fa il brand, 5-8 parole in maiuscolo -->
+    <p class="sotto">Social e campagne per imprese locali</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #1E1E1E; --accento: #F85A15; --sfondo: #F5F5F3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --taglio: 300px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; color: #FFFFFF; font-family: var(--font-testo);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accento) 86%, white) 0%, var(--accento) 50%, color-mix(in srgb, var(--accento) 90%, black) 100%); }
+
+  .foto { position: absolute; left: -175px; top: 120px; width: 1000px; height: 1342px; object-fit: cover; display: block;
+    -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 9%);
+    -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, #000 86%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 9%); mask-composite: intersect; }
+
+  /* la parola verticale, dal basso in alto: piena sopra il taglio, solo contorno dove passa sulla persona */
+  .parola { position: absolute; left: 0; top: 0; width: 280px; height: 1350px; }
+  .parola::before { content: attr(data-parola); position: absolute; left: 0; top: 0; height: 1350px; writing-mode: sideways-lr; text-align: start; white-space: nowrap;
+    font-family: var(--font-titoli); font-size: 340px; font-weight: 700; line-height: 0.8; letter-spacing: -0.025em;
+    color: transparent; -webkit-text-stroke: 5px #FFFFFF;
+    background: linear-gradient(180deg, #FFFFFF var(--taglio), transparent var(--taglio)); -webkit-background-clip: text; background-clip: text; }
+  .virgolette { position: absolute; left: 634px; top: 150px; width: 112px; height: 92px; color: #FFFFFF; }
+  .testo { position: absolute; left: 632px; top: 268px; width: 400px; font-size: 48px; font-weight: 400; line-height: 72px; letter-spacing: -0.015em; }
+  .testo b { display: inline-block; white-space: nowrap; line-height: 64px; margin-top: 4px; font-weight: 600; background: var(--secondario); color: var(--su-secondario); border-radius: 8px; padding: 0 14px; margin-left: -14px;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona a mezzo busto su un fondo pieno a tinta unita, vestita scura, guarda in basso o in camera; sta a sinistra -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <!-- parola: nell'attributo data-parola, una parola sola di 7-8 lettere, letta dal basso; sopra il taglio è piena, sulla persona solo contorno -->
+  <div class="parola" data-parola="Crescita"></div>
+
+  <svg class="virgolette" viewBox="0 0 112 92" fill="currentColor"><path d="M4 52 C4 22 18 6 46 2 L50 22 C36 26 30 34 30 46 L50 46 L50 90 L4 90 Z"/><path d="M62 52 C62 22 76 6 104 2 L108 22 C94 26 88 34 88 46 L108 46 L108 90 L62 90 Z"/></svg>
+  <!-- testo: una frase di 12-16 parole; 2-3 parole chiave nel <b> (fascia), al massimo 14 caratteri -->
+  <p class="testo">Segui i <b>trend giusti</b> oggi per far crescere il tuo brand domani.</p>
+</body>
+</html>

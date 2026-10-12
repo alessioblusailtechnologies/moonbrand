@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #EF007A; --accento: #DEFE14; --sfondo: #FFFEF1; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  /* La foto ha il fondo nero: in «screen» il nero diventa il fondo del brand e resta solo la persona, in bianco e nero. */
+  .foto { position: absolute; left: 450px; top: 640px; width: 740px; height: 820px; object-fit: cover; object-position: 50% 4%;
+    filter: grayscale(1) brightness(0.9) contrast(1.5); mix-blend-mode: screen; }
+
+  .occhiello { position: absolute; left: 108px; top: 108px; font-size: 40px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accento); }
+  .titolo { position: absolute; left: 104px; top: 244px; width: 940px; font-family: var(--font-titoli); font-weight: 700; font-size: 198px; line-height: 1.04;
+    letter-spacing: -0.02em; text-transform: uppercase; color: var(--sfondo); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .griglia { position: absolute; left: 105px; top: 770px; width: 588px; border: 2px solid color-mix(in srgb, var(--accento) 60%, transparent); border-bottom: none; }
+  .riga { position: relative; display: flex; align-items: center; height: 90px; border-bottom: 2px solid color-mix(in srgb, var(--accento) 60%, transparent); }
+  .riga::before { content: ''; position: absolute; left: 95px; top: 0; bottom: -2px; border-left: 2px solid color-mix(in srgb, var(--accento) 60%, transparent); }
+  .riga::after { content: ''; position: absolute; right: 52px; top: 0; bottom: -2px; border-left: 2px solid color-mix(in srgb, var(--accento) 60%, transparent); }
+  .stella { width: 95px; display: flex; justify-content: center; color: var(--accento); }
+  .stella svg { width: 26px; height: 26px; }
+  .voce { padding-left: 22px; font-size: 32px; letter-spacing: 0.02em; color: var(--accento); white-space: nowrap; }
+
+  .motto { position: absolute; left: 106px; top: 1146px; width: 600px; font-size: 30px; line-height: 32px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sfondo); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in piedi su fondo nero (studio), in bianco e nero, tagliata dal bordo destro e da quello basso -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <!-- occhiello: con le due barre davanti, 2-3 parole (chi siamo, che cosa è) -->
+  <p class="occhiello">//Agenzia creativa</p>
+
+  <!-- titolo: due righe di una parola, al massimo 6 lettere ciascuna; la seconda chiude col trattino basso del cursore -->
+  <h1 class="titolo"><span>Nodo</span><span>Studio_</span></h1>
+
+  <!-- voci: tre servizi nella griglia, 2-3 parole ciascuno -->
+  <div class="griglia">
+    <div class="riga"><span class="stella"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0 Z"/></svg></span><span class="voce">Identità di marca</span></div>
+    <div class="riga"><span class="stella"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0 Z"/></svg></span><span class="voce">Siti web</span></div>
+    <div class="riga"><span class="stella"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0 Z"/></svg></span><span class="voce">Piani editoriali</span></div>
+  </div>
+
+  <!-- motto: una frase in maiuscolo, 8-12 parole, su tre righe -->
+  <p class="motto">Smontiamo le abitudini della grafica per costruire marchi che durano.</p>
+</body>
+</html>

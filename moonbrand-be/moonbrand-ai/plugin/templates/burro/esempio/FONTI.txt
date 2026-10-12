@@ -1,0 +1,12 @@
+Foto d'esempio del template «burro», tutte da Unsplash (Unsplash License, uso gratuito), scaricate a 1600 px.
+
+asporto.jpg    copertina   https://unsplash.com/photos/a-woman-holding-two-cups-of-coffee-and-a-croissant-zfBoVcNAWts
+dehors.jpg     lista       https://unsplash.com/photos/woman-drinking-coffee-at-an-outdoor-cafe-table-7_ch_4ES7-w
+strisce.jpg    note        https://unsplash.com/photos/a-woman-walking-across-a-cross-walk-in-a-city-ulWqxGT5ckQ
+tavolino.jpg   calendario  https://unsplash.com/photos/woman-in-white-shirt-wearing-sunglasses-holding-drinking-glass--Ew80W30uUo
+gelato.jpg     ricerca     https://unsplash.com/photos/a-woman-wearing-sunglasses-eating-an-ice-cream-cone-UZoYpir_Kcg
+tazza.jpg      post        https://unsplash.com/photos/woman-wearing-glasses-holding-black-ceramic-mug-zy--gDmDI7s
+finestra.jpg   post        https://unsplash.com/photos/woman-holding-teacup-while-standing-near-window-inside-room-during-daytime-3LbpZo8MG8A
+portone.jpg    cartelle    https://unsplash.com/photos/a-woman-leaning-against-the-door-of-a-house-pILKnj4_H9k
+scrivania.jpg  scheda      https://unsplash.com/photos/a-person-sitting-at-a-table-with-a-laptop-and-a-cup-of-coffee-9xQBFQOJxms
+freddo.jpg     scheda      https://unsplash.com/photos/UHRxFHzy7WU

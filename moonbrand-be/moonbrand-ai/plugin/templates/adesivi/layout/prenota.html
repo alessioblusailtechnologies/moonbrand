@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.36), 0 1px 4px rgba(0,0,0,0.22); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -380px; top: 0; width: 2025px; height: 1350px; object-fit: cover; display: block; }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.20); }
+
+  .sopra { position: absolute; left: 94px; top: 166px; width: 460px; font-size: 50px; font-weight: 400; line-height: 1.08; letter-spacing: -0.05em; text-shadow: var(--ombra); }
+  .titolo { position: absolute; left: 0; top: 400px; width: 1050px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 176px; line-height: 0.9; letter-spacing: -0.055em; text-shadow: var(--ombra); white-space: nowrap; }
+  .titolo span { position: relative; display: inline-block; }
+  .orbita { position: absolute; right: -118px; top: -36px; width: 128px; height: 92px; }
+  .corsivo { position: absolute; left: 0; top: 896px; width: 1050px; text-align: center; font-family: 'Pinyon Script', cursive; font-weight: 400; font-size: 190px; line-height: 1; text-shadow: var(--ombra); white-space: nowrap; }
+
+  .posto { position: absolute; left: 50%; top: 1134px; transform: translateX(-50%); height: 72px; padding: 0 22px 0 16px; border-radius: 12px; display: flex; align-items: center; gap: 6px;
+    background: color-mix(in srgb, #FFFFFF 34%, transparent); color: #FFFFFF; font-size: 42px; font-weight: 500; letter-spacing: -0.06em; text-transform: uppercase; white-space: nowrap; }
+  .posto svg { width: 34px; height: 44px; flex: none; }
+</style>
+</head>
+<body>
+  <!-- foto: un tavolo vero vicino alla finestra (portatile, caffè, occhiali da sole), luce calda di giorno -->
+  <img class="foto" src="../esempio/scrivania.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: 3-5 parole su due righe, in alto a sinistra -->
+  <p class="sopra">prima la strategia,<br>poi il post</p>
+
+  <!-- titolo: tre righe corte, 4-9 lettere ciascuna, minuscole -->
+  <h1 class="titolo"><span>il tuo<svg class="orbita" viewBox="0 0 128 92">
+      <ellipse cx="66" cy="50" rx="56" ry="22" fill="none" stroke="var(--accento)" stroke-width="7" transform="rotate(-14 66 50)"/>
+      <path d="M44 10 L52 33 L76 34 L57 48 L64 71 L44 57 L24 71 L31 48 L12 34 L36 33 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="2.5" stroke-linejoin="round"/>
+    </svg></span><br>profilo<br>chiede un</h1>
+  <!-- corsivo: la parola che chiude il titolo, scritta a mano, al massimo 8 lettere -->
+  <p class="corsivo">reset</p>
+
+  <!-- posto: l'invito, 1-2 parole in maiuscolo, nella targhetta con lo spillo della posizione -->
+  <p class="posto"><svg viewBox="0 0 34 44"><path d="M17 2 C8.7 2 2 8.7 2 17 C2 28 17 42 17 42 C17 42 32 28 32 17 C32 8.7 25.3 2 17 2 Z M17 23 A6 6 0 1 1 17 11 A6 6 0 1 1 17 23 Z" fill="#FFFFFF" fill-rule="evenodd"/></svg>Prenota ora</p>
+</body>
+</html>

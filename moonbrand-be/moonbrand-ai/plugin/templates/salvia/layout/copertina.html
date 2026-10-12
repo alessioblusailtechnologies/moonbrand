@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #253A33; --secondario: #E4E1CE; --accento: #D8F0CE; --sfondo: #F8F8F8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Roboto', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto è un cerchio grande tagliato dal bordo in alto a destra */
+  .foto { position: absolute; left: 570px; top: -100px; width: 1000px; height: 1000px; border-radius: 50%; object-fit: cover; object-position: 38% 50%; display: block; }
+
+  .pillola { position: absolute; left: 75px; top: 118px; height: 95px; display: flex; align-items: center; gap: 24px; padding: 0 48px 0 44px; border-radius: 48px;
+    background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); font-weight: 700; font-size: 28px; letter-spacing: 0.01em; text-transform: uppercase; white-space: nowrap; }
+  .pillola::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: var(--accento); flex: none; }
+
+  .titolo { position: absolute; left: 78px; bottom: 92px; width: 640px; font-family: var(--font-titoli); font-weight: 400; font-size: 118px; line-height: 0.99; letter-spacing: -0.035em; }
+  .titolo em { font-style: italic; letter-spacing: -0.04em; padding-right: 0.08em; }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio di lavoro (mani, schermo, scrivania) con un lato scuro; finisce nel cerchio in alto a destra -->
+  <img class="foto" src="../esempio/portatile.jpg" alt="">
+
+  <!-- pillola: l'invito, 2-3 parole -->
+  <p class="pillola">Parliamone oggi</p>
+
+  <!-- titolo: una domanda di 6-8 parole su 4-5 righe corte; una o due parole in corsivo con <em> -->
+  <h1 class="titolo">Come trasformo i <em>follower</em> in clienti <em>veri?</em></h1>
+</body>
+</html>

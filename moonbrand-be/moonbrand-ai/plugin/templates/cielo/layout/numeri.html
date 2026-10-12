@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #11120D; --secondario: #8FABC2; --accento: #E0F2FC; --sfondo: #DEF0FA; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Albert Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); --tenue: color-mix(in oklab, var(--accento) 40%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--tenue); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 98px; top: 128px; width: 860px; font-family: var(--font-titoli); font-size: 88px; font-weight: 400; line-height: 1.08; letter-spacing: -0.045em; }
+  .righe { position: absolute; left: 58px; top: 360px; width: 964px; display: flex; flex-direction: column; gap: 20px; }
+  .riga { height: 282px; border-radius: 58px; display: flex; align-items: center; padding: 0 0 0 92px; }
+  .riga.a { background: var(--secondario); color: var(--su-secondario); }
+  .riga.b { background: var(--principale); color: #FFFFFF; }
+  .riga.c { background: #FFFFFF; }
+  .cifra { width: 570px; flex: none; }
+  .cifra span { display: inline-block; height: 170px; padding: 0 48px; margin-left: -48px; border-radius: 60px; line-height: 170px;
+    font-family: var(--font-titoli); font-size: 128px; font-weight: 400; letter-spacing: -0.05em; }
+  .riga.a .cifra span, .riga.c .cifra span { background: var(--accento); color: var(--su-accento); }
+  .voce { font-size: 42px; font-weight: 400; line-height: 1.32; letter-spacing: -0.005em; }
+</style>
+</head>
+<body>
+  <!-- titolo: due righe, 4-6 parole, col punto -->
+  <h1 class="titolo">I numeri parlano<br>da soli.</h1>
+
+  <div class="righe">
+    <!-- riga 1: cifra di 3-5 caratteri (+94%, 2.8x) e voce di 2-3 parole su due righe -->
+    <div class="riga a"><p class="cifra"><span>+94%</span></p><p class="voce">Clienti<br>soddisfatti</p></div>
+    <!-- riga 2: cifra e voce -->
+    <div class="riga b"><p class="cifra"><span>+38%</span></p><p class="voce">Fatturato<br>dei clienti</p></div>
+    <!-- riga 3: cifra e voce, fino a tre righe brevi -->
+    <div class="riga c"><p class="cifra"><span>2.8×</span></p><p class="voce">Contatti<br>in un<br>anno</p></div>
+  </div>
+</body>
+</html>

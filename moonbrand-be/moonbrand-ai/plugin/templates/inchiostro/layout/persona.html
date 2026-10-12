@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0B0B0B; --secondario: #2F2F2F; --accento: #8C8C8C; --sfondo: #F4F4F2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Playfair Display', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  /* il velo scuro: la foto si legge appena, il testo bianco sta sopra */
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: color-mix(in srgb, var(--principale) 52%, transparent); }
+
+  .sopra { position: absolute; left: 0; top: 352px; width: 1080px; text-align: center; padding-left: 130px; font-family: var(--font-titoli); font-size: 44px; font-weight: 700; letter-spacing: 0.42em; text-transform: uppercase; }
+  .parola { position: absolute; font-family: var(--font-titoli); font-size: 168px; font-weight: 400; line-height: 1; text-transform: uppercase; letter-spacing: -0.01em; white-space: nowrap; }
+  .p1 { left: 540px; top: 470px; }
+  .p2 { left: 616px; top: 600px; }
+  .nome { position: absolute; left: 0; top: 920px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 42px; font-weight: 700; letter-spacing: 0.32em; text-transform: uppercase; }
+  .ruolo { position: absolute; left: 0; top: 990px; width: 1080px; text-align: center; font-size: 24px; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; }
+  .testo { position: absolute; left: 130px; top: 1056px; width: 820px; text-align: center; font-size: 25px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <!-- foto: ritratto di una persona del team in un interno, guarda in camera o di tre quarti, a sinistra -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: 2-3 parole in maiuscolo spaziato -->
+  <p class="sopra">Conosci la</p>
+  <!-- parola: una parola di 7-9 lettere spezzata in due metà, la seconda più a destra -->
+  <h1><span class="parola p1">Stra</span><span class="parola p2">tega</span></h1>
+
+  <!-- nome: nome e cognome -->
+  <p class="nome">Marta Colombo</p>
+  <!-- ruolo: 2-5 parole -->
+  <p class="ruolo">Fondatrice e direttrice creativa</p>
+  <!-- testo: 35-50 parole -->
+  <p class="testo">Dieci anni in agenzia a Milano, poi la scelta di lavorare con le attività della sua città. Ogni piano editoriale passa dalla sua scrivania: legge i numeri il lunedì mattina e il martedì li racconta ai clienti, senza grafici inutili.</p>
+</body>
+</html>

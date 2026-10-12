@@ -1,0 +1,16 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+ritratto.jpg    Unsplash, foto -WpPGYQs4wg di Romario Roges (donna in top corto, braccio sulla testa, fondo nero)
+                https://unsplash.com/photos/a-black-and-white-photo-of-a-woman-in-a-crop-top--WpPGYQs4wg
+braccia.jpg     Unsplash, foto _lUvN5ZyW_w di Illia Horokhovsky (donna con le braccia alzate davanti a un muro)
+                https://unsplash.com/photos/woman-with-arms-raised-in-front-of-stone-wall-_lUvN5ZyW_w
+fondatrice.jpg  Unsplash, foto 3MvlGhagq4E di Mike Von (donna in top rosa con le braccia alzate)
+                https://unsplash.com/photos/woman-in-pink-tank-top-and-white-shorts-3MvlGhagq4E
+camicia.jpg     Unsplash, foto 1b2xcZG9K40 di sammy swae (donna in camicia bianca e cravatta, fondo scuro)
+                https://unsplash.com/photos/woman-in-white-shirt-and-tie-crouching-1b2xcZG9K40
+cappello.jpg    Unsplash, foto 4Lw9LTtqtyY di mehrab zahedbeigi (donna col cappellino appoggiata a un muro)
+                https://unsplash.com/photos/a-woman-leaning-against-a-wall-wearing-a-hat-4Lw9LTtqtyY
+cliente.jpg     Unsplash, foto kM7cpKZ1C1w di uji kanggo gumilang (donna in giacca nera e occhiali da sole)
+                https://unsplash.com/photos/woman-in-black-button-up-jacket-wearing-black-sunglasses-kM7cpKZ1C1w
+volto.jpg       Unsplash, foto JyInR8L8Rck di Abraham Kabdrashit (donna in giacca nera che guarda in basso)
+                https://unsplash.com/photos/woman-in-a-black-jacket-looking-down-JyInR8L8Rck

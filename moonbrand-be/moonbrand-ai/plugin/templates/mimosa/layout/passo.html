@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #22201D; --secondario: #C4D8E1; --accento: #FDF955; --sfondo: #F9F9ED; }
+  :root { --font-titoli: 'Newsreader', serif; --font-testo: 'Work Sans', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0.24, (0.62 - l) * 1000, 1)) 0 0);
+    --grana: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='300' height='300' filter='url(%23g)'/></svg>"); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  /* Carta un po' più grigia del fondo, con la grana. */
+  body { position: relative; background: color-mix(in srgb, var(--sfondo) 94%, var(--principale)); color: var(--principale); font-family: var(--font-testo); }
+  body::before { content: ''; position: absolute; inset: 0; background-image: var(--grana); opacity: 0.12; }
+
+  .pillola { position: absolute; left: 50%; top: 174px; transform: translateX(-50%); min-width: 186px; padding: 12px 34px 11px; border-radius: 30px; background: var(--accento); color: var(--su-accento);
+    border: 2px solid var(--principale); text-align: center; font-size: 24px; font-weight: 400; line-height: 1.2; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+
+  .titolo { position: absolute; left: 150px; width: 780px; top: 392px; text-align: center; text-wrap: balance; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-variation-settings: 'opsz' 72;
+    font-size: 92px; line-height: 0.86; letter-spacing: -0.01em; }
+
+  .testo { position: absolute; left: 170px; width: 740px; top: 728px; text-align: center; text-wrap: pretty; font-size: 29px; font-weight: 400; line-height: 1.08; letter-spacing: 0.015em; }
+  .testo ul { display: inline-block; margin: 30px 0 30px; text-align: left; list-style: none; }
+  .testo li { position: relative; padding-left: 26px; }
+  .testo li::before { content: ''; position: absolute; left: 4px; top: 0.48em; width: 8px; height: 8px; border-radius: 50%; background: var(--principale); }
+
+  .piede { position: absolute; left: 108px; right: 108px; top: 1282px; display: flex; justify-content: space-between; align-items: center; font-size: 24px; letter-spacing: 0.03em; text-transform: uppercase; }
+  .piede span { display: flex; align-items: center; gap: 10px; }
+  .piede svg { width: 26px; height: 26px; fill: none; stroke: var(--principale); stroke-width: 1.4; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+  <!-- passo: il numero del passo, 1-2 parole -->
+  <p class="pillola">Passo 1</p>
+
+  <!-- titolo: il passo in 5-8 parole, su 2 righe -->
+  <h1 class="titolo">Parti dall’idea, non dalla tendenza</h1>
+
+  <div class="testo">
+    <!-- attacco: una frase di 10-16 parole che introduce l'elenco -->
+    <p>Prima di girare, sappi cosa dire e perché conta:</p>
+    <!-- elenco: 3-4 domande o punti brevi, al massimo 6 parole ciascuno -->
+    <ul>
+      <li>Che problema risolve?</li>
+      <li>A chi parla?</li>
+      <li>Perché dovrebbe interessare adesso?</li>
+      <li>Cosa vuoi che faccia dopo?</li>
+    </ul>
+    <!-- chiusura: una frase di 10-14 parole -->
+    <p>Con un’idea chiara, il contenuto viene quasi da solo.</p>
+  </div>
+
+  <div class="piede">
+    <!-- piede: i due inviti fissi, condividi e salva -->
+    <span>Condividi <svg viewBox="0 0 26 26"><path d="M2 3 L24 3 L13 24 L11 13 Z M11 13 L24 3"/></svg></span>
+    <span><svg viewBox="0 0 26 26"><path d="M6 2 L20 2 L20 24 L13 17 L6 24 Z"/></svg> Salva</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1A1A1A; --secondario: #1A1A1A; --accento: #9A75E6; --sfondo: #F4F4F4; }
+  :root { --font-titoli: 'Host Grotesk', sans-serif; --font-testo: 'Host Grotesk', sans-serif; }
+  :root { --su-accento: color-mix(in oklab, oklch(from var(--accento) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0) 88%, var(--accento));
+    --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.6 - l) * 1000, 1)) 0 0);
+    --corsivo: 'Newsreader', serif; --mono: 'IBM Plex Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 48px; right: 48px; top: 40px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; z-index: 3; }
+  .stella { display: block; color: var(--accento); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .testata { color: #FFFFFF; justify-content: flex-end; }
+  .titolo { position: absolute; left: 70px; bottom: 116px; height: 1170px; writing-mode: vertical-rl; transform: rotate(180deg);
+    color: #FFFFFF; font-family: var(--font-titoli); font-weight: 400; font-size: 94px; line-height: 1.04; letter-spacing: -0.03em; text-transform: uppercase; }
+  .scheda { position: absolute; left: 338px; top: 994px; width: 692px; height: 290px; padding: 22px; display: flex; align-items: center; gap: 30px; border-radius: 30px; background: color-mix(in srgb, var(--sfondo) 94%, white); }
+  .riquadro { flex: none; width: 300px; height: 246px; padding: 24px 22px; border-radius: 22px; background: var(--accento); color: var(--su-accento); }
+  .riquadro small { display: block; font-size: 24px; letter-spacing: -0.03em; }
+  .riquadro b { display: block; margin-top: 10px; font-family: var(--font-titoli); font-weight: 400; font-size: 170px; line-height: 0.82; letter-spacing: -0.06em; white-space: nowrap; }
+  .riquadro sup { font-size: 64px; vertical-align: top; position: relative; top: -6px; letter-spacing: 0; }
+  .spiega { padding-top: 70px; font-size: 34px; line-height: 1.04; letter-spacing: -0.045em; color: var(--principale); }
+
+</style>
+</head>
+<body>
+  <!-- foto: un oggetto in still life su fondo grigio medio, toni spenti; la parte alta resta tranquilla -->
+  <img class="foto" src="../esempio/natura.jpg" alt="">
+  <div class="testata">
+    <!-- serie: il nome della rubrica e il numero, 2-4 parole (qui senza logo, come nel modello) -->
+    <span>Quaderni di marca 6</span>
+  </div>
+
+  <!-- titolo: verticale lungo il bordo sinistro, in maiuscolo, due righe di 2-3 parole -->
+  <h1 class="titolo">Quasi nessuno legge<br>fino in fondo</h1>
+
+  <div class="scheda">
+    <div class="riquadro">
+      <!-- prima: 2-3 parole -->
+      <small>Solo il</small>
+      <!-- cifra: due cifre e l'unità in sup -->
+      <b>20<sup>%</sup></b>
+    </div>
+    <!-- spiega: cosa misura, 9-13 parole -->
+    <p class="spiega">dei testi di un sito viene letto oltre la prima schermata.</p>
+  </div>
+</body>
+</html>

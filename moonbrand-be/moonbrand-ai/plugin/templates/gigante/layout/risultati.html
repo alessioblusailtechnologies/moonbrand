@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; color: var(--principale); }
+
+  /* griglia 3 x 3 di volti sul colore; al centro la frase prende due caselle */
+  .griglia { position: absolute; left: 30px; top: 30px; width: 1020px; height: 1290px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 30px; }
+  .volto { background: var(--accento); overflow: hidden; }
+  .volto img { width: 320px; height: 410px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.08) brightness(1.06); mix-blend-mode: multiply; }
+
+  .frase { grid-column: 2 / 4; display: flex; align-items: center; justify-content: center; padding: 0 20px; }
+  .frase p { font-family: var(--font-titoli); font-weight: 200; text-transform: uppercase; text-align: center; font-size: 47px; line-height: 1.02; letter-spacing: -0.03em; }
+  .frase b { font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="griglia">
+    <!-- foto: sei volti diversi di clienti sorridenti, a mezzo busto, su fondo chiaro (il fondo prende il colore) -->
+    <div class="volto"><img src="../esempio/volto-1.jpg" alt="" style="object-position: 50% 30%;"></div>
+    <div class="volto"><img src="../esempio/volto-3.jpg" alt="" style="object-position: 58% 30%;"></div>
+    <div class="volto"><img src="../esempio/volto-4.jpg" alt="" style="object-position: 50% 20%;"></div>
+    <div class="volto"><img src="../esempio/volto-2.jpg" alt="" style="object-position: 50% 40%;"></div>
+    <!-- frase: un risultato vero dell'anno, 26-36 parole; i pezzi che contano in grassetto -->
+    <div class="frase"><p>Nell'ultimo anno abbiamo <b>aiutato oltre 120 negozi e studi del territorio a vendere di più,</b> a passare meno sere sui social e <b>a riprendersi il proprio tempo</b></p></div>
+    <div class="volto"><img src="../esempio/volto-6.jpg" alt="" style="object-position: 50% 20%;"></div>
+    <div class="volto"><img src="../esempio/volto-5.jpg" alt="" style="object-position: 50% 30%;"></div>
+    <div class="volto"><img src="../esempio/volto-7.jpg" alt="" style="object-position: 50% 25%;"></div>
+  </div>
+</body>
+</html>

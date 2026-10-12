@@ -1,0 +1,11 @@
+Foto d'esempio del template «quota», tutte da Unsplash (Unsplash License, uso gratuito), scaricate a 1600 px.
+
+torre.jpg       https://unsplash.com/photos/modern-glass-skyscraper-against-a-cloudy-sky-qRJiQY-sdrc
+facciata.jpg    https://unsplash.com/photos/a-modern-skyscraper-reaches-towards-the-clouds-VJBnyWrFuI8
+vicolo.jpg      https://unsplash.com/photos/empty-street-in-between-of-buildings-8s0x8fqTGXE
+lettura.jpg     https://unsplash.com/photos/woman-in-black-blazer-sitting-at-the-table-OXsjoopV-Vw
+squadra.jpg     https://unsplash.com/photos/colleagues-collaborating-around-a-table-in-an-office-yM3blOV977Q
+scrivania.jpg   https://unsplash.com/photos/woman-in-black-blazer-sitting-at-the-table-Jk3u514GJes
+relatrice.jpg   https://unsplash.com/photos/a-smiling-woman-with-glasses-in-an-office-APjRQ59peUg
+relatore.jpg    https://unsplash.com/photos/man-in-blue-dress-shirt-ksbXoAsU7Bo
+ospite.jpg      https://unsplash.com/photos/a-man-smiling-for-the-camera-sgYGdrslz50

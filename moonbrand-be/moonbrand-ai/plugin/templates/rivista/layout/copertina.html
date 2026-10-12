@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+
+  .sopra { position: absolute; left: 0; top: 86px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 40px; font-weight: 500;
+    line-height: 0.92; letter-spacing: -0.05em; text-transform: uppercase; }
+
+  .titolo { position: absolute; left: 52px; top: 822px; width: 1000px; font-family: var(--font-titoli); font-size: 236px; font-weight: 500;
+    line-height: 0.74; letter-spacing: -0.065em; white-space: nowrap; }
+  .titolo > span { display: block; }
+  /* la «&» del modello è un serif chiaro, più grande del titolo: un dettaglio, non un titolo */
+  .e { font-family: 'Newsreader', serif; font-weight: 300; font-size: 1.08em; letter-spacing: -0.02em; margin-left: 0.04em; }
+
+  .didascalia { position: absolute; left: 80px; top: 1250px; width: 930px; font-size: 30px; font-weight: 700; line-height: 1.28; letter-spacing: -0.01em; color: var(--accento); }
+  .didascalia em { white-space: nowrap; font-weight: 400; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+</style>
+</head>
+<body>
+  <!-- foto: due persone (o una) in uno studio o in un ufficio vissuto, guardano in camera; la metà bassa scura -->
+  <img class="foto" src="../esempio/ufficio.jpg" alt="">
+
+  <!-- sopra: tre parole corte, una per riga, in alto al centro -->
+  <p class="sopra">Uno<br>spazio<br>creativo</p>
+
+  <!-- titolo: due righe di una parola corta (4-6 lettere); la prima chiude con «&» in serif -->
+  <h1 class="titolo"><span>Pensa <span class="e">&amp;</span></span><span>Crea</span></h1>
+
+  <!-- didascalia: una frase di 14-20 parole in grassetto, due pezzi in corsivo sottolineato con <em> -->
+  <p class="didascalia">Benvenuti in Studio Ottobre: <em>qui la creatività è</em> la base, e <em>il lavoro insieme</em> è il motore.</p>
+</body>
+</html>

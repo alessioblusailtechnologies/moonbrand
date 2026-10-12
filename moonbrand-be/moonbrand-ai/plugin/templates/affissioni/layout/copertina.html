@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1C1A; --secondario: #D1CEA9; --accento: #C0322B; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Montserrat', sans-serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #8FB2DA; color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -177px; top: -40px; width: 1440px; height: 1800px; object-fit: cover; display: block; }
+
+  /* la faccia del cartello: 436 x 800 nel suo piano, portata sulla foto in prospettiva */
+  .cartello { position: absolute; left: 0; top: 0; width: 436px; height: 800px; transform-origin: 0 0;
+    transform: matrix3d(1.0514016, 0.2247495, 0, 0.0000662, 0, 1.002375, 0, 0, 0, 0, 1, 0, 322.5, 186.8, 0, 1); }
+  .tinta { position: absolute; inset: 0; border-radius: 44px; background: var(--sfondo); mix-blend-mode: multiply; }
+  .testi { position: absolute; inset: 0; text-align: center; opacity: 0.9; }
+
+  .logo { position: absolute; left: 0; top: 54px; width: 436px; font-family: var(--font-testo); font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .titolo { position: absolute; left: 0; top: 250px; width: 436px; font-weight: 400; }
+  .corsivo { display: block; font-family: 'Pinyon Script', cursive; font-size: 132px; line-height: 0.86; letter-spacing: -0.01em; margin-bottom: 4px; position: relative; left: -8px; }
+  .righe { display: block; font-family: var(--font-titoli); font-style: italic; font-weight: 500; font-size: 46px; line-height: 1.16; text-transform: uppercase; letter-spacing: -0.01em; }
+  .freccia { position: absolute; left: 172px; top: 528px; width: 104px; height: 30px; color: var(--accento); }
+  .strisce { position: absolute; left: 56px; top: 712px; width: 324px; height: 28px; background: repeating-linear-gradient(135deg, transparent 0 14px, var(--accento) 14px 40px, transparent 40px 54px);
+    clip-path: polygon(0 100%, 8% 0, 100% 0, 100% 100%); }
+</style>
+</head>
+<body>
+  <!-- foto: un cartello bianco o una superficie libera in strada, ripresa dal basso; il testo ci va sopra in prospettiva -->
+  <img class="foto" src="../esempio/cartello.jpg" alt="">
+
+  <div class="cartello">
+    <div class="tinta"></div>
+    <div class="testi">
+      <!-- logo: il nome del brand, piccolo in testa al cartello -->
+      <p class="logo">Studio Faro</p>
+      <h1 class="titolo">
+        <!-- corsivo: una parola scritta a mano sopra il titolo, al massimo 9 lettere -->
+        <span class="corsivo">Segnali</span>
+        <!-- righe: due righe in maiuscolo corsivo, al massimo 12 lettere ciascuna -->
+        <span class="righe">che ti serve<br>un rebrand</span>
+      </h1>
+      <svg class="freccia" viewBox="0 0 104 30" fill="none" stroke="currentColor" stroke-width="4"><path d="M0 15 H96"/><path d="M84 4 L100 15 L84 26 Z" fill="currentColor" stroke="none"/></svg>
+      <!-- strisce: le bande da cantiere in fondo al cartello, restano -->
+      <div class="strisce"></div>
+    </div>
+  </div>
+</body>
+</html>

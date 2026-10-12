@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.30), 0 1px 4px rgba(0,0,0,0.18); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 100%; display: block; }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.10); }
+
+  .sopra { position: absolute; left: 0; top: 66px; width: 1080px; text-align: center; font-size: 50px; font-weight: 400; letter-spacing: -0.045em; text-shadow: var(--ombra); white-space: nowrap; }
+  .parola { position: absolute; left: 0; top: 96px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 340px; line-height: 1; letter-spacing: -0.06em; text-shadow: var(--ombra); white-space: nowrap; }
+  .parola span { position: relative; display: inline-block; }
+
+  .fiamma { position: absolute; right: -54px; top: 30px; width: 70px; height: 86px; }
+  .freccia { position: absolute; right: -36px; bottom: 6px; width: 60px; height: 84px; }
+  .stella { position: absolute; left: 168px; top: 346px; width: 62px; height: 62px; }
+  .occhi { position: absolute; left: 878px; top: 534px; width: 86px; height: 60px; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona da vicino davanti a un muro semplice, il volto coperto o tagliato; molto spazio libero in alto -->
+  <img class="foto" src="../esempio/tazza.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: 2-3 parole che introducono la parola, minuscole -->
+  <p class="sopra">parliamo di</p>
+  <!-- parola: una parola sola, 3-5 lettere (una sigla, un tema) -->
+  <h1 class="parola"><span>SEO<svg class="fiamma" viewBox="0 0 70 86">
+      <path d="M36 2 C40 22 66 34 64 58 C62 76 50 84 35 84 C18 84 6 74 6 56 C6 42 14 34 20 28 C20 38 24 44 30 46 C26 30 30 14 36 2Z" fill="color-mix(in srgb, var(--accento) 70%, #E8541C)"/>
+      <path d="M36 40 C40 52 52 58 50 70 C49 79 43 83 35 83 C27 83 21 78 21 70 C21 62 27 58 30 52 C31 58 33 60 36 61 C34 54 34 47 36 40Z" fill="var(--accento)"/>
+    </svg><svg class="freccia" viewBox="0 0 60 84"><path d="M6 4 L6 66 L21 52 L32 78 L43 73 L32 48 L52 48 Z" fill="#FFFFFF" stroke="#111111" stroke-width="3" stroke-linejoin="round"/></svg></span></h1>
+
+  <svg class="stella" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="occhi" viewBox="0 0 86 60">
+    <ellipse cx="22" cy="30" rx="19" ry="26" fill="#FFFFFF" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+    <ellipse cx="64" cy="30" rx="19" ry="26" fill="#FFFFFF" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+    <ellipse cx="17" cy="32" rx="9" ry="11" fill="#1A1A1A"/>
+    <ellipse cx="59" cy="32" rx="9" ry="11" fill="#1A1A1A"/>
+  </svg>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mr+Dafoe&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #141414; --secondario: #1E1E1E; --accento: #F85A15; --sfondo: #F5F5F3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 88%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+  .grana { position: absolute; inset: 0; box-shadow: inset 0 0 260px rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035' numOctaves='5' seed='40'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.2 0 0 0 -1.05'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3 0 0 0 -1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='0.16'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.12'/%3E%3C/svg%3E"); }
+
+  .titolo { position: absolute; left: 0; top: 214px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 800; letter-spacing: -0.045em; }
+  .titolo .riga { display: block; white-space: nowrap; font-size: 150px; line-height: 136px;
+    background: linear-gradient(180deg, var(--accento) 30%, var(--accento-scuro)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .mano { display: inline-block; margin-right: 18px; font-family: 'Mr Dafoe', cursive; font-size: 170px; font-weight: 400; letter-spacing: 0; line-height: 0.5; vertical-align: 0.05em;
+    color: #FFFFFF; -webkit-text-fill-color: #FFFFFF; background: none; transform: rotate(-6deg); }
+
+  .citazione { position: absolute; left: 182px; top: 552px; width: 720px; height: 350px; }
+  .filetto { position: absolute; left: 50px; width: 4px; background: var(--accento); }
+  .filetto.su { top: 0; height: 120px; }
+  .filetto.giu { top: 238px; height: 112px; }
+  .virgolette { position: absolute; left: 0; top: 140px; width: 106px; height: 80px; color: var(--accento); }
+  .testo { position: absolute; left: 140px; top: 6px; width: 580px; font-size: 38px; font-weight: 400; line-height: 1.24; letter-spacing: -0.005em; }
+  .autore { position: absolute; left: 146px; top: 324px; font-size: 38px; font-weight: 600; color: var(--accento); letter-spacing: -0.015em; white-space: nowrap; }
+
+  .stelle { position: absolute; left: 0; top: 1018px; width: 1080px; display: flex; justify-content: center; gap: 24px; color: var(--accento); }
+  .stelle svg { width: 58px; height: 56px; }
+</style>
+</head>
+<body>
+  <div class="grana"></div>
+
+  <h1 class="titolo">
+    <!-- titolo: due righe, la prima di una parola di 5-7 lettere (accanto alla parola a mano), la seconda di 2 parole, al massimo 11 caratteri -->
+    <!-- mano: una parola scritta a mano a sinistra della prima riga -->
+    <span class="riga"><span class="mano">cosa</span>dicono</span>
+    <span class="riga">i clienti</span>
+  </h1>
+
+  <div class="citazione">
+    <span class="filetto su"></span>
+    <svg class="virgolette" viewBox="0 0 106 80" fill="currentColor"><path d="M4 4 L46 4 L46 42 C46 64 34 76 10 78 L6 62 C20 60 26 54 26 44 L4 44 Z"/><path d="M60 4 L102 4 L102 42 C102 64 90 76 66 78 L62 62 C76 60 82 54 82 44 L60 44 Z"/></svg>
+    <span class="filetto giu"></span>
+    <!-- testo: la recensione, 26-34 parole -->
+    <p class="testo">Lavorare con loro ha cambiato il nostro modo di vendere. Dal primo giorno si sono presi il tempo di capire il negozio, i clienti e cosa volevamo diventare.</p>
+    <!-- autore: chi lo dice, nome o ruolo, 2-3 parole -->
+    <p class="autore">Marta, titolare</p>
+  </div>
+
+  <div class="stelle">
+    <svg viewBox="0 0 58 56"><path fill="currentColor" d="M29 2 L36 21 L56 21 L40 33 L46 53 L29 41 L12 53 L18 33 L2 21 L22 21 Z"/></svg>
+    <svg viewBox="0 0 58 56"><path fill="currentColor" d="M29 2 L36 21 L56 21 L40 33 L46 53 L29 41 L12 53 L18 33 L2 21 L22 21 Z"/></svg>
+    <svg viewBox="0 0 58 56"><path fill="currentColor" d="M29 2 L36 21 L56 21 L40 33 L46 53 L29 41 L12 53 L18 33 L2 21 L22 21 Z"/></svg>
+    <svg viewBox="0 0 58 56"><path fill="currentColor" d="M29 2 L36 21 L56 21 L40 33 L46 53 L29 41 L12 53 L18 33 L2 21 L22 21 Z"/></svg>
+    <svg viewBox="0 0 58 56"><path fill="currentColor" d="M29 2 L36 21 L56 21 L40 33 L46 53 L29 41 L12 53 L18 33 L2 21 L22 21 Z"/></svg>
+  </div>
+</body>
+</html>

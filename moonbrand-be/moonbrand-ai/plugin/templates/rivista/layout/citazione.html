@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #333334; --secondario: #A09D98; --accento: #FFF36B; --sfondo: #E8E5E0; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Newsreader', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 38px; top: 54px; width: 1010px; font-family: var(--font-titoli); font-size: 150px; font-weight: 500;
+    line-height: 1.03; letter-spacing: -0.035em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+  /* le parole in serif corsivo, nell'accento e sottolineate con un filetto spesso */
+  .titolo em { display: inline-block; font-family: var(--font-testo); font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--accento);
+    text-decoration: underline; text-decoration-thickness: 15px; text-underline-offset: 12px; text-decoration-skip-ink: none; }
+  .titolo em.ultima { text-transform: none; font-size: 1.15em; }
+
+  .sito { position: absolute; right: 120px; top: 1282px; font-family: var(--font-titoli); font-size: 22px; font-weight: 400; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+  <!-- titolo: una frase di 8-12 parole su cinque righe brevi (al massimo 11 lettere); la seconda riga e l'ultima parola in corsivo con <em> -->
+  <h1 class="titolo">
+    <span>Il buon</span>
+    <span><em>branding</em></span>
+    <span>lo vedi, ma</span>
+    <span>prima lo</span>
+    <span><em class="ultima">senti.</em></span>
+  </h1>
+
+  <!-- sito: l'indirizzo del sito -->
+  <p class="sito">studioottobre.it</p>
+</body>
+</html>

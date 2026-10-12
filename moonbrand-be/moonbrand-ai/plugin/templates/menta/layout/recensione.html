@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F3F39; --secondario: #B8D8BC; --accento: #7CB68E; --sfondo: #EEEEEE; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, color-mix(in srgb, var(--secondario) 65%, white) 0%, var(--accento) 100%); color: var(--principale); font-family: var(--font-testo); }
+
+  .lettere { position: absolute; transform: rotate(14deg); transform-origin: 0 0; }
+  .lettere::before { content: attr(data-lettere); display: block; font-family: var(--font-titoli); font-size: 640px; font-weight: 700; line-height: 0.8; letter-spacing: -0.04em; white-space: nowrap; color: #FFFFFF; }
+  .sopra { left: -40px; top: -40px; }
+  .sotto { left: -80px; top: 820px; }
+
+  .tag { position: absolute; left: 700px; top: 30px; width: 640px; height: 110px; padding-left: 60px; display: flex; align-items: center;
+    transform: rotate(62deg); transform-origin: 0 0; background: color-mix(in srgb, var(--secondario) 22%, white);
+    font-family: var(--font-titoli); font-size: 58px; font-weight: 600; letter-spacing: -0.02em; color: color-mix(in srgb, var(--accento) 65%, black); }
+
+  .scheda { position: absolute; left: 66px; top: 528px; width: 948px; padding: 46px 52px 54px 46px; border-radius: 30px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 55%, #ECECEC 100%); box-shadow: 0 26px 48px rgba(0,0,0,0.25); }
+  .chi { display: flex; align-items: center; gap: 28px; }
+  .avatar { width: 128px; height: 128px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; display: block; flex: none; }
+  .nome { font-size: 38px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+  .ruolo { font-size: 34px; font-weight: 400; line-height: 1.25; color: color-mix(in srgb, var(--principale) 80%, transparent); }
+  .stelle { margin-left: auto; align-self: flex-start; margin-top: 10px; font-size: 44px; letter-spacing: 3px; line-height: 1; color: var(--accento); }
+  .testo { margin-top: 40px; font-size: 32px; font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; color: color-mix(in srgb, var(--principale) 85%, transparent); }
+</style>
+</head>
+<body>
+  <!-- lettere: la parola RECENSIONI spezzata in due blocchi enormi, bianchi e inclinati, tagliati dai bordi; 3-4 lettere per blocco -->
+  <div class="lettere sopra" data-lettere="rece"></div>
+  <div class="lettere sotto" data-lettere="nsio"></div>
+
+  <!-- tag: un hashtag di una parola nella fascia inclinata, al massimo 12 caratteri -->
+  <p class="tag">#recensioni</p>
+
+  <div class="scheda">
+    <div class="chi">
+      <!-- avatar: il ritratto di chi scrive, primo piano -->
+      <img class="avatar" src="../esempio/cliente.jpg" alt="">
+      <div>
+        <!-- nome: nome e cognome -->
+        <p class="nome">Marco Bellini</p>
+        <!-- ruolo: ruolo e attività, al massimo 28 caratteri -->
+        <p class="ruolo">Titolare, Trattoria Bellini</p>
+      </div>
+      <p class="stelle">★★★★★</p>
+    </div>
+    <!-- testo: la recensione, 22-30 parole -->
+    <p class="testo">Lavorare con loro ha cambiato il nostro modo di stare sui social. Dal primo incontro hanno voluto capire chi siamo e chi viene a mangiare da noi.</p>
+  </div>
+</body>
+</html>

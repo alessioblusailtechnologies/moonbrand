@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #021F67; --secondario: #3569CF; --accento: #0A1F5B; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Titillium Web', sans-serif; --font-testo: 'Titillium Web', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; font-family: var(--font-testo); color: #FFFFFF;
+    background: linear-gradient(100deg, var(--principale) 0%, var(--secondario) 100%); }
+
+  .titolo { position: absolute; left: 60px; width: 960px; top: 92px; text-align: center; font-family: var(--font-titoli);
+    font-size: 92px; font-weight: 700; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.005em; }
+
+  .voci { position: absolute; left: 136px; width: 810px; top: 280px; border-top: 2px solid color-mix(in srgb, #FFFFFF 75%, transparent); }
+  .voce { display: flex; gap: 46px; align-items: center; height: 330px; border-bottom: 2px solid color-mix(in srgb, #FFFFFF 75%, transparent); padding: 0 0 0 28px; }
+  .voce img { flex: none; width: 170px; height: 196px; object-fit: cover; border-radius: 85px 85px 0 0; display: block; }
+  .voce h2 { font-family: var(--font-titoli); font-size: 46px; font-weight: 600; line-height: 1.1; }
+  .voce p { margin-top: 12px; font-size: 28px; line-height: 1.42; text-align: justify; color: color-mix(in srgb, #FFFFFF 90%, transparent); }
+</style>
+</head>
+<body>
+  <!-- titolo: 1-3 parole, una riga -->
+  <h1 class="titolo">Cosa facciamo</h1>
+
+  <div class="voci">
+    <!-- voce: tre voci; foto ad arco (una persona al lavoro), titolo di 2-4 parole, testo di 18-24 parole -->
+    <div class="voce">
+      <img src="../esempio/firma.jpg" alt="">
+      <div><h2>Strategia social</h2><p>Studiamo il tuo pubblico e scriviamo un piano di tre mesi, con i temi, i formati e i giorni giusti per pubblicare.</p></div>
+    </div>
+    <div class="voce">
+      <img src="../esempio/riunione.jpg" alt="">
+      <div><h2>Contenuti e grafica</h2><p>Foto, caroselli e video brevi fatti su misura, con il tuo tono di voce e i colori della tua attività.</p></div>
+    </div>
+    <div class="voce">
+      <img src="../esempio/documenti.jpg" alt="">
+      <div><h2>Campagne a budget</h2><p>Annunci su Meta e Google con una spesa decisa insieme, e un resoconto chiaro ogni mese su cosa ha funzionato.</p></div>
+    </div>
+  </div>
+</body>
+</html>

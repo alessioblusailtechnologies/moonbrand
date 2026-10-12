@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #0E0E10; --secondario: #EAD2E8; --accento: #D5ABD1; --sfondo: #E8E6E3; }
+  /* Oswald è strettissimo: qui è ingrandito, così le misure sotto valgono anche per i font del brand, più larghi. */
+  @font-face { font-family: 'Oswald Gigante'; font-weight: 200 700; src: url(https://fonts.gstatic.com/s/oswald/v57/TK3iWkUHHAIjg752GT8G.woff2) format('woff2'); size-adjust: 150%; }
+  :root { --font-titoli: 'Oswald Gigante', 'Oswald', sans-serif; --font-testo: 'Mulish', sans-serif; }
+  :root { --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; color: var(--principale); }
+
+  .titolo { position: absolute; left: 40px; top: 22px; width: 1000px; text-align: center; font-family: var(--font-titoli); font-weight: 700; text-transform: uppercase;
+    font-size: 200px; line-height: 1.04; letter-spacing: -0.015em; white-space: nowrap; }
+
+  .foto { position: absolute; left: 40px; top: 290px; width: 1000px; height: 870px; object-fit: cover; object-position: 50% 50%; display: block; filter: grayscale(1); }
+
+  /* le voci: capsule sfalsate, una a sinistra e una a destra, grassetto e chiaro alternati */
+  .voce { position: absolute; height: 82px; padding: 0 48px; border-radius: 41px; background: var(--secondario); border: 2px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; white-space: nowrap;
+    font-family: var(--font-titoli); font-size: 30px; line-height: 1; letter-spacing: -0.01em; color: var(--su-secondario); }
+  .forte { font-weight: 600; }
+  .chiara { font-weight: 300; }
+  .su { text-transform: uppercase; }
+  .s { left: 112px; min-width: 470px; }
+  .d { right: 100px; min-width: 370px; }
+
+  .testo { position: absolute; left: 40px; top: 1180px; width: 1000px; font-family: var(--font-testo); font-size: 25px; line-height: 1.22; text-align: justify; }
+</style>
+</head>
+<body>
+  <!-- titolo: una parola, al massimo 8 lettere, larga quanto la pagina -->
+  <h1 class="titolo">Servizi</h1>
+
+  <!-- foto: un dettaglio di una persona (capelli, spalla, mani), resa in bianco e nero dal CSS -->
+  <img class="foto" src="../esempio/capelli.jpg" alt="">
+
+  <!-- voci: da 5 a 7 servizi di 1-3 parole; maiuscolo e minuscolo, grassetto e chiaro si alternano -->
+  <div class="voce forte su s" style="top: 340px;">Gestione social</div>
+  <div class="voce chiara su d" style="top: 448px;">Email marketing</div>
+  <div class="voce forte s" style="top: 556px; left: 160px;">Siti web</div>
+  <div class="voce chiara su d" style="top: 664px; right: 160px;">Formazione</div>
+  <div class="voce forte su s" style="top: 772px; left: 70px;">Strategia di brand</div>
+  <div class="voce chiara d" style="top: 880px; right: 140px;">Foto di prodotto</div>
+  <div class="voce forte s" style="top: 988px; left: 190px; min-width: 250px;">e molto altro</div>
+
+  <!-- testo: chi siete e cosa fate, 45-60 parole -->
+  <p class="testo">Studio Marea segue negozi, botteghe e professionisti della città dal primo post al sito. Ascoltiamo la vostra storia, la mettiamo in ordine e la trasformiamo in contenuti che portano persone vere in negozio, con un piano chiaro ogni mese e numeri che vi mostriamo senza giri di parole.</p>
+</body>
+</html>

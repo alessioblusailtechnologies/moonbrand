@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;700&family=Arimo:wght@400&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'League Spartan', sans-serif; }
+  :root { --oro: color-mix(in oklab, var(--accento) 45%, #C98A12); --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.72 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 70%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.08); }
+  .utente { position: absolute; left: 0; top: 112px; width: 1080px; text-align: center; font-family: 'Arimo', sans-serif; font-size: 30px; }
+
+  .nota { position: absolute; left: 138px; top: 228px; width: 810px; padding: 50px 46px 64px; border-radius: 24px; background: var(--sfondo); color: var(--principale); text-align: center; }
+  .barra { display: flex; justify-content: space-between; align-items: center; color: var(--oro); }
+  .indietro { display: flex; align-items: center; gap: 8px; font-size: 32px; font-weight: 400; }
+  .indietro svg { width: 22px; height: 40px; }
+  .icone { display: flex; gap: 22px; }
+  .icone svg { width: 44px; height: 44px; }
+  .titolo { margin-top: 22px; font-family: var(--font-titoli); font-size: 70px; font-weight: 700; line-height: 1; letter-spacing: -0.045em; }
+  .testo { margin-top: 18px; font-size: 44px; font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; }
+
+  .emoji { position: absolute; font-family: 'Noto Color Emoji', sans-serif; line-height: 1; }
+  .emoji.a { left: 900px; top: 314px; font-size: 92px; }
+  .emoji.b { left: 84px; top: 600px; font-size: 80px; }
+  .fumetto { position: absolute; right: 86px; top: 652px; padding: 16px 30px 14px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); font-family: 'Arimo', sans-serif; font-size: 38px; line-height: 1.1; white-space: nowrap; }
+  .fumetto::after { content: ''; position: absolute; left: 20px; bottom: -16px; width: 28px; height: 26px; background: var(--secondario); clip-path: polygon(0 0, 100% 0, 10% 100%); }
+  .fumetto .e { font-family: 'Noto Color Emoji', sans-serif; font-size: 0.9em; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona in casa in un momento tranquillo (legge, scrive, beve un caffè), occupa la metà bassa -->
+  <img class="foto" src="../esempio/divano.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+
+  <div class="nota">
+    <div class="barra">
+      <span class="indietro"><svg viewBox="0 0 22 40"><path d="M19 3 L4 20 L19 37" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Note</span>
+      <span class="icone">
+        <svg viewBox="0 0 44 44"><path d="M22 4 V27 M14 12 L22 4 L30 12 M13 19 H8 V40 H36 V19 H31" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M13 16 H31 M13 22 H31 M13 28 H31" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+    <!-- titolo: il consiglio, 3-4 parole -->
+    <h1 class="titolo">Cura la luce</h1>
+    <!-- testo: la spiegazione, 16-24 parole -->
+    <p class="testo">Foto nitide e luminose vendono di più. La luce del giorno, indiretta, è la migliore per i dettagli dei prodotti.</p>
+  </div>
+
+  <span class="emoji a">✨</span>
+  <span class="emoji b">✨</span>
+  <!-- fumetto: una battuta da chat, 3-5 parole, con un'emoji alla fine -->
+  <p class="fumetto">ci prendi la mano <span class="e">👍</span></p>
+</body>
+</html>

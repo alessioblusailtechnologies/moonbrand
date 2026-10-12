@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2620; --secondario: #FF64C8; --accento: #FCF5BE; --sfondo: #FCFAF2; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --rosa-chiaro: color-mix(in srgb, var(--secondario) 62%, white); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .velo { position: absolute; inset: 0; background: rgba(0,0,0,0.16); }
+  .utente { position: absolute; left: 0; top: 92px; width: 1080px; text-align: center; font-size: 30px; }
+  .logo { position: absolute; left: 0; top: 1206px; width: 1080px; text-align: center; font-size: 34px; }
+
+  .titolo { position: absolute; left: 0; top: 248px; width: 1080px; text-align: center; font-weight: 400; }
+  .apre { display: block; margin-left: -150px; font-family: var(--font-testo); font-size: 64px; font-weight: 700; letter-spacing: -0.055em; line-height: 1; }
+  .grande { display: block; font-family: var(--font-titoli); font-size: 238px; font-weight: 500; line-height: 0.9; letter-spacing: -0.045em; color: var(--accento); white-space: nowrap; }
+  .grande + .grande { margin-top: -6px; }
+
+  .adesivo { position: absolute; left: 128px; top: 872px; transform: rotate(-12deg); padding: 18px 30px 14px; border: 2px dashed var(--rosa-chiaro); }
+  .adesivo span { font-family: var(--font-testo); font-size: 62px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  .maniglia { position: absolute; width: 18px; height: 18px; background: var(--secondario); }
+  .maniglia.a { left: -10px; top: -10px; } .maniglia.b { right: -10px; top: -10px; } .maniglia.c { left: -10px; bottom: -10px; } .maniglia.d { right: -10px; bottom: -10px; }
+  .freccia { position: absolute; left: 372px; top: 952px; width: 58px; height: 64px; transform: rotate(-24deg); }
+  .etichetta { position: absolute; left: 248px; top: 1036px; padding: 4px 12px; background: var(--rosa-chiaro); font-size: 38px; letter-spacing: -0.015em; color: #FFFFFF; }
+</style>
+</head>
+<body>
+  <!-- foto: una persona al lavoro in un posto accogliente (letto, divano, caffè), luce naturale, toni neutri; il soggetto al centro -->
+  <img class="foto" src="../esempio/letto.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- utente: il nome del profilo con la chiocciola -->
+  <p class="utente">@studiolume</p>
+
+  <h1 class="titolo">
+    <!-- apre: l'attacco in grassetto, 3-4 parole corte -->
+    <span class="apre">Se hai un</span>
+    <!-- grande-1 e grande-2: una parola per riga, al massimo 7 lettere ciascuna -->
+    <span class="grande">piccolo</span>
+    <span class="grande">brand,</span>
+  </h1>
+
+  <!-- adesivo: l'invito in maiuscolo, 2 parole, nel riquadro di selezione -->
+  <div class="adesivo"><span>Leggi qui</span><i class="maniglia a"></i><i class="maniglia b"></i><i class="maniglia c"></i><i class="maniglia d"></i></div>
+  <svg class="freccia" viewBox="0 0 58 64"><path d="M4 4 L54 30 L32 36 L22 60 Z" fill="var(--secondario)"/></svg>
+  <!-- etichetta: la rubrica o la serie, 2-3 parole -->
+  <p class="etichetta">Il club dei contenuti</p>
+
+  <!-- logo: il nome del brand -->
+  <p class="logo">Studio Lume</p>
+</body>
+</html>

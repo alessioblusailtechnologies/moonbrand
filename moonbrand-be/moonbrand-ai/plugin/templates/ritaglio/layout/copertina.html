@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  /* Hanken è più stretto dei font larghi: qui è ingrandito, così la misura sotto vale anche per i font del brand. */
+  @font-face { font-family: 'Hanken Copertina'; src: url(https://fonts.gstatic.com/s/hankengrotesk/v12/ieVq2YZDLWuGJpnzaiwFXS9tYvBRzyFLlZg_f_NcVGFq5vBM.woff2) format('woff2'); font-weight: 100 900; size-adjust: 136%; }
+  :root { --font-titoli: 'Hanken Copertina', 'Hanken Grotesk', sans-serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  .titolo { position: absolute; left: 36px; top: 110px; width: 1024px; color: #FFFFFF; font-family: var(--font-titoli); font-weight: 700;
+    font-size: 170px; line-height: 1.17; letter-spacing: -0.05em; }
+  .titolo span { display: block; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: un ritratto a colori, il volto nella metà alta dietro il titolo, luce calda -->
+  <img class="foto" src="../esempio/ritratto.jpg" alt="">
+
+  <!-- titolo: due parole contrapposte, una riga per span; la seconda parola lunga va spezzata a metà su due righe (è il segno del template), al massimo 10 lettere per riga -->
+  <h1 class="titolo"><span>Creatività</span><span>vs.</span><span>Perseve</span><span>ranza</span></h1>
+</body>
+</html>

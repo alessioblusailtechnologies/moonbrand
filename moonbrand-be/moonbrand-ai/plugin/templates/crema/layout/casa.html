@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@400;500&family=Host+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2723; --secondario: #E8E6E3; --accento: #F5C02C; --sfondo: #F1EBCF; }
+  :root { --font-titoli: 'Libre Caslon Condensed', serif; --font-testo: 'Host Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --bordo-stella: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--principale) 28%, transparent); }
+
+  .invito { position: absolute; left: 190px; top: 226px; font-family: var(--font-testo); font-size: 34px; font-weight: 400; line-height: 1; color: color-mix(in srgb, var(--chiaro) 78%, transparent); }
+  .titolo { position: absolute; left: 340px; top: 300px; width: 700px; font-family: var(--font-titoli); font-weight: 500; font-size: 236px; line-height: 1.12; letter-spacing: -0.04em; }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .luogo { position: absolute; left: 0; right: 0; top: 1208px; margin: 0 auto; width: max-content; display: flex; align-items: center; gap: 12px; padding: 10px 26px 10px 20px; border-radius: 12px;
+    background: color-mix(in srgb, var(--secondario) 55%, transparent); color: #FFFFFF; font-family: var(--font-testo); font-size: 34px; font-weight: 500; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.01em; }
+  .luogo svg { width: 28px; height: 36px; flex: none; }
+  .luogo path { fill: #FFFFFF; }
+
+  .stella { position: absolute; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22)); }
+  .stella path { fill: var(--accento); stroke: var(--bordo-stella); stroke-width: 3; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+  <!-- foto: un selfie allo specchio in casa o in camera, la persona al centro; luce morbida -->
+  <img class="foto" src="../esempio/tondo.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- invito: 2-3 parole piccole, minuscole, sopra il titolo a sinistra -->
+  <p class="invito">vieni con me</p>
+  <!-- titolo: tre parole corte, una per riga, minuscole, al massimo 7 lettere ciascuna -->
+  <h1 class="titolo"><span>lavoro</span><span>da</span><span>casa</span></h1>
+  <!-- luogo: la data o il posto, 1-2 parole in maiuscolo nell'etichetta col segnaposto -->
+  <p class="luogo"><svg viewBox="0 0 30 38"><path d="M15 0 C6.7 0 0 6.6 0 14.8 C0 25.5 15 38 15 38 C15 38 30 25.5 30 14.8 C30 6.6 23.3 0 15 0 Z M15 20.5 A5.8 5.8 0 1 1 15 8.9 A5.8 5.8 0 1 1 15 20.5 Z"/></svg>12 ott</p>
+
+  <svg class="stella" style="left: 836px; top: 270px; width: 80px; height: 80px; transform: rotate(10deg);" viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36 Z"/></svg>
+  <svg class="stella" style="left: 208px; top: 1040px; width: 76px; height: 76px; transform: rotate(-14deg);" viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36 Z"/></svg>
+</body>
+</html>

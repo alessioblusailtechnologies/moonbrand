@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2F323B; --secondario: #6E2620; --accento: #CB4426; --sfondo: #ECEBE7; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: #FFFFFF; font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  /* la lastra di colore che copre in basso a sinistra, fino a metà volto */
+  .lastra { position: absolute; left: 0; top: 700px; width: 600px; height: 650px; background: color-mix(in srgb, var(--secondario) 62%, transparent); }
+
+  /* quattro filetti con la freccia, che girano attorno al titolo senza chiudersi negli angoli */
+  .filetto { position: absolute; background: #FFFFFF; }
+  .filetto::after { content: ''; position: absolute; width: 0; height: 0; border: 9px solid transparent; }
+  .alto { left: 230px; top: 300px; width: 680px; height: 2px; }
+  .alto::after { right: -10px; top: -8px; border-left: 14px solid #FFFFFF; border-right: 0; }
+  .destro { left: 952px; top: 280px; width: 2px; height: 820px; }
+  .destro::after { left: -8px; bottom: -10px; border-top: 14px solid #FFFFFF; border-bottom: 0; }
+  .basso { left: 290px; top: 1140px; width: 690px; height: 2px; }
+  .basso::after { left: -10px; top: -8px; border-right: 14px solid #FFFFFF; border-left: 0; }
+  .sinistro { left: 166px; top: 350px; width: 2px; height: 820px; }
+  .sinistro::after { left: -8px; top: -10px; border-bottom: 14px solid #FFFFFF; border-top: 0; }
+
+  .riga { position: absolute; font-family: var(--font-titoli); font-weight: 600; font-size: 28px; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap; }
+  .r-alto { left: 330px; top: 248px; }
+  .r-basso { left: 360px; top: 1160px; }
+  .r-destro { left: 975px; top: 380px; transform-origin: 0 0; transform: rotate(90deg) translateY(-34px); }
+  .r-sinistro { left: 112px; top: 1060px; transform-origin: 0 0; transform: rotate(-90deg); }
+
+  .titolo { position: absolute; left: 214px; top: 470px; font-family: var(--font-titoli); font-weight: 700; font-size: 186px; line-height: 0.88; letter-spacing: -0.04em; }
+  .titolo span { display: block; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: un volto o un gesto molto da vicino, toni smorzati, riempie tutta la pagina -->
+  <img class="foto" src="../esempio/volto.jpg" alt="">
+  <div class="lastra"></div>
+
+  <i class="filetto alto"></i><i class="filetto destro"></i><i class="filetto basso"></i><i class="filetto sinistro"></i>
+  <!-- righe della cornice: quattro frasi brevi in maiuscolo che si leggono girando attorno al titolo, 3-6 parole ciascuna -->
+  <p class="riga r-alto">Visibilità, costruita piano.</p>
+  <p class="riga r-destro">Quello che ottimizzi oggi…</p>
+  <p class="riga r-basso">Porta visite domani.</p>
+  <p class="riga r-sinistro">Niente rumore. Solo risultati.</p>
+
+  <!-- titolo: tre righe corte, la prima può essere una sigla (SEO, ADV), al massimo 6 lettere per riga -->
+  <h1 class="titolo"><span>SEO</span><span>parla</span><span>piano</span></h1>
+</body>
+</html>

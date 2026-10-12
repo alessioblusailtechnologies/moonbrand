@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B2620; --secondario: #FFF3D0; --accento: #D4BF80; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --accento-scuro: color-mix(in srgb, var(--accento) 50%, black); --su-accento: oklch(from var(--accento) calc(clamp(0, (0.86 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); color: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+
+  /* due linguette sopra il fumetto: l'etichetta chiara e il punto di domanda nell'accento */
+  .etichetta { position: absolute; left: 222px; top: 500px; width: 410px; height: 128px; border-radius: 40px 40px 0 0; background: var(--sfondo);
+    font-family: var(--font-titoli); font-weight: 600; font-size: 46px; letter-spacing: 0.01em; text-transform: uppercase; color: var(--accento-scuro);
+    padding: 30px 0 0 88px; line-height: 1.2; }
+  .punto { position: absolute; left: 696px; top: 498px; width: 158px; height: 150px; border-radius: 40px 40px 0 0; background: var(--accento); color: var(--su-accento);
+    font-family: var(--font-titoli); font-weight: 600; font-size: 56px; line-height: 1; padding: 40px 0 0 56px; }
+  .fumetto { position: absolute; left: 222px; top: 620px; width: 632px; border-radius: 0 40px 40px 40px; background: var(--sfondo); padding: 34px 48px 44px 50px;
+    border-top: 2px solid color-mix(in srgb, var(--principale) 35%, transparent); }
+  .fumetto::after { content: ''; position: absolute; right: 70px; bottom: -40px; border-left: 0 solid transparent; border-right: 40px solid transparent; border-top: 42px solid var(--sfondo); transform: scaleX(-1); }
+  .fumetto p { font-size: 33px; line-height: 1.45; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: un tavolino dall'alto con caffè, portatile, fogli; i toni del legno e della carta -->
+  <img class="foto" src="../esempio/tavolino.jpg" alt="">
+
+  <!-- etichetta: una parola maiuscola (Domanda, Dubbio) -->
+  <div class="etichetta">Domanda</div>
+  <div class="punto">?</div>
+  <div class="fumetto">
+    <!-- domanda e risposta: due frasi, 8-14 parole ciascuna -->
+    <p>Perché il tempo per i social non basta mai?</p>
+    <p>Perché manca un piano, non perché mancano le ore.</p>
+  </div>
+</body>
+</html>

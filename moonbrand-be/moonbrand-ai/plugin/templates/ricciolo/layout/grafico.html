@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,500..700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #000000; --secondario: #1C1C1C; --accento: #39FF14; --sfondo: #FFFFFF; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Archivo', sans-serif; }
+  /* testo sopra accento e secondario: nero o bianco da solo; grigio dei perni e dei testi secondari */
+  :root { --su-accento: oklch(from var(--accento) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+          --su-secondario: oklch(from var(--secondario) calc(clamp(0, (0.62 - l) * 1000, 1)) 0 0);
+          --grigio: color-mix(in srgb, var(--sfondo) 45%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--sfondo); font-family: var(--font-testo); font-stretch: 112%; font-weight: 600; }
+  h1, h2, h3, .titolo { font-family: var(--font-titoli); font-stretch: 112%; font-weight: 660; letter-spacing: -0.055em; }
+
+  .logo { position: absolute; left: 68px; top: 44px; z-index: 5; display: flex; align-items: center; gap: 12px; font-family: var(--font-titoli); font-size: 33px; line-height: 37px; letter-spacing: -0.03em; color: var(--sfondo); }
+  .marchio { width: 32px; height: 40px; flex: none; }
+  .hashtag { position: absolute; right: 66px; top: 62px; z-index: 5; font-size: 28px; letter-spacing: -0.02em; }
+  .piede { position: absolute; left: 66px; right: 66px; bottom: 50px; z-index: 5; display: flex; align-items: center; gap: 16px; }
+  .piede .tag { border: 2.5px solid var(--accento); border-radius: 30px; padding: 7px 20px 9px; font-size: 27px; letter-spacing: -0.02em; }
+  .piede .account { margin-left: auto; font-size: 30px; letter-spacing: -0.02em; }
+  .foto { display: block; object-fit: cover; filter: grayscale(1) contrast(1.06); }
+  .linea { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; pointer-events: none; }
+  .linea path { fill: none; stroke: var(--accento); stroke-width: 44; stroke-linecap: round; }
+  .asterisco line { stroke-linecap: butt; }
+</style>
+<style>
+  .titolo { position: absolute; left: 70px; top: 212px; width: 760px; font-size: 108px; line-height: 1.08; z-index: 2; }
+  .testo { position: absolute; left: 70px; top: 482px; width: 560px; font-size: 37px; line-height: 1.36; letter-spacing: -0.045em; z-index: 2; }
+  .colonne { position: absolute; left: 70px; top: 760px; width: 948px; height: 416px; display: flex; align-items: flex-end; gap: 34px; }
+  .colonne span { display: block; flex: 1; background: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand su due righe (o il file del logo) -->
+  <div class="logo"><svg class="marchio" viewBox="0 0 32 40"><path d="M6 2h20a6 6 0 0 1 0 12H12a6 6 0 0 1 0-12z M6 26h14a6 6 0 0 1 6 6v0a6 6 0 0 1-6 6H6a6 6 0 0 1 0-12z M10 14h12v12H10z" fill="var(--accento)"/></svg><span>Spazio<br>Nove</span></div>
+  <!-- hashtag: il tema della slide, una parola composta -->
+  <p class="hashtag">#Analisi</p>
+
+  <svg class="linea" viewBox="0 0 1080 1350"><path d="M720 -30 C 740 120, 790 230, 900 300 C 1010 370, 1120 360, 1130 300 M 1110 230 C 980 200, 820 260, 790 340 C 760 430, 880 520, 1110 600" /></svg>
+
+  <!-- titolo: il nome della metrica, 2-3 parole su due righe -->
+  <h1 class="titolo">Costo per<br>cliente</h1>
+  <!-- testo: cosa misura, 8-12 parole su due righe -->
+  <p class="testo">Quanto spendi in pubblicità per ogni nuovo cliente</p>
+
+  <!-- colonne: tre o quattro colonne, altezze in percentuale dal dato vero -->
+  <div class="colonne">
+    <span style="height: 48%"></span>
+    <span style="height: 73%"></span>
+    <span style="height: 100%"></span>
+  </div>
+
+  <!-- piede: da uno a tre hashtag nei contorni e l'account (o «Spazio Nove») -->
+  <div class="piede"><span class="tag">#dati</span><span class="tag">#ads</span><span class="account">@spazionove</span></div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=PT+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #730F0F; --secondario: #FBE9A6; --accento: #EAE065; --sfondo: #B7CBE3; }
+  :root { --font-titoli: 'Courier Prime', monospace; --font-testo: 'PT Sans', sans-serif; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 14%, #F4F4F2); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 80px; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
+  .carta div { width: 100%; height: 100%; background: var(--carta); clip-path: polygon(0px 0px, 1080px 0px, 1080px 58px, 1076px 60px, 1065px 59px, 1056px 46px, 1050px 46px, 1041px 61px, 1033px 41px, 1024px 48px, 1013px 68px, 1003px 67px, 992px 66px, 979px 65px, 966px 75px, 951px 74px, 943px 60px, 928px 68px, 916px 65px, 900px 44px, 889px 52px, 884px 65px, 870px 77px, 857px 65px, 848px 48px, 840px 53px, 830px 54px, 825px 62px, 813px 68px, 801px 65px, 786px 60px, 779px 52px, 770px 45px, 764px 54px, 757px 60px, 751px 44px, 742px 46px, 737px 37px, 722px 44px, 713px 61px, 707px 45px, 693px 53px, 678px 69px, 673px 61px, 663px 67px, 649px 59px, 644px 58px, 634px 64px, 623px 72px, 615px 57px, 605px 53px, 600px 49px, 587px 59px, 580px 60px, 564px 61px, 559px 73px, 545px 59px, 536px 51px, 522px 53px, 509px 58px, 496px 76px, 483px 68px, 478px 62px, 471px 66px, 460px 65px, 446px 66px, 437px 61px, 432px 66px, 422px 74px, 409px 70px, 403px 64px, 391px 60px, 375px 70px, 359px 64px, 349px 68px, 338px 67px, 322px 58px, 317px 60px, 304px 69px, 292px 59px, 283px 54px, 268px 70px, 257px 82px, 244px 79px, 228px 71px, 222px 68px, 206px 56px, 200px 74px, 187px 63px, 182px 74px, 170px 62px, 162px 55px, 149px 70px, 137px 53px, 124px 67px, 113px 62px, 102px 55px, 87px 51px, 82px 74px, 76px 66px, 68px 68px, 59px 65px, 54px 59px, 43px 65px, 38px 47px, 30px 63px, 18px 59px, 6px 44px, 0px 46px); }
+
+  .social { position: absolute; left: 52px; right: 52px; display: flex; justify-content: space-between; font-size: 24px; color: color-mix(in srgb, #FFFFFF 88%, transparent); }
+  .social.su { top: 98px; }
+  .social.giu { top: 1250px; }
+
+  /* La cartellina: un foglio chiaro dietro, spostato a destra, e la cartella con la linguetta. */
+  .foglio { position: absolute; left: 150px; top: 232px; width: 856px; height: 950px; border-radius: 26px; background: var(--secondario); }
+  .foglio::before { content: ''; position: absolute; left: -10px; top: -14px; width: 300px; height: 60px; border-radius: 20px 20px 0 0; background: var(--secondario); }
+  .cartella { position: absolute; left: 58px; top: 262px; width: 880px; height: 950px; border-radius: 30px; border-top-left-radius: 0; background: var(--sfondo); }
+  .linguetta { position: absolute; left: 0; top: -54px; width: 470px; height: 64px; padding: 6px 0 0 66px; border-radius: 26px 26px 0 0; background: var(--sfondo);
+    font-family: var(--font-titoli); font-size: 34px; font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase; }
+
+  .titolo { position: absolute; left: 102px; top: 120px; width: 760px; font-family: var(--font-titoli); font-weight: 700; font-size: 82px; line-height: 1.22; letter-spacing: -0.01em; text-transform: uppercase; }
+  .testo { position: absolute; left: 102px; width: 440px; font-size: 34px; line-height: 1.3; }
+  .testo.uno { top: 520px; }
+  .testo.due { top: 680px; }
+  .verticale { position: absolute; left: 690px; top: 470px; display: flex; flex-direction: column; gap: 14px; writing-mode: vertical-rl; }
+  .verticale .invito { font-family: var(--font-titoli); font-size: 64px; font-weight: 700; text-transform: uppercase; line-height: 1; }
+  .verticale .profilo { font-size: 32px; line-height: 1; }
+</style>
+</head>
+<body>
+  <div class="carta"><div></div></div>
+  <!-- social: in alto e in basso, invito a seguire ai lati e il profilo al centro -->
+  <div class="social su"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+
+  <div class="foglio"></div>
+  <div class="cartella">
+    <!-- linguetta: il nome dello studio o del brand, in maiuscolo -->
+    <p class="linguetta logo">Studio Granata</p>
+    <!-- titolo: tre righe in maiuscolo, 5-8 parole, al massimo 14 caratteri per riga -->
+    <h1 class="titolo">Pronti a far crescere i tuoi social!</h1>
+    <!-- testo: due frasi brevi, 6-10 parole ciascuna -->
+    <p class="testo uno">Gestiamo anche le richieste dell'ultimo minuto</p>
+    <p class="testo due">Il successo dei clienti viene prima di tutto</p>
+    <!-- verticale: l'invito (1-2 parole) e il profilo, scritti in verticale a destra -->
+    <div class="verticale"><span class="invito">Scrivici!</span><span class="profilo">@studiogranata</span></div>
+  </div>
+
+  <div class="social giu"><span>Segui per altri consigli</span><span>@studiogranata</span><span>Segui per altri consigli</span></div>
+</body>
+</html>

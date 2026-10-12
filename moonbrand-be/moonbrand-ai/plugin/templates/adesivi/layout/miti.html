@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.36), 0 1px 4px rgba(0,0,0,0.22); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; filter: saturate(0.8); }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.22); }
+
+  .fumetto { position: absolute; left: 88px; top: 286px; height: 62px; padding: 0 34px; border-radius: 31px; background: #FFFFFF; color: var(--principale);
+    display: flex; align-items: center; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; box-shadow: 0 2px 10px rgba(0,0,0,0.18); white-space: nowrap; }
+  .fumetto::after { content: ''; position: absolute; right: 6px; bottom: -10px; width: 26px; height: 22px; background: #FFFFFF; clip-path: polygon(0 0, 70% 0, 100% 100%); }
+
+  .titolo { position: absolute; left: 0; top: 428px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 176px; line-height: 1; letter-spacing: -0.05em; text-transform: uppercase; text-shadow: var(--ombra); white-space: nowrap; }
+  .titolo span { position: relative; display: inline-block; }
+  .sole { position: absolute; right: -104px; top: 22px; width: 100px; height: 100px; }
+  .corsivo { position: absolute; left: 0; top: 560px; width: 1080px; padding-left: 40px; text-align: center; font-family: 'Pinyon Script', cursive; font-weight: 400; font-size: 300px; line-height: 1; text-shadow: var(--ombra); white-space: nowrap; }
+  .cuore { position: absolute; left: 138px; top: 696px; width: 72px; height: 64px; transform: rotate(-12deg); }
+  .sotto { position: absolute; left: 0; top: 958px; width: 1080px; text-align: center; font-size: 74px; font-weight: 500; letter-spacing: -0.045em; text-shadow: var(--ombra); white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio di persona (busto, mani, vestiti) in toni caldi e spenti, senza volto -->
+  <img class="foto" src="../esempio/maglia.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- fumetto: 2-3 parole, come un messaggio ricevuto -->
+  <p class="fumetto">obiettivi chiari</p>
+
+  <!-- titolo: una parola in maiuscolo, al massimo 9 lettere -->
+  <h1 class="titolo"><span>Social<svg class="sole" viewBox="0 0 76 76"><g fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="2" stroke-linejoin="round">
+    <circle cx="38" cy="38" r="17"/>
+    <path d="M38 2 L42 14 L34 14 Z M38 74 L42 62 L34 62 Z M2 38 L14 34 L14 42 Z M74 38 L62 34 L62 42 Z M12.5 12.5 L23.5 18.5 L18.5 23.5 Z M63.5 63.5 L52.5 57.5 L57.5 52.5 Z M63.5 12.5 L57.5 23.5 L52.5 18.5 Z M12.5 63.5 L18.5 52.5 L23.5 57.5 Z"/>
+  </g></svg></span></h1>
+  <!-- corsivo: una parola scritta a mano, al massimo 7 lettere -->
+  <p class="corsivo">Miti</p>
+  <svg class="cuore" viewBox="0 0 72 64"><path d="M36 60 C14 44 3 32 3 19 C3 9 11 3 20 3 C27 3 33 7 36 13 C39 7 45 3 52 3 C61 3 69 9 69 19 C69 32 58 44 36 60Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="2.5" stroke-linejoin="round"/></svg>
+  <!-- sotto: una parola o due, minuscole -->
+  <p class="sotto">da sfatare</p>
+</body>
+</html>

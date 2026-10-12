@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #36302F; --secondario: #7EC036; --accento: #F6D22E; --sfondo: #FBF5DE; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Hanken Grotesk', sans-serif; }
+  /* Testi chiari sulle foto: la tinta dello sfondo del brand, schiarita se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  :root { --ombra: 0 2px 26px rgba(0,0,0,0.38), 0 1px 4px rgba(0,0,0,0.24); --accento-scuro: color-mix(in srgb, var(--accento) 72%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -300px; top: 0; width: 2025px; height: 1350px; object-fit: cover; display: block; }
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: rgba(0,0,0,0.16); }
+
+  .sopra { position: absolute; left: 152px; top: 196px; width: 480px; font-size: 48px; font-weight: 400; line-height: 1.05; letter-spacing: -0.05em; text-shadow: var(--ombra); }
+  .titolo { position: absolute; left: 150px; top: 456px; width: 840px; font-family: var(--font-titoli); font-weight: 700; font-size: 158px; line-height: 0.8; letter-spacing: -0.055em; text-shadow: var(--ombra); white-space: nowrap; }
+  .titolo span { display: block; }
+  .titolo .r2 { margin-left: 26px; }
+  .titolo .r3 { margin-left: 236px; }
+
+  .perline { position: absolute; left: 0; top: 880px; width: 1080px; display: flex; justify-content: center; padding-right: 40px; }
+  .perline span { width: 82px; height: 82px; margin: 0 -2px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 38% 32%, #FFFFFF 0%, #FFFFFF 46%, #E4E1DC 100%); box-shadow: 0 3px 8px rgba(0,0,0,0.30);
+    color: var(--principale); font-family: var(--font-testo); font-size: 42px; font-weight: 800; }
+  .freccia { position: absolute; left: 808px; top: 940px; width: 60px; height: 84px; }
+  .stella { position: absolute; left: 932px; top: 608px; width: 84px; height: 84px; }
+  .cuore { position: absolute; left: 96px; top: 708px; width: 84px; height: 76px; transform: rotate(-14deg); }
+</style>
+</head>
+<body>
+  <!-- foto: mani da vicino su un oggetto vero (un libro, un quaderno, una tastiera), luce calda -->
+  <img class="foto" src="../esempio/libro.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- sopra: 3-5 parole su due righe, in alto a sinistra -->
+  <p class="sopra">ti servono idee<br>più chiare</p>
+
+  <!-- titolo: tre righe, la prima di una parola, la seconda la più lunga (al massimo 10 lettere); continua nelle perline -->
+  <h1 class="titolo"><span class="r1">non ti</span><span class="r2">servono</span><span class="r3">altri</span></h1>
+
+  <!-- perline: la parola che chiude il titolo, 4-9 lettere, una lettera per perlina -->
+  <p class="perline"><span>C</span><span>O</span><span>N</span><span>T</span><span>E</span><span>N</span><span>U</span><span>T</span><span>I</span></p>
+  <svg class="freccia" viewBox="0 0 60 84"><path d="M6 4 L6 66 L21 52 L32 78 L43 73 L32 48 L52 48 Z" fill="#FFFFFF" stroke="#111111" stroke-width="3" stroke-linejoin="round"/></svg>
+
+  <svg class="stella" viewBox="0 0 100 100"><path d="M50 7 L61.5 37.5 L94 39 L68.5 59.5 L77.5 91 L50 73 L22.5 91 L31.5 59.5 L6 39 L38.5 37.5 Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg class="cuore" viewBox="0 0 72 64"><path d="M36 60 C14 44 3 32 3 19 C3 9 11 3 20 3 C27 3 33 7 36 13 C39 7 45 3 52 3 C61 3 69 9 69 19 C69 32 58 44 36 60Z" fill="var(--accento)" stroke="var(--accento-scuro)" stroke-width="2.5" stroke-linejoin="round"/></svg>
+</body>
+</html>

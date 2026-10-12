@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,400&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161414; --secondario: #E9E9EB; --accento: #F4C542; --sfondo: #F3EED0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'IBM Plex Mono', monospace; }
+  :root { --crema: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--crema); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; filter: saturate(0.6) brightness(0.8) contrast(1.02) sepia(0.12); }
+
+  .blocco { position: absolute; left: 60px; top: 270px; width: 800px; text-align: center; }
+  .piccolo { display: block; font-size: 40px; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+  .grande { display: block; margin: 6px 0 2px; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 400; font-size: 200px; line-height: 0.9; letter-spacing: -0.035em; white-space: nowrap; }
+
+  .stella { position: absolute; width: 72px; height: 72px; }
+  .s1 { left: 718px; top: 312px; transform: rotate(12deg); }
+  .s2 { left: 36px; top: 486px; width: 62px; height: 62px; transform: rotate(-10deg); }
+  .freccia { position: absolute; left: 820px; top: 470px; width: 90px; height: 170px; color: var(--crema); }
+</style>
+</head>
+<body>
+  <!-- foto: l'attrezzo di cui parla la guida (portatile, telefono, quaderno) in una stanza vera; la parte alta libera -->
+  <img class="foto" src="../esempio/letto.jpg" alt="">
+
+  <p class="blocco">
+    <!-- sopra: l'attacco della guida, 2-3 parole -->
+    <span class="piccolo">come usare</span>
+    <!-- grande: lo strumento o il tema, una parola di al massimo 9 lettere -->
+    <span class="grande">Pinterest</span>
+    <!-- sotto: come, 3-4 parole, una in maiuscolo se l'originale lo chiede -->
+    <span class="piccolo">nel modo GIUSTO</span>
+  </p>
+
+  <svg class="stella s1" viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color: color-mix(in srgb, var(--accento) 35%, white)"/><stop offset="0.5" style="stop-color: var(--accento)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--accento) 72%, black)"/></radialGradient></defs>
+    <path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+  <svg class="stella s2" viewBox="0 0 100 100"><path d="M50 6 L62 37 L95 38 L69 58 L79 91 L50 72 L21 91 L31 58 L5 38 L38 37 Z" fill="url(#g1)" stroke="url(#g1)" stroke-width="8" stroke-linejoin="round"/></svg>
+  <svg class="freccia" viewBox="0 0 90 170" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 8 C 70 40, 80 100, 44 158"/><path d="M40 132 L44 160 L68 146"/>
+  </svg>
+</body>
+</html>

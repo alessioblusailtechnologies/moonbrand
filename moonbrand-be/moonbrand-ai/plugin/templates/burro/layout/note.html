@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Hanken+Grotesk:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3B2A14; --secondario: #FFFFCD; --accento: #FEC832; --sfondo: #FFFFCD; }
+  :root { --font-titoli: 'Hanken Grotesk', sans-serif; --font-testo: 'Quicksand', sans-serif; }
+  :root { --burro: oklch(from var(--secondario) max(l, 0.95) min(c, 0.09) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+
+  .titolo { position: absolute; right: 52px; top: 70px; text-align: right; font-family: var(--font-titoli); font-weight: 800; color: var(--burro); font-size: 180px; letter-spacing: -0.055em; line-height: 0.92; white-space: nowrap;
+    text-shadow: 0 4px 26px rgba(0,0,0,0.28); }
+  .titolo span { display: block; }
+
+  .nota { position: absolute; left: 70px; top: 880px; width: 440px; padding: 30px 36px 36px; border-radius: 34px; transform: rotate(-3deg);
+    background: var(--burro); color: var(--principale); }
+  .testata { display: flex; justify-content: space-between; align-items: center; color: color-mix(in srgb, var(--accento) 80%, var(--principale)); font-size: 26px; font-weight: 700; }
+  .testata svg { width: 34px; height: 10px; }
+  .righe { margin-top: 16px; padding-left: 24px; font-size: 24px; font-weight: 500; line-height: 1.4; }
+  .righe li::marker { color: var(--principale); }
+
+  .stelline { position: absolute; left: 330px; top: 640px; width: 120px; height: 130px; color: var(--burro); filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
+</style>
+</head>
+<body>
+  <!-- foto: una persona che cammina in città, a figura intera, nella metà destra; asfalto o marciapiede in basso a sinistra -->
+  <img class="foto" src="../esempio/strisce.jpg" alt="">
+
+  <!-- titolo: tre righe allineate a destra, una parola corta ciascuna, al massimo 8 caratteri per riga -->
+  <h1 class="titolo"><span>nessuno</span><span>ti trova</span><span>online</span></h1>
+
+  <svg class="stelline" viewBox="0 0 120 130" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round">
+    <path d="M38 6 L47 30 L72 31 L52 46 L59 71 L38 56 L17 71 L24 46 L4 31 L29 30 Z"/>
+    <path d="M90 82 L95 96 L110 96 L98 105 L102 120 L90 111 L78 120 L82 105 L70 96 L85 96 Z"/>
+    <path d="M30 96 L34 106 L45 106 L36 113 L39 124 L30 117 L21 124 L24 113 L15 106 L26 106 Z"/>
+  </svg>
+
+  <div class="nota">
+    <!-- testata: il nome della nota, una parola -->
+    <p class="testata"><span>‹ Note</span><svg viewBox="0 0 34 10" fill="currentColor"><circle cx="5" cy="5" r="4"/><circle cx="17" cy="5" r="4"/><circle cx="29" cy="5" r="4"/></svg></p>
+    <!-- righe: da cinque a otto righe brevi, 3-5 parole ciascuna -->
+    <ul class="righe">
+      <li>bio senza parole chiave</li>
+      <li>nessun link nel profilo</li>
+      <li>post senza il luogo</li>
+      <li>orari mai aggiornati</li>
+      <li>storie una volta al mese</li>
+      <li>risposte dopo tre giorni</li>
+      <li>scheda Google vuota</li>
+    </ul>
+  </div>
+</body>
+</html>
