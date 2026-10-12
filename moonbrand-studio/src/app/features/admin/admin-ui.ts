@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
-import type { AdminCost, AdminJob } from '@moonbrand/shared/api/contract';
+import type { AdminCost, AdminCostPart, AdminJob, CreditCategory } from '@moonbrand/shared/api/contract';
+
+import { lockPageScroll } from '../../ui/scroll-lock';
 
 // La sezione admin è interna (due persone): i testi sono in italiano, senza i18n.
 
@@ -24,6 +26,27 @@ export function duration(seconds: number | null): string {
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`;
 }
 
+// Le voci dei crediti dette per l'admin, che sa quale servizio c'è dietro.
+export const CATEGORY_LABELS: Record<CreditCategory, string> = {
+  assistant: 'Claude (token)',
+  image: 'Immagini',
+  clip: 'Clip video',
+  music: 'Musica',
+  voice: 'Voce fuori campo',
+  sound: 'Effetti sonori',
+  subtitles: 'Sottotitoli e tempi delle parole',
+  check: 'Controlli (Gemini)',
+  export: 'Esportazione video (Lambda)',
+  download: 'Download dei post (Zernio)',
+  dictation: 'Dettatura',
+  other: 'Altro',
+};
+
+export function monthName(month: string): string {
+  const name = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(new Date(`${month}-15T12:00:00`));
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 export const STATUS_LABELS: Record<AdminJob['status'], string> = {
   queued: 'in coda',
   running: 'in corso',
@@ -43,6 +66,8 @@ export const STATUS_LABELS: Record<AdminJob['status'], string> = {
       <a routerLink="/admin/contenuti" routerLinkActive="on">Contenuti</a>
       <a routerLink="/admin/lavori" routerLinkActive="on">Lavori</a>
       <a routerLink="/admin/consumi" routerLinkActive="on">Consumi</a>
+      <a routerLink="/admin/spese" routerLinkActive="on">Spese</a>
+      <a routerLink="/admin/gratuiti" routerLinkActive="on">Gratuiti</a>
       <a routerLink="/admin/salute" routerLinkActive="on">Salute</a>
     </nav>
   `,
@@ -205,4 +230,145 @@ export class AdminJobsTable {
   protected readonly duration = duration;
   protected readonly money = money;
   protected readonly total = total;
+}
+
+// Il dettaglio di un costo per voce, in una finestra: si apre cliccando un totale nelle liste.
+export interface CostDetail {
+  title: string;
+  subtitle?: string;
+  total: number;
+  parts: AdminCostPart[];
+}
+
+@Component({
+  selector: 'mb-admin-cost-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'closed.emit()' },
+  template: `
+    @if (detail(); as d) {
+      <div class="backdrop" (click)="closed.emit()"></div>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cost-title">
+        <header class="top">
+          <div class="grow">
+            <h2 id="cost-title" class="dialog-title">{{ d.title }}</h2>
+            @if (d.subtitle) {
+              <p class="caption">{{ d.subtitle }}</p>
+            }
+          </div>
+          <span class="heading">{{ money(d.total) }}</span>
+        </header>
+        @if (d.parts.length === 0) {
+          <p class="caption">Nessun costo.</p>
+        } @else {
+          <div class="bars">
+            @for (part of d.parts; track part.category) {
+              <div class="bar-row">
+                <span class="caption">{{ labels[part.category] }}</span>
+                <span class="bar"><span class="fill" [style.width.%]="d.total > 0 ? (part.usd / d.total) * 100 : 0"></span></span>
+                <span class="strong-sm amount">{{ money(part.usd) }}</span>
+                <span class="caption amount">{{ share(part.usd, d.total) }}</span>
+              </div>
+            }
+          </div>
+        }
+        <div class="actions">
+          <button class="btn btn-secondary btn-sm" type="button" (click)="closed.emit()">Chiudi</button>
+        </div>
+      </div>
+    }
+  `,
+  styles: `
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: var(--scrim);
+      animation: fade-in 160ms var(--ease);
+    }
+    .dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 91;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: min(520px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-card);
+      box-shadow: var(--shadow-menu);
+      transform: translate(-50%, -50%);
+      animation: dialog-in 180ms var(--ease);
+    }
+    .top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .dialog-title {
+      margin: 0;
+      color: var(--text-title);
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 180px) 1fr auto 40px;
+      align-items: center;
+      gap: 10px;
+    }
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-sunken);
+      overflow: hidden;
+    }
+    .fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary-soft);
+    }
+    .amount {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    @media (max-width: 480px) {
+      .bar-row {
+        grid-template-columns: 1fr auto 40px;
+      }
+      .bar {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+    }
+  `,
+})
+export class AdminCostDetail {
+  readonly detail = input<CostDetail | null>(null);
+  readonly closed = output();
+
+  protected readonly money = money;
+  protected readonly labels = CATEGORY_LABELS;
+
+  constructor() {
+    lockPageScroll(() => this.detail() !== null);
+  }
+
+  protected share(value: number, total: number): string {
+    return total > 0 ? (value / total).toLocaleString('it-IT', { style: 'percent', maximumFractionDigits: 0 }) : '—';
+  }
 }

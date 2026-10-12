@@ -1,9 +1,10 @@
 import type pg from 'pg';
 
-import type { AdminAccount, AdminCost, AdminJob } from '@moonbrand/shared/api/contract';
+import type { AdminAccount, AdminCost, AdminCostPart, AdminJob, CreditCategory } from '@moonbrand/shared/api/contract';
 
 import { adminEmails, type Config } from '../../config';
 import { accountEmail } from '../auth/accounts';
+import { CATEGORY_BY_TASK } from '../credits/routes';
 
 // Le query comuni della sezione admin. I costi sono quelli veri in dollari: Claude dai job, i servizi (clip, immagini,
 // musica...) da ai_usage. In ai_usage ci sono anche righe di Claude dei primi giorni (visual-style, video): contano come
@@ -19,6 +20,15 @@ export const JOBS_CLAUDE = (where: string) => `(select coalesce(sum(cost_usd), 0
 
 export const usd = (value: unknown) => Math.round(Number(value ?? 0) * 100) / 100;
 export const cost = (claude: unknown, generations: unknown): AdminCost => ({ claude: usd(claude), generations: usd(generations) });
+// La voce di una riga di costo, come nei crediti, ma con tutte le chiamate a Claude sotto «assistant». La parte di
+// Claude dei lavori (ai_jobs.cost_usd) è il task «job» con modello «claude».
+export const categoryOf = (task: string, model: string | null): CreditCategory =>
+  model?.startsWith('claude') ? 'assistant' : (CATEGORY_BY_TASK[task] ?? 'other');
+
+// Le voci sommate, dalla più cara.
+export const toParts = (values: Map<CreditCategory, number>): AdminCostPart[] =>
+  [...values.entries()].map(([category, value]) => ({ category, usd: usd(value) })).sort((a, b) => b.usd - a.usd);
+
 export const iso = (value: Date | null) => (value ? value.toISOString() : null);
 
 // Un lavoro con chi l'ha chiesto, il brand, quanto è durato e quanto è costato. In coda: da quanto aspetta.

@@ -9,14 +9,14 @@ import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { LightboxService } from '../../ui/lightbox';
 import { Loader } from '../../ui/loader';
-import { AdminTabs, money, total, when } from './admin-ui';
+import { AdminCostDetail, AdminTabs, money, total, when, type CostDetail } from './admin-ui';
 
 // Tutti i contenuti fatti da tutti, dal più recente: anteprima o video, brand, utenza, stato e costo. Filtri per brand,
 // formato, stato e titolo; 48 alla volta.
 @Component({
   selector: 'mb-admin-contents',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AdminTabs, Loader, RouterLink],
+  imports: [AdminCostDetail, AdminTabs, Loader, RouterLink],
   styleUrl: './admin.scss',
   template: `
     <section class="admin">
@@ -81,8 +81,9 @@ import { AdminTabs, money, total, when } from './admin-ui';
                 <span class="caption">
                   <a class="link" [routerLink]="['/admin/utenze', content.accountId]">{{ content.email }}</a>
                 </span>
-                <span class="caption" [title]="'Claude ' + money(content.cost.claude) + ' · servizi ' + money(content.cost.generations) + ' (con la conversazione da cui è nato)'">
-                  {{ when(content.createdAt) }} · {{ money(costOf(content.cost)) }}
+                <span class="caption">
+                  {{ when(content.createdAt) }} ·
+                  <button class="cost-link" type="button" title="Dettaglio per voce" (click)="showCost(content)">{{ money(costOf(content.cost)) }}</button>
                 </span>
               </figcaption>
             </figure>
@@ -94,6 +95,7 @@ import { AdminTabs, money, total, when } from './admin-ui';
           </button>
         }
       }
+      <mb-admin-cost-detail [detail]="detail()" (closed)="detail.set(null)" />
     </section>
   `,
   styles: `
@@ -119,6 +121,7 @@ export class AdminContentsPage {
 
   protected readonly money = money;
   protected readonly costOf = total;
+  protected readonly detail = signal<CostDetail | null>(null);
   protected readonly when = when;
 
   constructor() {
@@ -130,6 +133,15 @@ export class AdminContentsPage {
       this.status();
       this.query();
       untracked(() => void this.load(true));
+    });
+  }
+
+  protected showCost(content: AdminContent): void {
+    this.detail.set({
+      title: content.title,
+      subtitle: `${content.brandName ?? 'Brand'} · ${content.format} · con la conversazione da cui è nato`,
+      total: total(content.cost),
+      parts: content.parts,
     });
   }
 

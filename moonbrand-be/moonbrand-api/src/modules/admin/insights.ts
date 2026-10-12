@@ -2,14 +2,23 @@ import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import type { AdminContent, AdminContentsResponse, AdminCost, AdminCosts, AdminHealth, AdminJobTimeline } from '@moonbrand/shared/api/contract';
+import type {
+  AdminContent,
+  AdminContentsResponse,
+  AdminCost,
+  AdminCostPart,
+  AdminCosts,
+  AdminHealth,
+  AdminJobTimeline,
+  CreditCategory,
+} from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { COLUMNS, toContent, type ContentRow } from '../contents/repository';
 import { summarize, withUrls } from '../contents/service';
-import { cost, iso, JOB_SELECT, MONTH_START, toJob, usd, type JobRow } from './queries';
+import { categoryOf, cost, iso, JOB_SELECT, MONTH_START, toJob, toParts, usd, type JobRow } from './queries';
 
 const total = (value: AdminCost) => value.claude + value.generations;
 
@@ -29,29 +38,44 @@ const contentsQuery = z.object({
 const jobParams = z.object({ jobId: z.uuid('Lavoro non trovato.') });
 
 // Il costo di ogni contenuto: i lavori fatti su di lui (content, content-edit, content-video) più quelli della
-// conversazione da cui è nato. Una query per tutti, con i lavori raccolti una volta sola.
-async function contentCosts(pool: pg.Pool, contentIds: string[]): Promise<Map<string, AdminCost>> {
+// conversazione da cui è nato, in tutto e per voce. Una query per tutti, con i lavori raccolti una volta sola.
+interface ContentCost {
+  cost: AdminCost;
+  parts: AdminCostPart[];
+}
+
+async function contentCosts(pool: pg.Pool, contentIds: string[]): Promise<Map<string, ContentCost>> {
   if (contentIds.length === 0) return new Map();
-  const { rows } = await pool.query<{ content_id: string; claude: string; generations: string }>(
+  const { rows } = await pool.query<{ content_id: string; task: string; model: string | null; usd: string }>(
     `with x as (select id, conversation_id from presenza.contents where id = any($1::uuid[])),
           cj as (
             select x.id as content_id, j.id as job_id, j.cost_usd
             from x join presenza.ai_jobs j on j.input->>'contentId' = x.id::text
             union
             select x.id, j.id, j.cost_usd
-            from x join presenza.conversation_turns t on t.conversation_id = x.conversation_id join presenza.ai_jobs j on j.id = t.job_id),
-          jobs as (select content_id, sum(coalesce(cost_usd, 0)) as usd from cj group by content_id),
-          usage as (
-            select cj.content_id,
-              coalesce(sum(u.cost_usd) filter (where u.model like 'claude%'), 0) as claude,
-              coalesce(sum(u.cost_usd) filter (where coalesce(u.model, '') not like 'claude%'), 0) as services
-            from cj join presenza.ai_usage u on u.job_id = cj.job_id group by cj.content_id)
-     select x.id as content_id, coalesce(jobs.usd, 0) + coalesce(usage.claude, 0) as claude, coalesce(usage.services, 0) as generations
-     from x left join jobs on jobs.content_id = x.id left join usage on usage.content_id = x.id`,
+            from x join presenza.conversation_turns t on t.conversation_id = x.conversation_id join presenza.ai_jobs j on j.id = t.job_id)
+     select content_id, 'job' as task, 'claude' as model, cost_usd as usd from cj where coalesce(cost_usd, 0) <> 0
+     union all
+     select cj.content_id, u.task, u.model, u.cost_usd from cj join presenza.ai_usage u on u.job_id = cj.job_id where u.cost_usd <> 0`,
     [contentIds],
   );
-  return new Map(rows.map((row) => [row.content_id, cost(row.claude, row.generations)]));
+  const parts = new Map<string, Map<CreditCategory, number>>();
+  for (const row of rows) {
+    const category = categoryOf(row.task, row.model);
+    const content = parts.get(row.content_id) ?? new Map<CreditCategory, number>();
+    content.set(category, (content.get(category) ?? 0) + Number(row.usd));
+    parts.set(row.content_id, content);
+  }
+  return new Map(
+    [...parts.entries()].map(([id, values]) => {
+      const claude = values.get('assistant') ?? 0;
+      const all = [...values.values()].reduce((sum, value) => sum + value, 0);
+      return [id, { cost: cost(claude, all - claude), parts: toParts(values) }];
+    }),
+  );
 }
+
+const NO_COST: ContentCost = { cost: cost(0, 0), parts: [] };
 
 // La riga della sessione di Claude Code che serve qui: chi parla, quando, e i tool chiesti o le loro risposte.
 interface SessionLine {
@@ -162,7 +186,7 @@ export function registerAdminInsights(scope: FastifyInstance, pool: pg.Pool, fil
         email: row.email,
         createdAt: content.createdAt,
         videoUrl: withUrls(content, files).visual.files?.find((file) => file.role === 'video')?.url ?? null,
-        cost: costs.get(row.id) ?? cost(0, 0),
+        ...(costs.get(row.id) ?? NO_COST),
       };
     });
     return {
@@ -191,8 +215,8 @@ export function registerAdminInsights(scope: FastifyInstance, pool: pg.Pool, fil
       ),
     ]);
     const costs = await contentCosts(pool, byFormat.rows.map((row) => row.id));
-    const formats = new Map<string, number[]>();
-    for (const row of byFormat.rows) formats.set(row.format, [...(formats.get(row.format) ?? []), total(costs.get(row.id) ?? cost(0, 0))]);
+    const formats = new Map<string, ContentCost[]>();
+    for (const row of byFormat.rows) formats.set(row.format, [...(formats.get(row.format) ?? []), costs.get(row.id) ?? NO_COST]);
     const used = brands.rows.map((brand) => ({ ...brand, used: Math.round(Number(brand.used)) }));
     const plans = (Object.keys(SUBSCRIPTION_PLANS) as SubscriptionPlanId[]).map((plan) => {
       const { name, monthlyCredits } = SUBSCRIPTION_PLANS[plan];
@@ -217,12 +241,18 @@ export function registerAdminInsights(scope: FastifyInstance, pool: pg.Pool, fil
       })),
       byFormat: [...formats.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([format, values]) => ({
-          format,
-          contents: values.length,
-          avgUsd: usd(values.reduce((sum, value) => sum + value, 0) / values.length),
-          maxUsd: usd(Math.max(...values)),
-        })),
+        .map(([format, items]) => {
+          const values = items.map((item) => total(item.cost));
+          const parts = new Map<CreditCategory, number>();
+          for (const part of items.flatMap((item) => item.parts)) parts.set(part.category, (parts.get(part.category) ?? 0) + part.usd / items.length);
+          return {
+            format,
+            contents: items.length,
+            avgUsd: usd(values.reduce((sum, value) => sum + value, 0) / values.length),
+            maxUsd: usd(Math.max(...values)),
+            parts: toParts(parts),
+          };
+        }),
       plans,
       topBrands: used
         .filter((brand) => brand.used > 0)

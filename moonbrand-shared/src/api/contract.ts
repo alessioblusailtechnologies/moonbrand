@@ -821,6 +821,13 @@ export interface AdminContent extends ContentSummary {
   createdAt: string;
   videoUrl: string | null;
   cost: AdminCost;
+  // Lo stesso costo per voce (Claude, clip, immagini...), dalla più cara.
+  parts: AdminCostPart[];
+}
+
+export interface AdminCostPart {
+  category: CreditCategory;
+  usd: number;
 }
 
 export interface AdminContentsResponse {
@@ -833,11 +840,44 @@ export interface AdminCosts {
   // Ultimi 30 giorni, per tipo di lavoro.
   byKind: { kind: string; jobs: number; avgUsd: number; avgSeconds: number; totalUsd: number }[];
   // Ultimi 30 giorni, per formato: il costo medio di un contenuto (vedi AdminContent.cost).
-  byFormat: { format: string; contents: number; avgUsd: number; maxUsd: number }[];
+  // parts: il costo medio per voce.
+  byFormat: { format: string; contents: number; avgUsd: number; maxUsd: number; parts: AdminCostPart[] }[];
   // Questo mese, per piano: quanti brand, quanto consumano in media rispetto ai crediti del piano.
   plans: { plan: string; name: string; monthlyCredits: number; brands: number; avgUsed: number; maxUsed: number; over: number }[];
   // Questo mese, i brand che costano di più.
   topBrands: { brandId: string; name: string; accountId: string; email: string; plan: string; used: number; usd: number }[];
+}
+
+// Quanto si è speso in un mese (a Roma) per voce, con le voci dei crediti: Claude (la parte dei job e le sue chiamate
+// dirette) è «assistant». Diviso tra la parte addebitata ai clienti e quella dei lavori gratuiti (ai_jobs.free).
+export interface AdminSpending {
+  // Il mese mostrato, YYYY-MM, e quelli con dei costi, dal più recente; il mese in corso c'è sempre.
+  month: string;
+  months: string[];
+  paidUsd: number;
+  freeUsd: number;
+  categories: {
+    category: CreditCategory;
+    paidUsd: number;
+    freeUsd: number;
+    // Le generazioni di quel tipo; per Claude i lavori e le chiamate dirette.
+    count: number;
+    // I secondi generati, per clip, musica, voce e dettatura.
+    seconds: number | null;
+    // Da quali task di ai_usage viene la voce («job» per la parte di Claude dei lavori), dal più caro.
+    tasks: { task: string; usd: number }[];
+  }[];
+}
+
+// I lavori gratuiti di un mese (onboarding e saluti del mattino): li paga moonbrand, ai clienti non scalano crediti.
+export interface AdminFreeJobs {
+  month: string;
+  months: string[];
+  totalUsd: number;
+  byKind: { kind: string; jobs: number; usd: number }[];
+  byCategory: AdminCostPart[];
+  // I più recenti, al massimo 300.
+  jobs: (AdminJob & { parts: AdminCostPart[] })[];
 }
 
 export interface AdminHealth {

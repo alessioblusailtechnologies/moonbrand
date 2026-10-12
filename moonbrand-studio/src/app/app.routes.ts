@@ -87,6 +87,8 @@ export const routes: Routes = [
           { path: 'lavori/:jobId', loadComponent: () => import('./features/admin/admin-job').then((m) => m.AdminJobPage) },
           { path: 'contenuti', loadComponent: () => import('./features/admin/admin-contents').then((m) => m.AdminContentsPage) },
           { path: 'consumi', loadComponent: () => import('./features/admin/admin-costs').then((m) => m.AdminCostsPage) },
+          { path: 'spese', loadComponent: () => import('./features/admin/admin-spending').then((m) => m.AdminSpendingPage) },
+          { path: 'gratuiti', loadComponent: () => import('./features/admin/admin-free').then((m) => m.AdminFreePage) },
           { path: 'salute', loadComponent: () => import('./features/admin/admin-health').then((m) => m.AdminHealthPage) },
         ],
       },

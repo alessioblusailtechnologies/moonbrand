@@ -8,14 +8,14 @@ import type { AdminCosts } from '@moonbrand/shared/api/contract';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
 import { Loader } from '../../ui/loader';
-import { AdminTabs, duration, money } from './admin-ui';
+import { AdminCostDetail, AdminTabs, duration, money, type CostDetail } from './admin-ui';
 
 // Dove vanno i soldi: quanto costa in media ogni tipo di lavoro e ogni formato di contenuto, quanto consumano i brand
 // rispetto ai crediti del loro piano, e i brand più cari del mese. 1 credito = 1 centesimo di costo vero.
 @Component({
   selector: 'mb-admin-costs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AdminTabs, Loader, RouterLink],
+  imports: [AdminCostDetail, AdminTabs, Loader, RouterLink],
   styleUrl: './admin.scss',
   template: `
     <section class="admin">
@@ -57,7 +57,14 @@ import { AdminTabs, duration, money } from './admin-ui';
             <thead><tr><th>Formato</th><th class="num">Contenuti</th><th class="num">Medio</th><th class="num">Massimo</th></tr></thead>
             <tbody>
               @for (row of d.byFormat; track row.format) {
-                <tr><td>{{ row.format }}</td><td class="num">{{ row.contents }}</td><td class="num">{{ money(row.avgUsd) }}</td><td class="num">{{ money(row.maxUsd) }}</td></tr>
+                <tr>
+                  <td>{{ row.format }}</td>
+                  <td class="num">{{ row.contents }}</td>
+                  <td class="num">
+                    <button class="cost-link" type="button" title="Dettaglio per voce" (click)="showFormat(row)">{{ money(row.avgUsd) }}</button>
+                  </td>
+                  <td class="num">{{ money(row.maxUsd) }}</td>
+                </tr>
               }
             </tbody>
           </table>
@@ -112,6 +119,7 @@ import { AdminTabs, duration, money } from './admin-ui';
           <button class="btn btn-secondary btn-sm" type="button" (click)="load()">Riprova</button>
         </div>
       }
+      <mb-admin-cost-detail [detail]="detail()" (closed)="detail.set(null)" />
     </section>
   `,
 })
@@ -124,10 +132,15 @@ export class AdminCostsPage {
 
   protected readonly money = money;
   protected readonly duration = duration;
+  protected readonly detail = signal<CostDetail | null>(null);
 
   constructor() {
     pageHeader(() => [{ label: 'Admin', link: '/admin' }, { label: 'Consumi' }]);
     void this.load();
+  }
+
+  protected showFormat(row: AdminCosts['byFormat'][number]): void {
+    this.detail.set({ title: `Un ${row.format} in media`, subtitle: `${row.contents} contenuti negli ultimi 30 giorni`, total: row.avgUsd, parts: row.parts });
   }
 
   protected share(used: number, total: number): string {

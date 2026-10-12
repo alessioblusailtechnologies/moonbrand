@@ -112,7 +112,7 @@ interface MovementRow {
 }
 
 // Le voci del consumo dai task di ai_usage, compresi quelli dei primi mesi; quello che non si riconosce è «altro».
-const CATEGORY_BY_TASK: Record<string, CreditCategory> = {
+export const CATEGORY_BY_TASK: Record<string, CreditCategory> = {
   image: 'image',
   cutout: 'image',
   'video-cover': 'image',

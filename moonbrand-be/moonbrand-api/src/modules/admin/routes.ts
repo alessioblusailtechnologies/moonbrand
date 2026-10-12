@@ -12,6 +12,7 @@ import { summarize, withUrls } from '../contents/service';
 import type { AuthGateway } from '../auth/gateway';
 import { registerAdminActions } from './actions';
 import { registerAdminInsights } from './insights';
+import { registerAdminSpending } from './spending';
 import {
   ACCOUNT_SELECT,
   adminCheck,
@@ -199,6 +200,7 @@ export function registerAdminRoutes(
     });
 
     registerAdminInsights(scope, pool, files);
+    registerAdminSpending(scope, pool);
     registerAdminActions(scope, pool, gateway);
   });
 }
