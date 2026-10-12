@@ -98,8 +98,7 @@ export class SummaryStep {
 
   protected readonly plan = computed(() => {
     const plan = SUBSCRIPTION_PLANS[this.store.plan()];
-    const intl = this.i18n.intl();
-    return this.i18n.t('plans.settingsSummary', { plan: plan.name, credits: plan.monthlyCredits.toLocaleString(intl), price: plan.priceEur.toLocaleString(intl) });
+    return this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly });
   });
 
   protected editPlan(): void {

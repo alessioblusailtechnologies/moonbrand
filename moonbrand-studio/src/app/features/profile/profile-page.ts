@@ -227,10 +227,9 @@ export class ProfilePage {
     const credits = this.credits.credits();
     if (!credits) return null;
     const plan = SUBSCRIPTION_PLANS[credits.plan];
-    const intl = this.i18n.intl();
     return {
       id: credits.plan,
-      summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, credits: plan.monthlyCredits.toLocaleString(intl), price: plan.priceEur.toLocaleString(intl) }),
+      summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly }),
     };
   });
   protected readonly connection = inject(ChannelConnectionService);
