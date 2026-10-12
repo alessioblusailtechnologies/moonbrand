@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1915; --secondario: #BAA68E; --accento: #522D1A; --sfondo: #F4F1E8; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'PT Serif', serif; }
+  /* testo chiaro sulle foto: la tinta dello sfondo schiarita; testo sul secondario: chiaro se il secondario è medio o scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --su-secondario: oklch(from var(--secondario) clamp(0.16, (0.8 - l) * 1000, 0.97) min(c, 0.03) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; letter-spacing: -0.01em; }
+  .corsivo { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  body { background: var(--secondario); color: var(--su-secondario); }
+  .titolo { position: absolute; left: 36px; top: 110px; font-size: 128px; line-height: 1; white-space: nowrap; }
+  .dolce { position: absolute; left: 320px; top: 250px; width: 820px; height: 867px; filter: drop-shadow(14px 22px 16px color-mix(in srgb, var(--principale) 35%, transparent)); }
+  .nome { position: absolute; left: 70px; top: 1048px; font-size: 54px; line-height: 1; }
+  .filetto { position: absolute; left: 70px; top: 1124px; width: 1010px; height: 3px; background: var(--accento); }
+  .testo { position: absolute; left: 70px; top: 1150px; width: 820px; font-size: 29px; line-height: 1.35; }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 parole minuscole con il punto, su una riga -->
+  <h1 class="titolo" data-adatta="990">appena sfornati.</h1>
+
+  <!-- foto: il prodotto scontornato (foto su fondo chiaro e la sua maschera -maschera.jpg, bianco = prodotto), grande, che esce dal bordo destro -->
+  <svg class="dolce" viewBox="0 0 520 550"><mask id="m-brownie"><image href="../esempio/brownie-maschera.jpg" width="520" height="550"/></mask><image href="../esempio/brownie.jpg" width="520" height="550" mask="url(#m-brownie)"/></svg>
+
+  <!-- nome: il prodotto, 1-2 parole in corsivo -->
+  <p class="nome corsivo">Brownie</p>
+  <div class="filetto"></div>
+  <!-- testo: 25-30 parole, com'è e quando gustarlo -->
+  <p class="testo">Cioccolato fondente e noci, morbido dentro e croccante sopra. Il profumo riempie il forno ogni pomeriggio: perfetto da dividere o per una serata sul divano.</p>
+  <script>
+    // Con un font del brand più largo i titoli su una riga si rimpiccioliscono finché stanno nella misura scritta in data-adatta.
+    const adatta = () => document.querySelectorAll('[data-adatta]').forEach((el) => {
+      el.style.fontSize = '';
+      const max = Number(el.dataset.adatta);
+      const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      while (larghezza() > max && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+    });
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

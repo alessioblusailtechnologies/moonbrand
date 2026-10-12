@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  body { background: var(--principale); color: var(--chiaro); }
+  .foto { position: absolute; left: 0; top: 0; width: 566px; height: 1350px; object-position: 45% 50%; }
+  .striscia { position: absolute; left: 566px; top: 0; width: 26px; height: 1350px; background: var(--accento); }
+  .colonna { position: absolute; left: 640px; top: 0; width: 390px; height: 1350px; }
+  .colonna .etichetta { left: 0; top: 84px; opacity: 0.7; }
+  .titolo { position: absolute; left: 0; top: 196px; width: 390px; font-size: 64px; line-height: 1.3; }
+  .testo { position: absolute; left: 0; top: 520px; width: 380px; font-size: 24px; line-height: 1.7; opacity: 0.85; }
+  .riga { position: absolute; left: 0; top: 720px; width: 390px; border-top: 1px solid color-mix(in oklab, var(--accento) 60%, transparent); }
+  .sotto { position: absolute; left: 0; top: 790px; width: 390px; font-family: var(--font-titoli); font-size: 40px; line-height: 1.35; }
+  .info { position: absolute; left: 0; width: 390px; font-size: 17px; line-height: 1.6; letter-spacing: 0.04em; opacity: 0.8; }
+  .i1 { top: 960px; } .i2 { top: 1080px; text-transform: uppercase; } .i3 { top: 1140px; } .i4 { top: 1240px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: verticale a mezza pagina, il prodotto da vicino su fondo scuro -->
+  <img class="foto" src="../esempio/fetta.jpg" width="566" height="1350" alt="">
+  <div class="striscia"></div>
+
+  <div class="colonna">
+    <!-- logo: il nome del brand -->
+    <p class="etichetta logo">Pasticceria Olmo</p>
+    <!-- titolo: due frasi brevi di 2-3 parole -->
+    <h1 class="titolo">Il tuo stile. La tua festa.</h1>
+    <!-- testo: 12-18 parole -->
+    <p class="testo">Salva lo stile che preferisci e raccontaci cosa ti piace di più.</p>
+    <div class="riga"></div>
+    <!-- sotto: invito di 4-7 parole -->
+    <p class="sotto">Parliamo della tua torta.</p>
+    <!-- info: servizio, link, contatto e zona, una riga ciascuno -->
+    <p class="info i1">Chiedi delle torte su misura per compleanni e matrimoni</p>
+    <p class="info i2">Link in bio</p>
+    <p class="info i3">ciao@pasticceriaolmo.it<br>@pasticceriaolmo</p>
+    <p class="info i4">Torino e cintura</p>
+  </div>
+</body>
+</html>

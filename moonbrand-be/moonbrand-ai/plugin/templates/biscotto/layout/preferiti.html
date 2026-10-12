@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Anton&family=Montserrat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #57190C; --secondario: #C8926C; --accento: #F7B0C0; --sfondo: #FADDE2; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* tinte derivate: crema (lo sfondo schiarito), chiaro sulle foto e sui fondi scuri */
+  :root { --crema: color-mix(in oklab, var(--sfondo) 32%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    /* tinta: lo sfondo con un velo d'accento, così schede e linguette si vedono anche se lo sfondo del brand è bianco */
+    --tinta: color-mix(in oklab, var(--sfondo) 82%, var(--accento)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; }
+  .corsivo { font-family: 'Sacramento', cursive; font-weight: 400; line-height: 1; }
+  .alto { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; }
+  .spaziato { font-family: var(--font-testo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .smerlo { position: absolute; display: block; }
+  .disegni { position: absolute; inset: 0; background: var(--principale); opacity: 0.07;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px; }
+  .logo { font-family: var(--font-titoli); color: var(--principale); text-align: center; line-height: 0.9; }
+
+
+  .colata { position: absolute; left: 0; top: 0; width: 1080px; height: 300px; }
+  .colata path { fill: var(--principale); }
+  .macchia { position: absolute; left: 330px; top: 760px; width: 1100px; height: 1100px; border-radius: 50%; background: color-mix(in oklab, var(--sfondo) 55%, white); }
+  .macchia2 { position: absolute; left: 520px; top: 300px; width: 640px; height: 640px; border-radius: 50%; background: color-mix(in oklab, var(--accento) 45%, var(--sfondo)); }
+  .tondo { position: absolute; border-radius: 50%; object-fit: cover; display: block; }
+  .t1 { left: 120px; top: 250px; width: 300px; height: 300px; }
+  .t2 { left: 500px; top: 360px; width: 470px; height: 470px; }
+  .t3 { left: 60px; top: 600px; width: 380px; height: 380px; }
+  .t4 { left: 100px; top: 1040px; width: 300px; height: 300px; }
+  .titolo { position: absolute; left: 470px; width: 560px; top: 870px; text-align: center; font-size: 112px; }
+  .titolo .corsivo { display: block; color: var(--secondario); font-size: 120px; line-height: 0.62; margin: 4px 0 2px; }
+  .invito { position: absolute; left: 470px; width: 560px; top: 1140px; text-align: center; font-size: 76px; color: var(--secondario); }
+  .sito { position: absolute; left: 520px; width: 470px; top: 1226px; height: 64px; border-radius: 32px; background: color-mix(in oklab, var(--accento) 60%, var(--sfondo)); color: var(--principale);
+    display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+</style>
+</head>
+<body>
+  <svg class="colata" viewBox="0 0 1080 300" preserveAspectRatio="none"><path d="M0 0 H1080 V150 C1040 220 990 240 950 190 C910 140 880 120 840 170 C800 230 760 250 720 190 C690 140 650 110 600 150 C560 190 520 240 470 200 C430 160 410 110 360 120 C300 130 300 220 240 230 C180 240 170 160 120 150 C70 140 40 190 0 210 Z"/></svg>
+  <div class="macchia"></div>
+  <div class="macchia2"></div>
+
+  <!-- foto: quattro dolci diversi, in tondo -->
+  <img class="tondo t1" src="../esempio/cupcake-bianco.jpg" alt="">
+  <img class="tondo t2" src="../esempio/cupcake-lamponi.jpg" alt="">
+  <img class="tondo t3" src="../esempio/cupcake-cacao.jpg" alt="" style="object-position: 75% 60%;">
+  <img class="tondo t4" src="../esempio/cupcake-fragola.jpg" alt="" style="object-position: 50% 75%;">
+
+  <!-- titolo: 3 parole, quella in mezzo scritta a mano -->
+  <h1 class="titolo">i preferiti<span class="corsivo">della</span>settimana</h1>
+  <!-- invito: 2-3 parole scritte a mano -->
+  <p class="invito corsivo">ordina i tuoi</p>
+  <!-- sito: l'indirizzo del sito o il profilo -->
+  <p class="sito spaziato">www.fornolulu.it</p>
+
+</body>
+</html>

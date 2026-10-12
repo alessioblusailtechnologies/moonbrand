@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Arimo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Pinyon Script', cursive; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .arco { position: absolute; left: 203px; top: 283px; width: 678px; height: 785px; border-radius: 339px 339px 0 0; background: var(--sfondo); }
+  .stella { position: absolute; left: 512px; top: 360px; width: 58px; height: 64px; color: var(--accento); }
+  .titolo { position: absolute; left: 233px; top: 488px; width: 618px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 82px; line-height: 1.1; white-space: nowrap; }
+  .testo { position: absolute; left: 263px; top: 640px; width: 558px; text-align: center; font-size: 28px; line-height: 1.58; letter-spacing: 0.02em; }
+</style>
+</head>
+<body>
+  <!-- foto: la facciata del locale o la sua strada, a tutto quadro -->
+  <img class="foto" src="../esempio/via.jpg" alt="">
+
+  <!-- arco: la scheda chiara ad arco al centro, resta -->
+  <div class="arco"></div>
+
+  <!-- stella: la stella a quattro punte in cima all'arco, resta -->
+  <svg class="stella" viewBox="0 0 58 64" fill="currentColor"><path d="M29 0 C31 22 36 29 58 32 C36 35 31 42 29 64 C27 42 22 35 0 32 C22 29 27 22 29 0 Z"/></svg>
+
+  <!-- titolo: 2-3 parole scritte a mano, una riga -->
+  <h1 class="titolo" data-max="600">Tavoli di dicembre</h1>
+
+  <!-- testo: l'annuncio, 40-50 parole su 8 righe -->
+  <p class="testo">Da oggi sono aperte le prenotazioni per dicembre. Riservate il vostro tavolo per la colazione della domenica o per una merenda con il panettone appena tagliato, la cioccolata calda e i biscotti di Natale. I posti sono pochi, scriveteci per tempo!</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        const max = parseFloat(el.dataset.max);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+        while (larghezza() > max && size > 20) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

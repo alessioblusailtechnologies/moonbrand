@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@1,700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 90px; top: 150px; width: 900px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 700;
+    font-size: 92px; line-height: 1.1; letter-spacing: 0.01em; }
+  .testo { position: absolute; left: 150px; top: 520px; width: 780px; text-align: center; font-family: var(--font-testo); font-weight: 400; font-size: 33px; line-height: 1.5; }
+
+  /* La foto occupa il terzo basso a tutta larghezza: il pane sul tagliere, il legno fino al bordo. */
+  .foto { position: absolute; left: 0; top: 735px; width: 1080px; height: 615px; object-fit: cover; object-position: 50% 100%; }
+</style>
+</head>
+<body>
+  <!-- titolo: 3 righe in corsivo, 8-12 parole in tutto -->
+  <h1 class="titolo">Croccante fuori, soffice e profumato dentro.</h1>
+
+  <!-- testo: 20-30 parole su tre righe, il racconto del prodotto -->
+  <p class="testo">Il nostro pane di segale con i semi lievita per una notte intera: ricco di fibre, saporito, buono anche il giorno dopo.</p>
+
+  <!-- foto: il prodotto appoggiato su un piano di legno, inquadrato dal basso, a tutta larghezza -->
+  <img class="foto" src="../esempio/pane-tagliere.jpg" alt="">
+</body>
+</html>

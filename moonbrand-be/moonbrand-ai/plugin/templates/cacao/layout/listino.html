@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;700&family=Alegreya:ital,wght@0,800;1,400&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Alegreya', serif; }
+  /* il testo sull'accento: chiaro se l'accento è scuro, scuro se è chiaro */
+  :root { --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0.02 h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 196px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 132px; line-height: 1; letter-spacing: -0.065em; }
+
+  .voce { position: absolute; height: 188px; border-radius: 0 94px 94px 0; background: var(--accento); color: var(--su-accento); display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .voce h2 { font-family: var(--font-testo); font-weight: 800; font-size: 36px; line-height: 1.15; }
+  .voce p { font-style: italic; font-size: 30px; line-height: 1.12; margin-top: 6px; }
+  .v1 { left: 250px; top: 441px; width: 665px; padding: 0 40px 0 150px; }
+  .v2 { left: 370px; top: 680px; width: 642px; padding: 0 40px 0 150px; }
+  .v3 { left: 490px; top: 919px; width: 560px; padding: 0 40px 0 150px; }
+
+  /* la piega: tutto quello che sta a sinistra della diagonale copre l'inizio delle voci, con la sua ombra */
+  .piega { position: absolute; inset: 0; filter: drop-shadow(14px 6px 12px color-mix(in srgb, var(--principale) 22%, transparent));
+    mask-image: linear-gradient(transparent 330px, #000 420px, #000 1100px, transparent 1180px); }
+  .piega div { position: absolute; inset: 0; background: var(--sfondo); clip-path: polygon(0 0, 112px 0, 776px 1350px, 0 1350px); }
+
+  .tondo { position: absolute; width: 196px; height: 196px; border-radius: 50%; overflow: hidden; background: color-mix(in srgb, var(--accento) 45%, var(--sfondo)); }
+  .tondo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .t1 { left: 90px; top: 417px; }
+  .t2 { left: 209px; top: 673px; }
+  .t3 { left: 328px; top: 923px; }
+
+  .prezzo { position: absolute; font-family: 'Nothing You Could Do', cursive; font-size: 40px; line-height: 1; }
+  .p1 { left: 268px; top: 602px; }
+  .p2 { left: 388px; top: 842px; }
+  .p3 { left: 540px; top: 1086px; }
+
+  .piede { position: absolute; left: 82px; right: 82px; top: 1238px; display: flex; justify-content: space-between; font-family: var(--font-titoli); font-weight: 500; font-size: 25px; line-height: 1.15; text-transform: uppercase; }
+  .piede b { font-weight: 700; display: block; }
+  .piede div:last-child { text-align: right; }
+</style>
+</head>
+<body>
+  <!-- titolo: 1-2 parole minuscole con il punto -->
+  <h1 class="titolo">il menu.</h1>
+
+  <!-- voci: tre prodotti, nome di 2-4 parole e descrizione di 8-12 parole -->
+  <div class="voce v1"><h2>Cannolo siciliano</h2><p>Cialda croccante e ricotta di pecora, con scorza d'arancia candita</p></div>
+  <div class="voce v2"><h2>Cornetto sfogliato</h2><p>Burro francese e tre giorni di lievitazione, sfornato all'alba</p></div>
+  <div class="voce v3"><h2>Torta al cioccolato</h2><p>Pan di Spagna al cacao e ganache fondente, con una ciliegia</p></div>
+
+  <div class="piega"><div></div></div>
+
+  <!-- foto: i tre prodotti, ritagliati a cerchio, lungo la diagonale -->
+  <div class="tondo t1"><img src="../esempio/cannolo.jpg" alt="" style="object-position: 46% 50%;"></div>
+  <div class="tondo t2"><img src="../esempio/cornetto.jpg" alt="" style="object-position: 30% 50%;"></div>
+  <div class="tondo t3"><img src="../esempio/torta.jpg" alt="" style="object-position: 50% 42%;"></div>
+
+  <!-- prezzi: scritti a mano, in euro -->
+  <span class="prezzo p1">3,50 €</span>
+  <span class="prezzo p2">1,80 €</span>
+  <span class="prezzo p3">4 €</span>
+
+  <div class="piede">
+    <!-- indirizzo: dove trovarci -->
+    <div><b>Vieni a trovarci</b>Via Sparano 41, Bari</div>
+    <!-- sito: dove leggere di più -->
+    <div><b>Per informazioni</b>pasticceriabruna.it</div>
+  </div>
+</body>
+</html>

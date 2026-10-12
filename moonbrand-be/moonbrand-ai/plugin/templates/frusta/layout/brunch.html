@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@400;700&family=Archivo:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* Testi chiari sulla foto: lo sfondo del brand schiarito, leggibile anche se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 70% 50%; display: block; }
+
+  .titolo { position: absolute; left: 36px; top: 150px; font-family: var(--font-titoli); font-weight: 400; font-size: 206px; line-height: 1; letter-spacing: -0.03em; text-transform: uppercase; white-space: nowrap; }
+  .quando { position: absolute; left: 470px; top: 352px; font-weight: 700; font-size: 62px; line-height: 1; letter-spacing: -0.04em; white-space: nowrap; }
+  .battuta { position: absolute; right: 70px; top: 840px; text-align: right; font-size: 62px; line-height: 0.88; letter-spacing: -0.04em; }
+  .firma { position: absolute; right: 64px; top: 1060px; font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 150px; line-height: 1; letter-spacing: -0.04em; }
+</style>
+</head>
+<body>
+  <!-- foto: il piatto o il prodotto dell'evento da vicino, a tutto post -->
+  <img class="foto" src="../esempio/brunch.jpg" alt="">
+
+  <!-- titolo: il nome dell'evento o del momento, 1 parola in maiuscolo, al massimo 6 lettere -->
+  <h1 class="titolo">Brunch</h1>
+  <!-- quando: l'orario o il giorno, 2-3 parole brevi -->
+  <p class="quando">ore 10-12</p>
+  <!-- battuta: 3 righe di una parola ciascuna, allineate a destra -->
+  <p class="battuta">non<br>il<br>solito</p>
+  <!-- firma: il mestiere o il nome del locale, 1 parola -->
+  <p class="firma">Forno</p>
+</body>
+</html>

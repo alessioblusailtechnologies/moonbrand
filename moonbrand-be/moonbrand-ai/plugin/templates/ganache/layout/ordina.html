@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A1B14; --secondario: #4A3226; --accento: #E2A94F; --sfondo: #F3EEE6; }
+  :root { --font-titoli: 'Anton', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo chiaro sui fondi scuri: lo sfondo del brand, schiarito se è scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 0; width: 1080px; top: 50px; text-align: center; font-size: 19px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-stretch: 25%; font-weight: 560; font-variation-settings: 'opsz' 144, 'YTLC' 570, 'YTUC' 760;
+    letter-spacing: -0.01em; line-height: 0.8; white-space: nowrap; }
+  .corsivo { font-family: 'Libre Caslon Text', serif; font-style: italic; }
+  .filetto { position: absolute; height: 2px; background: currentColor; opacity: 0.55; }
+  .profilo { position: absolute; left: 0; width: 1080px; bottom: 44px; text-align: center; font-size: 21px; font-weight: 600; letter-spacing: 0.12em; }
+  /* la foto del prodotto su fondo uniforme, chiaro (.chiaro) o nero (.scuro): il filtro toglie il fondo e il dolce passa davanti al titolo */
+  .chiaro { filter: url(#chiaro); }
+  .scuro { filter: url(#scuro); }
+  .ritaglio { position: absolute; overflow: hidden; }
+  .ritaglio img { position: absolute; display: block; }
+
+  body { background: var(--principale); color: var(--chiaro); }
+  .titolo { left: 0; width: 1080px; text-align: center; font-weight: 400; font-stretch: normal; font-variation-settings: normal; text-transform: uppercase; line-height: 1; letter-spacing: -0.01em; }
+  .r1 { top: 70px; font-size: 400px; }
+  .r2 { top: 410px; font-size: 400px; }
+  .r3 { top: 750px; font-size: 400px; }
+  .foto { position: absolute; left: 111px; top: -230px; width: 880px; height: 1318px; }
+  .riquadro { position: absolute; left: 76px; top: 1150px; width: 928px; height: 86px; border: 3px solid var(--accento); display: flex; align-items: center; justify-content: center;
+    font-size: 44px; font-weight: 700; }
+  .passi { position: absolute; left: 0; width: 1080px; top: 1252px; text-align: center; font-size: 22px; font-weight: 500; }
+  .profilo { bottom: 30px; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute">
+    <filter id="chiaro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  7.33 -2.67 -12.67 0 5.8"/></filter>
+    <filter id="scuro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.33 1.33 1.33 0 -0.5"/></filter>
+  </svg>
+
+  <!-- logo: il nome del brand -->
+  <div class="testata logo">Pasticceria Bruna</div>
+
+  <!-- titolo: 3 righe di 1-2 parole in maiuscolo, enormi -->
+  <div class="titolo r1" data-max="1000">Ordina</div>
+  <div class="titolo r2" data-max="1000">la tua</div>
+  <div class="titolo r3" data-max="1000">torta</div>
+
+  <!-- foto: una torta su fondo nero, al centro sopra la riga di mezzo -->
+  <img class="foto scuro" src="../esempio/torta-bianca.jpg" alt="">
+
+  <!-- invito: 2-4 parole nel riquadro -->
+  <div class="riquadro">Ordina in direct</div>
+  <!-- passi: come si ordina, 8-12 parole -->
+  <p class="passi">Scegli il gusto, la misura e scrivici la data</p>
+  <!-- profilo: il profilo social del brand -->
+  <div class="profilo">@pasticceriabruna</div>
+  <script>
+    // Con un font del brand più largo, ogni riga del titolo si rimpicciolisce finché sta nella sua misura (data-max, in px)
+    // e scende di metà della differenza, così il blocco del titolo resta al suo posto.
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = ''; el.style.marginTop = '';
+        const base = parseFloat(getComputedStyle(el).fontSize);
+        const range = document.createRange(); range.selectNodeContents(el);
+        const larga = range.getBoundingClientRect().width;
+        const max = Number(el.dataset.max);
+        if (larga > max) { const size = Math.floor(base * max / larga); el.style.fontSize = `${size}px`; el.style.marginTop = `${(base - size) * 0.4}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  body { background: var(--principale); color: var(--chiaro); }
+  .marchio { position: absolute; left: 0; right: 0; top: 76px; text-align: center; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; }
+  .riga { position: absolute; left: 34px; right: 34px; top: 128px; border-top: 1px solid color-mix(in oklab, var(--accento) 45%, transparent); }
+  .titolo { position: absolute; left: 60px; right: 60px; top: 178px; text-align: center; font-size: 86px; line-height: 1.22; }
+  .titolo span { display: block; text-transform: uppercase; }
+  .cornice { position: absolute; left: 130px; top: 430px; width: 820px; height: 864px; border: 2px solid color-mix(in oklab, var(--accento) 55%, transparent); }
+  .foto { position: absolute; left: 148px; top: 448px; width: 784px; height: 828px; object-position: 50% 45%; }
+  .nota { position: absolute; left: 200px; top: 1196px; width: 680px; height: 84px; background: var(--sfondo); color: var(--principale); display: flex; align-items: center; justify-content: center; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand -->
+  <p class="marchio logo">Pasticceria Olmo</p>
+  <div class="riga"></div>
+
+  <!-- titolo: due righe, la prima in minuscolo (2-3 parole), la seconda in maiuscolo (1-3 parole) -->
+  <h1 class="titolo">Trova la tua<span>torta ideale</span></h1>
+
+  <!-- foto: la torta o il prodotto protagonista, verticale, luce calda -->
+  <div class="cornice"></div>
+  <img class="foto" src="../esempio/torta-piani.jpg" width="784" height="828" alt="">
+
+  <!-- nota: 3-6 parole che invitano a scorrere -->
+  <p class="nota">Quattro stili, qual è il tuo?</p>
+</body>
+</html>

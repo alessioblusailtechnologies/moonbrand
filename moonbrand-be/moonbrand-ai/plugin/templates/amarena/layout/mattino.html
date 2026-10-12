@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 266px; top: 284px; font-family: var(--font-titoli); font-weight: 400; font-size: 46px; line-height: 1; letter-spacing: 0.005em; }
+  .cornice { position: absolute; left: 266px; top: 347px; width: 549px; height: 658px; overflow: hidden; }
+  .cornice img { position: absolute; left: -540px; top: -10px; width: 1721px; height: 1150px; object-fit: cover; display: block; }
+  .orario { position: absolute; left: 836px; top: 1005px; transform: rotate(-90deg); transform-origin: left top; white-space: nowrap; font-family: var(--font-titoli); font-size: 18px; letter-spacing: 0.03em; }
+  .testo { position: absolute; left: 266px; top: 1020px; width: 520px; font-size: 23px; font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- titolo: 3-4 parole sul momento della giornata -->
+  <h1 class="titolo">Colazione al banco</h1>
+  <!-- foto: la vetrina o il banco, verticale, stretta nella cornice -->
+  <div class="cornice"><img src="../esempio/vetrina.jpg" alt=""></div>
+  <!-- orario: la fascia oraria, scritta in verticale lungo la foto -->
+  <p class="orario">DALLE 7:00 ALLE 11:30</p>
+  <!-- testo: cosa si trova, 8-12 parole in maiuscolo su due righe -->
+  <p class="testo">Cornetti caldi, cappuccino e il tempo di fare due chiacchiere.</p>
+</body>
+</html>

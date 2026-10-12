@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5E2A1C; --secondario: #7F5943; --accento: #F3EFEA; --sfondo: #E9E1D6; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--accento); font-family: var(--font-testo); }
+
+  .parola { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700;
+    font-size: 360px; line-height: 1; letter-spacing: -0.035em; text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+  .foto { position: absolute; left: 180px; top: 350px; width: 740px; height: 740px; clip-path: circle(46%); object-fit: cover; display: block; }
+</style>
+</head>
+<body>
+  <!-- titolo: una parola sola di 4-6 lettere (saldi, nuovo, torte), ripetuta quattro volte; le due in mezzo stanno dietro la foto -->
+  <div class="parola" style="top: -34px;">Saldi</div>
+  <div class="parola" style="top: 296px;">Saldi</div>
+  <div class="parola" style="top: 626px;">Saldi</div>
+  <div class="parola" style="top: 956px;">Saldi</div>
+
+  <!-- foto: un solo prodotto visto dall'alto su fondo chiaro, tagliato in tondo (biscotto, ciambella, piatto) -->
+  <img class="foto" src="../esempio/biscotto.jpg" alt="">
+</body>
+</html>

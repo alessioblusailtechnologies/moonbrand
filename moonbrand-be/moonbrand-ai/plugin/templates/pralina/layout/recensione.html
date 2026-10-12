@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Allison&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #85564D; --secondario: #B6A18E; --accento: #9C6B5F; --sfondo: #E8E0D8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Libre Baskerville', serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --firma: 'Allison', cursive; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: blur(3px); }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--chiaro) 66%, transparent); }
+  .scheda { position: absolute; left: 230px; top: 340px; width: 760px; height: 720px; background: var(--secondario); }
+  .titolo { position: absolute; left: 230px; top: 362px; width: 760px; text-align: center; font-family: var(--firma); font-weight: 400; font-size: 190px; line-height: 1; color: var(--principale); }
+  .stelle { position: absolute; left: 445px; top: 560px; width: 330px; height: 56px; display: flex; justify-content: space-between; }
+  .stelle svg { width: 56px; height: 56px; }
+  .testo { position: absolute; left: 300px; top: 660px; width: 620px; text-align: center; font-size: 26px; line-height: 1.65; letter-spacing: 0.1em; }
+  .volto { position: absolute; left: 270px; top: 900px; width: 128px; height: 128px; border-radius: 50%; object-fit: cover; object-position: 50% 22%; border: 4px solid var(--chiaro); }
+  .piede { position: absolute; left: 0; top: 1262px; width: 1080px; text-align: center; font-size: 24px; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+  <!-- foto: prodotti nel banco, a tutto fondo e schiariti -->
+  <img class="fondo" src="../esempio/muffin-banco.jpg" alt="">
+  <div class="velo"></div>
+  <div class="scheda"></div>
+
+  <!-- titolo: una parola scritta a mano -->
+  <h1 class="titolo">Recensioni</h1>
+
+  <!-- stelle: cinque, chiare -->
+  <div class="stelle">
+    <svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6 5.6 21.1 7 14l-5.3-5 7.2-.9z" fill="var(--chiaro)"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6 5.6 21.1 7 14l-5.3-5 7.2-.9z" fill="var(--chiaro)"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6 5.6 21.1 7 14l-5.3-5 7.2-.9z" fill="var(--chiaro)"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6 5.6 21.1 7 14l-5.3-5 7.2-.9z" fill="var(--chiaro)"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6 5.6 21.1 7 14l-5.3-5 7.2-.9z" fill="var(--chiaro)"/></svg>
+  </div>
+
+  <!-- testo: la recensione tra virgolette, 20-28 parole -->
+  <p class="testo">"Dai compleanni alla colazione di tutti i giorni, ormai prendiamo tutto qui. Le loro sfogliatine sono una piccola gioia che ci migliora la giornata."</p>
+
+  <!-- volto: la foto della cliente nel cerchio, in basso a sinistra della scheda -->
+  <img class="volto" src="../esempio/fornaia.jpg" alt="">
+
+  <!-- piede: sito, profilo e telefono separati da barrette -->
+  <p class="piede">www.pasticceriagemma.it | @pasticceriagemma | 051 234 5678</p>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Young Serif', serif; }
+  :root {
+    --su-secondario: oklch(from var(--secondario) clamp(0.22, (0.74 - l) * 1000, 0.98) min(c, 0.02) h);
+    --su-accento: oklch(from var(--accento) clamp(0.22, (0.8 - l) * 1000, 0.98) min(c, 0.02) h);
+    --linguetta: color-mix(in oklch, var(--secondario) 85%, black);
+    --su-linguetta: oklch(from var(--linguetta) clamp(0.22, (0.74 - l) * 1000, 0.98) min(c, 0.02) h);
+    --ombra: color-mix(in oklch, var(--secondario) 75%, black);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 168px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400;
+    font-size: 96px; line-height: 110px; white-space: nowrap; color: var(--principale); }
+
+  /* riquadri con l'ombra piena spostata in basso a destra e la linguetta in alto */
+  .riquadro { position: absolute; left: 197px; width: 681px; border-radius: 18px; box-shadow: 12px 12px 0 var(--ombra);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-size: 38px; line-height: 46px; }
+  .domanda { top: 345px; height: 260px; padding: 40px 90px 10px; background: var(--secondario); color: var(--su-secondario); }
+  .risposta { top: 698px; height: 327px; padding: 40px 120px 10px 30px; background: var(--accento); color: var(--su-accento); }
+  .linguetta { position: absolute; left: 427px; width: 221px; height: 62px; border-radius: 14px; background: var(--linguetta); color: var(--su-linguetta);
+    display: flex; align-items: center; justify-content: center; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .l1 { top: 320px; box-shadow: 0 6px 0 color-mix(in oklch, var(--principale) 55%, var(--sfondo)); }
+  .l2 { top: 672px; box-shadow: 0 6px 0 color-mix(in oklch, var(--secondario) 30%, var(--sfondo)); }
+
+  .profilo { position: absolute; left: 370px; top: 1095px; width: 342px; height: 68px; border-radius: 34px; background: color-mix(in oklch, var(--principale) 45%, var(--sfondo));
+    box-shadow: 5px 6px 0 var(--ombra); display: flex; align-items: center; justify-content: center; font-size: 31px; color: color-mix(in oklch, var(--secondario) 70%, black); }
+
+  .persona { position: absolute; left: 770px; top: 690px; width: 310px; height: 660px; display: block; object-fit: cover; object-position: 46% 50%; }
+</style>
+</head>
+<body>
+  <!-- titolo: 1-2 parole in maiuscolo -->
+  <h1 class="titolo">TU CHIEDI</h1>
+
+  <!-- domanda: quella di un cliente, 6-10 parole -->
+  <p class="riquadro domanda">Come si conserva il pane per più giorni?</p>
+  <p class="linguetta l1">Domanda</p>
+
+  <!-- risposta: 16-22 parole -->
+  <p class="riquadro risposta">In un sacchetto di carta, mai in frigo. Dal terzo giorno, due minuti in forno.</p>
+  <p class="linguetta l2">Risposta</p>
+
+  <!-- profilo: il nome del profilo social -->
+  <p class="profilo">@fornomariani</p>
+
+  <!-- foto: chi risponde, sorridente, in grembiule, nell'angolo in basso a destra tagliata dai bordi -->
+  <img class="persona" src="../esempio/fornaia.jpg" alt="">
+</body>
+</html>

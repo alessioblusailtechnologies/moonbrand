@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Young Serif', serif; --font-testo: 'Poppins', sans-serif; }
+  :root {
+    --su-accento: oklch(from var(--accento) clamp(0.22, (0.8 - l) * 1000, 0.98) min(c, 0.02) h);
+    --su-secondario: oklch(from var(--secondario) clamp(0.22, (0.74 - l) * 1000, 0.98) min(c, 0.02) h);
+    --scuro: color-mix(in oklch, var(--secondario) 72%, black);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--accento); color: var(--su-accento); font-family: var(--font-testo); }
+
+  .logo { position: absolute; left: 420px; top: 106px; width: 240px; height: 80px; border: 2px solid var(--su-accento); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-size: 30px; }
+
+  .titolo { position: absolute; left: 104px; top: 196px; font-family: var(--font-titoli); font-weight: 400; font-size: 124px; line-height: 118px; letter-spacing: -0.02em; white-space: nowrap; }
+  .titolo span { display: block; }
+  .gusti { position: absolute; left: 112px; top: 452px; font-size: 38px; font-weight: 600; color: var(--scuro); }
+  .elenco { position: absolute; left: 118px; top: 512px; font-size: 31px; line-height: 37px; list-style: none; }
+  .elenco li::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: currentColor; margin: 0 18px 6px 4px; }
+
+  /* biscotti: foto tonda in un pirottino di carta, con un cerchio pieno dietro spostato in basso a destra */
+  .dietro { position: absolute; border-radius: 50%; background: var(--principale); }
+  .pirottino { position: absolute; background: #FFFFFF; filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.12));
+    clip-path: polygon(100.00% 50.00%, 95.38% 53.25%, 99.49% 57.12%, 94.46% 59.67%, 97.97% 64.09%, 92.63% 65.90%, 95.48% 70.77%, 89.93% 71.81%, 92.06% 77.03%, 86.42% 77.27%, 87.79% 82.74%, 82.17% 82.17%, 82.74% 87.79%, 77.27% 86.42%, 77.03% 92.06%, 71.81% 89.93%, 70.77% 95.48%, 65.90% 92.63%, 64.09% 97.97%, 59.67% 94.46%, 57.12% 99.49%, 53.25% 95.38%, 50.00% 100.00%, 46.75% 95.38%, 42.88% 99.49%, 40.33% 94.46%, 35.91% 97.97%, 34.10% 92.63%, 29.23% 95.48%, 28.19% 89.93%, 22.97% 92.06%, 22.73% 86.42%, 17.26% 87.79%, 17.83% 82.17%, 12.21% 82.74%, 13.58% 77.27%, 7.94% 77.03%, 10.07% 71.81%, 4.52% 70.77%, 7.37% 65.90%, 2.03% 64.09%, 5.54% 59.67%, 0.51% 57.12%, 4.62% 53.25%, 0.00% 50.00%, 4.62% 46.75%, 0.51% 42.88%, 5.54% 40.33%, 2.03% 35.91%, 7.37% 34.10%, 4.52% 29.23%, 10.07% 28.19%, 7.94% 22.97%, 13.58% 22.73%, 12.21% 17.26%, 17.83% 17.83%, 17.26% 12.21%, 22.73% 13.58%, 22.97% 7.94%, 28.19% 10.07%, 29.23% 4.52%, 34.10% 7.37%, 35.91% 2.03%, 40.33% 5.54%, 42.88% 0.51%, 46.75% 4.62%, 50.00% 0.00%, 53.25% 4.62%, 57.12% 0.51%, 59.67% 5.54%, 64.09% 2.03%, 65.90% 7.37%, 70.77% 4.52%, 71.81% 10.07%, 77.03% 7.94%, 77.27% 13.58%, 82.74% 12.21%, 82.17% 17.83%, 87.79% 17.26%, 86.42% 22.73%, 92.06% 22.97%, 89.93% 28.19%, 95.48% 29.23%, 92.63% 34.10%, 97.97% 35.91%, 94.46% 40.33%, 99.49% 42.88%, 95.38% 46.75%); }
+  .biscotto { position: absolute; display: block; border-radius: 50%; object-fit: cover; }
+
+  .stella { position: absolute; width: 36px; height: 36px; }
+
+  .solo { position: absolute; left: 790px; top: 770px; width: 150px; text-align: center; font-size: 38px; }
+  .prezzo { position: absolute; right: 112px; top: 808px; font-size: 196px; line-height: 190px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; }
+  .unita { position: absolute; right: 125px; top: 972px; font-size: 34px; }
+  .bottone { position: absolute; left: 648px; top: 1048px; width: 320px; height: 84px; border-radius: 42px; background: var(--secondario); color: var(--su-secondario);
+    display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 600; }
+  .indirizzo { position: absolute; right: 112px; top: 1146px; text-align: right; font-size: 31px; line-height: 38px; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand nell'ovale -->
+  <p class="logo">Forno Mariani</p>
+
+  <!-- titolo: 3-4 parole su due righe di 8-10 caratteri -->
+  <h1 class="titolo"><span>Scegli il</span><span>biscotto</span></h1>
+
+  <!-- gusti: una riga di 2-3 parole e un elenco di tre gusti di 1-3 parole -->
+  <p class="gusti">Tre gusti</p>
+  <ul class="elenco"><li>Cioccolato</li><li>Caramello salato</li><li>Mandorle</li></ul>
+
+  <!-- foto: tre prodotti tondi visti dall'alto, in diagonale dall'alto a destra al basso a sinistra -->
+  <div class="dietro" style="left: 676px; top: 352px; width: 340px; height: 340px;"></div>
+  <div class="pirottino" style="left: 644px; top: 312px; width: 336px; height: 336px;"></div>
+  <img class="biscotto" src="../esempio/biscotto-1.jpg" alt="" style="left: 678px; top: 346px; width: 268px; height: 268px;">
+
+  <div class="dietro" style="left: 388px; top: 600px; width: 340px; height: 340px;"></div>
+  <div class="pirottino" style="left: 350px; top: 578px; width: 340px; height: 340px;"></div>
+  <img class="biscotto" src="../esempio/biscotto-2.jpg" alt="" style="left: 384px; top: 612px; width: 272px; height: 272px;">
+
+  <div class="dietro" style="left: 128px; top: 880px; width: 350px; height: 350px;"></div>
+  <div class="pirottino" style="left: 90px; top: 850px; width: 350px; height: 350px;"></div>
+  <img class="biscotto" src="../esempio/biscotto-3.jpg" alt="" style="left: 125px; top: 885px; width: 280px; height: 280px;">
+
+  <!-- stelle a quattro punte sparse, come nel modello -->
+  <svg class="stella" style="left: 196px; top: 92px; width: 30px; height: 30px;" viewBox="0 0 40 40"><path d="M20 2 C21 15 25 19 38 20 C25 21 21 25 20 38 C19 25 15 21 2 20 C15 19 19 15 20 2 Z" style="fill: var(--scuro)"/></svg>
+  <svg class="stella" style="left: 264px; top: 776px;" viewBox="0 0 40 40"><path d="M20 2 C21 15 25 19 38 20 C25 21 21 25 20 38 C19 25 15 21 2 20 C15 19 19 15 20 2 Z" fill="none" style="stroke: var(--su-accento)" stroke-width="2"/></svg>
+  <svg class="stella" style="left: 948px; top: 692px;" viewBox="0 0 40 40"><path d="M20 2 C21 15 25 19 38 20 C25 21 21 25 20 38 C19 25 15 21 2 20 C15 19 19 15 20 2 Z" fill="none" style="stroke: var(--su-accento)" stroke-width="2"/></svg>
+  <svg class="stella" style="left: 536px; top: 1058px;" viewBox="0 0 40 40"><path d="M20 2 C21 15 25 19 38 20 C25 21 21 25 20 38 C19 25 15 21 2 20 C15 19 19 15 20 2 Z" style="fill: var(--su-accento)"/></svg>
+
+  <!-- prezzo: «Solo», il prezzo grande e l'unità -->
+  <p class="solo">Solo</p>
+  <p class="prezzo">€2</p>
+  <p class="unita">/pezzo</p>
+
+  <!-- bottone: l'invito, 2-3 parole -->
+  <p class="bottone">Ordina ora</p>
+  <!-- indirizzo: via e città su due righe -->
+  <p class="indirizzo">Via Roma 18,<br>Bergamo</p>
+</body>
+</html>

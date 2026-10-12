@@ -1,0 +1,9 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License).
+
+baguette.jpg         https://www.pexels.com/photo/5588987/   (baguette a fette dall'alto su marmo bianco)
+torta-fragole.jpg    https://www.pexels.com/photo/16400924/  (tortina meringata con mandorle e fragole su fondo beige)
+cornetto-lato.jpg    https://www.pexels.com/photo/10165866/  (cornetto di lato su un piatto bianco)
+cornetto.jpg         https://www.pexels.com/photo/30110688/  (cornetto su piatto bianco, fondo bianco)
+panino-mano.jpg      https://www.pexels.com/photo/13424726/  (mano che tiene un panino al latte aperto, fondo chiaro)
+crostata.jpg         https://www.pexels.com/photo/32421564/  (fette di crostata di ciliegie su fondo bianco, ritagliata sulla fetta di sinistra)
+pani.jpg             https://www.pexels.com/photo/11570705/  (pani assortiti da vicino in un cesto)

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@400&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Oswald', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+
+  /* Il foglio strappato: un bordo bianco irregolare sotto, il foglio sopra. */
+  .strappo, .foglio { position: absolute; left: 300px; top: 368px; width: 560px; height: 810px; clip-path: polygon(0.0% 1.5%, 2.2% 1.0%, 4.3% 0.5%, 6.5% 2.1%, 8.7% 0.2%, 10.9% 1.7%, 13.0% 1.2%, 15.2% 0.2%, 17.4% 1.6%, 19.6% 0.1%, 21.7% 1.4%, 23.9% 0.2%, 26.1% 0.3%, 28.3% 1.4%, 30.4% 2.6%, 32.6% 0.4%, 34.8% 0.7%, 37.0% 2.0%, 39.1% 3.0%, 41.3% 1.8%, 43.5% 1.3%, 45.7% 3.1%, 47.8% 0.1%, 50.0% 2.7%, 52.2% 0.9%, 54.3% 0.5%, 56.5% 0.4%, 58.7% 1.0%, 60.9% 2.6%, 63.0% 0.6%, 65.2% 1.9%, 67.4% 2.0%, 69.6% 1.2%, 71.7% 1.8%, 73.9% 0.2%, 76.1% 0.2%, 78.3% 0.7%, 80.4% 2.2%, 82.6% 1.4%, 84.8% 1.0%, 87.0% 1.9%, 89.1% 1.5%, 91.3% 1.0%, 93.5% 2.5%, 95.7% 2.2%, 97.8% 0.8%, 100.0% 1.5%, 100.0% 98.2%, 97.8% 98.3%, 95.7% 97.2%, 93.5% 97.7%, 91.3% 99.1%, 89.1% 96.9%, 87.0% 99.6%, 84.8% 98.7%, 82.6% 97.6%, 80.4% 99.5%, 78.3% 98.4%, 76.1% 99.9%, 73.9% 97.9%, 71.7% 97.6%, 69.6% 98.2%, 67.4% 97.2%, 65.2% 99.0%, 63.0% 97.8%, 60.9% 98.1%, 58.7% 98.1%, 56.5% 98.5%, 54.3% 97.3%, 52.2% 97.0%, 50.0% 98.5%, 47.8% 97.9%, 45.7% 99.8%, 43.5% 97.8%, 41.3% 97.9%, 39.1% 96.8%, 37.0% 97.4%, 34.8% 99.1%, 32.6% 98.8%, 30.4% 97.9%, 28.3% 99.9%, 26.1% 98.5%, 23.9% 99.5%, 21.7% 99.6%, 19.6% 99.8%, 17.4% 97.5%, 15.2% 99.6%, 13.0% 99.2%, 10.9% 98.7%, 8.7% 97.2%, 6.5% 99.7%, 4.3% 98.6%, 2.2% 98.2%, 0.0% 97.2%); }
+  .strappo { background: #FFFFFF; transform: scale(1.012, 1.008); }
+  .foglio { background: var(--sfondo); transform: scale(0.996, 0.988); }
+  .nastro { position: absolute; left: 600px; top: 352px; width: 310px; height: 84px; background: color-mix(in srgb, var(--secondario) 92%, transparent); transform: rotate(13deg); }
+
+  .titolo { position: absolute; left: 300px; top: 476px; width: 560px; text-align: center; font-family: var(--font-titoli); font-weight: 600; font-size: 118px; line-height: 1.1; letter-spacing: -0.02em; text-transform: uppercase; color: var(--accento); }
+  .col { position: absolute; top: 656px; width: 214px; font-size: 26px; line-height: 1.2; letter-spacing: -0.03em; }
+  .col.sx { left: 352px; }
+  .col.dx { left: 606px; text-align: right; }
+  .col.dx p + p { margin-top: 31px; }
+  .logo { position: absolute; left: 470px; top: 940px; font-family: 'Mrs Saint Delafield', cursive; font-size: 118px; line-height: 1; color: var(--principale); transform: rotate(-10deg); }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto ripetuto dall'alto, sparso su un fondo chiaro, che resta visibile tutto intorno al foglio -->
+  <img class="foto" src="../esempio/biscotti.jpg" alt="">
+
+  <div class="strappo"></div>
+  <div class="foglio"></div>
+  <!-- nastro: il nastro adesivo sull'angolo del foglio -->
+  <div class="nastro"></div>
+
+  <!-- titolo: il nome del prodotto, 1 parola, al massimo 9 lettere -->
+  <h1 class="titolo">Biscotti</h1>
+  <!-- testo: com'è fatto il prodotto, 22-28 parole -->
+  <div class="col sx"><p>Croccanti fuori e morbidi dentro, li facciamo ogni mattina con burro vero, zucchero di canna e gocce di cioccolato fondente.</p></div>
+  <!-- frasi: tre frasi brevi di 2-5 parole, allineate a destra -->
+  <div class="col dx"><p>Dorati, golosi e finiti in un attimo.</p><p>Uno tira l'altro.</p><p>Provare per credere.</p></div>
+
+  <!-- logo: il nome del forno come firma a mano -->
+  <div class="logo">Lievito</div>
+</body>
+</html>

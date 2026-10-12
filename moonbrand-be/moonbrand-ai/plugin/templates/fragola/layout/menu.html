@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Karla:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Gochi Hand', cursive; --font-testo: 'Karla', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: oklch(from var(--sfondo) max(l, 0.95) min(c, 0.03) h); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la cornice a onde disegnata a pennarello, su tutti e quattro i lati */
+  .cornice { position: absolute; left: 0; top: 0; fill: none; stroke: var(--accento); stroke-width: 11; stroke-linecap: round; stroke-linejoin: round; }
+
+  .titolo { position: absolute; left: 0; width: 1080px; top: 168px; text-align: center; font-family: var(--font-titoli); font-size: 150px; line-height: 0.86; text-transform: uppercase; color: var(--accento); -webkit-text-stroke: 2px var(--accento); }
+  .filetto { position: absolute; left: 290px; top: 452px; width: 500px; height: 4px; background: var(--secondario); border-radius: 2px; }
+
+  .voci { position: absolute; left: 186px; top: 520px; width: 760px; list-style: none; }
+  .voci li { margin-bottom: 44px; }
+  .voci b { display: block; font-family: var(--font-titoli); font-weight: 400; font-size: 44px; line-height: 1.1; }
+  .voci i { display: block; margin-top: 8px; font-size: 30px; line-height: 1.2; }
+
+  .disegni { position: absolute; left: 0; width: 1080px; top: 1088px; display: flex; justify-content: center; gap: 74px; }
+  .disegni svg { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .rosa { stroke: var(--accento); }
+  .scuro { stroke: var(--principale); }
+</style>
+</head>
+<body>
+  <svg class="cornice" width="1080" height="1350" viewBox="0 0 1080 1350">
+    <path id="onde" d=""/>
+  </svg>
+
+  <!-- titolo: 2-4 parole su due righe, in maiuscolo, scritte a pennarello -->
+  <h1 class="titolo">I preferiti<br>del banco</h1>
+  <div class="filetto"></div>
+
+  <!-- voci: 3-4 prodotti; nome e prezzo (2-4 parole), sotto una frase di 6-9 parole in corsivo -->
+  <ul class="voci">
+    <li><b>Cornetto al burro - €1,50</b><i>Sfoglia croccante e cuore morbido, ancora tiepido.</i></li>
+    <li><b>Muffin ai mirtilli - €2,50</b><i>Soffice, con mirtilli freschi in ogni morso.</i></li>
+    <li><b>Bombolone alla crema - €2</b><i>Fritto al momento, pieno di crema pasticcera.</i></li>
+    <li><b>Pain au chocolat - €2,20</b><i>Sfoglia leggera con due barrette di fondente.</i></li>
+  </ul>
+
+  <!-- disegni: tre schizzi a linea dei prodotti, due rosa e uno scuro -->
+  <div class="disegni">
+    <svg class="rosa" width="200" height="120" viewBox="0 0 200 120">
+      <path d="M10 92 C 4 70, 30 40, 62 30 C 90 20, 120 20, 146 30 C 178 42, 198 70, 190 94 C 180 100, 160 96, 150 92 C 120 104, 80 104, 50 92 C 40 98, 18 100, 10 92 Z"/>
+      <path d="M62 30 C 56 54, 54 76, 50 92"/><path d="M98 22 C 96 50, 96 76, 98 100"/><path d="M146 30 C 146 54, 148 76, 150 92"/>
+      <path d="M30 52 C 34 66, 36 80, 32 96"/><path d="M174 52 C 170 66, 170 80, 174 96"/>
+    </svg>
+    <svg class="scuro" width="160" height="130" viewBox="0 0 160 130">
+      <ellipse cx="80" cy="112" rx="72" ry="12"/>
+      <path d="M20 100 C 20 92, 140 92, 140 100 C 140 108, 20 108, 20 100 Z"/>
+      <path d="M24 84 C 24 76, 136 76, 136 84 C 136 94, 24 94, 24 84 Z"/>
+      <path d="M22 68 C 22 60, 138 60, 138 68 C 138 78, 22 78, 22 68 Z"/>
+      <path d="M26 52 C 26 42, 134 42, 134 52 C 134 62, 26 62, 26 52 Z"/>
+      <path d="M60 46 C 70 52, 96 52, 108 44"/><path d="M110 50 C 116 60, 114 70, 118 76"/>
+      <circle cx="72" cy="30" r="9"/><circle cx="90" cy="28" r="9"/><circle cx="81" cy="16" r="8"/><path d="M96 18 C 104 10, 112 14, 108 22"/>
+    </svg>
+    <svg class="rosa" width="190" height="120" viewBox="0 0 190 120">
+      <ellipse cx="96" cy="100" rx="86" ry="16"/>
+      <path d="M22 86 L 22 56 L 150 22 L 168 34 L 168 70 L 22 86 Z"/>
+      <path d="M22 56 L 168 40"/><path d="M22 66 L 168 50"/><path d="M168 34 L 22 56"/>
+      <circle cx="146" cy="16" r="7"/><circle cx="134" cy="20" r="6"/><circle cx="140" cy="8" r="6"/>
+    </svg>
+  </div>
+
+  <script>
+    // le onde della cornice: archi verso l'interno lungo i quattro lati
+    (function () {
+      const m = 34, w = 1080, h = 1350, r = 34;
+      let d = '';
+      const lato = (x0, y0, x1, y1) => {
+        const len = Math.hypot(x1 - x0, y1 - y0), n = Math.round(len / (r * 2.1));
+        const dx = (x1 - x0) / n, dy = (y1 - y0) / n;
+        d += `M${x0} ${y0}`;
+        for (let i = 0; i < n; i++) {
+          const ax = x0 + dx * (i + 1), ay = y0 + dy * (i + 1);
+          d += ` A ${r} ${r * 0.9} 0 0 1 ${ax.toFixed(1)} ${ay.toFixed(1)}`;
+        }
+      };
+      lato(m, m, w - m, m); lato(w - m, m, w - m, h - m); lato(w - m, h - m, m, h - m); lato(m, h - m, m, m);
+      document.getElementById('onde').setAttribute('d', d);
+    })();
+  </script>
+</body>
+</html>

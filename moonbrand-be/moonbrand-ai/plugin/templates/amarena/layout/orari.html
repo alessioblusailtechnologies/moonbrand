@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.95) min(c, 0.03) h); --tratto: color-mix(in oklch, var(--secondario) 70%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 60%; display: block; filter: brightness(1.08) saturate(0.85); }
+  .velo { position: absolute; inset: 0; background: color-mix(in oklch, var(--carta) 22%, transparent); }
+  .foglio { position: absolute; left: 187px; top: 330px; width: 706px; height: 740px; background: var(--carta); }
+  .nastro { position: absolute; left: 352px; top: 238px; width: 330px; height: 150px; transform: rotate(-4deg); background: color-mix(in oklch, white 42%, transparent); border-bottom: 1px solid color-mix(in oklch, white 60%, transparent); }
+  .icona { position: absolute; left: 38px; top: 26px; width: 92px; height: 82px; fill: none; stroke: var(--tratto); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .titolo { position: absolute; left: 0; top: 138px; width: 706px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 140px; line-height: 0.86; letter-spacing: -0.02em; color: var(--secondario); }
+  .colonne { position: absolute; left: 56px; top: 478px; width: 594px; display: flex; justify-content: space-between; font-size: 24px; line-height: 1.5; }
+  .colonne b { display: block; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; }
+  .colonne div + div { text-align: right; }
+</style>
+</head>
+<body>
+  <!-- foto: la vetrina piena, un po' sfocata e chiara -->
+  <img class="foto" src="../esempio/banco.jpg" alt="">
+  <div class="velo"></div>
+
+  <div class="foglio">
+    <svg class="icona" viewBox="0 0 92 82" aria-hidden="true">
+      <path d="M8,40 L22,74 L64,62 L50,30 Z"/>
+      <path d="M40,58 C34,50 44,42 50,48 C56,42 64,50 58,58"/>
+      <path d="M20,30 C16,22 24,18 20,8 M30,28 C26,20 34,16 30,6"/>
+      <path d="M58,62 C70,58 80,62 84,70 L66,76"/>
+    </svg>
+    <!-- titolo: 1-2 parole su due righe -->
+    <h1 class="titolo">Orari di<br>apertura</h1>
+    <!-- colonne: due fasce di giorni con l'orario -->
+    <div class="colonne">
+      <div><b>Lunedì - Venerdì</b>07:00 - 19:30</div>
+      <div><b>Sabato - Domenica</b>07:30 - 13:30</div>
+    </div>
+  </div>
+  <!-- nastro adesivo che tiene il foglio: un oggetto, resta bianco trasparente -->
+  <div class="nastro"></div>
+</body>
+</html>

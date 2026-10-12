@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Titolo in due parole: la prima dritta, la seconda in corsivo che la tocca. */
+  .titolo { position: absolute; left: 0; top: 52px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 132px; line-height: 0.78; }
+  .titolo em { display: block; font-style: italic; }
+
+  .voce { position: absolute; width: 1080px; height: 330px; }
+  .foto { position: absolute; top: 0; width: 360px; height: 330px; object-fit: cover; mix-blend-mode: multiply; }
+  .testo { position: absolute; top: 40px; width: 400px; }
+  .nome { font-family: var(--font-titoli); font-weight: 400; font-size: 58px; line-height: 1.1; }
+  .prezzo { font-family: var(--font-testo); font-weight: 700; font-size: 54px; line-height: 1.25; }
+  .descr { margin-top: 12px; font-family: var(--font-testo); font-weight: 400; font-size: 27px; line-height: 1.4; }
+  .freccia { position: absolute; width: 130px; height: 70px; }
+
+  .v1 { top: 330px; }  .v1 .foto { left: 90px; }  .v1 .testo { left: 590px; }  .v1 .freccia { left: 440px; top: 50px; }
+  .v2 { top: 660px; }  .v2 .foto { left: 620px; } .v2 .testo { left: 110px; }  .v2 .freccia { left: 500px; top: 40px; transform: scaleX(-1); }
+  .v3 { top: 990px; }  .v3 .foto { left: 90px; }  .v3 .testo { left: 590px; }  .v3 .freccia { left: 440px; top: 30px; }
+</style>
+</head>
+<body>
+  <!-- titolo: due parole, la seconda in corsivo -->
+  <h1 class="titolo">Il nostro<em>menù</em></h1>
+
+  <!-- voci: tre prodotti, foto scontornata su fondo bianco, nome 1-2 parole, prezzo, descrizione 6-10 parole; foto a sinistra e a destra alternate -->
+  <div class="voce v1">
+    <img class="foto" src="../esempio/biscotti-pila.jpg" alt="">
+    <svg class="freccia" viewBox="0 0 130 70"><path d="M4 52 C30 58 44 40 40 26 C36 12 18 22 28 36 C40 52 80 46 120 24 M104 18 L121 23 L114 40" fill="none" stroke="var(--principale)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="testo"><p class="nome">Biscotti</p><p class="prezzo">€ 12</p><p class="descr">Al burro e cioccolato, la scatola da mezzo chilo.</p></div>
+  </div>
+
+  <div class="voce v2">
+    <img class="foto" src="../esempio/brownie.jpg" alt="" style="object-position: 50% 30%;">
+    <svg class="freccia" viewBox="0 0 130 70"><path d="M4 52 C30 58 44 40 40 26 C36 12 18 22 28 36 C40 52 80 46 120 24 M104 18 L121 23 L114 40" fill="none" stroke="var(--principale)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="testo"><p class="nome">Brownie</p><p class="prezzo">€ 3,50</p><p class="descr">Fondente e umido dentro, con le noci tostate.</p></div>
+  </div>
+
+  <div class="voce v3">
+    <img class="foto" src="../esempio/cornetto.jpg" alt="">
+    <svg class="freccia" viewBox="0 0 130 70"><path d="M4 52 C30 58 44 40 40 26 C36 12 18 22 28 36 C40 52 80 46 120 24 M104 18 L121 23 L114 40" fill="none" stroke="var(--principale)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="testo"><p class="nome">Cornetto</p><p class="prezzo">€ 1,60</p><p class="descr">Sfoglia al burro, dorato e friabile.</p></div>
+  </div>
+</body>
+</html>

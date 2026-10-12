@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@800&family=Tinos&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Figtree', sans-serif; --font-testo: 'Tinos', serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 60px; top: 190px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-size: 128px; line-height: 1; letter-spacing: -0.04em; color: var(--chiaro); }
+  .telefono { position: absolute; left: 294px; top: 520px; width: 492px; height: 900px; border: 10px solid #2B2A29; border-radius: 64px; background: color-mix(in srgb, var(--sfondo) 62%, var(--principale)); }
+  .telefono::after { content: ""; position: absolute; left: 156px; top: -2px; width: 160px; height: 34px; border-radius: 0 0 18px 18px; background: #2B2A29; }
+  .scheda { position: absolute; left: 216px; top: 630px; width: 648px; padding: 30px 46px; background: #FFFFFF; border-radius: 22px; }
+  .scheda p { padding: 26px 0; text-align: center; font-size: 25px; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; border-bottom: 2px solid color-mix(in srgb, var(--principale) 70%, white); }
+  .scheda p:last-child { border-bottom: 0; }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 parole, una riga -->
+  <h1 class="titolo">Contattaci</h1>
+
+  <!-- telefono: il telefono disegnato che esce dal fondo, resta; lo schermo è un tortora chiaro -->
+  <div class="telefono"></div>
+
+  <!-- scheda: cinque righe separate da filetti, sito, email, indirizzo, telefono, profilo; ognuna al massimo 28 caratteri -->
+  <div class="scheda">
+    <p>ortensiaforno.it</p>
+    <p>ciao@ortensiaforno.it</p>
+    <p>Via dei Mille 14, Bologna</p>
+    <p>051 234 5678</p>
+    <p>@ortensia.forno</p>
+  </div>
+</body>
+</html>

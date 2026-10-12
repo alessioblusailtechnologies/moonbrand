@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  .titolo { position: absolute; left: 96px; top: 150px; width: 820px; font-size: 76px; }
+  .arco-linea { position: absolute; left: 100px; top: 418px; width: 430px; height: 720px; border: 2px solid color-mix(in oklab, var(--accento) 50%, transparent); border-radius: 215px 215px 0 0; }
+  .foto { position: absolute; left: 112px; top: 430px; width: 406px; height: 696px; border-radius: 203px 203px 0 0; object-position: 50% 60%; }
+  .voce { position: absolute; left: 584px; width: 400px; }
+  .voce h2 { font-family: var(--font-titoli); font-weight: 400; font-size: 31px; line-height: 1.25; }
+  .voce p { margin-top: 18px; font-size: 24px; line-height: 1.55; opacity: 0.8; }
+  .uno { top: 450px; }
+  .due { top: 760px; }
+  .riga { position: absolute; left: 584px; top: 712px; width: 400px; border-top: 1px solid color-mix(in oklab, var(--principale) 25%, transparent); }
+  .testo { position: absolute; left: 100px; top: 1166px; width: 700px; font-size: 24px; line-height: 1.55; opacity: 0.8; }
+</style>
+</head>
+<body>
+  <!-- etichetta: numero e rubrica, 2-4 parole -->
+  <p class="etichetta">04 / La prenotazione</p>
+
+  <!-- titolo: una domanda di 4-7 parole su due righe -->
+  <h1 class="titolo">Quando è fissata<br>la tua data?</h1>
+
+  <!-- foto: verticale, il prodotto su un'alzata, tagliata ad arco -->
+  <div class="arco-linea"></div>
+  <img class="foto" src="../esempio/torta-cioccolato.jpg" width="406" height="696" alt="">
+
+  <!-- voci: due titoletti di 1-3 parole con 15-25 parole ciascuno -->
+  <div class="voce uno">
+    <h2>Cosa serve</h2>
+    <p>Almeno dieci giorni di anticipo, il numero degli invitati e un acconto del 30% al momento dell'ordine.</p>
+  </div>
+  <div class="riga"></div>
+  <div class="voce due">
+    <h2>La conferma</h2>
+    <p>Ti scriviamo entro due giorni con gusto, misura e orario di ritiro. Da quel momento la data è tua.</p>
+  </div>
+
+  <!-- testo: 10-16 parole -->
+  <p class="testo">Tieni il messaggio di conferma a portata di mano fino al ritiro.</p>
+
+  <div class="piede">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pasticceria Olmo</span>
+    <!-- pagina: numero della slide nel carosello -->
+    <span>04 / 07</span>
+  </div>
+</body>
+</html>

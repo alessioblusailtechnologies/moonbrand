@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* testi chiari sulle foto: la tinta dello sfondo schiarita */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+  .logo { position: absolute; left: 50%; transform: translateX(-50%); font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; padding: 8px 56px; border: 2px solid currentColor; border-radius: 14px; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; filter: brightness(0.6) saturate(0.95); }
+  .logo { top: 250px; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 440px; text-align: center; }
+  .titolo .corsivo { display: block; font-size: 190px; line-height: 0.62; padding-top: 50px; transform: translateX(26px) rotate(-3deg); }
+  .titolo .dritto { display: block; margin-top: 0; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 210px; line-height: 0.8; letter-spacing: -0.03em; }
+  .testo { position: absolute; left: 220px; width: 640px; top: 940px; text-align: center; font-weight: 600; font-size: 26px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <!-- foto: prodotti appena sfornati in primo piano, calda e scura, verticale -->
+  <img class="foto" src="../esempio/sfornati.jpg" alt="">
+
+  <!-- logo: il nome del forno in un riquadro arrotondato -->
+  <div class="logo">Forno Rosmarì</div>
+
+  <!-- titolo: una parola in corsivo e una in serif, 2 parole in tutto -->
+  <h1 class="titolo"><span class="corsivo">Appena</span><span class="dritto">sfornato</span></h1>
+
+  <!-- testo: 20-30 parole, l'invito a passare -->
+  <p class="testo">Ogni mattina cornetti, pane e torte escono dal forno alle sei, con farine buone e burro vero. Passa a trovarci!</p>
+</body>
+</html>

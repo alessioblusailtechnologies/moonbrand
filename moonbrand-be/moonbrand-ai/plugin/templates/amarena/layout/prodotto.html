@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 62%; display: block; }
+  .titolo { position: absolute; left: 0; top: 160px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; color: var(--accento); line-height: 1; }
+  .titolo span { display: block; font-size: 58px; letter-spacing: -0.005em; }
+  .titolo b { display: block; margin-top: 4px; font-weight: 400; font-size: 90px; letter-spacing: -0.015em; }
+  .occhiello { position: absolute; left: 0; top: 1138px; width: 1080px; text-align: center; font-size: 23px; font-weight: 500; text-transform: uppercase; color: var(--secondario); }
+  .testo { position: absolute; left: 220px; top: 1196px; width: 640px; text-align: center; font-size: 23px; font-weight: 400; line-height: 1.5; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- foto: un solo dolce al centro, su un fondo pulito e chiaro, con spazio sopra e sotto -->
+  <img class="foto" src="../esempio/tartelletta.jpg" alt="">
+
+  <!-- titolo: il nome del dolce su due righe, 1 parola sopra e 2-3 sotto -->
+  <h1 class="titolo"><span>Tartelletta</span><b>Crema e Fragola</b></h1>
+  <!-- occhiello: quando c'è, 3-4 parole in maiuscolo -->
+  <p class="occhiello">Sfornata ogni mattina</p>
+  <!-- testo: gli ingredienti, 12-16 parole su due righe -->
+  <p class="testo">Frolla al burro, crema pasticcera alla vaniglia, panna montata e una fragola di stagione</p>
+</body>
+</html>

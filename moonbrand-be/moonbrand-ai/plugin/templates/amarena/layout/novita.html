@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --tratto: color-mix(in oklch, var(--secondario) 38%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .rametto { position: absolute; left: 780px; top: -40px; width: 420px; height: 420px; transform: rotate(-58deg); fill: none; stroke: var(--tratto); stroke-width: 2; stroke-linecap: round; }
+  /* il titolo grottesco in maiuscolo del modello: il font del testo, nero pieno */
+  .titolo { position: absolute; left: 0; top: 262px; width: 1080px; text-align: center; font-family: var(--font-testo); font-weight: 700; font-size: 60px; letter-spacing: -0.01em; line-height: 1; text-transform: uppercase; color: var(--accento); }
+  .testo { position: absolute; left: 240px; top: 364px; width: 600px; text-align: center; font-size: 23px; font-weight: 700; line-height: 1.5; color: var(--accento); }
+  .foto { position: absolute; left: 0; top: 678px; width: 1080px; height: 672px; object-fit: cover; object-position: 50% 62%; display: block; }
+  /* scritta a mano: un dettaglio decorativo, non titolo né testo */
+  .firma { position: absolute; left: 60px; top: 690px; font-family: 'Yellowtail', cursive; font-size: 178px; line-height: 1; letter-spacing: -0.01em; color: var(--chiaro); transform: rotate(-16deg); }
+</style>
+</head>
+<body>
+  <svg class="rametto" viewBox="0 0 200 640" aria-hidden="true">
+    <defs><path id="foglia" d="M0,0 C-26,-14 -54,-36 -70,-74 C-40,-60 -14,-36 0,0 Z"/></defs>
+    <line x1="100" y1="640" x2="100" y2="80"/>
+    <use href="#foglia" transform="translate(100,560)"/>
+    <use href="#foglia" transform="translate(100,500) scale(-1,1)"/>
+    <use href="#foglia" transform="translate(100,430)"/>
+    <use href="#foglia" transform="translate(100,370) scale(-1,1)"/>
+    <use href="#foglia" transform="translate(100,300)"/>
+    <use href="#foglia" transform="translate(100,240) scale(-1,1)"/>
+    <use href="#foglia" transform="translate(100,170)"/>
+  </svg>
+
+  <!-- titolo: il nome del dolce o della novità, 2-4 parole -->
+  <h1 class="titolo">Cornetto fragola e crema</h1>
+  <!-- testo: cos'è e quando c'è, 12-18 parole su due righe -->
+  <p class="testo">Sfoglia al burro, crema pasticcera e fragole fresche: lo trovate in vetrina ogni sabato.</p>
+
+  <!-- foto: il dolce da vicino, orizzontale, nella metà bassa -->
+  <img class="foto" src="../esempio/cornetti-crema.jpg" alt="">
+  <!-- firma: una parola scritta a mano, storta, a cavallo del bordo della foto -->
+  <p class="firma">Novità</p>
+</body>
+</html>

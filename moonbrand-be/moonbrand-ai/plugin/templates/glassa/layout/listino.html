@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --carta: oklch(from var(--sfondo) max(l, 0.94) min(c, 0.025) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  /* il foglio di carta: grana e due pieghe */
+  .carta { position: absolute; background: var(--carta); }
+  .carta::before { content: ''; position: absolute; inset: 0; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .3 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .carta::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(128deg, transparent 33.6%, rgb(0 0 0 / 0.07) 34%, rgb(255 255 255 / 0.5) 34.3%, transparent 35%),
+                linear-gradient(61deg, transparent 70.4%, rgb(0 0 0 / 0.05) 70.7%, rgb(255 255 255 / 0.4) 71%, transparent 71.6%); }
+  .nastro { position: absolute; background: color-mix(in oklch, var(--accento) 88%, transparent);
+    clip-path: polygon(0 8%, 6% 0, 12% 10%, 20% 2%, 100% 0, 97% 30%, 100% 55%, 96% 78%, 100% 100%, 0 100%, 3% 70%, 0 40%); }
+  .nastro::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.25) 45%, transparent 60%, rgb(0 0 0 / 0.06) 75%, transparent 85%); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+  .foglio { left: 184px; top: 182px; width: 712px; height: 1064px; padding: 0 64px 0 64px; }
+  .foglio > * { position: relative; }
+  .nastro.alto { left: 330px; top: 116px; width: 420px; height: 130px; transform: rotate(-2deg); }
+  .sopra { margin-top: 112px; text-align: center; font-size: 26px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; }
+  .titolo { margin-top: 2px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 124px; line-height: 1; text-transform: uppercase;  }
+  .voci { margin-top: 52px; list-style: none; }
+  .voci li { display: flex; justify-content: space-between; gap: 24px; font-size: 26px; line-height: 1; font-weight: 500; text-transform: uppercase; }
+  .voci li + li { margin-top: 32px; }
+  .voci li span:last-child { white-space: nowrap; }
+  .firma { position: absolute; left: 0; right: 0; bottom: 40px; text-align: center; font-size: 26px; }
+  .stella { color: var(--chiaro); width: 120px; height: 132px; }
+</style>
+</head>
+<body>
+  <!-- foto: il banco o la vetrina del forno, a tutto campo -->
+  <img class="foto" src="../esempio/banco.jpg" alt="">
+
+  <svg class="doodle stella" style="left: 70px; top: 90px; transform: rotate(-12deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+
+  <div class="carta foglio">
+    <!-- sopra: il nome del forno, in maiuscolo spaziato -->
+    <p class="sopra">Il Piccolo Forno</p>
+    <!-- titolo: 1-2 parole, grandi -->
+    <h1 class="titolo">Listino</h1>
+    <!-- voci: 8-11 prodotti col prezzo, nomi di 2-4 parole -->
+    <ul class="voci">
+      <li><span>Torta al cioccolato</span><span>€ 28</span></li>
+      <li><span>Torta della nonna</span><span>€ 24</span></li>
+      <li><span>Cheesecake ai frutti rossi</span><span>€ 26</span></li>
+      <li><span>Crostata di albicocche</span><span>€ 22</span></li>
+      <li><span>Cornetto alla crema</span><span>€ 1,50</span></li>
+      <li><span>Cornetto integrale al miele</span><span>€ 1,50</span></li>
+      <li><span>Maritozzo con la panna</span><span>€ 2,80</span></li>
+      <li><span>Bombolone alla crema</span><span>€ 1,80</span></li>
+      <li><span>Biscotti al burro, l'etto</span><span>€ 3</span></li>
+      <li><span>Cantucci alle mandorle, l'etto</span><span>€ 3,50</span></li>
+      <li><span>Sfogliatella riccia</span><span>€ 2</span></li>
+    </ul>
+    <!-- firma: il profilo social -->
+    <p class="firma">@ilpiccoloforno</p>
+  </div>
+  <div class="nastro alto"></div>
+
+  <svg class="doodle stella" style="left: 850px; top: 1150px; transform: rotate(14deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  /* testi e linee chiari sulle foto: la tinta dello sfondo, schiarita se il fondo del brand è scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  svg.linee { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+
+  /* la foto di fondo velata dell'accento, come il marrone del modello */
+  .velo { position: absolute; inset: 0; background: color-mix(in oklch, var(--accento) 62%, transparent); }
+  .pannello { position: absolute; left: 104px; top: 104px; width: 872px; height: 1138px; background: var(--sfondo); }
+  .pannello img { position: absolute; left: 47px; top: 47px; width: 778px; height: 724px; object-fit: cover; object-position: 50% 78%; display: block; }
+  .titolo { position: absolute; left: 0; width: 872px; top: 812px; text-align: center; font-family: var(--font-titoli); font-weight: 400;
+    font-size: 178px; line-height: 1.1; letter-spacing: -0.01em; color: var(--accento); }
+  .sotto { position: absolute; left: 0; width: 872px; top: 1018px; text-align: center; font-size: 25px; font-weight: 500;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- fondo: lo stesso prodotto in quantità (teglia, banco), si vede solo ai bordi -->
+  <img class="foto" src="../esempio/cornetti-teglia.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- le linee sottili oblique nei margini, come nel modello -->
+  <svg class="linee" viewBox="0 0 1080 1350" fill="none" stroke="var(--chiaro)" stroke-width="2.5" stroke-opacity="0.85">
+    <line x1="-40" y1="250" x2="240" y2="-30"/>
+    <line x1="-40" y1="140" x2="120" y2="-30"/>
+    <line x1="-40" y1="420" x2="60" y2="300"/>
+    <line x1="980" y1="-30" x2="1120" y2="260"/>
+    <line x1="1000" y1="430" x2="1120" y2="330"/>
+    <line x1="1000" y1="900" x2="1120" y2="700"/>
+    <line x1="30" y1="1380" x2="250" y2="1220"/>
+    <line x1="420" y1="1380" x2="600" y2="1220"/>
+    <line x1="700" y1="1240" x2="1120" y2="1380"/>
+    <line x1="900" y1="1380" x2="1120" y2="1180"/>
+  </svg>
+
+  <div class="pannello">
+    <!-- foto: un solo prodotto da vicino su fondo chiaro, orizzontale -->
+    <img src="../esempio/cornetto-zucchero.jpg" alt="">
+    <!-- titolo: il prodotto, una parola -->
+    <h1 class="titolo">Cornetti</h1>
+    <!-- sottotitolo: 4-7 parole, maiuscolo spaziato -->
+    <p class="sotto">Sfornati ogni mattina alle sei</p>
+  </div>
+</body>
+</html>

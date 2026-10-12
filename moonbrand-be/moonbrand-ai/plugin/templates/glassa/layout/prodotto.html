@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .corsivo { font-family: 'Great Vibes', cursive; font-weight: 400; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  body { background: var(--chiaro); }
+  /* la foto su fondo liscio si fonde col fondo: bordi sfumati e moltiplica */
+  .foto { position: absolute; left: -240px; top: 330px; width: 1560px; height: 1040px; object-fit: cover; display: block; mix-blend-mode: multiply;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%); }
+  .sito { position: absolute; right: 96px; top: 118px; font-size: 24px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.01em; }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 196px; text-align: center; font-size: 76px; line-height: 1; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 262px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 250px; line-height: 1;  text-transform: uppercase; letter-spacing: 0.01em; }
+  .nome { position: absolute; left: 80px; bottom: 96px; font-size: 36px; line-height: 1.15; font-weight: 500; text-transform: uppercase; }
+  .nota { position: absolute; right: 96px; bottom: 100px; width: 330px; text-align: right; font-size: 24px; line-height: 1.25; font-weight: 500; text-transform: uppercase; }
+  .freccia { color: var(--secondario); width: 140px; height: 120px; left: 800px; top: 610px; }
+  .stella { color: var(--secondario); width: 104px; height: 114px; left: 84px; top: 1000px; transform: rotate(-6deg); }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto solo, di lato, su un fondo liscio bianco o chiaro (si fonde col fondo della slide) -->
+  <img class="foto" src="../esempio/pane.jpg" alt="">
+
+  <!-- sito: l'indirizzo del sito -->
+  <p class="sito">ilpiccoloforno.it</p>
+  <!-- sopra: 3-4 parole in corsivo che portano al titolo -->
+  <p class="sopra corsivo">Oggi ci vuole il</p>
+  <!-- titolo: una parola sola, il prodotto -->
+  <h1 class="titolo">Pane</h1>
+
+  <svg class="doodle freccia" viewBox="0 0 140 120"><path d="M130 14 C104 4 86 24 100 40 C114 54 132 30 110 22 C82 12 54 54 20 84 M22 62 L18 86 L42 90"/></svg>
+  <svg class="doodle stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+
+  <!-- nome: il nome del dolce, 2-3 parole su due righe -->
+  <p class="nome">Pan bauletto<br>al latte</p>
+  <!-- nota: un invito di 6-10 parole -->
+  <p class="nota">Sfornato ogni mattina, già tagliato a fette</p>
+</body>
+</html>

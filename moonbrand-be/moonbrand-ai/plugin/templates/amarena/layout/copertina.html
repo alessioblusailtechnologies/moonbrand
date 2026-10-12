@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  /* testi chiari sulle foto e sui fondi scuri: la tinta dello sfondo, schiarita */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 55%; display: block; filter: brightness(0.82); }
+  .blocco { position: absolute; left: 0; top: 478px; width: 1080px; text-align: center; color: var(--chiaro); }
+  .anno { font-size: 27px; font-weight: 400; letter-spacing: 0.01em; }
+  .marchio { margin-top: 14px; line-height: 1; }
+  .marchio b { display: block; font-family: var(--font-testo); font-weight: 700; font-size: 124px; letter-spacing: -0.015em; line-height: 0.92; text-transform: uppercase; }
+  .marchio span { display: block; margin-top: -2px; font-family: var(--font-titoli); font-size: 88px; letter-spacing: -0.01em; line-height: 0.95; }
+  .frase { margin: 36px auto 0; width: 300px; font-size: 18px; font-weight: 500; line-height: 1.55; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: un primo piano a tutto campo del prodotto più riconoscibile, caldo e ravvicinato -->
+  <img class="foto" src="../esempio/cornetti.jpg" alt="">
+
+  <div class="blocco">
+    <!-- anno: l'anno di apertura, 2 parole -->
+    <p class="anno">DAL 1987</p>
+    <!-- logo: il nome del brand, la prima parola grande in maiuscolo, la seconda in serif -->
+    <h1 class="marchio logo"><b>Rosina</b><span>Pasticceria</span></h1>
+    <!-- frase: chi siamo, 8-12 parole in maiuscolo su tre righe -->
+    <p class="frase">Pasticceria di quartiere dove il burro fa ancora la differenza</p>
+  </div>
+</body>
+</html>

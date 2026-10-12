@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@400&family=Ms+Madi&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* Le scritte stanno sulla foto: la tinta dello sfondo schiarita, leggibile anche con un brand dal fondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; }
+
+  .sopra { position: absolute; left: 0; top: 150px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 600; font-size: 62px; letter-spacing: 0.16em; line-height: 1; }
+  .corsivo { position: absolute; left: 60px; top: 190px; width: 960px; text-align: center; font-family: 'Ms Madi', cursive; font-weight: 400; font-size: 290px; line-height: 1; letter-spacing: 0.01em; }
+  .sotto { position: absolute; left: 0; top: 1130px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 600; font-size: 66px; letter-spacing: 0.16em; line-height: 1; }
+  .filetto { position: absolute; left: 70px; top: 1240px; width: 940px; height: 2px; background: var(--chiaro); opacity: 0.85; }
+  .sito { position: absolute; left: 0; top: 1262px; width: 1080px; text-align: center; font-size: 24px; letter-spacing: 0.12em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: colazione da vicino (cornetto, tazza), parte alta tranquilla e scura per le scritte -->
+  <img class="foto" src="../esempio/colazione.jpg" width="1080" height="1350" alt="">
+
+  <!-- sopra: una parola in maiuscolo spaziato, al massimo 8 lettere -->
+  <p class="sopra">DOLCE</p>
+
+  <!-- corsivo: la parola che comanda, una sola, scritta a mano (al massimo 10 lettere) -->
+  <h1 class="corsivo">Colazione</h1>
+
+  <!-- sotto: una parola in maiuscolo spaziato sopra il filetto, al massimo 9 lettere -->
+  <p class="sotto">CORNETTI</p>
+  <div class="filetto"></div>
+
+  <!-- sito: l'indirizzo del sito o il profilo -->
+  <p class="sito">fornomerlo.it</p>
+</body>
+</html>

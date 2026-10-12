@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E2E1F; --secondario: #9B7C5F; --accento: #C2A586; --sfondo: #F5F0EA; }
+  :root { --font-titoli: 'Kaushan Script', cursive; --font-testo: 'Courier Prime', monospace; }
+  /* Sul fondo chiaro del modello la carta è quasi bianca; il testo sulla fascia diventa chiaro o scuro da solo. */
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.04) h); --su-fascia: oklch(from var(--secondario) calc(clamp(0, (0.66 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+  .etichetta { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .anelli { color: var(--accento); stroke-width: 7; }
+  .tratto { color: var(--principale); stroke-width: 3; }
+
+  /* il dolce su fondo liscio si fonde con la carta */
+  .foto { position: absolute; left: -20px; top: -140px; width: 1150px; height: 1725px; object-fit: cover; display: block; mix-blend-mode: multiply; filter: brightness(1.08) saturate(1.05);
+    -webkit-mask-image: radial-gradient(ellipse 32% 20% at 50% 53%, #000 66%, transparent 100%); mask-image: radial-gradient(ellipse 32% 20% at 50% 53%, #000 66%, transparent 100%); }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 130px; text-align: center; font-size: 78px; letter-spacing: 0.07em; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 196px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 300px; line-height: 1; letter-spacing: -0.01em; }
+  .nome { position: absolute; left: 136px; top: 1080px; font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; }
+
+  .fascia { position: absolute; left: 0; top: 1200px; width: 1080px; height: 150px; background: var(--secondario); color: var(--su-fascia); }
+  .fascia .logo { position: absolute; left: 118px; top: 54px; font-size: 44px; font-weight: 500; letter-spacing: 0.03em; }
+  .fascia .sito { position: absolute; left: 580px; top: 50px; display: flex; align-items: center; gap: 22px; font-size: 34px; text-decoration: underline; text-underline-offset: 6px; }
+  .fascia .sito svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+
+  .cuore { width: 120px; height: 130px; left: 836px; top: 104px; transform: rotate(12deg); }
+  .stella { width: 100px; height: 112px; left: 196px; top: 600px; transform: rotate(-8deg); }
+  .freccia { width: 100px; height: 150px; left: 140px; top: 846px; }
+  .anelli-giu { width: 380px; height: 440px; left: 730px; top: 800px; }
+</style>
+</head>
+<body>
+  <!-- foto: un dolce intero o una fetta, su un fondo liscio chiaro (si fonde con la carta), al centro sotto il titolo -->
+  <img class="foto" src="../esempio/torta-fragole.jpg" alt="">
+
+  <!-- sopra: 2-4 parole in maiuscolo che portano al titolo -->
+  <p class="sopra etichetta">È l'ora della</p>
+  <!-- titolo: una parola sola, in maiuscolo, al massimo 5 lettere -->
+  <h1 class="titolo">TORTA</h1>
+
+  <svg class="doodle tratto cuore" viewBox="0 0 100 110"><path d="M50 98 C30 76 6 58 8 34 C10 14 34 8 47 30 C54 10 82 4 90 26 C98 52 72 76 50 98 C44 80 42 62 34 50"/></svg>
+  <svg class="doodle tratto stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle tratto freccia" viewBox="0 0 100 150"><path d="M70 6 C40 14 30 44 52 54 C74 64 80 36 58 34 C30 32 18 80 34 140 M18 120 L34 142 L52 122"/></svg>
+  <svg class="doodle anelli anelli-giu" viewBox="0 0 380 440"><path d="M30 20 C110 120 200 260 260 400 C270 430 240 440 228 410 C170 290 110 170 60 70 C46 40 70 30 92 60 C170 170 260 300 330 420 C344 444 318 452 300 420 C240 320 170 220 120 150"/></svg>
+
+  <!-- nome: il nome del dolce, 2-4 parole -->
+  <p class="nome">Torta meringata alle fragole</p>
+
+  <div class="fascia">
+    <!-- logo: il nome del forno -->
+    <p class="logo etichetta">Forno Bellavista</p>
+    <!-- sito: l'indirizzo del sito -->
+    <p class="sito"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><ellipse cx="20" cy="20" rx="7" ry="16"/><path d="M4 20 H36"/></svg>fornobellavista.it</p>
+  </div>
+</body>
+</html>

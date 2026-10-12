@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testo sull'accento: una sua versione scura se l'accento è chiaro, quasi bianca se è scuro */
+  :root { --su-accento: oklch(from var(--accento) calc(0.3 + clamp(0, (0.62 - l) * 1000, 1) * 0.66) min(c * 0.6, 0.06) h);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  /* carta stropicciata sul fondo pieno */
+  .carta { position: absolute; left: 0; top: 0; width: 720px; height: 1350px; mix-blend-mode: soft-light; opacity: 1; }
+
+  .foto { position: absolute; left: 720px; top: 0; width: 360px; height: 1350px; object-fit: cover; object-position: 38% 50%; display: block; }
+
+  .etichetta { position: absolute; left: 107px; top: 158px; font-size: 25px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 104px; top: 236px; width: 600px; font-family: var(--font-titoli); font-weight: 400; font-size: 112px; line-height: 124px; }
+
+  .domande { position: absolute; left: 107px; top: 541px; width: 488px; list-style: none; }
+  .domande li { display: flex; align-items: center; justify-content: flex-end; gap: 26px; height: 194px; margin-bottom: 37px; padding: 0 30px 0 40px; background: var(--accento); color: var(--su-accento); }
+  .domande span { text-align: right; font-size: 25px; line-height: 38px; letter-spacing: 0.18em; text-transform: uppercase; }
+  .domande b { flex: none; font-family: var(--font-titoli); font-weight: 400; font-size: 120px; line-height: 1; }
+</style>
+</head>
+<body>
+  <svg class="carta" width="720" height="1350"><filter id="carta" x="0" y="0" width="100%" height="100%"><feTurbulence type="turbulence" baseFrequency="0.004 0.006" numOctaves="6" seed="5"/><feDiffuseLighting lighting-color="#9B9B9B" surfaceScale="10"><feDistantLight azimuth="235" elevation="55"/></feDiffuseLighting></filter><rect width="720" height="1350" filter="url(#carta)"/></svg>
+
+  <!-- foto: striscia verticale a destra, mani al lavoro o un dettaglio del laboratorio -->
+  <img class="foto" src="../esempio/impasto.jpg" alt="">
+
+  <!-- etichetta: 2-4 parole in maiuscolo che introducono il titolo -->
+  <p class="etichetta">3 domande da fare</p>
+
+  <!-- titolo: 2 righe di 1-2 parole -->
+  <h1 class="titolo">Al vostro<br>fornaio</h1>
+
+  <!-- domande: 3 domande brevi in maiuscolo, 3-6 parole su 2-3 righe, con il punto di domanda grande a destra -->
+  <ul class="domande">
+    <li><span>Usate farine<br>del<br>territorio</span><b>?</b></li>
+    <li><span>Avete dolci<br>senza<br>glutine</span><b>?</b></li>
+    <li><span>Fate torte<br>su<br>ordinazione</span><b>?</b></li>
+  </ul>
+</body>
+</html>

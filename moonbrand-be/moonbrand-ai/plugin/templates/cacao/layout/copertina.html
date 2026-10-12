@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Alegreya:ital,wght@1,400&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'League Spartan', sans-serif; --font-testo: 'Alegreya', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .mano { font-family: 'Nothing You Could Do', cursive; }
+
+  .foto { position: absolute; left: -340px; top: -300px; width: 1560px; height: 2080px; object-fit: cover; transform-origin: 790px 820px; transform: rotate(-36deg) scale(1.2); display: block; }
+  .profilo { position: absolute; left: 0; top: 74px; width: 1080px; text-align: center; font-style: italic; font-size: 27px; }
+  .titolo { position: absolute; left: 58px; top: 150px; font-family: var(--font-titoli); font-weight: 700; font-size: 156px; line-height: 0.84; letter-spacing: -0.065em; }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .nota { position: absolute; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--principale); }
+  .nota svg { position: absolute; inset: 0; overflow: visible; }
+  .nota p { position: relative; font-size: 30px; line-height: 1.12; }
+  .nota.negozi { left: 790px; top: 405px; width: 260px; height: 200px; transform: rotate(-9deg); }
+  .nota.prezzo { left: 64px; top: 870px; width: 270px; height: 120px; transform: rotate(-8deg); }
+  .freccia { position: absolute; overflow: visible; }
+
+  .testo { position: absolute; left: 70px; bottom: 90px; width: 620px; font-style: italic; font-size: 35px; line-height: 1.32; }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto tenuto in mano su fondo chiaro e pulito, ruotata perché la mano entri dal basso a destra; il prodotto sta sotto la fine della terza riga del titolo -->
+  <img class="foto" src="../esempio/macaron.jpg" alt="">
+
+  <!-- profilo: il nome del profilo social -->
+  <p class="profilo">@pasticceriabruna</p>
+
+  <!-- titolo: minuscolo, 3 righe di 7-12 caratteri -->
+  <h1 class="titolo"><span>eccolo,</span><span>il tuo nuovo</span><span>preferito</span></h1>
+
+  <!-- nota: scritta a mano dentro un ovale, 3-5 parole su tre righe -->
+  <div class="nota negozi">
+    <svg viewBox="0 0 260 200" preserveAspectRatio="none"><path d="M40 40 C 90 -6, 230 4, 252 82 C 270 150, 190 198, 110 190 C 30 182, -6 130, 12 80 C 24 50, 60 26, 120 20" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round"/></svg>
+    <p class="mano">in tutti<br>i nostri<br>negozi!</p>
+  </div>
+  <svg class="freccia" style="left:660px; top:575px;" width="150" height="70" viewBox="0 0 150 70"><path d="M146 6 C 120 20, 112 50, 92 40 C 72 30, 84 12, 64 22 C 46 31, 40 52, 12 58 M12 58 L 30 44 M12 58 L 32 66" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+  <!-- prezzo: scritto a mano dentro un ovale, «a soli» e il prezzo -->
+  <svg class="freccia" style="left:190px; top:745px;" width="110" height="120" viewBox="0 0 110 120"><path d="M8 114 C 20 88, 50 96, 54 72 C 58 52, 34 56, 48 38 C 60 22, 80 22, 100 6 M100 6 L 80 8 M100 6 L 96 26" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="nota prezzo">
+    <svg viewBox="0 0 270 120" preserveAspectRatio="none"><path d="M60 14 C 140 -4, 262 12, 266 58 C 270 104, 150 122, 76 112 C 10 104, -4 70, 14 44 C 30 22, 90 6, 170 10" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round"/></svg>
+    <p class="mano">a soli<br>2,50 €</p>
+  </div>
+
+  <!-- testo: due frasi sul prodotto, 25-35 parole -->
+  <p class="testo">Il nuovo macaron al caffè e nocciola: guscio croccante, cuore morbido. Piccolo, ma è il momento più dolce della tua giornata.</p>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Josefin+Sans:wght@400;600&family=Ephesis&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3E2116; --secondario: #7B4325; --accento: #A8673E; --sfondo: #F6ECE3; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Josefin Sans', sans-serif; }
+  /* Corsivo a pennello: dettaglio fisso del template, la seconda parola del titolo. */
+  :root { --corsivo: 'Ephesis', cursive; --fascia-chiara: color-mix(in oklab, var(--secondario) 7%, color-mix(in srgb, var(--sfondo) 40%, white)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 118px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 112px; line-height: 1; letter-spacing: 0.04em; text-transform: uppercase; }
+  .corsivo { position: absolute; left: 0; top: 196px; width: 1080px; text-align: center; font-family: var(--corsivo); font-size: 250px; line-height: 1; color: var(--accento); }
+
+  .foto { position: absolute; left: 60px; top: 440px; width: 960px; height: 690px; object-fit: cover; object-position: 50% 52%;
+    -webkit-mask-image: radial-gradient(ellipse 45% 42% at 50% 58%, #000 70%, transparent 100%); mask-image: radial-gradient(ellipse 45% 42% at 50% 58%, #000 70%, transparent 100%); }
+
+  .fascia { position: absolute; left: 44px; top: 1130px; width: 992px; height: 170px; background: var(--fascia-chiara); border-radius: 6px 60px 60px 6px / 6px 30px 30px 6px; }
+  .puntini { position: absolute; left: 76px; top: 1205px; display: flex; gap: 10px; }
+  .puntini i { display: block; width: 9px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--principale) 45%, transparent); }
+  .puntini i:first-child, .puntini i:last-child { width: 18px; height: 3px; margin-top: 3px; border-radius: 2px; }
+  .riga { position: absolute; left: 0; width: 1080px; text-align: center; font-size: 37px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .riga.prima { top: 1160px; font-weight: 600; }
+  .riga.seconda { top: 1222px; font-weight: 400; color: color-mix(in srgb, var(--principale) 80%, transparent); }
+  .cuore { display: inline-block; width: 30px; height: 27px; margin-left: 10px; vertical-align: -1px; }
+  .cuore path { fill: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- titolo: una parola in maiuscolo, 5-8 lettere -->
+  <h1 class="titolo">Appena</h1>
+  <!-- corsivo: la seconda parola del titolo, a mano, 6-9 lettere -->
+  <p class="corsivo">Sfornato</p>
+
+  <!-- foto: il prodotto scontornato o su fondo chiaro, al centro, che sfuma nel fondo -->
+  <img class="foto" src="../esempio/cestino.jpg" alt="">
+
+  <div class="fascia"></div>
+  <div class="puntini"><i></i><i></i><i></i></div>
+  <!-- riga: tre prodotti separati da pallini, 3-4 parole in tutto -->
+  <p class="riga prima">Pane &bull; cornetti &bull; torte</p>
+  <!-- riga: una frase breve, 3-4 parole, con il cuore -->
+  <p class="riga seconda">Impastati a mano<svg class="cuore" viewBox="0 0 24 22"><path d="M12 21.3 10.3 19.8C4.2 14.3 0 10.6 0 6.1 0 2.6 2.7 0 6.2 0c2 0 3.9.9 5.8 3 1.9-2.1 3.8-3 5.8-3C21.3 0 24 2.6 24 6.1c0 4.5-4.2 8.2-10.3 13.7z"/></svg></p>
+</body>
+</html>

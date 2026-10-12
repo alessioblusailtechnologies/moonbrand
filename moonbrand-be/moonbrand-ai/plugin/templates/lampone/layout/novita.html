@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wdth,wght@62.5..100,100..900&family=Archivo:wdth,wght@62..125,100..900&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #820A0B; --secondario: #E3E2DD; --accento: #F8E8D0; --sfondo: #F5F4F0; }
+  :root { --font-titoli: 'Noto Serif', serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --mano: oklch(from var(--accento) max(l, 0.88) c h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #5A3520; color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; filter: sepia(0.25) saturate(0.85); }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, #2B160A 34%, transparent); }
+
+  .angolo { position: absolute; font-family: var(--font-testo); font-size: 19px; font-weight: 400; font-stretch: 80%; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
+  .su { top: 114px; } .giu { top: 1218px; }
+  .sx { left: 112px; } .dx { right: 112px; }
+
+  .mano { position: absolute; left: 0; top: 400px; width: 1080px; text-align: center; font-family: 'Pinyon Script', cursive; font-size: 172px; line-height: 1; color: var(--mano); white-space: nowrap; }
+  .titolo { position: absolute; left: 0; top: 590px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-stretch: 87.5%; font-size: 150px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap; }
+  .testo { position: absolute; left: 340px; top: 778px; width: 400px; text-align: center; font-family: var(--font-testo); font-weight: 600; font-size: 21px; line-height: 1.25; }
+</style>
+</head>
+<body>
+  <!-- foto: una foto vera del prodotto nuovo, da vicino e a tutto campo, toni caldi -->
+  <img class="foto" src="../esempio/ciambelle.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- angoli: in alto il profilo e la data, in basso due etichette brevi (1-2 parole) -->
+  <p class="angolo su sx">@fornogelsomino</p>
+  <p class="angolo su dx">12 ottobre</p>
+
+  <!-- scritta a mano: 1-2 parole, 6-10 caratteri -->
+  <p class="mano">Novità</p>
+  <!-- titolo: 1-2 parole in maiuscolo, 8-11 caratteri, una riga -->
+  <h1 class="titolo" data-max="960">In vetrina</h1>
+  <!-- testo: cosa è e quando arriva, 40-55 parole -->
+  <p class="testo">Impasto soffice, una glassa leggera al limone e la scorza grattugiata al momento. Le nostre ciambelle nuove escono dal forno ogni mattina alle sette e finiscono presto. Le prime le trovate da sabato, le altre si prenotano al banco o con un messaggio.</p>
+
+  <p class="angolo giu sx">Novità</p>
+  <p class="angolo giu dx">Dal forno</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        const max = Number(el.dataset.max);
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return Math.max(0, ...[...r.getClientRects()].map((q) => q.width)); };
+        while (larghezza() > max && size > 24) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License / Unsplash License).
+Le foto «ritagliate» hanno il fondo portato a bianco, così il filtro «scontorna» dei layout le rende trasparenti attorno al prodotto.
+
+cesto.jpg            https://www.pexels.com/photo/2932677/   (pane in un cestino intrecciato su fondo bianco, ritagliata)
+cornetto.jpg         Unsplash, foto VzUE5RtCuBA (cornetto su fondo bianco)
+girelle-piatto.jpg   https://www.pexels.com/photo/4047193/   (girelle su un piatto bianco, dall'alto)
+biscotti.jpg         https://www.pexels.com/photo/19837526/  (pila di biscotti al cioccolato su fondo bianco, ritagliata)
+brownie.jpg          https://www.pexels.com/photo/7157867/   (brownie su un piatto bianco, ritagliata)
+girelle.jpg          https://www.pexels.com/photo/9727087/   (girelle alla cannella su fondo bianco, ritagliata)
+filone.jpg           https://www.pexels.com/photo/1756061/   (filone ai semi a fette su fondo bianco, ritagliata)
+cornetti-teglia.jpg  https://www.pexels.com/photo/38594753/  (cornetti dorati su una teglia)
+girelle-teglia.jpg   https://www.pexels.com/photo/36897955/  (girelle alla cannella da vicino)
+carta.jpg            Unsplash, foto 7jOTppsu8HI («A sheet of white paper with multiple creases and folds»)

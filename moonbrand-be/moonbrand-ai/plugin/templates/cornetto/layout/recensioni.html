@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* testi chiari sulle foto: la tinta dello sfondo schiarita */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+
+  .foto { position: absolute; left: -40px; top: -40px; width: 1160px; height: 1430px; object-fit: cover; filter: blur(9px) brightness(0.8); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 200px; text-align: center; color: var(--chiaro); font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 112px; line-height: 0.92; letter-spacing: -0.03em; }
+  .titolo .corsivo { font-size: 150px; letter-spacing: 0; margin-left: 10px; }
+  .fumetto { position: absolute; height: 200px; display: flex; align-items: center; gap: 30px; padding: 0 70px 0 40px; background: color-mix(in oklch, var(--chiaro) 92%, transparent); border-radius: 30px; }
+  .fumetto img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: none; align-self: flex-start; margin-top: 40px; }
+  .fumetto p { font-size: 28px; line-height: 1.35; }
+  .fumetto svg { position: absolute; right: 26px; top: 28px; width: 28px; height: 28px; fill: color-mix(in oklch, var(--secondario) 70%, transparent); }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto da vicino, resa sfocata come fondo -->
+  <img class="foto" src="../esempio/biscotti-tavolo.jpg" alt="">
+
+  <!-- titolo: 5-6 parole su due righe, l'ultima parola in corsivo -->
+  <h1 class="titolo">le vostre parole,<br>il nostro <span class="corsivo">Lievito</span></h1>
+
+  <!-- fumetti: 3 recensioni vere di 12-20 parole, con la foto di chi scrive -->
+  <div class="fumetto" style="left: 108px; top: 540px; width: 712px;">
+    <img src="../esempio/cliente-1.jpg" alt="">
+    <p>Il forno migliore del quartiere. I cornetti sono incredibili: burrosi, friabili, perfetti.</p>
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 5 6.4 5c2 0 3.6 1.1 4.6 2.6C12 6.1 13.6 5 15.6 5 19 5 21.1 8.5 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>
+  </div>
+  <div class="fumetto" style="left: 380px; top: 780px; width: 690px;">
+    <img src="../esempio/cliente-2.jpg" alt="">
+    <p>Ho ordinato a domicilio e le paste sono arrivate ancora tiepide e buonissime.</p>
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 5 6.4 5c2 0 3.6 1.1 4.6 2.6C12 6.1 13.6 5 15.6 5 19 5 21.1 8.5 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>
+  </div>
+  <div class="fumetto" style="left: 108px; top: 1020px; width: 712px;">
+    <img src="../esempio/cliente-3.jpg" alt="">
+    <p>Si sente la cura in ogni morso. Ormai non posso fare a meno delle loro girelle.</p>
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 5 6.4 5c2 0 3.6 1.1 4.6 2.6C12 6.1 13.6 5 15.6 5 19 5 21.1 8.5 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>
+  </div>
+</body>
+</html>

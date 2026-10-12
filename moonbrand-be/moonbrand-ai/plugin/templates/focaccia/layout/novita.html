@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E2E1F; --secondario: #9B7C5F; --accento: #C2A586; --sfondo: #F5F0EA; }
+  :root { --font-titoli: 'Kaushan Script', cursive; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.04) h); --su-fascia: oklch(from var(--secondario) calc(clamp(0, (0.66 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+  .etichetta { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .tratto { color: var(--principale); stroke-width: 3; }
+
+  /* due righe in corsivo con in mezzo due parole piccole a scaletta */
+  .script { position: absolute; font-family: var(--font-titoli); font-weight: 400; font-size: 196px; line-height: 1; white-space: nowrap; }
+  .uno { left: 0; width: 1080px; text-align: center; top: 96px; }
+  .due { left: 0; width: 1080px; text-align: center; top: 400px; }
+  .piccolo { position: absolute; font-size: 44px; }
+  .p1 { left: 420px; top: 300px; }
+  .p2 { left: 510px; top: 350px; }
+
+  /* la foto riempie la metà bassa e sfuma verso la carta in alto */
+  .foto { position: absolute; left: 0; top: 520px; width: 1080px; height: 690px; object-fit: cover; object-position: 50% 60%; display: block;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 26%); mask-image: linear-gradient(to bottom, transparent 0, #000 26%); }
+  .anelli-foto { color: var(--principale); stroke-width: 7; width: 360px; height: 380px; left: 730px; top: 830px; }
+
+  .fascia { position: absolute; left: 0; top: 1206px; width: 1080px; height: 144px; background: var(--secondario); color: var(--su-fascia); }
+  .fascia .logo { position: absolute; left: 117px; top: 50px; font-size: 44px; font-weight: 500; letter-spacing: 0.03em; }
+  .fascia .sito { position: absolute; left: 585px; top: 46px; display: flex; align-items: center; gap: 22px; font-size: 34px; text-decoration: underline; text-underline-offset: 6px; }
+  .fascia .sito svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+
+  .freccia { width: 120px; height: 260px; left: 190px; top: 330px; }
+  .cuore { width: 80px; height: 130px; left: 4px; top: 530px; transform: rotate(-16deg); }
+  .stella { width: 70px; height: 150px; left: 1024px; top: 70px; }
+</style>
+</head>
+<body>
+  <!-- foto: tanti prodotti da vicino, che riempiono la metà bassa -->
+  <img class="foto" src="../esempio/pani.jpg" alt="">
+  <svg class="doodle anelli-foto" viewBox="0 0 360 380"><path d="M20 20 C100 110 180 220 250 350 C264 376 240 388 226 362 C170 260 110 170 40 90 C22 70 42 54 62 76 C140 160 220 260 300 370 M150 40 C220 120 280 200 340 300"/></svg>
+
+  <!-- uno: una parola in corsivo, al massimo 7 lettere -->
+  <p class="script uno">Novità</p>
+  <!-- p1, p2: due parole piccole in maiuscolo, a scaletta tra le due righe -->
+  <p class="piccolo etichetta p1">Restate</p>
+  <p class="piccolo etichetta p2">con noi</p>
+  <!-- due: 1-2 parole in corsivo, al massimo 9 lettere -->
+  <p class="script due">in arrivo</p>
+
+  <svg class="doodle tratto freccia" viewBox="0 0 120 260"><path d="M60 8 C20 30 20 80 60 100 C100 120 108 76 78 74 C40 72 30 150 56 248 M34 226 L56 250 L82 230"/></svg>
+  <svg class="doodle tratto cuore" viewBox="0 0 100 110"><path d="M50 98 C30 76 6 58 8 34 C10 14 34 8 47 30 C54 10 82 4 90 26 C98 52 72 76 50 98 C44 80 42 62 34 50"/></svg>
+  <svg class="doodle tratto stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+
+  <div class="fascia">
+    <!-- logo: il nome del forno -->
+    <p class="logo etichetta">Forno Bellavista</p>
+    <!-- sito: l'indirizzo del sito -->
+    <p class="sito"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><ellipse cx="20" cy="20" rx="7" ry="16"/><path d="M4 20 H36"/></svg>fornobellavista.it</p>
+  </div>
+</body>
+</html>

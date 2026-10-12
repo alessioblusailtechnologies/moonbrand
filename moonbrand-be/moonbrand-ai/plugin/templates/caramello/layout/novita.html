@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 30%; display: block; }
+  /* l'arco chiaro in basso con il filo in accento */
+  svg.arco { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .titolo { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; color: var(--accento); }
+  .su { top: 952px; font-size: 128px; line-height: 1.1; display: flex; align-items: center; gap: 40px; padding: 0 32px; }
+  /* filetti ai lati della prima parola, lunghi quanto resta */
+  .su::before, .su::after { content: ''; flex: 1; height: 3px; background: var(--accento); margin-top: 12px; }
+  .giu { top: 1092px; font-size: 172px; line-height: 1.1; letter-spacing: 0.16em; text-transform: uppercase; padding-left: 0.16em; }
+</style>
+</head>
+<body>
+  <!-- foto: la novità da vicino, riempie la slide; il soggetto nella parte alta -->
+  <img class="foto" src="../esempio/grata.jpg" alt="">
+
+  <svg class="arco" viewBox="0 0 1080 1350">
+    <path d="M-40 1090 Q 540 700 1120 1090 L 1120 1400 L -40 1400 Z" fill="var(--sfondo)" fill-opacity="0.9" stroke="var(--accento)" stroke-width="3"/>
+  </svg>
+
+  <!-- titolo: una parola breve tra due filetti, poi una parola maiuscola spaziata di 5-6 lettere -->
+  <h1 class="titolo su">Nuovo</h1>
+  <h2 class="titolo giu">Gusto</h2>
+</body>
+</html>

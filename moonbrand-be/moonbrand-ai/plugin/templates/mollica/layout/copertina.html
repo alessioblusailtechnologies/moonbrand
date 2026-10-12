@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Le forme piene in una tinta chiara del secondario: ci stanno sopra testi scuri e foto fuse col multiply. */
+  :root { --tinta: oklch(from var(--secondario) max(l, 0.85) min(c, 0.07) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Il cerchio pieno che esce dall'angolo in alto a destra, dietro la foto. */
+  .cerchio { position: absolute; left: 470px; top: -150px; width: 700px; height: 700px; border-radius: 50%; background: var(--tinta); }
+
+  /* La foto scontornata: fondo bianco fuso con lo sfondo, il pane in diagonale sopra il cerchio. */
+  .foto { position: absolute; left: 250px; top: 0px; width: 660px; height: 660px; object-fit: cover; mix-blend-mode: multiply; transform: rotate(-58deg); }
+
+  .titolo { position: absolute; left: 60px; top: 700px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 700;
+    font-size: 134px; line-height: 0.88; letter-spacing: -0.01em; text-transform: uppercase; }
+  .frase { position: absolute; left: 60px; top: 1132px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 36px; }
+  .bottone { position: absolute; left: 415px; top: 1210px; width: 250px; height: 66px; border: 3px solid var(--principale); border-radius: 33px;
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-weight: 500; font-size: 30px; }
+</style>
+</head>
+<body>
+  <div class="cerchio"></div>
+
+  <!-- foto: un prodotto da forno scontornato su fondo bianco (pane a fette, filone), in diagonale -->
+  <img class="foto" src="../esempio/pane-fette.jpg" alt="">
+
+  <!-- titolo: 3 righe di 6-10 caratteri, maiuscolo -->
+  <h1 class="titolo">Una fetta<br>di bontà<br>ti aspetta</h1>
+
+  <!-- frase: 6-10 parole -->
+  <p class="frase">Il pane di ogni giorno, come lo faceva la nonna.</p>
+
+  <!-- bottone: l'invito, 1-2 parole -->
+  <p class="bottone">Ordina ora</p>
+</body>
+</html>

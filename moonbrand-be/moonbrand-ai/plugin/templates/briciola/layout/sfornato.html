@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,800;7..72,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161311; --secondario: #D3B48E; --accento: #C2864E; --sfondo: #EEEDEA; }
+  :root { --font-titoli: 'Literata', serif; --font-testo: 'Newsreader', serif; }
+  /* il testo sui riquadri colorati: nero se il colore è chiaro, bianco se è scuro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.62 - l) * 1000, 1) 0 0); --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  /* lo sfondo anche su html, così il body ha un fondo suo e i ritagli si fondono */
+  html { background: var(--sfondo); }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-variation-settings: 'opsz' 12; line-height: 0.88; letter-spacing: -0.02em; }
+  /* le foto ritagliate su fondo bianco: il filtro «scontorna» rende trasparente il bianco, così stanno su ogni colore */
+  .ritaglio { position: absolute; display: block; object-fit: cover; filter: url(#scontorna); }
+  /* carta stropicciata sopra lo sfondo */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: grayscale(1) contrast(1.2); mix-blend-mode: multiply; opacity: 0.6; }
+  body { background: var(--principale); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; filter: brightness(0.45) saturate(0.85); }
+  .nome { position: absolute; left: 0; width: 1080px; top: 150px; text-align: center; font-size: 58px; line-height: 0.9; color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  .parentesi { position: absolute; top: 140px; width: 34px; height: 130px; border: 5px solid var(--accento); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 440px; text-align: center; font-size: 132px; line-height: 0.86; color: var(--accento); }
+  .profilo { position: absolute; left: 0; width: 1080px; top: 1240px; text-align: center; font-size: 26px; color: var(--accento); opacity: 0.85; }
+</style>
+</head>
+<body>
+  <!-- foto: i prodotti appena sfornati a tutto campo, scurita -->
+  <img class="foto" src="../esempio/cornetti-teglia.jpg" alt="">
+
+  <!-- nome: il nome del brand su due righe, tra parentesi quadre -->
+  <div class="parentesi" style="left: 300px; border-right: 0;"></div>
+  <p class="nome logo">Forno<br>Ardito</p>
+  <div class="parentesi" style="right: 300px; border-left: 0;"></div>
+
+  <!-- titolo: 5-8 parole su quattro o cinque righe corte -->
+  <h1 class="titolo">Appena usciti<br>dal forno,<br>dritti<br>al cuore</h1>
+
+  <!-- profilo del brand -->
+  <p class="profilo">@fornoardito</p>
+</body>
+</html>

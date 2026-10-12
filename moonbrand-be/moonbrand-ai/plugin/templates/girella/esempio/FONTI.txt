@@ -1,0 +1,19 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License / Unsplash License).
+
+croissant-marmo.jpg    https://www.pexels.com/photo/6150710/ (ritagliata)
+croissant-griglia.jpg  https://www.pexels.com/photo/6605310/ (ritagliata)
+girelle.jpg            https://www.pexels.com/photo/3434526/ (ritagliata)
+biscotti.jpg           https://unsplash.com/photos/Imwgit84NGo
+vetrina-paste.jpg      https://www.pexels.com/photo/31101247/
+schiuma.jpg            https://www.pexels.com/photo/10026601/
+latte-freddo.jpg       https://www.pexels.com/photo/10738363/
+matcha.jpg             https://www.pexels.com/photo/32972501/
+frappe.jpg             https://www.pexels.com/photo/4790062/
+cappuccino.jpg         https://www.pexels.com/photo/302900/
+caffe-ghiaccio.jpg     https://www.pexels.com/photo/8605859/
+matcha-tavolo.jpg      https://www.pexels.com/photo/29156485/
+bigne.jpg              https://www.pexels.com/photo/15803796/
+espresso.jpg           https://www.pexels.com/photo/8429813/
+bomboloni.jpg          https://www.pexels.com/photo/205961/
+impasto.jpg            https://www.pexels.com/photo/302544/
+fornaia.jpg            https://www.pexels.com/photo/8349713/

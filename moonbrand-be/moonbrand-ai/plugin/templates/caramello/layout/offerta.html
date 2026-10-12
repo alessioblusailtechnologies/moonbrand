@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  /* la foto quasi coperta dallo sfondo: resta la trama della mollica */
+  .velo { position: absolute; inset: 0; background: color-mix(in oklch, var(--sfondo) 52%, transparent); }
+  .fascia { position: absolute; left: 0; top: 199px; width: 1080px; height: 946px; background: color-mix(in oklch, var(--sfondo) 28%, transparent);
+    border-top: 3px solid var(--principale); border-bottom: 3px solid var(--principale); }
+  svg.linee { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .testo { position: absolute; left: 0; width: 1080px; text-align: center; }
+  .sopra { top: 328px; font-size: 40px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .titolo { top: 448px; font-family: var(--font-titoli); line-height: 1.02; }
+  .titolo .a { display: block; font-weight: 700; font-size: 160px; color: var(--accento); letter-spacing: -0.01em; }
+  .titolo .b { display: block; font-weight: 700; font-style: italic; font-size: 160px; color: var(--principale); }
+  .sotto { top: 960px; font-size: 40px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: una trama del prodotto molto da vicino (mollica, sfoglia), velata dallo sfondo -->
+  <img class="foto" src="../esempio/mollica.jpg" alt="">
+  <div class="velo"></div>
+  <div class="fascia"></div>
+
+  <!-- le curve sottili che entrano dagli angoli, in accento e in principale -->
+  <svg class="linee" viewBox="0 0 1080 1350" fill="none" stroke-width="2.5">
+    <path d="M60 -20 C 120 160, 330 220, 560 140 S 840 0, 940 -20" stroke="var(--principale)"/>
+    <path d="M200 -20 C 260 120, 420 180, 600 120" stroke="var(--accento)"/>
+    <path d="M1100 1000 C 900 940, 700 1100, 650 1370" stroke="var(--principale)"/>
+    <path d="M1100 1080 C 960 1060, 840 1180, 820 1370" stroke="var(--accento)"/>
+  </svg>
+
+  <!-- sopra: 2 parole, maiuscolo -->
+  <p class="testo sopra">Offerta speciale</p>
+  <!-- titolo: due parole, la prima in accento, la seconda in corsivo -->
+  <h1 class="testo titolo"><span class="a">Pane</span><span class="b">a metà</span></h1>
+  <!-- sotto: lo sconto o la condizione, 3-6 parole -->
+  <p class="testo sotto">Dalle 18 fino al 50%</p>
+</body>
+</html>

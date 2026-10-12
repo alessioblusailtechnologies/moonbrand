@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bellefair&family=Montserrat:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Bellefair', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .tondo { position: absolute; left: 150px; top: 220px; width: 790px; height: 790px; border-radius: 50%; object-fit: cover; object-position: 55% 60%; }
+  .anello { position: absolute; left: 700px; top: 160px; width: 300px; height: 300px; }
+  .anello text { font-family: var(--font-titoli); font-size: 39px; letter-spacing: 0.04em; fill: var(--principale); text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; top: 945px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 160px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
+  .filetto { position: absolute; left: 112px; top: 1110px; width: 856px; height: 3px; background: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- foto: il premio, ritagliato nel tondo (cornetti, colazione, una torta) -->
+  <img class="tondo" src="../esempio/cornetti.jpg" width="790" height="790" alt="">
+
+  <!-- anello: frase che gira attorno a un cerchio vuoto in alto a destra, 4-6 parole -->
+  <svg class="anello" viewBox="0 0 300 300" aria-hidden="true">
+    <defs><path id="giro" d="M150,150 m-108,0 a108,108 0 1,1 216,0 a108,108 0 1,1 -216,0"/></defs>
+    <text><textPath href="#giro" startOffset="0">Vinci la colazione per due</textPath></text>
+  </svg>
+
+  <!-- titolo: una parola sola in maiuscolo che scavalca il bordo del tondo, al massimo 8 lettere -->
+  <h1 class="titolo">Concorso</h1>
+  <div class="filetto"></div>
+</body>
+</html>

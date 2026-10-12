@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  /* grana di carta sul fondo */
+  body::before { content: ''; position: absolute; inset: 0; opacity: 0.3; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .3 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .corsivo { font-family: 'Great Vibes', cursive; font-weight: 400; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .riga { position: absolute; left: 100px; right: 72px; top: 132px; display: flex; justify-content: space-between; font-size: 24px; }
+  .logo { position: absolute; left: 100px; top: 268px; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 44px; line-height: 1; text-transform: uppercase; }
+  .titolo { position: absolute; left: 96px; top: 340px; width: 520px; font-size: 128px; line-height: 1.04; font-weight: 400; }
+  .quando { position: absolute; left: 100px; top: 700px; font-size: 31px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .cornice { position: absolute; border: 9px solid var(--secondario); overflow: hidden; }
+  .cornice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .uno { left: 664px; top: 252px; width: 440px; height: 476px; }
+  .due { left: 96px; top: 792px; width: 490px; height: 472px; }
+  .tre { left: 664px; top: 792px; width: 440px; height: 472px; }
+  .stella { color: var(--chiaro); width: 104px; height: 114px; }
+  .freccia { color: var(--chiaro); width: 110px; height: 160px; left: 480px; top: 420px; }
+</style>
+</head>
+<body>
+  <!-- riga in alto: profilo social, indirizzo, sito -->
+  <div class="riga"><span>@ilpiccoloforno</span><span>Via Garibaldi 12, Bologna</span><span>ilpiccoloforno.it</span></div>
+
+  <!-- logo: il nome del forno -->
+  <p class="logo">Il Piccolo Forno</p>
+  <!-- titolo: l'offerta in corsivo, 3-5 parole su due righe -->
+  <h1 class="titolo corsivo">Prendi 2<br>paghi 1</h1>
+  <svg class="doodle freccia" viewBox="0 0 110 160"><path d="M40 8 C80 6 96 40 74 58 C56 72 30 60 40 44 C54 24 92 58 80 100 C74 118 68 130 62 146 M48 132 L62 148 L76 132"/></svg>
+  <!-- quando: il giorno dell'offerta, 3-5 parole -->
+  <p class="quando">Solo domenica 20 ottobre</p>
+
+  <!-- foto: tre foto di prodotti nelle cornici, la prima e l'ultima escono dal bordo destro -->
+  <div class="cornice uno"><img src="../esempio/pane-spighe.jpg" alt="" style="object-position: 78% 50%;"></div>
+  <div class="cornice due"><img src="../esempio/pagnotte.jpg" alt="" style="object-position: 50% 78%;"></div>
+  <div class="cornice tre"><img src="../esempio/teglia-cornetti.jpg" alt="" style="object-position: 40% 50%;"></div>
+
+  <svg class="doodle stella" style="left: 610px; top: 196px; transform: rotate(-8deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle stella" style="left: 46px; top: 1196px; transform: rotate(10deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+</body>
+</html>

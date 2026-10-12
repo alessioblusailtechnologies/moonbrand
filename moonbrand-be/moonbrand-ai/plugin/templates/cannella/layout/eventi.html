@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #BE1B2C; --secondario: #F2EEE2; --accento: #CA1B2C; --sfondo: #F2D6D2; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --su-accento: oklch(from var(--accento) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .logo { position: absolute; left: 50%; top: 112px; transform: translateX(-50%); padding: 12px 30px; border-radius: 12px; background: var(--accento); color: var(--su-accento); font-size: 24px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+  /* il titolo in verticale, due righe che si leggono dal basso */
+  .titolo { position: absolute; left: 44px; top: 1240px; width: 830px; transform: rotate(-90deg); transform-origin: left top; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 172px; line-height: 0.76em; letter-spacing: -0.02em; text-transform: uppercase; padding-top: 6px; }
+  .titolo { white-space: nowrap; }
+  .evento { position: absolute; left: 318px; width: 740px; height: 197px; }
+  .data { position: absolute; left: 0; top: 0; width: 201px; height: 197px; background: color-mix(in srgb, var(--accento) 58%, var(--sfondo)); color: var(--principale); text-align: center; }
+  .mese { display: block; margin-top: 34px; font-size: 24px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .giorno { display: block; font-size: 84px; font-weight: 700; line-height: 1.1; }
+  .cosa { position: absolute; left: 241px; top: 34px; width: 270px; font-size: 24px; font-weight: 500; line-height: 1.12; }
+  .ora { position: absolute; left: 236px; top: 118px; padding: 8px 18px; border: 1.5px solid var(--principale); border-radius: 26px; font-size: 24px; font-weight: 400; }
+  .tondo { position: absolute; left: 526px; top: 0; width: 196px; height: 196px; border-radius: 50%; object-fit: cover; display: block; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand nell'etichetta in alto -->
+  <div class="logo">Forno Rosa</div>
+
+  <!-- titolo: 2 parole in verticale, 6-9 lettere l'una -->
+  <h1 class="titolo" data-max="830" data-verticale>Prossimi<br>eventi</h1>
+
+  <!-- eventi: tre, con mese e giorno nel riquadro, nome in 2 righe di 3-5 parole, orario, una foto tonda -->
+  <div class="evento" style="top: 456px;">
+    <div class="data"><span class="mese">Ottobre</span><span class="giorno">18</span></div>
+    <p class="cosa">Corso di sfoglia per principianti</p>
+    <span class="ora">16:00 - 18:00</span>
+    <img class="tondo" src="../esempio/baguette.jpg" alt="">
+  </div>
+  <div class="evento" style="top: 725px;">
+    <div class="data"><span class="mese">Ottobre</span><span class="giorno">25</span></div>
+    <p class="cosa">Merenda con le tortine d'autunno</p>
+    <span class="ora">16:00 - 18:00</span>
+    <img class="tondo" src="../esempio/cupcake-fragola.jpg" alt="">
+  </div>
+  <div class="evento" style="top: 993px;">
+    <div class="data"><span class="mese">Novembre</span><span class="giorno">8</span></div>
+    <p class="cosa">Degustazione di caffè e biscotti</p>
+    <span class="ora">10:00 - 12:00</span>
+    <img class="tondo" src="../esempio/caffe-latte.jpg" alt="">
+  </div>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px
+    // lungo la riga; data-verticale per il titolo ruotato). Interlinea in em, così le righe restano vicine.
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => {
+          const righe = [];
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const r of range.getClientRects()) righe.push(el.dataset.verticale !== undefined ? r.height : r.width);
+          }
+          return Math.max(0, ...righe);
+        };
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

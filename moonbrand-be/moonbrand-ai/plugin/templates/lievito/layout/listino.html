@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E3F31; --secondario: #A8957E; --accento: #C4532F; --sfondo: #E8E1D7; }
+  :root { --font-titoli: 'Gelasio', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 45%, white); --kraft: color-mix(in srgb, var(--secondario) 42%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+
+  .griglia { position: absolute; left: 14px; top: 14px; width: 1052px; height: 1322px; display: grid; gap: 12px;
+    grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .cella { position: relative; background: var(--kraft); display: flex; flex-direction: column; align-items: center; padding: 70px 36px 0; text-align: center; }
+  .cella img { width: 226px; height: 226px; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 14px color-mix(in srgb, var(--principale) 30%, transparent); }
+  .nome { margin-top: 44px; font-family: var(--font-titoli); font-size: 31px; line-height: 34px; text-transform: uppercase; letter-spacing: .03em; }
+  .prezzo { margin-top: 8px; font-size: 26px; font-weight: 700; letter-spacing: .04em; }
+
+  .titolo { grid-column: 2 / 4; position: relative; background: var(--kraft); padding: 108px 60px 0 52px; }
+  .titolo h1 { font-family: var(--font-titoli); font-weight: 400; font-size: 78px; line-height: 80px; text-transform: uppercase; letter-spacing: -.005em; }
+  .titolo h1 em { display: block; font-style: italic; }
+  .titolo p { position: absolute; left: 52px; right: 48px; top: 300px; font-size: 24px; line-height: 30px; text-transform: uppercase; text-align: justify; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+  <div class="griglia">
+    <!-- prodotti: 7 caselle, foto dall'alto ritagliata tonda, nome 1-3 parole, prezzo -->
+    <div class="cella"><img src="../esempio/crostata-meringa.jpg" alt=""><p class="nome">Meringa e limone</p><p class="prezzo">€ 3,50</p></div>
+    <div class="cella"><img src="../esempio/crostata-griglia.jpg" alt=""><p class="nome">Frolla ai mirtilli</p><p class="prezzo">€ 3,50</p></div>
+    <div class="cella"><img src="../esempio/crostata-intreccio.jpg" alt=""><p class="nome">Mele e cannella</p><p class="prezzo">€ 3,80</p></div>
+
+    <div class="cella"><img src="../esempio/crostata-lamponi.jpg" alt=""><p class="nome">Lamponi</p><p class="prezzo">€ 4,00</p></div>
+    <!-- titolo: due righe, la prima in corsivo (una parola), la seconda 1-2 parole; testo 14-20 parole -->
+    <div class="titolo">
+      <h1><em>Crostatine</em>di stagione</h1>
+      <p>Tornano solo per qualche settimana. Prenotale entro giovedì, trovi tutti i dettagli nella didascalia.</p>
+    </div>
+
+    <div class="cella"><img src="../esempio/crostata-cioccolato.jpg" alt=""><p class="nome">Cioccolato e mirtilli</p><p class="prezzo">€ 4,00</p></div>
+    <div class="cella"><img src="../esempio/crostata-mandorle.jpg" alt=""><p class="nome">Amarene e mandorle</p><p class="prezzo">€ 3,80</p></div>
+    <div class="cella"><img src="../esempio/crostata-crema.jpg" alt=""><p class="nome">Crema e albicocca</p><p class="prezzo">€ 3,50</p></div>
+  </div>
+</body>
+</html>

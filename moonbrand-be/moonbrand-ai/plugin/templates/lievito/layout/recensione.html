@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E3F31; --secondario: #A8957E; --accento: #C4532F; --sfondo: #E8E1D7; }
+  :root { --font-titoli: 'Gelasio', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 45%, white); --kraft: color-mix(in srgb, var(--secondario) 30%, var(--sfondo)); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --corsivo: 'Sacramento', cursive; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #1E1A17; color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; }
+  .etichetta { position: absolute; left: 0; top: 58px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--chiaro); }
+  .etichetta::after { content: ""; display: block; width: 10px; height: 2px; margin: 8px auto 0; background: currentColor; }
+
+  .busta { position: absolute; left: 150px; top: 430px; width: 740px; height: 500px; background: color-mix(in srgb, var(--carta) 88%, #8A8A8A); transform: rotate(9deg); box-shadow: 0 14px 30px rgba(0,0,0,.45); }
+  .busta::after { content: ""; position: absolute; left: 0; top: 0; width: 740px; height: 500px; background: linear-gradient(33deg, transparent 49.6%, rgba(0,0,0,.12) 50%, transparent 50.6%), linear-gradient(-33deg, transparent 49.6%, rgba(0,0,0,.12) 50%, transparent 50.6%); background-size: 50% 100%; background-repeat: no-repeat; background-position: 0 0, 100% 0; }
+
+  .cartolina { position: absolute; left: 125px; top: 520px; width: 880px; height: 560px; background: var(--kraft); transform: rotate(-7deg); box-shadow: 0 16px 34px rgba(0,0,0,.5); }
+  .intestazione { position: absolute; left: 0; top: 44px; width: 880px; text-align: center; font-size: 18px; letter-spacing: .24em; text-transform: uppercase; }
+  .bordo { position: absolute; left: 44px; top: 280px; width: 520px; transform: translate(-50%, -50%) rotate(-90deg); font-size: 15px; line-height: 19px; color: var(--accento); text-align: center; }
+  .timbro { position: absolute; left: 600px; top: 40px; width: 240px; height: 160px; color: var(--accento); }
+  .linea { position: absolute; left: 120px; width: 690px; border-top: 2px solid color-mix(in srgb, var(--chiaro) 75%, transparent); }
+  .citazione { position: absolute; left: 130px; top: 228px; width: 680px; text-align: center; font-family: var(--corsivo); font-size: 54px; line-height: 64px; color: var(--accento); -webkit-text-stroke: .8px var(--accento); transform: rotate(-4deg); }
+  .nome { position: absolute; left: 0; top: 452px; width: 880px; text-align: center; font-family: var(--font-titoli); font-size: 27px; }
+
+  .firma { position: absolute; left: 0; top: 1262px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--chiaro); }
+  .firma::before { content: ""; display: block; width: 10px; height: 2px; margin: 0 auto 8px; background: currentColor; }
+</style>
+</head>
+<body>
+  <!-- foto: una foto scura e calda (tavola, colazione, tessuto), la cartolina ci sta sopra -->
+  <img class="foto" src="../esempio/colazione.jpg" alt="">
+  <!-- etichetta: 1-3 parole -->
+  <p class="etichetta">Dicono di noi</p>
+
+  <div class="busta"></div>
+  <div class="cartolina">
+    <!-- intestazione: 1 parola -->
+    <p class="intestazione">Recensioni</p>
+    <!-- bordo: una frase del brand di 10-16 parole, in verticale sul lato -->
+    <p class="bordo">Il pane fatto bene è una delle poche cose semplici che cambiano la giornata.</p>
+    <!-- timbro: il nome del brand in un timbro tondo con le righe dell'annullo -->
+    <svg class="timbro" viewBox="0 0 240 160" aria-hidden="true">
+      <defs><path id="giro" d="M162 80 m-56 0 a56 56 0 1 1 112 0 a56 56 0 1 1 -112 0"/></defs>
+      <g fill="none" stroke="currentColor" stroke-width="2.4">
+        <circle cx="162" cy="80" r="72"/>
+        <circle cx="162" cy="80" r="40"/>
+        <path d="M4 50 q12 -9 24 0 t24 0 t24 0 t24 0"/>
+        <path d="M4 68 q12 -9 24 0 t24 0 t24 0 t24 0"/>
+        <path d="M4 86 q12 -9 24 0 t24 0 t24 0 t24 0"/>
+        <path d="M4 104 q12 -9 24 0 t24 0 t24 0 t24 0"/>
+      </g>
+      <text fill="currentColor" font-family="Courier Prime, monospace" font-size="17" font-weight="700" letter-spacing="2.2"><textPath href="#giro">FORNO MERIGHI  PANE E DOLCI  </textPath></text>
+      
+    </svg>
+    <div class="linea" style="top: 266px"></div>
+    <div class="linea" style="top: 332px"></div>
+    <div class="linea" style="top: 398px"></div>
+    <!-- citazione: la recensione, 14-22 parole -->
+    <p class="citazione">Ormai è la mia colazione fissa. Tostato è perfetto e sta bene con tutto.</p>
+    <!-- nome: chi l'ha scritta -->
+    <p class="nome">Giulia</p>
+  </div>
+
+  <!-- firma: il profilo del brand -->
+  <p class="firma">@forno.merighi</p>
+</body>
+</html>

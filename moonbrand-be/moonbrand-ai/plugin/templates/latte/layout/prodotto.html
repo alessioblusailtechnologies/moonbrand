@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'Gilda Display', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--accento); font-family: var(--font-testo); }
+
+  .parola { position: absolute; font-family: var(--font-titoli); font-weight: 400; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; color: var(--accento); }
+  .p1 { left: 255px; top: 90px; font-size: 120px; }
+  .p2 { left: 560px; top: 195px; font-size: 170px; }
+  .p3 { left: 10px; top: 285px; font-size: 185px; }
+  .p4 { left: 570px; top: 455px; font-size: 170px; }
+  .p5 { left: 10px; top: 925px; font-size: 185px; }
+  .p6 { left: 130px; top: 1175px; font-size: 185px; }
+
+  .forno { position: absolute; left: 58px; top: 108px; font-size: 30px; line-height: 1.08; text-transform: uppercase; color: var(--principale); }
+
+  .tondo { position: absolute; left: 240px; top: 410px; width: 590px; height: 590px; border-radius: 50%; overflow: hidden; box-shadow: 28px 34px 40px color-mix(in srgb, var(--principale) 35%, transparent); }
+  .tondo img { position: absolute; left: -380px; top: -725px; width: 1305px; height: 1957px; object-fit: cover; }
+
+  .raggi { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .raggi line { stroke: var(--secondario); stroke-width: 11; stroke-linecap: round; }
+
+  .nome { position: absolute; right: 74px; top: 1070px; width: 360px; text-align: right; font-size: 44px; line-height: 1.12; text-transform: uppercase; color: var(--accento); }
+  .prezzo { position: absolute; left: 650px; top: 1190px; font-family: var(--font-titoli); font-size: 82px; line-height: 1; color: var(--secondario); }
+</style>
+</head>
+<body>
+  <!-- parola: un aggettivo del prodotto ripetuto sei volte, misure diverse, alcune tagliate dal bordo (al massimo 5 lettere) -->
+  <p class="parola p1">Burro</p>
+  <p class="parola p2">Burro</p>
+  <p class="parola p3">Burro</p>
+  <p class="parola p4">Burro</p>
+  <p class="parola p5">Burro</p>
+  <p class="parola p6">Burro</p>
+
+  <!-- forno: tre parole in maiuscolo, una per riga, in alto a sinistra -->
+  <p class="forno">Appena<br>uscite<br>dal forno</p>
+
+  <!-- foto: un solo dolce visto dall'alto, ritagliato nel tondo con l'ombra, sopra le parole -->
+  <div class="tondo"><img src="../esempio/girella.jpg" width="1305" height="1957" alt=""></div>
+
+  <!-- raggi: tre tratti per lato, restano -->
+  <svg class="raggi" viewBox="0 0 1080 1350" aria-hidden="true">
+    <line x1="125" y1="580" x2="205" y2="625"/>
+    <line x1="95" y1="680" x2="205" y2="685"/>
+    <line x1="100" y1="790" x2="205" y2="740"/>
+    <line x1="875" y1="760" x2="1015" y2="735"/>
+    <line x1="870" y1="830" x2="1015" y2="845"/>
+    <line x1="865" y1="895" x2="975" y2="990"/>
+  </svg>
+
+  <!-- nome: il prodotto in due righe, maiuscolo -->
+  <p class="nome">Girella alla<br>cannella</p>
+
+  <!-- prezzo: in euro -->
+  <p class="prezzo">€ 2,50</p>
+</body>
+</html>

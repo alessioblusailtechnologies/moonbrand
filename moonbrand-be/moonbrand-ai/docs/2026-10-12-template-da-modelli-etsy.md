@@ -30,6 +30,8 @@ il template.
    Nessuno scartato: anche i set fatti di mockup avevano almeno una griglia di slide piatte leggibili. Ogni agente ha
    scelto il nome e creato la cartella da solo (`mkdir` senza `-p`, così due agenti non prendono lo stesso nome);
    catalogo, descrizioni e doc li ha scritti chi li ha lanciati, dagli esiti. I set di parrucchieri restano da fare.
+5. **12/10, ristorazione.** I 30 set di bakery scaricati da Etsy, un agente per set con un brief comune, fino a 16
+   alla volta. Nessuno scartato; dove due set venivano dallo stesso negozio il secondo agente ha evitato i segni del primo.
 
 ## Il procedimento
 
@@ -1317,6 +1319,1092 @@ Molte richiedono oggetti scontornati.
 - con un brand dai colori accesi l'annuncio diventa una pagina tutta nell'accento;
 - il titolo in accento sulla foto della copertina può avere poco contrasto;
 - in «servizio» il secondario non compare.
+
+### Ristorazione
+
+I 30 set di `moonbrand-examples/bakery/` (Etsy, scaricati il 12/10), uno per template: panetterie, pasticcerie,
+bar-pasticceria. Nessuno scartato, nemmeno quelli con 4 o 5 immagini. Alcuni vengono dallo stesso negozio Etsy: cannella,
+sfogliatina e maritozzo; glassa e focaccia; cornetto, girella, lampone e frusta; nocciola e ciambella. Per sfogliatina,
+maritozzo e focaccia l'agente ha scelto slide e segni diversi dal template già fatto; gli altri si somigliano poco.
+
+Comune a tutti:
+- **Prodotti scontornati.** I modelli di bakery sono pieni di dolci ritagliati che passano davanti ai titoli; le foto
+  d'esempio sono JPEG. Le soluzioni usate, tutte scritte nel TEMPLATE.md di chi le usa:
+  - foto su fondo bianco in `mix-blend-mode: multiply` (cacao, fragola, mollica, lampone, albicocca, focaccia, frolla):
+    regge solo con uno `--sfondo` chiaro;
+  - filtro SVG che rende trasparente il bianco o il nero (ganache, briciola): regge su ogni fondo ma solo con foto su
+    fondo uniforme;
+  - maschera in un `<mask>` SVG con un file `<nome>-maschera.jpg` accanto alla foto (crosta, sfogliatina, tostato,
+    pagnotta): pulita, ma con una foto nuova serve una maschera nuova. `mask-image` del CSS con `file://` non si carica;
+  - foto rettangolari o tagliate a cerchio, ovale, arco (tutti gli altri).
+
+  Con le foto vere del brand l'agente toglie l'effetto e mette il prodotto in un riquadro.
+- **Titoli che si adattano.** Molti layout (cannella, moka, cacao, fragola, ciambella, ganache, crosta, lampone,
+  maritozzo, sfogliatina) hanno un piccolo script `data-max` o `data-adatta` che rimpicciolisce il titolo quando il
+  font del brand è più largo: senza, con Sora i titoli uscivano dal bordo.
+- **Font fissi.** Il corsivo calligrafico o a mano (Pinyon Script, Great Vibes, Allison, Sacramento...) resta quello del
+  modello anche con un brand: è il segno del template.
+- **Testo sui pieni.** Dove il fondo è un colore del brand, il testo sopra diventa chiaro o scuro da solo
+  (`--su-accento`, `--su-secondario`) secondo la luminosità.
+- **Foto:** Pexels quasi sempre. Gli id si trovano leggendo le pagine di ricerca con WebFetch; curl prende 403 sulle
+  pagine, `images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg` invece scarica.
+
+#### Cannella
+
+- **Modello:** `bakery/01`, «Bakery/Café Instagram templates» (76 post), https://www.etsy.com/listing/4373919454. Rosa cipria e rosso con il crema delle righe; serif classico grande spesso maiuscolo e grottesco geometrico; foto di dolci da vicino in arco, tondo o a strisce; carta vera (manifesto stropicciato, sacchetto).
+- **Font:** Cormorant Garamond (titoli; 700 per «Our New»), Montserrat (testi, sembra lo stesso), Allison (scritte a mano della novità).
+- **Palette demo:** principale `#BE1B2C`, secondario `#F2EEE2`, accento `#CA1B2C`, sfondo `#F2D6D2`.
+- **Foto:** 11 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Borcelle Cafe / You're Invited / BRUNCH & LUNCH» |
+| aperti | «OPEN EVERYDAY / WE ARE OPEN» (manifesto sulle girelle) |
+| preferito | «Staff Fave of the Month» |
+| eventi | «UPCOMING EVENTS» |
+| novita | «Our New DESSERT MENU» |
+| ingrediente | «Ingredient Spotlight» |
+| mattina | «MORNING MOOD» |
+
+**Diverso dal modello:**
+- aperti, eventi, novita, mattina erano storie 9:16 portate a 4:5;
+- cornetto scontornato della copertina = foto rettangolare al centro;
+- titolo verticale di eventi senza ombra, un solo blocco, a 44 px dal bordo;
+- copertina/ingrediente/eventi/preferito hanno un piccolo script che rimpicciolisce il titolo con font larghi (data-max);
+- righe di mattina = secondario schiarito;
+- manifesto e sacchetto = carta con rumore SVG, carta e nastro con colori fissi (oggetti), fiocco in accento;
+- riquadri data color-mix accento/sfondo;
+- etichette 24 px invece di 20.
+
+**Lasciate fuori:** BAKERY ripetuto, New!, baguette nel sacchetto, Weekly Bestseller, Vanilla Berry Cupcake (scontornati); Q&A, FAQ, Coffee event a mano, thank you, Stay tuned, Opening hours, quote of the day, diagramma, finte interfacce.
+
+**Aperto:**
+- da valutare pillole orari e bottone Ordina ora (del modello);
+- con font larghi le righe del titolo verticale di eventi quasi si toccano;
+- pieghe del sacchetto più regolari;
+- foto novità più scura;
+- lo script di adattamento usa document.fonts.ready: verificare che renderizza aspetti i font (nelle prove è andato).
+
+#### Cornetto
+
+- **Modello:** `bakery/02`, «Bakery/Cafè 77 Instagram Templates» di Noèka Lab, https://www.etsy.com/listing/4402422933. Marrone cannella e crema, serif stretto con una parola in corsivo calligrafico, foto di forno calde da vicino.
+- **Font:** Noto Serif Display stretto 75% (titoli; serif condensato ad alto contrasto più vicino), Open Sans (testi), Pinyon Script (parola corsiva, fissa), Poppins corsivo semigrassetto (logo nel riquadro), Questrial (numeri calendario).
+- **Palette demo:** principale `#8E4922`, secondario `#DCBDA0`, accento `#964A28`, sfondo `#FAEAD0`.
+- **Foto:** 13 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Freshly Baked» |
+| dietro-le-quinte | «Behind the scenes in the Bakery» |
+| menu | «Bakery Menu» |
+| offerta | «Sweet deal of the week / 2x1 on all cookies!» |
+| recensioni | «your words, our Motivation» |
+| fornaia | «Meet the baker» |
+| storia | «How it all started» |
+| evento | «CHRISTMAS Sale» con calendario 12-13-14 |
+
+**Diverso dal modello:**
+- storie 9:16 e post portati a 1080x1350, distanze verticali stimate in recensioni e dietro-le-quinte;
+- oggetti scontornati diventano foto (biscotto a cerchio, cornetto in fascia che esce dal basso);
+- carta stropicciata di menu = grana SVG leggera;
+- arancio di logo/filetti/riquadro/bottone su accento con --su-accento;
+- in copertina corsivo e serif si toccano appena (renderizza segnava sovrapposizione);
+- offerta in colonna unica che si allunga;
+- testi piccoli portati a 24 px;
+- calendario 11-12-13 dicembre 2026 col 12 cerchiato.
+
+**Lasciate fuori:** slide con oggetti scontornati (BAKERY ripetuto, CROISSANT Soft & Crunchy, Cake of the week, Join our team, motivo a righe), disegni a linea (from Heaven, Open Hour), finte interfacce (Delivery, Tag us, conto alla rovescia, Did you know, Ask me anything), FAQ e Coming soon, più altre oltre il tetto di 8.
+
+**Aperto:**
+- corsivo resta Pinyon Script anche con un brand;
+- con font larghi «Forno» va su tre righe e «cominciata» tocca il bordo;
+- paragrafo sulla foto fitta della copertina si legge meno;
+- fumetti chiari delle recensioni da verificare con sfondo scuro.
+
+#### Glassa
+
+- **Modello:** `bakery/03`, «Bakery & Pastry Store Posts & Stories» (Little Bakery), https://www.etsy.com/listing/4406748503. Cioccolato, terracotta e pesca; titoli tondi e grassi accanto a un corsivo, foglietti di carta col nastro adesivo sopra foto di forno, stelline e frecce a ricciolo disegnate a mano.
+- **Font:** Bagel Fat One (titoli; il bubbly del modello non è su Google; nei layout peso 800 con font-synthesis none), Poppins (testi, uguale), Great Vibes fisso (righe in corsivo).
+- **Palette demo:** principale `#3D2420`, secondario `#A8705E`, accento `#D9C39A`, sfondo `#F0E1D1`.
+- **Foto:** 10 (8 Unsplash, 2 Pexels).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Little BAKERY» |
+| orari | «Opening hours» |
+| listino | «Little Bakery's Price List» |
+| offerta | «Buy 1 Get 1 free» |
+| prodotto | «Let's eat some CAKE» |
+| contatti | «Contact us / Get a sweet treat now» |
+| sfornati | «Freshly Baked» |
+| crostate | «Bakery Tarts & Pies» |
+
+**Diverso dal modello:**
+- in copertina e prodotto foto non a tutto campo, rimpicciolite e fuse col fondo (multiply e maschera radiale);
+- in prodotto pane a fette invece della torta («Oggi ci vuole il PANE»);
+- in crostate crostata intera dall'alto a cerchio, niente forchetta;
+- bottone e nastro in accento, cornici e fascia contatti in secondario;
+- foto di sfornati scurita;
+- testi piccoli 22-24 px;
+- corsivo fisso, dove fa da titolo (orari, offerta) non prende il font del brand.
+
+**Lasciate fuori:** slide con prodotti scontornati (BAKERY ripetuto, Fruit Galette, Bakery & Cake Shop con la mano...), storie 9:16 e doppioni di sfornati, doppioni del foglietto orari, mockup del post Instagram.
+
+**Aperto:**
+- con font larghi il titolo di crostate tocca la crostata e quello di copertina passa i 900 px;
+- Great Vibes resta uguale con ogni brand;
+- stelline chiare su fondo chiare poco visibili (come l'originale);
+- da valutare l'etichetta spaziata del listino (nel modello).
+
+#### Cacao
+
+- **Modello:** `bakery/04`, «150 Bakery social media pack» (post e storie, Canva), https://www.etsy.com/listing/4325988857. Crema e cioccolato, prodotto su fondo chiaro, titoli enormi con un font diverso per post, note a mano in ovali.
+- **Font:** titoli League Spartan 700 (copertina, listino), Anton (offerta), Young Serif (gusti), Noto Serif Display wdth 62,5 peso 300 (ricetta, passo, sfornato), Pinyon Script (evento); testi Alegreya corsivo e 800, Young Serif, IBM Plex Sans Condensed, League Spartan secondo il layout; Pinyon Script per la chiusa calligrafica, Nothing You Could Do per note, prezzi e ovali a mano.
+- **Palette demo:** principale `#2B1009`, secondario `#5B3621`, accento `#D9D0C1`, sfondo `#FFF7EC`.
+- **Foto:** 11 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «introducing, your new favourite» |
+| offerta | «DOUBLE FUDGE BROWNIE 50% OFF» |
+| listino | «our menu.» |
+| evento | «Save The Date !!» |
+| ricetta | «BAKING CHOCOLATE chip cookies» |
+| passo | «MIXING THE dough 03» |
+| gusti | «Nutty Secret» |
+| sfornato | «CROISSANT AWAITS» |
+
+**Diverso dal modello:**
+- «Nutty Secret» quasi quadrata allungata;
+- scontornati = foto su fondo bianco in multiply con luminosità alzata (gusti, sfornato) o a tutta pagina (copertina, ruotata di -36°);
+- prodotti del listino a cerchio;
+- titoli di gusti e sfornato nel principale;
+- ovali, frecce, bollo, pillole e filetti nel secondario (erano neri/marroni), voci del listino in accento;
+- evento con velo del principale al 34%, numeri a una cifra;
+- script calligrafico non si sovrappone più in passo;
+- script data-max sui titoli;
+- piega del listino = piano con ombra;
+- in offerta niente icone telefono/sito, logo-biscotto = tondo nel secondario.
+
+**Lasciate fuori:** mockup in prospettiva illeggibili e composizioni di scontornati (BREAD DELIVERY, combo deals, Valentine's cake...), giveaway, NEW release, FRESHLY BAKED, BAKERY MENU (doppione), Buy 1 free, Thank you 50k, altri passi del tutorial, icone highlight.
+
+**Aperto:**
+- gusti e sfornato in multiply, con sfondo scuro del brand la foto si scurisce;
+- la copertina dipende dalla rotazione della foto (si vede un angolo di manica scura) e il testo in basso passa sopra la mano;
+- ovali e note a mano con font fisso.
+
+#### Girella
+
+- **Modello:** `bakery/05`, Noèka Lab bakery e caffè, https://www.etsy.com/listing/4591106624. Marrone quasi nero, crema e rosa su bianco caldo, grottesco nerissimo largo, foto di prodotto a tutto campo con fogli, polaroid, fumetti chat.
+- **Font:** Archivo 900 largo 112% (titoli; Garet/Agrandir non su Google), Arimo (testi, al posto di Helvetica), Ballet (parola a mano e firma), Nothing You Could Do (note del rullino), Libre Caslon Text (invito copertina, data novità).
+- **Palette demo:** principale `#383330`, secondario `#FDF6EC`, accento `#FFA1DD`, sfondo `#F5F4F2`.
+- **Foto:** 17 Pexels(16)+Unsplash(1), 3 ritagli.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «we are Open / Opening hours» |
+| preordini | «PREORDERS ARE OPEN» |
+| bevande | «Choose your drink» |
+| novita | «New bake this week» |
+| domanda | «I need dessert for the weekend…» |
+| metodo | «Our Approach» |
+| rullino | «Bakery camera roll» |
+| recensione | «Customer kind words» |
+
+**Diverso dal modello:**
+- già 4:5;
+- bevande strisce con foto vere ritagliate (no bicchieri scontornati), carta = secondario;
+- novita cartoncino davanti a bignè col cioccolato invece del vortice con brioche scontornate;
+- metodo striscia di biscotti cotti invece di impasto crudo;
+- copertina croissant su marmo più radi con velo principale;
+- recensione rifatta dalla storia 9:16;
+- molla SVG grigia fissa (oggetto);
+- fumetto risposta in accento con --su-accento.
+
+**Lasciate fuori:** slide su prodotti scontornati (New flavors, Client's picks, Can't choose one?, Soft & golden, Coming soon); finti widget/app e chat iMessage; From our clients (doppione); slide visibili solo tagliate nei mockup.
+
+**Aperto:**
+- da valutare solo cose dell'originale (testi <24px, titolo verticale in metodo);
+- etichette recensione poco leggibili sui chiari come nell'originale;
+- nella prova carta di bevande/recensione/novita diventa blu pieno, perde il carattere di carta;
+- schiuma di bevande più scura del modello.
+
+#### Moka
+
+- **Modello:** `bakery/06`, «40 Canva Instagram Carousel Post Templates» per coffee shop di CieloRosaStudio, https://www.etsy.com/listing/4562748233. Espresso scuro, crema e verde matcha, maiuscoli serif stretti accavallati a un corsivo calligrafico, foto scure e calde a tutto campo, stelline a quattro punte.
+- **Font:** Noto Serif Display stretto wdth 62,5 peso 400 (titoli; il didone condensato del modello è a pagamento, questo è meno stretto), Lato (testi, come l'originale), Pinyon Script fisso (parole in corsivo).
+- **Palette demo:** principale `#2A2420`, secondario `#8A5A36`, accento `#5F7448`, sfondo `#EEEAE3`.
+- **Foto:** 13 Unsplash.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «GOOD DAYS START WITH GOOD Coffee» |
+| menu | «Breakfast MENU» |
+| frase | «Powered by coffee & good vibes.» |
+| listino | «Seasonal DRINK MENU / PRICE LIST» |
+| sfornato | «FRESH FROM Oven» (finestra AirDrop) |
+| assaggi | «Little treats» |
+| assunzioni | «WE ARE HIRING A BARISTA» |
+| pausa | «Life happens Coffee helps» |
+
+**Diverso dal modello:**
+- niente scontornati (tazza della copertina = adesivo dal bordo bianco, bicchieri = foto rettangolari dal bordo, tazza in assaggi = tondo);
+- «Listino» dentro la larghezza;
+- in assunzioni il corsivo non si accavalla al titolo (controllo);
+- fascia di frase in accento (era nera), bottone in secondario, AirDrop in accento;
+- script data-adatta che stringe i titoli con font larghi;
+- grana leggera sui fondi chiari;
+- prezzi del listino allineati.
+
+**Lasciate fuori:** persone con teste di bicchieri scontornati, polaroid con fermaglio e chat, bicchiere scontornato su texture, collage doppioni di assaggi, interfaccia fotocamera, slide illeggibili nei mockup.
+
+**Aperto:**
+- corsivo resta Pinyon Script (in pausa tutto il titolo, lì il font del brand non c'è);
+- da valutare pillole e bottone (del modello);
+- testi chiari della copertina su una foto chiara del brand.
+
+#### Ganache
+
+- **Modello:** `bakery/07`, «Cake Shop Instagram templates» (Cake Solo Cakes, 25 post), https://www.etsy.com/listing/4590338116. Cacao scuro e crema con un tocco di senape; titoli grotteschi enormi e strettissimi da bordo a bordo con il dolce scontornato davanti alle lettere; corsivo serif tra filetti sottili; alcuni post a fondo pieno scuro.
+- **Font:** Roboto Flex larghezza 25-50% con YTLC/YTUC alti (titoli; il grottesco ultra-stretto del modello non è dichiarato), Anton (ordina), Bagel Fat One (offerta), Poppins (testi), Libre Caslon Text corsivo fisso (frasi, inviti, recensione, tondi).
+- **Palette demo:** principale `#2A1B14`, secondario `#4A3226`, accento `#E2A94F`, sfondo `#F3EEE6`.
+- **Foto:** 8 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «treat yourself» |
+| menu | «CAKE MENU» |
+| ordina | «ORDER YOUR CAKE» |
+| novita | «limited edition alert!» |
+| offerta | «BUY 2 GET 1 FREE» |
+| recensione | «CUSTOMER LOVE» |
+| pasticcere | «meet the baker» |
+| golosi | «CHOCOLATE CHOCOLATE CHOCOLATE» |
+
+**Diverso dal modello:**
+- lo scontorno lo fa un filtro SVG sulle foto JPEG (.chiaro toglie fondo chiaro, .scuro fondo nero), servono foto su fondo uniforme, le panne bianche diventano trasparenti;
+- in golosi clip-path sul bordo della fetta, fetta su piatto invece di spatola e mano;
+- in pasticcere foto delle mani in rettangolo senza scontorno;
+- in menu torta su alzata nera;
+- copertina crostatina in mano invece della fetta sulla forchetta, offerta mano con bignè invece della red velvet spezzata;
+- script data-max che restringe i titoli con font larghi;
+- filo di ordina e stelle in accento;
+- elenco con trattini lunghi diventato una frase.
+
+**Lasciate fuori:** 17 variazioni dello stesso schema (titolo enorme + dolce scontornato): tenute le 8 che coprono più usi.
+
+**Aperto:**
+- scontorno solo con foto su fondo chiaro o nero uniforme, con foto vere del brand va tolta la classe e il titolo non passa più dietro (scritto in TEMPLATE.md);
+- con sfondo scuro del brand le parti bianche dei dolci diventano trasparenti;
+- in offerta il profilo sta sopra il braccio;
+- da valutare solo cose del modello.
+
+#### Fragola
+
+- **Modello:** `bakery/08`, «Bakery Social Media Template» (Canva, 45 post), https://www.etsy.com/listing/4530135167. Rosa acceso su crema e marrone, titoli enormi in un solo colore, prodotti veri su fondo chiaro o tenuti in mano, ogni slide con una voce tipografica sua.
+- **Font:** titoli Noto Serif Display stretto (copertina, prodotto, dolce); per layout Old Standard TT (colazione), Bodoni Moda (torta), Gochi Hand (menu), Young Serif (orari), Unbounded 800 (offerta); testi Roboto Mono, Questrial, Poppins, Archivo, Karla corsivo, Old Standard TT, Unbounded secondo il layout; La Belle Aurore per note a mano.
+- **Palette demo:** principale `#3A2216`, secondario `#8E4A26`, accento `#F862C0`, sfondo `#F3ECE0`.
+- **Foto:** 9 Pexels (5 su fondo bianco schiarite, 2 con fondo allungato).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Bakery & Cake Shop» |
+| prodotto | «Croissant.» |
+| colazione | «Time for breakfast» |
+| dolce | «Tiramisu cake» |
+| torta | «Let's eat some CAKE» |
+| menu | «Bakery Favorites» |
+| orari | «Open Hours» (scontrino con molletta) |
+| offerta | «Cookies Sale 50% off» |
+
+**Diverso dal modello:**
+- scontornati = foto vere su fondo bianco fuse con multiply (in copertina cornetto invece di scone);
+- in torta il dolce non copre la parola grande;
+- in dolce fondo di legno scuro invece del drappo;
+- in offerta il bollo accanto alla seconda riga (controllo);
+- cornice a onde su quattro lati nel menu, schizzi ridisegnati in SVG;
+- script che rimpicciolisce il titolo della copertina;
+- molletta grigio metallo unico colore fisso, scontrino = sfondo schiarito.
+
+**Lasciate fuori:** Cookie Attack!, Baking soon, Open daily, folded gold., It's brunch o'clock (scontornati o doppioni), collage di 01.jpg, profilo Instagram (mockup interfaccia).
+
+**Aperto:**
+- con sfondo bianco del brand si vede lo stacco tra muro beige della foto e lo sfondo in copertina, cornetto troppo schiarito;
+- da valutare solo cose del modello;
+- in orari il nome nel logo resta in Noto Serif Display finché non c'è il file del logo.
+
+#### Albicocca
+
+- **Modello:** `bakery/09`, «Bakery Shop Instagram Feed» (immagini 03-05; le 01-02 dell'inserzione sono un altro set rosa, non usato), https://www.etsy.com/listing/4531411658. Corallo e giallo su grigio caldo chiaro, titoli enormi grotteschi o monospazio, dolci scontornati che coprono il titolo, ellissi inclinate, stelline a quattro punte e frecce a mano.
+- **Font:** Archivo 800 (titoli copertina, promo, sfornato), IBM Plex Mono 700 (altri titoli), Arimo (testi, per l'Arial), IBM Plex Mono corsivo fisso (etichette nelle ellissi).
+- **Palette demo:** principale `#E35F52`, secondario `#5C4646`, accento `#F2D512`, sfondo `#E3DFDA`.
+- **Foto:** 11 (6 Pexels, 5 Unsplash), 6 su fondo bianco ripulite.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «BEST SELLER» |
+| promo | «PROMO PROMO… 20% OFF / ONLY MONDAY» |
+| classifica | «BEST TOP 3 BAKERY IN AUGUST» |
+| ricetta | «TASTE OUR SIGNATURE RECIPE» |
+| offerta | «WEEKEND SALE / BUY 3 FREE 1» |
+| colazione | «SPECIAL MONDAY OFFER» |
+| sfornato | «FRESHLY BAKED» |
+| recensione | «CUSTOMER TESTIMONIAL» |
+
+**Diverso dal modello:**
+- scontornato finto = foto su fondo bianco in multiply più div.sagoma con clip-path che segue il dolce e copre il titolo (poligono da rifare cambiando foto);
+- in promo la parola ripetuta viene dal CSS;
+- in ricetta foto rettangolare a tutta larghezza;
+- torta su alzata e cupcake al posto degli originali;
+- classifica con cuori interi;
+- ellissi e fumetti in accento e secondario, scritte nelle ellissi gialle in secondario scurito;
+- slide allungate a 4:5.
+
+**Lasciate fuori:** NEW / MIX CAKE e CHOOSE YOUR FAVORITE TREAT (servono scontornati veri), tutto il set rosa delle immagini 01-02.
+
+**Aperto:**
+- scontornato regge solo con foto su fondo chiaro uniforme e sfondo del brand chiaro;
+- leggero alone della sagoma sopra la macchia d'accento;
+- con font larghi «WEEKEND» vicino ai bordi;
+- due da valutare (testi vicini al bordo) come nell'originale.
+
+#### Caramello
+
+- **Modello:** `bakery/10`, «Bakery Instagram Posts» (50 post Canva di Casuarrina), https://www.etsy.com/listing/4329128419. Marrone caramello, nero caffè e crema; serif da rivista anche corsivo, foto del prodotto da vicino velate o sotto pannelli chiari, linee sottili, archi e fasce marroni.
+- **Font:** Playfair Display (titoli, uguale), Poppins (testi, uguale).
+- **Palette demo:** principale `#1F1612`, secondario `#B88E68`, accento `#7E5235`, sfondo `#FDF5EC`.
+- **Foto:** 10 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Croissants / FRESHLY BAKED. FLAKY. FLAWLESS» |
+| menu | «Our Menu» |
+| orari | «OPENING HOURS» |
+| offerta | «SPECIAL OFFER Bakery Sale UP TO 50% OFF» |
+| novita | «New FLAVOR» |
+| recensione | «Client Review» |
+| sondaggio | «This or That» |
+| curiosita | «DID YOU KNOW?» |
+
+**Diverso dal modello:**
+- nel menu tre crostate scontornate = tre foto tonde tagliate dal bordo, voci con prezzo;
+- descrizioni menu a 24 px;
+- carta stropicciata di curiosita = foto in bianco e nero moltiplicata sul secondario;
+- titolo di sondaggio più piccolo (118 px) per «Questo o quello»;
+- filetti ai lati di «Nuovo» si adattano alla parola;
+- arance fresche invece che essiccate nella recensione;
+- copertina velata con l'accento.
+
+**Lasciate fuori:** 19 slide leggibili ma con impaginazioni già prese o poco utili (Giveaway, Coming soon, About us, Flash sale, FAQ, Best seller, ...).
+
+**Aperto:**
+- da valutare solo cose del modello (riga spaziata, stelline);
+- foto di cannoli e tiramisù a fondo scuro (nell'originale chiare);
+- con secondario molto scuro la carta della curiosità diventa quasi nera, il testo resta leggibile.
+
+#### Mollica
+
+- **Modello:** `bakery/11`, «Bakery Instagram Post Bundle» (80+ post e storie, Canva), https://www.etsy.com/listing/4495382408. Crema pieno e marrone caffellatte con tan chiaro; serif classico grande (maiuscolo, corsivo grassetto); prodotti scontornati su fondo bianco fusi con lo sfondo, forme piene tonde.
+- **Font:** EB Garamond (titoli, inviti, nomi prodotti, bottoni in serif), Open Sans (testi).
+- **Palette demo:** principale `#5A442F`, secondario `#E2C7AC`, accento `#61432B`, sfondo `#F6F4E7`.
+- **Foto:** 15 file da 12 foto Pexels, schiarite per il multiply.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «A Slice of Happiness Awaits» |
+| novita | «Morning Starts With a Roll» |
+| offerta | «Get 10% off on all freshly baked goodies» |
+| menu | «Bakery Menu» |
+| prenota | «August pre order cookies» |
+| recensione | «Why they love it» |
+| racconto | «Crispy on the outside and soft on the inside.» |
+| visitaci | «Try them today!» |
+
+**Diverso dal modello:**
+- scontornati = JPEG su fondo bianco in multiply (su fondi scuri non regge, scritto in TEMPLATE.md);
+- cerchio, metà bassa, fascia, esplosione e bottone usano una tinta chiara del secondario oklch(max l 0.85, max c 0.07) perché con un secondario saturo i prodotti diventavano blu;
+- bottoni scuri in accento;
+- menu, recensione e prenota da storie 9:16 ricomposte;
+- tondi di prenota = foto a cerchio;
+- pancarrè in visitaci;
+- testi piccoli a 24 px.
+
+**Lasciate fuori:** collage di più scontornati (Bread Lovers Rejoice, BAKERY ripetuto, brownies, Our Best Seller Cookie, Our Story, Cookie box...), sondaggi e quiz da storia, mockup su telefono.
+
+**Aperto:**
+- da valutare solo cose del modello;
+- con secondario saturo leggera dominante sui prodotti;
+- piccola ombra grigia sulle girelle in novita;
+- foto di fondo non fuse in racconto, recensione, offerta;
+- nessun elemento logo nelle slide scelte.
+
+#### Nocciola
+
+- **Modello:** `bakery/12`, «Bakery Instagram Post Templates» (The Avery Shop), https://www.etsy.com/listing/4459334579. Marrone nocciola e crema, fondi a tinta unita, prodotto dall'alto ritagliato in tondo od ovale, serif elegante con una parola in corsivo calligrafico, capsule a filo.
+- **Font:** titoli diversi per layout: Oswald 700 (copertina), Gilda Display (offerta, stagione, visione), Lexend 700 (storie, consigli, ingredienti); testi Source Sans 3 (Poppins in offerta); Pinyon Script per la parola corsiva e il titolo della recensione; Gilda Display scritto direttamente per le righe introduttive di consigli e ingredienti.
+- **Palette demo:** principale `#5E2A1C`, secondario `#7F5943`, accento `#F3EFEA`, sfondo `#E9E1D6`.
+- **Foto:** 8 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «SALE SALE SALE SALE» (biscotto) |
+| offerta | «new flavour / get 15% off / Special OFFER» |
+| storie | «Our Best Stories» |
+| consigli | «MINDFUL BAKING» (3 capsule) |
+| ingredienti | «benefits of BAKERY» |
+| recensione | «Client Review-Testimonial» |
+| stagione | «New Season, New Bakes» (titolo su arco, foto ovale) |
+| visione | «Vision / Our mood» |
+
+**Diverso dal modello:**
+- copertina «SALDI» con le righe dentro il bordo (nel modello escono, renderizza segnava);
+- biscotto, piatto, cesto = foto ritagliate in tondo/ovale (nel cesto resta un po' di tovaglia);
+- stelle in principale (erano nere), scheda = sfondo schiarito, manca la scritta in trasparenza dietro;
+- in visione manca la stellina nella «O»;
+- arco di stagione con textLength fisso 800 px;
+- testo sul secondario con --su-secondario;
+- modello un po' più alto di 4:5 riportato a 1080x1350.
+
+**Lasciate fuori:** slide visibili solo tagliate nei mockup, DAILY TIP (interfaccia), diagrammi decorativi, foto con sole scritte, NEW NEW (doppione della copertina), planner.
+
+**Aperto:**
+- capsule da valutare (del modello);
+- con accento simile al secondario la parola ripetuta si legge male;
+- con sfondo bianco la scheda della recensione si vede solo per il filo;
+- righe introduttive restano in Gilda Display;
+- con font larghi l'arco schiaccia le lettere.
+
+#### Latte
+
+- **Modello:** `bakery/13`, «200+ Bakery Insta Posts, The Latte Collection» (post e storie, Canva), https://www.etsy.com/listing/1471411387. Caffellatte, crema e caramello, un serif diverso per ogni post, foto calde nei tondi o a tutto campo.
+- **Font:** titoli per layout: Playfair Display (copertina; 900 per le virgolette della citazione), Bellefair (concorso), Yeseva One (recensione), Gilda Display (prodotto), Gloock (vetrina), Lora (listino), Bodoni Moda (novita); testi Montserrat, Poppins, Prata o Lora; Ms Madi (parola a mano della copertina), Quicksand (logo nell'ovale del listino).
+- **Palette demo:** principale `#2E2420`, secondario `#B98E6B`, accento `#5A2C1E`, sfondo `#FCF6F1`.
+- **Foto:** 8 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Enjoy Breakfast Cookies» |
+| concorso | «Giveaway / Get our product for free» |
+| citazione | «People do not notice whether it is winter or summer when they are happy» (Čechov) |
+| recensione | «Client Review» |
+| prodotto | «Fresh from oven, Flaky x6, Cinnamon Roll $2.55» |
+| vetrina | «Special Today, Choco Berry Cupcake» (ingredienti con frecce) |
+| listino | «Master Bread, Bread Price List» |
+| novita | «New Product, Organic gluten free bread» |
+
+**Diverso dal modello:**
+- post quadrati allungati a 4:5;
+- girella scontornata = foto dall'alto in tondo con ombra, parola ripetuta «Burro», le parole non escono dal bordo;
+- cesto del listino = foto che sfuma con maschera, icona del pane = nome del forno (logo);
+- cupcake un po' più grande;
+- blocco della citazione, virgolette, parola ripetuta, titolo curvo e stelle in accento, filetti, raggi, prezzo e fondi pieni in secondario;
+- firma senza trattino;
+- titoli del concorso e del prodotto un po' più piccoli per i font larghi.
+
+**Lasciate fuori:** This or That, Special Offer Cake (simile al listino), Cinnamon Roll Order Now (spighe da disegnare), slide tagliate o piccole nelle anteprime (Baking, 50% OFF, FAQ, Homemade, Croissant, New Release).
+
+**Aperto:**
+- da valutare solo cose del modello;
+- con font larghi il titolo di vetrina va su due righe;
+- nel listino il cesto scuro si stacca da un secondario chiaro o freddo;
+- foto della copertina più chiara in alto dell'originale.
+
+#### Ciambella
+
+- **Modello:** `bakery/14`, «Modern Cafe & Bakery Posts» (THE.AVERY.SHOPP), https://www.etsy.com/listing/4514479468. Grigio chiaro e tortora pieno con rosa e verde matcha di evidenza; grottesco nero, serif classico e corsivo calligrafico enorme; foto ritagliate a cerchio, ovale e arco.
+- **Font:** Figtree 800 (titoli copertina, scelta, contatti), Montserrat 800 maiuscolo (orari, riga del menu), Noto Serif Display stretto (menu), Tinos (novita, per il Times), Pinyon Script (chi-siamo, prenotazioni); testi Arimo (per l'Arial), Figtree corsivo, Tinos maiuscolo; Pinyon Script e Tinos corsivo scritti direttamente per dettagli.
+- **Palette demo:** principale `#5A4A3D`, secondario `#A9BE5F`, accento `#CF6FA0`, sfondo `#E7E6E2`.
+- **Foto:** 11 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Good morning! fresh pastries are ready» |
+| orari | «Opening Hours» |
+| chi-siamo | «About Us» |
+| menu | «How to explore our menu Here Online» |
+| scelta | «Pick your drink» |
+| novita | «New Season, New Flavor» |
+| prenotazioni | «August Clients» |
+| contatti | «Contact Us» |
+
+**Diverso dal modello:**
+- copertina, scelta, contatti dal quadrato allungati a 4:5;
+- bevande scontornate = foto dall'alto a cerchio;
+- cerchio del menu = ingrandimento di un waffle rettangolare (si vede un po' di piatto azzurro);
+- nastro degli orari in secondario (era grigio), bordo bottone, stella e «tuo» in accento;
+- schermo del telefono = color-mix sfondo/principale, telefono grigio fisso (oggetto);
+- etichette e titoli chiari con la tinta chiara dello sfondo;
+- script data-max in chi-siamo, novita, menu, prenotazioni.
+
+**Lasciate fuori:** slide di scontornati (Iced latte, Coffee Break, Lattetoast, Avocado Toast, Happy Hour, NEW NEW NEW), finti telefoni/tablet, doppioni (We are Open!, 3 Tips), slide leggibili solo in piccolo.
+
+**Aperto:**
+- etichette di novita poco leggibili sulle parti chiare della foto (come l'originale);
+- il titolo ad arco con font largo si rimpicciolisce parecchio;
+- il secondario si vede solo nel nastro degli orari.
+
+#### Crosta
+
+- **Modello:** `bakery/15`, «Baked.» (feed di Flair Nook, Canva, quadrato), https://www.etsy.com/listing/1831177172. Tortora, crema e quasi nero, serif elegante col punto finale («Sfornato.»), foto di forno a tutta pagina e prodotti scontornati con frecce a mano.
+- **Font:** Gilda Display (titoli), PT Serif (testi, quasi uguale), Playfair Display corsivo (dettagli in corsivo).
+- **Palette demo:** principale `#1C1915`, secondario `#BAA68E`, accento `#522D1A`, sfondo `#F4F1E8`.
+- **Foto:** 11 Pexels più 6 maschere ricavate dalle foto.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Baked. est. 2024» (mani nella farina) |
+| inaugurazione | «You are invited to the Grand Opening» |
+| chi-siamo | «who's Baked.» |
+| listino | «This month's Favorite» |
+| novita | «NEW MENU» ripetuto con la girella |
+| recensione | (due recensioni a 5 stelle) |
+| prodotto | «freshly Baked.» con il brownie |
+| domande | «Q & A» |
+
+**Diverso dal modello:**
+- quadrato allungato a 4:5 seguendo i tagli 4:5 visibili in 01.jpg;
+- scontornati = svg con la foto e una mask di luminanza (<nome>-maschera.jpg fatta con PIL/scipy;
+- mask-image CSS su file:// falliva);
+- listino con tre cornetti e un caffè freddo;
+- frecce, stelle e filetto in accento (erano bianchi/neri);
+- scritte sul tortora con --su-secondario;
+- «MENU NUOVO» con due girelle glassate;
+- «D & R»;
+- script data-adatta sui titoli;
+- foto della copertina scurita del 20%.
+
+**Lasciate fuori:** Barista Course, Baking Class, team (ritratti scontornati), giochi di parole inglesi (procaffeinating, you just got Baked.), trama di croissant, traguardo follower, Coffee's Speciality (doppione del listino).
+
+**Aperto:**
+- in chi-siamo testo bianco sulla farina poco leggibile (come l'originale);
+- maschere dei cornetti con filo d'ombra grigia;
+- brownie un po' morbido;
+- con foto del brand in listino, novita e prodotto serve una maschera nuova, se no il prodotto resta in un riquadro;
+- da valutare il corsivo di «grande apertura» (originale).
+
+#### Biscotto
+
+- **Modello:** `bakery/16`, «Bakery Instagram Templates» (100 post, Design Pixie), https://www.etsy.com/listing/4497594004. Rosa e cioccolato, serif morbido e grasso con corsivo a mano, riquadri smerlati, strisce verticali, foto di dolci in tondo.
+- **Font:** Caprasimo (titoli, serif retrò grasso), Montserrat (testi; maiuscolo spaziato 700 per etichette e voci), Sacramento (scritte a mano), Anton (archi della copertina, prezzi, «Sconti in corso»).
+- **Palette demo:** principale `#57190C`, secondario `#C8926C`, accento `#F7B0C0`, sfondo `#FADDE2`.
+- **Foto:** 10 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Loaded cookies» |
+| orari | «open today, 9AM to 3PM, see you soon!» |
+| listino | «Price List» |
+| preferiti | «favorites of the week» |
+| fornaia | «meet the baker» |
+| recensione | «kind words» |
+| offerta | «Sale on now, 25% off sitewide» |
+| gusto | «flavor of the month» |
+
+**Diverso dal modello:**
+- modello 3:4 allungato a 4:5;
+- biscotti scontornati della copertina = foto su fondo scuro fusa nel principale (lighten e maschera), stessa foto sbiadita dietro;
+- in gusto foto in tondo senza coriandoli;
+- etichette del listino e cartellino del nome in --crema;
+- coccarda con testo in principale;
+- schede, linguette, bollo e fasce oblique in --tinta (sfondo con velo d'accento);
+- disegni a linea di dolci = motivo SVG nostro al 7%;
+- segnalibro della recensione con biscotto SVG.
+
+**Lasciate fuori:** slide con frecce e prodotti scontornati (Strawberry cupcake, Customer favorites, Top seller, Best seller), doppioni (holiday hours, menu ad arco), Q&A, giveaway, slide con oggetti disegnati (forno, bancarella, busta), frasi solo tipografiche.
+
+**Aperto:**
+- con sfondo bianco del brand la scheda bianca della recensione sparisce;
+- la copertina fusa regge solo con principale scuro e foto su fondo scuro;
+- da valutare solo cose del modello.
+
+#### Frolla
+
+- **Modello:** `bakery/17`, «Bakery Instagram Templates», griglia coerente di 15 slide dell'immagine 03 («+25 Editable Bakery Instagram Templates»; le altre immagini sono mockup illeggibili di stile misto), https://www.etsy.com/listing/4553903236. Crema e cioccolato, serif maiuscolo spaziato con una parola a mano a pennello, prodotto grande sfumato nel fondo, bollini tondi e fascia marrone in basso.
+- **Font:** Cormorant Garamond 500-700 (titoli), Josefin Sans (testi, come il modello), Ephesis fisso (parola a mano, variabile --corsivo).
+- **Palette demo:** principale `#3E2116`, secondario `#7B4325`, accento `#A8673E`, sfondo `#F6ECE3`.
+- **Foto:** 8 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Freshly Baked» |
+| offerta | «Special Offer» |
+| prodotto | «Cake of the Day» |
+| torte | «Custom Cakes for Every Occasion» |
+| menu | «Today's Special» |
+| sconto | «Special Discount» |
+| orari | «We Are Open» |
+| grazie | «Thank You!» |
+
+**Diverso dal modello:**
+- slide quadrate allungate a 4:5;
+- scontornati = foto con bordi sfumati da maschera (resta un po' del fondo);
+- fascia chiara della copertina = sfondo con 7% di secondario;
+- cuori, rametti, scarabocchi e festone in SVG su accento e secondario;
+- corsivo fisso;
+- tolta la cornice a scheda dei mockup, layout a pagina piena.
+
+**Lasciate fuori:** doppioni dell'offerta (cupcake, Weekend Treats), slide coperte dal bollo «+25», slide con la stessa struttura di copertina e prodotto, tutti i mockup delle altre immagini.
+
+**Aperto:**
+- da valutare solo cose del modello;
+- con font larghi il titolo di offerta finisce in parte sotto la foglia (anche nel modello);
+- con fondo scuro le foto sfumate hanno un alone chiaro.
+
+#### Lampone
+
+- **Modello:** `bakery/18`, set di Noèka Lab («One pack. Limitless Combos», 50 post), https://www.etsy.com/listing/4591849178. Rosso pieno e bianco caldo, serif stretto in maiuscolo, dolci fotografati molto da vicino a tutto campo, quattro piccole scritte agli angoli.
+- **Font:** Noto Serif a larghezza 62,5-87,5% (titoli, serif di transizione stretto), Archivo (testi), Pinyon Script (scritta a mano in aperti, novita, firma).
+- **Palette demo:** principale `#820A0B`, secondario `#E3E2DD`, accento `#F8E8D0`, sfondo `#F5F4F0`.
+- **Foto:** 12 (11 Pexels, 1 Unsplash), 5 scontornate su bianco con OpenCV.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «CUSTOM ORDERS» |
+| aperti | «we are Open / OPENING HOURS» |
+| prodotto | «RASPBERRY FLAVOUR» |
+| filosofia | «Our Philosophy» |
+| preordini | «PREORDERS ARE OPEN» |
+| scelte | «THIS WEEKEND'S PICKS» |
+| recensione | «CUSTOMER KIND WORDS» |
+| novita | «New Bake THIS WEEK» |
+
+**Diverso dal modello:**
+- scontornati = JPEG ritagliati su bianco in multiply sul fondo chiaro;
+- in filosofia un solo cornetto ruotato, con piccole sbavature;
+- cartoncino delle schede = secondario schiarito, scritta a mano = accento schiarito;
+- foto di aperti e novita velate;
+- molla della copertina in CSS (oggetto fisso);
+- grana SVG sul rosso;
+- script data-max sui titoli;
+- tolte le inclinazioni dei mockup (resta la polaroid della copertina).
+
+**Lasciate fuori:** Textures e Pastry Menu (ritagli perfetti), svolazzi sui bomboloni, interfacce finte (Pastry Drop, ricerca, chat), Our Signature, prodotti scontornati su fondo pieno, telefono disegnato, slide piccole o doppioni.
+
+**Aperto:**
+- scritte agli angoli e testi lunghi a 19-22 px (come l'originale);
+- su principale chiaro le scritte chiare della copertina si leggono poco;
+- con sfondo scuro gli scontornati mostrano il fondo bianco;
+- polaroid di preordini sparisce su sfondo bianco;
+- candele visibili in preordini, ombra sul caffè freddo.
+
+#### Cioccolato
+
+- **Modello:** `bakery/19`, «Cake Artist Carousels» (10 caroselli, 70 slide), https://www.etsy.com/listing/4591529844. Cioccolato, crema e beige con un nocciola; serif classico, foto di torte in luce calda ad arco, in cornice o in fascia a tutta larghezza.
+- **Font:** Libre Baskerville (titoli, uguale), Montserrat (testi, uguale).
+- **Palette demo:** principale `#33231C`, secondario `#DED3C1`, accento `#B39572`, sfondo `#F8F0E5`.
+- **Foto:** 7 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Find your CAKE STYLE» |
+| stile | «Minimalist» |
+| arco | «Botanical» |
+| prenotazione | «When is your date reserved?» |
+| listino | «A guide for your cake» |
+| cura | «Care for this particular cake» |
+| voto | «Which one feels most like you?» |
+| chiusura | «Your style. Your celebration.» |
+
+**Diverso dal modello:**
+- i caroselli del modello sono una tela continua, qui ogni slide è a sé (le fasce non continuano);
+- beige delle slide di mezzo = secondario schiarito (l almeno 0,86);
+- segnaposto tra parentesi diventati testi veri;
+- testi del corpo a 22-24 px;
+- rettangolo sfalsato, cornici, filetti, numeri e striscia in accento, barra del voto in principale.
+
+**Lasciate fuori:** diagramma degli strati e foto rotonda con cerchietti numerati (grafica su misura), slide dei caroselli leggibili solo in miniatura che ripetono gli schemi.
+
+**Aperto:**
+- da valutare numeri 01-04 e scritte sotto i 24 px, come nell'originale;
+- con brand a fondo bianco il secondario schiarito di arco diventa azzurro pastello (si legge);
+- foto più fredde e meno uniformi di quelle in studio del modello.
+
+#### Sfogliatina
+
+- **Modello:** `bakery/20`, set Canva per bakery con la copertina «BAKERY» (stesso negozio di cannella), https://www.etsy.com/listing/1801818842. Giallo burro, nero e crema, serif didone alto e stretto (anche corsivo maiuscolo), foto calde di sfoglia a tutto campo, lettere giganti e scritte inclinate.
+- **Font:** Noto Serif Display font-stretch 62,5-87,5% (titoli), Montserrat (testi, come il modello), Ms Madi (firma a mano «Speciale di oggi»).
+- **Palette demo:** principale `#1B1A17`, secondario `#8B6B47`, accento `#F5D35A`, sfondo `#F3EEE5`.
+- **Foto:** 6 Pexels più una maschera.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «BAKERY BAKERY BAKERY» con croissant scontornati |
+| speciale | «Special Today / VANILLA BERRY CUPCAKE» con frecce a mano |
+| domande | «Q & A» |
+| recensione | «Absolutely in love with this place!» |
+| perte | «JUST for you / Brewed to Perfection» |
+| arrivo | «NEW RECIPE / NEW TREAT IS LOADING» |
+| faq | «FAQ / QUESTION / ANSWER» |
+| tre | «Sweet / Fluffy / Buttery» (cerchi di Venn) |
+
+**Diverso dal modello:**
+- parola ripetuta e lettere giganti dentro i bordi (nel modello tagliate, renderizza segnava);
+- scontorno = foto con mask SVG, ombra in secondario scurito;
+- «D & R» con & e R dentro l'elemento della D;
+- testi lunghi chiari invece che gialli (regola accento), stelle e nome in accento;
+- foto scurite;
+- speciale con 3 ingredienti e un brownie;
+- in tre niente carta piegata (c'è già in cannella);
+- FAQ, tre e recensione da quadrate a 4:5;
+- script che rimpicciolisce i titoli. Scelte slide diverse da cannella.
+
+**Lasciate fuori:** slide che ripetono cannella (eventi verticale, brunch, aperti, titolo curvo), tazza disegnata, NEW NEW NEW, quote card, campo commenti finto, slide piccole o con interfacce, slide di vendita.
+
+**Aperto:**
+- da valutare del modello (parole vicino al bordo, nome piccolo nell'ovale, maiuscolo spaziato);
+- ovale del nome un po' simile all'etichetta di cannella;
+- la copertina con foto del brand richiede prodotto scontornato o maschera;
+- font-stretch solo con font che hanno l'asse larghezza (con Sora righe più basse e vuoti);
+- in arrivo l'accento sulla foto scura si legge appena.
+
+#### Briciola
+
+- **Modello:** `bakery/21`, «230 Bakery Themed Instagram Templates» (DigiCraftStyle, Canva), https://www.etsy.com/listing/1876875262. Fondo quasi bianco o carta stropicciata, serif nero pesantissimo, prodotti scontornati che galleggiano sulla pagina, tocchi sabbia e caramello.
+- **Font:** Literata 900 con opsz 12 (titoli; il serif Canva pesante a basso contrasto non è su Google, Gloock aveva troppo contrasto), Newsreader 300/400 (testi).
+- **Palette demo:** principale `#161311`, secondario `#D3B48E`, accento `#C2864E`, sfondo `#EEEDEA`.
+- **Foto:** 11 (9 Pexels, 2 Unsplash; la carta e un cornetto copiato da albicocca).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Premium Bakery» |
+| croissant | «We bake fresh pastries every day / Croissant» |
+| dolce | «Special Dessert / Cinnamon Roll $6.50» |
+| menu | «Bakery Menu» |
+| orari | «Opening Hours» |
+| colazione | «breakfast time / Coffee + fresh croissant» |
+| sfornato | «Fresh Out of the Oven & Into Your Heart!» |
+| inaugurazione | «grand opening» |
+
+**Diverso dal modello:**
+- storie 9:16 ricomposte in 4:5;
+- scontornati = JPEG a fondo bianco con filtro SVG #scontorna sulla classe .ritaglio che rende trasparente il bianco (multiply colorava di blu con la prova);
+- piatto del dolce ritagliato a cerchio;
+- testi delle pennellate in accento (erano sabbia);
+- invito in tinta chiara dello sfondo;
+- fascia e piede con color-mix accento/principale;
+- «affè» staccato dalla C (renderizza);
+- foto di sfornato e inaugurazione scurite;
+- logo a icona = nome del brand in testo.
+
+**Lasciate fuori:** post quadrati di 02 e 05 (altro stile), copertine di storie miste, doppioni o slide solo in prospettiva, slide di vendita.
+
+**Aperto:**
+- da valutare del modello (pillole, «grande» vicino al bordo, «Merenda» larga);
+- il filtro scontorna regge solo con foto su fondo bianco, con foto del brand si toglie .ritaglio (scritto in TEMPLATE.md);
+- ombre grigie sotto i prodotti sui fondi colorati;
+- con un accento caldo vicino al pane il titolo di sfornato e inaugurazione è al limite del contrasto.
+
+#### Tostato
+
+- **Modello:** `bakery/22`, «12 cafe-bakery templates» (marchio finto «psomi»), https://www.etsy.com/listing/4469013896. Grigio tortora con grana di cemento, titoli grassissimi tondi in crema minuscolo, scritte a pennarello marrone su carta, prodotti scontornati enormi.
+- **Font:** Bagel Fat One (titoli), Gochi Hand (testi e scritte a mano grandi, al posto del pennarello).
+- **Palette demo:** principale `#FEFFF1`, secondario `#7B3F20`, accento `#8C7563`, sfondo `#A59A90`.
+- **Foto:** 8 Pexels (3 scontornate con la loro -maschera.jpg).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «good morning» |
+| speciale | «today's special vanilla cake» |
+| fame | «hungry?» |
+| brunch | «Brunch Daily 10 am - 14 pm» |
+| orari | «We Are Open 8AM-6PM» |
+| visita | «Visit our Cafe» |
+| scontrino | «psomi … TOTAL VISIT US!» |
+| novita | «we serve matcha tea!» |
+
+**Diverso dal modello:**
+- marchio = nome in testo con un pane a linea in SVG e la riga «panetteria & pasticceria»;
+- carta = sfondo schiarito, scritte a mano in secondario;
+- caffè freddo in copertina, cornetto aperto senza briciole in fame;
+- brunch con baguette ruotata e fogli strappati in clip-path;
+- pani impilati negli orari;
+- cartello di visita in CSS con cavalletto SVG;
+- voci dello scontrino a mano, niente chicchi;
+- novita con cornetti scuriti al posto della trama di matcha;
+- grana di cemento come rumore SVG.
+
+**Lasciate fuori:** freshly baked (pancarré a motivo), Happy Woman's Day, latte time (doppione), tre fasce di bevande, griglia e mockup del feed.
+
+**Aperto:**
+- da valutare del modello;
+- nella prova logo scuro sopra il dolce in speciale si legge meno;
+- con secondario chiaro le scritte sulla carta si leggono poco, con principale e sfondo entrambi chiari i titoli spariscono;
+- con font larghi la frase di brunch va su due righe;
+- piccola ombra grigia sotto il cornetto.
+
+#### Pralina
+
+- **Modello:** `bakery/23`, «Bakery Shop Instagram Post + Story» (Very Social Design), https://www.etsy.com/listing/4313532785. Tortora e cipria, serif classico con una parola scritta a mano, foto calde in ovali, cerchi e archi.
+- **Font:** Libre Baskerville (titoli e testi, come il serif del modello), Allison (parola a mano, fissa).
+- **Palette demo:** principale `#85564D`, secondario `#B6A18E`, accento `#9C6B5F`, sfondo `#E8E0D8`.
+- **Foto:** 10 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Love at first bite» |
+| chi-siamo | «About us» |
+| ripetuto | «Baker baker baker» (parola ripetuta con cerchio di foto) |
+| amore | «baked with love» |
+| piu-amato | «weekly best seller» |
+| menu | «Our menu» |
+| sconto | «30% off today!» |
+| recensione | «Testimonials» |
+
+**Diverso dal modello:**
+- modelli quadrati allungati a 4:5;
+- in ripetuto la parola sta in una variabile CSS e la ripete ::before (come testo vero renderizza segnava le righe tagliate);
+- in piu-amato cornetti scontornati = foto con bordo alto frastagliato (clip-path);
+- in sconto «oggi!» sotto e non sovrapposto;
+- parola a mano e cuore in accento, stelle in tinta chiara dello sfondo;
+- recensione da storia 9:16 ricomposta.
+
+**Lasciate fuori:** We are open (quasi uguale alla copertina), slide coperte dai mockup o poco leggibili, pagine dell'inserzione.
+
+**Aperto:**
+- con un secondario forte e scuro i testi in principale sul fondo tortora si leggono meno;
+- titolo della recensione in Allison, non prende il font del brand;
+- da valutare le etichette in maiuscolo spaziato (modello).
+
+#### Frusta
+
+- **Modello:** `bakery/24`, «Bakery 42» di Creative Vibes Lab, https://www.etsy.com/listing/4306798415. Rosso, giallo e nero su bianco caldo, una parola enorme per post, disegni a linea (frusta, cornetto), note di carta su foto di forno da vicinissimo.
+- **Font:** titoli per layout: Archivo 900 (copertina), Bagel Fat One (forno, brunch; il display anni Settanta non è su Google), Libre Caslon Condensed (impasto), Oswald 600 (prodotto), Gochi Hand (cornice), Poppins (orari, curiosita); testi Poppins, Oswald, Playfair Display («dal 1958»); Mrs Saint Delafield per la firma, Archivo 900 diretto per la parola gigante di impasto e «Forno» di brunch.
+- **Palette demo:** principale `#161412`, secondario `#FFCB00`, accento `#BC1D14`, sfondo `#F4F2F3`.
+- **Foto:** 6 Unsplash.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Bakery.» (frusta disegnata, «since 1930», firma) |
+| orari | «open hour» |
+| prodotto | «COOKIES» |
+| impasto | «FROM FLOUR TO FLAVOR / DOUGH» |
+| curiosita | «DID YOU KNOW?» |
+| cornice | «CROISSANT» |
+| forno | «from HEAVEN (and our oven)» |
+| brunch | «BRUNCH 10-12 am not your typical Bakery» |
+
+**Diverso dal modello:**
+- in impasto la parola gigante è intera sul bordo basso (nel modello tagliata, renderizza la segnava);
+- «Forno.» tutto dentro il post;
+- titolo di prodotto in accento rosso (era arancio);
+- cornetto e frusta SVG a linea più regolari degli schizzi;
+- carta della nota = sfondo ingiallito, righe SVG;
+- scheda di curiosita dritta;
+- brunch nel font tondo anni Settanta;
+- foto con soggetti diversi.
+
+**Lasciate fuori:** slide con oggetto scontornato su fondo pieno (Crispy/Fluffy, get rollin', DONUT worry, ICED COFFEE, BITE ME...), finto post Facebook e barra di ricerca, collage a 9 riquadri, scritte su texture simili a forno e brunch, FAQ illeggibile, doppioni.
+
+**Aperto:**
+- da valutare del modello (parole vicino al bordo, scheda arrotondata con ombra);
+- con un secondario scuro titolo e parola gigante di impasto si leggono poco sulla foto scura;
+- con font larghi titolo di impasto su 3 righe copre le mani;
+- Bagel Fat One, Gochi Hand e Oswald 600 con i font del brand escono più leggeri (400);
+- foto degli orari più fredda.
+
+#### Pagnotta
+
+- **Modello:** `bakery/25`, «Bakery/Café Instagram, 130 templates» (The Musgram Studio), https://www.etsy.com/listing/4463123413. Arancio caramello, marrone e beige su crema, serif morbidi e grassi (Cooper e Recoleta), scacchi, quadretti da tovaglia, nastro di carta, prodotti scontornati.
+- **Font:** Young Serif (titoli, simile a Recoleta), Caprasimo (titoli in maiuscolo grasso tipo Cooper: mercato, domande), Bodoni Moda chiaro (parola verticale di dietro); testi Poppins, Hind, Young Serif secondo il layout; Kalam 700 (scritta a mano nel mito).
+- **Palette demo:** principale `#C5752E`, secondario `#865338`, accento `#BE9869`, sfondo `#FDEBD3`.
+- **Foto:** 15 Pexels (19 file: tre ritagli di biscotto, tre scontornati con -maschera.jpg).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «New on the Menu» |
+| listino | «Bakery Menu» |
+| offerta | «Pick Your Cookies» |
+| mito | «MYTH: Fresh bread should be soft» |
+| mercato | «The Local Market Pop-Up» |
+| domande | «Q&A TIME» |
+| dietro | «behind the scenes» |
+
+**Diverso dal modello:**
+- scontornati di listino, domande e mercato = foto rettangolari tagliate dai bordi;
+- un cornetto e un cupcake nel mercato, pagnotta a fette nel mito;
+- mercato «IL / FORNO / VA IN / PIAZZA»;
+- in dietro la parola verticale più piccola (250 px) per renderizza;
+- tolte icone dei contatti e briciole;
+- testo sui fondi pieni chiaro o scuro secondo la luminosità;
+- nastri, quadretti e scacchi nei colori del brand, pirottino bianco (oggetto);
+- linguette in tinte di principale e secondario.
+
+**Lasciate fuori:** slide visibili solo in mockup inclinati o telefoni (ordine, giveaway, FAQ, collab, scontrino...), Special Discount e Creamy Macaron (scontornati a mano, simili), Opening Week (simile al listino), schede di vendita.
+
+**Aperto:**
+- da valutare del modello (pillole, riquadri con ombra, parole vicino al bordo);
+- nella prova il profilo di domande è smorto;
+- bordo del cornetto scontornato con un tratto dritto;
+- con secondario chiaro i blocchi pieni diventano chiari e il testo passa a scuro.
+
+#### Mandorla
+
+- **Modello:** `bakery/26`, «The Bakery Instagram Posts» (20 post, 1080x1440), https://www.etsy.com/listing/4571249260. Caramello e cioccolato su carta stropicciata, rosa cipria e crema, serif classico leggero con maiuscolo spaziato, foto calde e scure.
+- **Font:** Cormorant Garamond (titoli, come l'originale), Montserrat (testi, come l'originale).
+- **Palette demo:** principale `#6B4126`, secondario `#D3A375`, accento `#E8BBA8`, sfondo `#F8F4EC`.
+- **Foto:** 10 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Weekend Specials Checklist» |
+| alba | «Behind the scenes, Baking Before Sunrise» |
+| mito | «Myth or Fact?» |
+| stagione | «Our Seasonal Specials» |
+| consiglio | «Baking Tip: how to keep bread fresh longer» |
+| citazione | «Life is what you bake it.» |
+| domande | «3 questions to Ask Your Baker» |
+| apertura | «Countdown to freshly baked goodness» |
+
+**Diverso dal modello:**
+- modello 3:4 schiacciato a 4:5;
+- carta stropicciata = filtro SVG in soft-light sui fondi pieni (alba, domande);
+- bollino smerlato e icona del forno ridisegnati in SVG;
+- etichette chiare = secondario mescolato con lo sfondo;
+- testo su secondario e accento passa da solo tra scuro e quasi bianco;
+- in alba etichetta, titolo e orari in una colonna;
+- in apertura un conto alla rovescia vero al posto dello spazio vuoto.
+
+**Lasciate fuori:** slide con scontornati, cartine o acquerelli, giochi poco adatti a un forno italiano, doppioni (This or That, Afternoon Tea, Bakery Trends, Bakery Hashtags, Giveaway...).
+
+**Aperto:**
+- con secondario o accento di luminosità media il testo automatico può avere poco contrasto;
+- con un principale chiaro domande, apertura e consiglio perdono il fondo scuro;
+- da valutare solo il maiuscolo spaziato (modello).
+
+#### Maritozzo
+
+- **Modello:** `bakery/27`, «Bakery/Café Instagram templates» (84 post, Moxieque; stesso negozio di cannella), https://www.etsy.com/listing/1816678376. Corallo pieno e crema, serif classico enorme in maiuscolo, foto di dolci a tutto campo con riquadri chiari sopra.
+- **Font:** Old Standard TT (titoli, uguale), Montserrat (testi, uguale).
+- **Palette demo:** principale `#D7452C`, secondario `#2B2826`, accento `#D7452C`, sfondo `#F3EADB`.
+- **Foto:** 10 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Tasty pastry for you!» |
+| prodotto | «A cake taste of Sweet & Tangy» |
+| domande | «Q&A Fridays / Ask us anything!» |
+| citazione | «Cake: because no great story ever started with someone eating a salad.» |
+| raccolta | «Mood board» |
+| biglietto | «29-Nov / 30-Nov Black Friday deals» |
+| edizione | «Limited Edition Treat Alert / Maritozzi» |
+| fornaio | «Meet the baker Isabel» |
+
+**Diverso dal modello:**
+- post quadrati portati a 4:5;
+- in domande la Q gigante = C disegnata in SVG, titolo «Chiedilo al forno»;
+- in raccolta fondo pieno in principale;
+- riga curva di prodotto in SVG textPath;
+- in fornaio carta stropicciata = foto tinta dallo sfondo (multiply) con pieghe a filetti;
+- riquadri e testi chiari in tinta schiarita dello sfondo;
+- scotch grigio fisso (oggetto);
+- titolo di edizione minuscolo, nome del prodotto in secondario. Scelte le 8 slide più diverse da cannella.
+
+**Lasciate fuori:** slide già in cannella o con scontornati e disegni a mano (Brunch & Lunch, eventi, We are open, Ingredient spotlight...), altre slide solo in mockup storti o tagliate.
+
+**Aperto:**
+- da valutare del modello (etichette tonde, maiuscolo spaziato, fascia vicino al bordo);
+- testi chiari in basso della copertina poco leggibili (come il modello);
+- con accento = principale titoli ed evidenze hanno lo stesso colore. Corretto un bug nello script che rimpicciolisce i titoli (misurava il contenitore invece del testo, con Sora il titolo diventava minuscolo).
+
+#### Amarena
+
+- **Modello:** `bakery/28`, «Creamy Bakery», https://www.etsy.com/listing/4505509847. Bordeaux, rosso amarena, rosa bruno e crema; serif morbido accanto a un grottesco nero maiuscolo, schede color carta sulle foto, spighe e tazze disegnate a tratto.
+- **Font:** DM Serif Display (titoli), Red Hat Display (testi, marchio, titolo di novita), Yellowtail (scritta a mano «Novità»).
+- **Palette demo:** principale `#562427`, secondario `#966255`, accento `#9D2D29`, sfondo `#F1EDE1`.
+- **Foto:** 6 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «CREAMY Bakery, EST. 2026» |
+| listino | «CREAMY Bakery» con prezzi |
+| novita | «MAISON LEMON CAKE / Special» |
+| senza-zucchero | «Sugar-free desserts» |
+| mattino | «Tasty Morning Joy» |
+| prodotto | «Strawberry Almond Cake» |
+| orari | «Opening hours» |
+| frase | «Good Food Good Mood» |
+
+**Diverso dal modello:**
+- foto diverse (cornetti al posto dei macaron, cornetti con fragole, biscotti su carta forno, tartelletta alla fragola);
+- copertina scurita (0.82);
+- spighe, rametto, cupcake, tazze e pane in SVG a tratto semplici, più poveri delle incisioni;
+- «Novità» tutta sulla foto;
+- fondo del listino = sfondo un po' più scuro e caldo;
+- orari con trattino corto;
+- vetrina di mattino ingrandita per tagliare i prezzi in dollari.
+
+**Lasciate fuori:** scheda rossa solo marchio, brunch (si sovrappone a orari e frase), mockup ricerca Google, calendario, chat, CREAMY x3, Sourdough Bread, WE'RE OPEN ad arco, scritta circolare (quasi tutte leggibili solo in miniatura).
+
+**Aperto:**
+- con sfondo bianco puro il fondo del listino diventa rosato;
+- nel prodotto titolo arancio sul telo giallo della foto d'esempio poco leggibile;
+- da valutare scritte sotto 24 px e corsivo «umore» (come il modello).
+
+#### Lievito
+
+- **Modello:** `bakery/29`, «IG Post Canva Template» di And Done Studio («Butterfield Home Bakery»), https://www.etsy.com/listing/4485475944. Kraft, beige e marrone con accento terracotta; serif classico, macchina da scrivere e corsivo a mano; carte vere appoggiate sulle foto del prodotto (foglio strappato, centrino, tagliando, cartolina, biglietti da visita).
+- **Font:** Gelasio (titoli; il serif Canva a contrasto medio non è su Google), Courier Prime (testi, uguale), Sacramento (corsivo a mano: una parola, la data, la recensione).
+- **Palette demo:** principale `#4E3F31`, secondario `#A8957E`, accento `#C4532F`, sfondo `#E8E1D7`.
+- **Foto:** 13 Pexels (6 a tutta pagina, 7 crostate dall'alto rese tonde).
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Layers you can hear» |
+| listino | «Sourdough Mini Pie» |
+| orari | «Open Hour» |
+| domande | «Q&A, Do you use any preservatives?» |
+| recensione | «Kind words» |
+| avviso | «Sorry we're Closed today» |
+| preordine | «Next Pre-order 08 October» |
+| biglietto | «What we do, Small batch bakes, made to share» |
+
+**Diverso dal modello:**
+- tolte le icone del cornetto da logo e timbro (logo = nome con motto in corsivo);
+- centrino, foglio strappato, tagliando dentellato e molla disegnati in SVG;
+- busta = rettangolo semplice, piatto d'argento = foto scura vera;
+- crostate del listino = foto a cerchio con ombra;
+- «D e R»;
+- in orari e preordine etichetta e firma in principale (foto chiare);
+- foto di avviso e biglietto scurite.
+
+**Lasciate fuori:** slide con prodotti scontornati che volano (Buttery soft, Buy 1 get 1, Sourdough Loaf, Lemon Tart...), mockup di oggetti (busta col codice a barre, cornice dorata, vassoio con polaroid, sacchetti), Meet the baker e vlog (ritratto), collage ricetta.
+
+**Aperto:**
+- nel biglietto testo chiaro sull'accento, con accento chiaro si legge poco;
+- da valutare del modello (etichette piccole spaziate, testi sotto 24 px, righe della fascia, prezzi vicino al bordo);
+- in preordine l'etichetta cade sul fiocco del sacchetto nella foto d'esempio.
+
+#### Focaccia
+
+- **Modello:** `bakery/30`, «Bakery & Pastry Store Posts & Stories» (Cottage Bakery; stesso negozio di glassa), https://www.etsy.com/listing/4464918772. Cioccolato e nocciola su carta, corsivo a pennello enorme, prodotti ritagliati che si fondono col fondo, scarabocchi a matita.
+- **Font:** Kaushan Script (titoli, corsivo a pennello), Courier Prime (testi, macchina da scrivere), Oswald fisso (etichette, fasce, seconde righe).
+- **Palette demo:** principale `#4E2E1F`, secondario `#9B7C5F`, accento `#C2A586`, sfondo `#F5F0EA`.
+- **Foto:** 7 Pexels.
+
+| Layout | Slide del modello |
+|---|---|
+| copertina | «Bakery x5 / Order now» |
+| torta | «Let's eat some CAKE / Strawberry shortcake» |
+| gusti | «Choose your favorite Flavor» |
+| forno | «Bakery & Cake Shop / Baked perfection» |
+| cornetti | «Freshly Baked Croissants Only» |
+| offerta | «Fruit Galette 20% off» |
+| novita | «Coming stay tuned Soon» |
+
+**Diverso dal modello:**
+- ritagliati = foto su fondo chiaro fuse con la carta (multiply e bordo sfumato), con certe foto resta un alone;
+- crostata a griglia al posto della galette;
+- in gusti e novita le parole piccole non toccano più il corsivo (renderizza);
+- testo sulla fascia bianco o nero secondo il secondario;
+- scarabocchi in accento. Lasciati fuori tutti i segni di glassa (foglietti col nastro, telefono, tre foto in cornice, dolce tondo, titoli tondi);
+- usati solo parola ripetuta in pila, corsivo enorme, parole incastrate, raggiere, anelli a scarabocchio.
+
+**Lasciate fuori:** slide con segni di glassa (Price List, orari, FAQ, Contact Us, Buy 1 get 1, Tarts & Pies), interfaccia Instagram, slide troppo vicine a sfornati di glassa, doppioni in miniatura.
+
+**Aperto:**
+- velatura appena visibile in basso a destra in forno;
+- con font larghi «TORTA» quasi al bordo;
+- Oswald resta fisso.
 
 ## Dove sta cosa
 

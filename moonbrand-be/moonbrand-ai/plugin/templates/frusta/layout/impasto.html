@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@400&family=Poppins:wght@400&family=Archivo:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Libre Caslon Condensed', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--secondario); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; display: block; }
+
+  .testa { position: absolute; right: 64px; top: 104px; width: 760px; }
+  .titolo { text-align: right; font-family: var(--font-titoli); font-weight: 400; font-size: 116px; line-height: 0.86; letter-spacing: -0.01em; text-transform: uppercase; }
+  .sotto { margin: 22px 0 0 auto; width: 640px; text-align: right; font-size: 34px; line-height: 1.2; letter-spacing: -0.03em; }
+  /* La parola gigante appoggiata sul bordo basso, larga quanto il post (nel modello usciva dal bordo). */
+  .parola { position: absolute; left: 22px; right: 22px; bottom: 0; text-align: center; white-space: nowrap; font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 212px; line-height: 1; letter-spacing: -0.045em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: dietro le quinte, mani al lavoro sull'impasto, fondo scuro in alto a destra per il titolo -->
+  <img class="foto" src="../esempio/impasto.jpg" alt="">
+
+  <!-- titolo: 2 righe in maiuscolo, 4-5 parole, finisce con i due punti -->
+  <div class="testa">
+  <h1 class="titolo">Dalla farina<br>al sapore:</h1>
+  <!-- sotto: una frase breve, 5-7 parole -->
+  <p class="sotto">guarda crescere il nostro impasto.</p>
+  </div>
+
+  <!-- parola: una parola gigante sul bordo basso, larga quanto il post, 6-7 lettere -->
+  <p class="parola">Impasto</p>
+</body>
+</html>

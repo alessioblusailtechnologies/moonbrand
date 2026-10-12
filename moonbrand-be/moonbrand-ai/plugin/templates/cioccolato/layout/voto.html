@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  .titolo { position: absolute; left: 96px; top: 150px; width: 860px; font-size: 80px; }
+  .invito { position: absolute; left: 98px; top: 424px; font-size: 24px; opacity: 0.8; }
+  .griglia { position: absolute; left: 96px; top: 540px; width: 888px; height: 560px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .griglia::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px solid color-mix(in oklab, var(--principale) 18%, transparent); }
+  .griglia::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid color-mix(in oklab, var(--principale) 18%, transparent); }
+  .voce { padding: 50px 0 0 0; }
+  .voce:nth-child(even) { padding-left: 64px; }
+  .num { font-family: var(--font-titoli); font-size: 64px; line-height: 1; color: var(--accento); }
+  .nome { margin-top: 26px; font-family: var(--font-titoli); font-size: 34px; }
+  .desc { margin-top: 14px; font-size: 19px; opacity: 0.65; }
+  .barra { position: absolute; left: 66px; right: 66px; top: 1150px; height: 92px; background: var(--principale); color: var(--chiaro); display: flex; align-items: center; justify-content: center; font-size: 19px; letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- etichetta: la rubrica, 2-4 parole -->
+  <p class="etichetta">Il voto degli stili</p>
+
+  <!-- titolo: una domanda di 5-8 parole -->
+  <h1 class="titolo">Quale stile senti<br>più tuo?</h1>
+  <!-- invito: 6-10 parole -->
+  <p class="invito">Scegli la tua preferita, o una coppia da unire.</p>
+
+  <div class="griglia">
+    <!-- voci: quattro opzioni, nome di 1 parola e descrizione di 3 parole -->
+    <div class="voce"><p class="num">01</p><p class="nome">Essenziale</p><p class="desc">Quieta e pulita</p></div>
+    <div class="voce"><p class="num">02</p><p class="nome">Scultorea</p><p class="desc">Decisa, a rilievo</p></div>
+    <div class="voce"><p class="num">03</p><p class="nome">Vintage</p><p class="desc">Ricca e nostalgica</p></div>
+    <div class="voce"><p class="num">04</p><p class="nome">Botanica</p><p class="desc">Morbida e naturale</p></div>
+  </div>
+
+  <!-- barra: l'invito a commentare, 4-7 parole -->
+  <p class="barra">Commenta 01, 02, 03 o 04</p>
+
+  <div class="piede">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pasticceria Olmo</span>
+    <!-- pagina: numero della slide nel carosello -->
+    <span>06 / 07</span>
+  </div>
+</body>
+</html>

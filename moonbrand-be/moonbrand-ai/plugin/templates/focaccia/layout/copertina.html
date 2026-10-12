@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E2E1F; --secondario: #9B7C5F; --accento: #C2A586; --sfondo: #F5F0EA; }
+  :root { --font-titoli: 'Kaushan Script', cursive; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.04) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+  .etichetta { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .anelli { color: var(--accento); stroke-width: 7; }
+  .tratto { color: var(--principale); stroke-width: 3; }
+
+  /* la stessa parola ripetuta cinque volte, il pane appoggiato sopra le righe di mezzo */
+  .pila { position: absolute; left: 0; top: 34px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 252px; line-height: 0.93; }
+  .pila span { display: block; }
+  .foto { position: absolute; left: 200px; top: 160px; width: 700px; height: 1037px; object-fit: cover; display: block; transform: rotate(56deg); mix-blend-mode: multiply; filter: brightness(1.06);
+    -webkit-mask-image: radial-gradient(ellipse 30% 49% at 50% 50%, #000 70%, transparent 100%); mask-image: radial-gradient(ellipse 30% 49% at 50% 50%, #000 70%, transparent 100%); }
+  .invito { position: absolute; left: 0; width: 1080px; top: 1244px; text-align: center; font-size: 44px; }
+
+  .anelli-su { width: 360px; height: 520px; left: -30px; top: -40px; }
+  .stella { width: 70px; height: 150px; left: 1030px; top: 80px; }
+  .cuore { width: 80px; height: 150px; left: -30px; top: 1080px; transform: rotate(-20deg); }
+</style>
+</head>
+<body>
+  <svg class="doodle anelli anelli-su" viewBox="0 0 360 520"><path d="M60 10 C120 140 200 300 290 470 C306 500 276 512 262 482 C190 330 110 180 40 70 C24 44 46 30 66 56 C150 170 240 320 320 450 C336 476 312 490 296 462 C230 350 160 240 100 160"/></svg>
+
+  <!-- pila: la stessa parola (il prodotto o il nome del forno, al massimo 6 lettere) ripetuta cinque volte -->
+  <h1 class="pila"><span>Forno</span><span>Forno</span><span>Forno</span><span>Forno</span><span>Forno</span></h1>
+
+  <!-- foto: un pane o un prodotto lungo, dall'alto su un fondo liscio chiaro, messo di traverso sulle righe di mezzo -->
+  <img class="foto" src="../esempio/baguette.jpg" alt="">
+
+  <svg class="doodle tratto stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle tratto cuore" viewBox="0 0 100 110"><path d="M50 98 C30 76 6 58 8 34 C10 14 34 8 47 30 C54 10 82 4 90 26 C98 52 72 76 50 98 C44 80 42 62 34 50"/></svg>
+
+  <!-- invito: 2-3 parole in maiuscolo -->
+  <p class="invito etichetta">Ordina ora</p>
+</body>
+</html>

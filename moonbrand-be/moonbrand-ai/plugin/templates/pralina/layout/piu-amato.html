@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Allison&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #85564D; --secondario: #B6A18E; --accento: #9C6B5F; --sfondo: #E8E0D8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Libre Baskerville', serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --firma: 'Allison', cursive; --collina: color-mix(in srgb, var(--secondario) 45%, var(--chiaro)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--chiaro); color: var(--principale); font-family: var(--font-testo); }
+
+  .barra { position: absolute; left: 40px; top: 352px; width: 540px; height: 13px; background: var(--secondario); }
+  .titolo { position: absolute; left: 70px; top: 262px; width: 560px; font-family: var(--font-titoli); font-weight: 400; font-size: 84px; line-height: 1; letter-spacing: -0.01em; }
+  .corsivo { position: absolute; left: 130px; top: 340px; font-family: var(--firma); font-size: 230px; line-height: 1; color: var(--accento); }
+
+  .contatti { position: absolute; left: 640px; top: 238px; width: 410px; text-align: center; font-size: 24px; line-height: 1.6; letter-spacing: 0.1em; }
+  .contatti .logo { display: block; text-transform: uppercase; }
+
+  .collina { position: absolute; background: var(--collina); border-radius: 50% 50% 0 0 / 220px 220px 0 0; }
+  .collina.sx { left: 0; top: 640px; width: 520px; height: 710px; }
+  .collina.dx { left: 640px; top: 600px; width: 520px; height: 750px; }
+  .foto { position: absolute; left: 0; top: 650px; width: 1030px; height: 700px; object-fit: cover;
+    clip-path: polygon(6% 12%, 14% 6%, 24% 9%, 33% 2%, 44% 6%, 52% 0%, 63% 5%, 71% 2%, 80% 8%, 88% 6%, 95% 14%, 100% 30%, 100% 100%, 3% 100%, 0% 40%, 2% 22%); }
+</style>
+</head>
+<body>
+  <div class="collina sx"></div>
+  <div class="collina dx"></div>
+
+  <!-- titolo: 2 parole in serif minuscolo sulla barra, chiuse da una parola a mano sotto -->
+  <div class="barra"></div>
+  <h1 class="titolo">dolce della</h1>
+  <!-- parola a mano: una parola, al massimo 9 lettere -->
+  <p class="corsivo">settimana</p>
+
+  <!-- contatti: nome, sito, telefono e profilo, uno per riga -->
+  <p class="contatti"><span class="logo">Pasticceria Gemma</span>pasticceriagemma.it<br>051 234 5678<br>@pasticceriagemma</p>
+
+  <!-- foto: il prodotto della settimana, con il bordo in alto irregolare come ritagliato -->
+  <img class="foto" src="../esempio/cornetti-piatto.jpg" alt="">
+</body>
+</html>

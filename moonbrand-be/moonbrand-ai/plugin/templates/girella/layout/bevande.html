@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  body { background: #000; }
+  .fondo { object-position: 50% 50%; filter: saturate(0.85); }
+  .profilo { left: 0; width: 1080px; top: 112px; text-align: center; font-style: italic; font-weight: 400; color: var(--chiaro); }
+  .carta { position: absolute; left: 135px; top: 298px; width: 810px; height: 752px; background: var(--secondario); color: var(--su-secondario); }
+  .titolo { position: absolute; left: 0; width: 810px; top: 122px; text-align: center; font-size: 104px; line-height: 0.86; letter-spacing: -0.045em; }
+  .sotto { position: absolute; left: 0; width: 810px; top: 340px; text-align: center; font-size: 34px; text-transform: uppercase; letter-spacing: -0.01em; }
+  .strisce { position: absolute; left: 0; top: 434px; width: 825px; height: 318px; display: flex; }
+  .strisce figure { flex: 1; height: 318px; background: var(--secondario); border-left: 2px solid color-mix(in srgb, var(--su-secondario) 14%, var(--secondario)); overflow: hidden; }
+  .strisce figure:first-child { border-left: 0; }
+  .strisce figure:last-child { transform: translate(4px, 6px) rotate(1.2deg); box-shadow: -2px 3px 6px rgba(0,0,0,0.15); }
+  .strisce img { width: 100%; height: 318px; object-fit: cover; display: block; }
+</style>
+</head>
+<body>
+  <!-- fondo: una texture del bar a tutto campo (schiuma, caffè, farina) -->
+  <img class="fondo" src="../esempio/schiuma.jpg" alt="">
+
+  <!-- profilo: il profilo social del brand -->
+  <p class="profilo">@fornomaddalena</p>
+
+  <div class="carta">
+    <!-- titolo: 3-5 parole su due righe -->
+    <h1 class="titolo"><span>Scegli la</span><span>tua pausa</span></h1>
+    <!-- sotto: 2-3 parole in maiuscolo, la rubrica o la stagione -->
+    <p class="sotto">Edizione autunno</p>
+    <!-- strisce: 6 foto strette e alte, una bevanda o un prodotto per striscia -->
+    <div class="strisce">
+      <figure><img src="../esempio/latte-freddo.jpg" alt="" style="object-position: 62% 60%;"></figure>
+      <figure><img src="../esempio/matcha.jpg" alt="" style="object-position: 50% 62%;"></figure>
+      <figure><img src="../esempio/frappe.jpg" alt="" style="object-position: 40% 60%;"></figure>
+      <figure><img src="../esempio/cappuccino.jpg" alt="" style="object-position: 40% 55%;"></figure>
+      <figure><img src="../esempio/matcha-tavolo.jpg" alt="" style="object-position: 50% 55%;"></figure>
+      <figure><img src="../esempio/caffe-ghiaccio.jpg" alt="" style="object-position: 45% 50%;"></figure>
+    </div>
+  </div>
+</body>
+</html>

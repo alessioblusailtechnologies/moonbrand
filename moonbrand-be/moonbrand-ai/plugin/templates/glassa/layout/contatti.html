@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Great+Vibes&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    /* il testo sul secondario: chiaro se il secondario è scuro, il principale se è chiaro */
+    --su-secondario: oklch(from var(--secondario) clamp(0.2, (0.7 - l) * 1000, 0.97) min(c, 0.02) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .corsivo { font-family: 'Great Vibes', cursive; font-weight: 400; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+  .fascia { position: absolute; left: 0; top: 340px; width: 1080px; height: 692px; background: var(--secondario); color: var(--su-secondario); }
+  .titolo { position: absolute; left: 96px; top: 90px; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 84px; line-height: 1;  text-transform: uppercase; }
+  .voci { position: absolute; left: 96px; top: 222px; width: 520px; list-style: none; }
+  .voci li { display: flex; align-items: center; gap: 38px; font-size: 27px; line-height: 1.2; }
+  .voci li + li { margin-top: 44px; }
+  .voci svg { flex: none; width: 48px; height: 48px; fill: currentColor; }
+  .bottone { position: absolute; left: 96px; top: 548px; width: 368px; height: 86px; border-radius: 12px; background: var(--accento); color: var(--principale);
+    display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; text-transform: uppercase; }
+  /* il telefono: un contorno con la foto che si vede attraverso */
+  .telefono { position: absolute; left: 652px; top: 290px; width: 386px; height: 790px; border: 11px solid var(--principale); border-radius: 46px; overflow: hidden; }
+  .telefono img { position: absolute; left: -663px; top: -301px; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; }
+  .telefono::before { content: ''; position: absolute; z-index: 1; left: 50%; top: -2px; transform: translateX(-50%); width: 150px; height: 30px; background: var(--principale); border-radius: 0 0 18px 18px; }
+  .frase { position: absolute; z-index: 1; left: 0; right: 0; top: 150px; text-align: center; font-size: 104px; line-height: 1.12; color: var(--chiaro); }
+  .stella { color: var(--chiaro); width: 110px; height: 120px; }
+  .firma { position: absolute; left: 0; width: 1080px; bottom: 74px; text-align: center; font-size: 26px; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: la vetrina o il banco pieno, a tutto campo (si vede sopra, sotto e nel telefono) -->
+  <img class="foto" src="../esempio/vetrina.jpg" alt="">
+
+  <div class="fascia">
+    <!-- titolo: 1-2 parole -->
+    <h1 class="titolo">Contatti</h1>
+    <!-- voci: indirizzo, telefono, email -->
+    <ul class="voci">
+      <li><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.6A2.6 2.6 0 1 1 12 6.4a2.6 2.6 0 0 1 0 5.2z"/></svg><span>Via Garibaldi 12,<br>40124 Bologna</span></li>
+      <li><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>051 234 5678</span></li>
+      <li><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1.6 2 7.4 5.6L19.4 7H4.6zM4 9.1V17h16V9.1l-8 6z"/></svg><span>ciao@ilpiccoloforno.it</span></li>
+    </ul>
+    <!-- bottone: 1-2 parole, l'invito -->
+    <p class="bottone">Scrivici</p>
+  </div>
+
+  <div class="telefono">
+    <img src="../esempio/vetrina.jpg" alt="">
+    <!-- frase: 3-5 parole in corsivo, una per riga -->
+    <p class="frase corsivo">Passa<br>per un<br>dolce<br>oggi</p>
+  </div>
+
+  <svg class="doodle stella" style="left: 96px; top: 252px; transform: rotate(-10deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle stella" style="left: 930px; top: 1010px; transform: rotate(12deg);" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+
+  <!-- firma: il profilo social -->
+  <p class="firma">@ilpiccoloforno</p>
+</body>
+</html>

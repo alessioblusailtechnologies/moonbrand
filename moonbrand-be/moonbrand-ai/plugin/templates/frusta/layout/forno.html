@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Oswald:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Oswald', sans-serif; }
+  /* Testi e disegno chiari sulla foto: lo sfondo del brand schiarito, leggibile anche se il brand ha lo sfondo scuro. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .disegno { position: absolute; left: 170px; top: -40px; width: 1100px; height: 660px; }
+
+  .prima { position: absolute; left: 124px; top: 860px; font-weight: 300; font-size: 132px; line-height: 1; letter-spacing: -0.05em; }
+  .titolo { position: absolute; left: 124px; top: 986px; font-family: var(--font-titoli); font-weight: 400; font-size: 214px; line-height: 1; letter-spacing: -0.03em; text-transform: uppercase; white-space: nowrap; }
+  .dopo { position: absolute; right: 64px; top: 1206px; font-size: 60px; line-height: 1; letter-spacing: -0.05em; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto da vicinissimo, lucido e dorato, a tutto post -->
+  <img class="foto" src="../esempio/cornetti.jpg" alt="">
+
+  <!-- disegno: il prodotto disegnato a linea chiara, grande, che esce dall'angolo in alto a destra -->
+  <svg class="disegno" viewBox="50 70 400 240" fill="none" stroke="var(--chiaro)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <style>.fine { stroke-width: 1.1; }</style>
+    <g transform="rotate(-8 250 180)">
+    <path d="M78 300 Q44 259 73 236 Q59 175 105 157 Q131 97 192 97 Q250 68 308 97 Q369 97 395 157 Q441 175 427 236 Q456 259 422 300 Q382 285 382 260 Q358 242 346 215 Q313 206 286 184 Q250 190 214 184 Q187 206 154 215 Q142 242 118 260 Q118 285 78 300 Z"/>
+    <path d="M118 260 Q102 237 73 236 M154 215 Q139 178 105 157 M214 184 Q216 138 192 97 M286 184 Q284 138 308 97 M346 215 Q361 178 395 157 M382 260 Q398 237 427 236"/>
+    <path class="fine" d="M122 238 Q107 215 78 207 M133 224 Q121 199 94 188 M169 194 Q159 159 131 131 M188 185 Q183 148 159 117 M238 172 Q246 133 233 92 M262 172 Q275 134 267 92 M312 185 Q335 156 341 117 M331 194 Q358 169 369 131 M367 224 Q392 214 406 188 M378 238 Q405 231 422 207"/>
+    </g>
+  </svg>
+
+  <!-- prima: la parola piccola sopra il titolo, 1 parola minuscola -->
+  <p class="prima">dal</p>
+  <!-- titolo: 1 parola in maiuscolo, al massimo 6 lettere -->
+  <h1 class="titolo">Cielo</h1>
+  <!-- dopo: la battuta tra parentesi sotto, 3-4 parole -->
+  <p class="dopo">(e dal nostro forno)</p>
+</body>
+</html>

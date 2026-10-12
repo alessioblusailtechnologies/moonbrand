@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&family=Gilda+Display&family=Source+Sans+3:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5E2A1C; --secondario: #7F5943; --accento: #F3EFEA; --sfondo: #E9E1D6; }
+  :root { --font-titoli: 'Lexend', sans-serif; --font-testo: 'Source Sans 3', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .sopra { position: absolute; left: 158px; top: 150px; font-family: 'Gilda Display', serif; font-size: 70px; line-height: 1; white-space: nowrap; }
+  .titolo { position: absolute; left: 158px; top: 240px; font-family: var(--font-titoli); font-weight: 700; font-size: 80px; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+  .nota { position: absolute; font-size: 31px; line-height: 1.6; letter-spacing: 0.06em; }
+  .foto { position: absolute; left: 300px; top: 420px; width: 540px; height: 800px; object-fit: cover; display: block; clip-path: ellipse(49% 49% at 50% 50%); }
+  svg { position: absolute; left: 0; top: 0; }
+  svg path { fill: none; stroke: var(--principale); stroke-width: 2.5; stroke-dasharray: 6 6; }
+  svg path.punta { stroke-dasharray: none; }
+</style>
+</head>
+<body>
+  <!-- sopra: 2-3 parole in minuscolo che introducono il titolo -->
+  <p class="sopra">i segreti del</p>
+  <!-- titolo: una parola in maiuscolo, il prodotto -->
+  <h1 class="titolo">Pane</h1>
+
+  <!-- foto: il prodotto nel suo cesto o sul piatto, dall'alto, tagliata a ovale -->
+  <img class="foto" src="../esempio/cestino.jpg" alt="">
+
+  <!-- note: 5 pregi del prodotto, 2-4 parole ciascuno, a capo dove serve -->
+  <p class="nota" style="left: 628px; top: 228px;">lievito madre<br>di vent'anni</p>
+  <p class="nota" style="left: 104px; top: 440px;">farina<br>macinata<br>a pietra</p>
+  <p class="nota" style="left: 866px; top: 566px;">crosta<br>sottile</p>
+  <p class="nota" style="left: 80px; top: 1052px;">due giorni<br>di lievitazione</p>
+  <p class="nota" style="left: 862px; top: 1100px;">forno<br>a legna</p>
+
+  <!-- frecce tratteggiate dalle note alla foto -->
+  <svg width="1080" height="1350" viewBox="0 0 1080 1350">
+    <path d="M598 345 C 560 350, 535 375, 528 418"/><path class="punta" d="M517 405 L528 420 L539 406"/>
+    <path d="M168 676 C 170 720, 195 760, 242 780"/><path class="punta" d="M228 769 L244 781 L227 791"/>
+    <path d="M140 1010 C 140 950, 190 905, 260 900"/><path class="punta" d="M246 891 L262 900 L247 910"/>
+    <path d="M968 726 C 965 780, 935 810, 882 812"/><path class="punta" d="M896 802 L880 812 L896 822"/>
+    <path d="M936 1062 C 935 1020, 915 985, 875 970"/><path class="punta" d="M880 984 L872 968 L890 966"/>
+  </svg>
+</body>
+</html>

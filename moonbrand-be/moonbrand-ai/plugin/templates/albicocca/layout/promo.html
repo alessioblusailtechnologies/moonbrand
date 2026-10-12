@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,800&family=Arimo:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); font-family: var(--font-testo); }
+
+  .parola { position: absolute; left: 80px; top: 22px; width: 860px; font-family: var(--font-titoli); font-weight: 800; font-stretch: 92%; font-size: 238px; line-height: 208px; letter-spacing: -0.005em; text-transform: uppercase; color: var(--principale); }
+  .parola span { display: block; height: 208px; white-space: nowrap; }
+  .parola span::before { content: var(--parola); }
+
+  .sagoma { position: absolute; left: -10px; top: 318px; width: 1050px; height: 590px; transform: rotate(14deg); background: var(--sfondo);
+    clip-path: polygon(16% 52%, 26% 29%, 27% 28%, 27% 27%, 37% 14%, 44% 13%, 49% 13%, 56% 14%, 65% 16%, 74% 21%, 80% 28%, 83% 37%, 83% 40%, 85% 54%, 85% 61%, 84% 65%, 84% 68%, 83% 70%, 82% 71%, 72% 77%, 46% 88%, 39% 89%, 29% 90%, 20% 90%, 18% 89%, 17% 79%, 16% 59%); }
+  .dolce { position: absolute; left: -10px; top: 318px; width: 1050px; height: 590px; object-fit: cover; transform: rotate(14deg); mix-blend-mode: multiply; }
+
+  .giorno { position: absolute; left: 684px; top: 140px; width: 300px; height: 214px; border-radius: 50%; transform: rotate(-16deg); background: var(--secondario);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-style: italic; font-size: 30px; line-height: 40px; text-transform: uppercase; color: #FFFFFF; }
+  .giorno span { transform: rotate(16deg); }
+
+  .sconto { position: absolute; left: 14px; top: 924px; width: 500px; height: 336px; border-radius: 50%; transform: rotate(-15deg); background: var(--sfondo); border: 3px solid var(--principale);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .sconto > * { transform: rotate(15deg); }
+  .sconto strong { font-weight: 700; font-size: 74px; line-height: 84px; color: var(--secondario); }
+  .sconto span { font-size: 50px; line-height: 60px; text-transform: uppercase; color: var(--principale); }
+</style>
+</head>
+<body>
+  <!-- parola: una parola di 5 lettere (PROMO, SALDI, DOLCI...) scritta in --parola, ripetuta su 6 righe come trama: è un fondo, le ellissi ci passano sopra -->
+  <h1 class="parola" style="--parola: 'Promo'" aria-label="Promo"><span></span><span></span><span></span><span></span><span></span><span></span></h1>
+
+  <!-- foto: un dolce scontornato su fondo bianco (si fonde con lo sfondo), inclinato sopra le parole; la sagoma dietro segue il suo contorno -->
+  <div class="sagoma"></div>
+  <img class="dolce" src="../esempio/cheesecake-caramello.jpg" alt="">
+
+  <!-- giorno: quando vale, 2 parole su 2 righe -->
+  <p class="giorno"><span>Solo<br>lunedì</span></p>
+
+  <!-- sconto: la percentuale e una parola -->
+  <div class="sconto"><strong>20%</strong><span>sconto</span></div>
+</body>
+</html>

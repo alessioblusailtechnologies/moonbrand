@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Hind:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Young Serif', serif; --font-testo: 'Hind', sans-serif; }
+  :root { --su-principale: oklch(from var(--principale) clamp(0.22, (0.74 - l) * 1000, 0.97) min(c, 0.03) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* blocchi pieni dagli angoli arrotondati: uno in alto a sinistra, uno in basso */
+  .blocco { position: absolute; }
+  .b1 { left: 22px; top: 0; width: 250px; height: 215px; border-radius: 0 0 40px 40px; background: var(--secondario); }
+  .b2 { left: 307px; top: 1105px; width: 248px; height: 245px; border-radius: 48px 48px 0 0; background: var(--accento); }
+
+  .titolo { position: absolute; left: 300px; top: 92px; width: 740px; text-align: center; font-family: var(--font-titoli); font-weight: 400;
+    font-size: 112px; line-height: 120px; letter-spacing: -0.02em; white-space: nowrap; color: var(--principale); }
+
+  .listino { position: absolute; left: 338px; top: 263px; width: 682px; height: 610px; border-radius: 50px; background: var(--principale);
+    padding: 62px 76px 0 77px; color: var(--su-principale); }
+  .voce { display: flex; align-items: baseline; height: 74px; font-size: 33px; font-weight: 600; }
+  .voce .puntini { flex: 1; margin: 0 8px; border-bottom: 2px dashed currentColor; transform: translateY(-6px); }
+
+  .foto { position: absolute; display: block; object-fit: cover; border-radius: 30px; border: 4px solid color-mix(in oklch, var(--accento) 30%, var(--sfondo)); }
+  .f1 { left: 26px; top: 244px; width: 226px; height: 236px; }
+  .f2 { left: 24px; top: 540px; width: 248px; height: 334px; }
+  .f3 { left: 33px; top: 933px; width: 229px; height: 235px; }
+  .pane { position: absolute; left: 598px; top: 1000px; width: 482px; height: 350px; display: block; object-fit: cover; border-radius: 48px 0 0 0; }
+
+  /* la palette in quattro cerchi */
+  .tinte { position: absolute; left: 310px; top: 953px; display: flex; gap: 9px; }
+  .tinte i { display: block; width: 56px; height: 56px; border-radius: 50%; }
+  .tag { position: absolute; left: 310px; top: 1034px; width: 251px; text-align: center; font-size: 26px; color: color-mix(in oklch, var(--secondario) 85%, var(--sfondo)); }
+</style>
+</head>
+<body>
+  <div class="blocco b1"></div>
+
+  <!-- titolo: 1-2 parole, su una riga -->
+  <h1 class="titolo">Il listino</h1>
+
+  <!-- voci: 5-7 prodotti con il prezzo, nomi di 1-2 parole -->
+  <div class="listino">
+    <p class="voce"><span>Michetta</span><span class="puntini"></span><span>€ 0,80</span></p>
+    <p class="voce"><span>Focaccia</span><span class="puntini"></span><span>€ 3,50</span></p>
+    <p class="voce"><span>Pane di segale</span><span class="puntini"></span><span>€ 4,20</span></p>
+    <p class="voce"><span>Crostata</span><span class="puntini"></span><span>€ 16</span></p>
+    <p class="voce"><span>Cornetto</span><span class="puntini"></span><span>€ 1,40</span></p>
+    <p class="voce"><span>Cappuccino</span><span class="puntini"></span><span>€ 1,70</span></p>
+    <p class="voce"><span>Ciambella</span><span class="puntini"></span><span>€ 1,80</span></p>
+  </div>
+
+  <!-- foto: tre foto di prodotto nella colonna di sinistra, con gli angoli arrotondati e il bordo chiaro -->
+  <img class="foto f1" src="../esempio/pagnotta.jpg" alt="" style="object-position: 60% 50%;">
+  <img class="foto f2" src="../esempio/cesto.jpg" alt="" style="object-position: 50% 40%;">
+  <img class="foto f3" src="../esempio/mollica.jpg" alt="">
+
+  <!-- tinte: i quattro colori del brand, sempre in questo ordine -->
+  <div class="tinte">
+    <i style="background: color-mix(in oklch, var(--accento) 55%, var(--sfondo));"></i>
+    <i style="background: var(--accento);"></i>
+    <i style="background: var(--secondario);"></i>
+    <i style="background: var(--principale);"></i>
+  </div>
+  <!-- tag: un hashtag del forno, 1-2 parole -->
+  <p class="tag">#ordinaoggi</p>
+
+  <div class="blocco b2"></div>
+
+  <!-- foto: il pane grande nell'angolo in basso a destra, tagliato dai bordi -->
+  <img class="pane" src="../esempio/pane-tagliere.jpg" alt="" style="object-position: 40% 50%;">
+</body>
+</html>

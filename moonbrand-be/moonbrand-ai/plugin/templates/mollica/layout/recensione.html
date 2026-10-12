@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Le forme piene in una tinta chiara del secondario: ci stanno sopra testi scuri e foto fuse col multiply. */
+  :root { --tinta: oklch(from var(--secondario) max(l, 0.85) min(c, 0.07) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Il fondo: una foto scura e ravvicinata del prodotto, a tutta pagina. */
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; }
+  .sopra { position: absolute; left: 0; top: 40px; width: 1080px; text-align: center; font-family: var(--font-testo); font-weight: 700; font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+
+  /* La scheda chiara con gli angoli tondi. */
+  .scheda { position: absolute; left: 150px; top: 100px; width: 780px; height: 1200px; border-radius: 52px; background: var(--sfondo); }
+  .titolo { position: absolute; left: 0; top: 70px; width: 780px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 96px; line-height: 1.02; letter-spacing: 0.03em; text-transform: uppercase; }
+
+  /* La foto in una cornice di carta, inclinata, appesa con una puntina. */
+  .polaroid { position: absolute; left: 200px; top: 330px; width: 400px; height: 420px; padding: 22px 22px 80px; background: #FFFFFF; transform: rotate(-4deg);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); }
+  .polaroid img { display: block; width: 356px; height: 318px; object-fit: cover; }
+  .polaroid .num { position: absolute; left: 26px; bottom: 26px; font-size: 24px; font-weight: 400; }
+  .polaroid .nome { position: absolute; right: 26px; bottom: 16px; text-align: right; font-size: 24px; font-weight: 700; line-height: 1.15; text-transform: uppercase; }
+  .puntina { position: absolute; left: 390px; top: 312px; width: 40px; height: 40px; border-radius: 50%; background: var(--principale); }
+
+  .stelle { position: absolute; left: 0; top: 790px; width: 780px; text-align: center; font-size: 68px; letter-spacing: 0.1em; line-height: 1; }
+
+  /* La fascia piena in fondo alla scheda con la frase del cliente. */
+  .fascia { position: absolute; left: -10px; top: 900px; width: 790px; height: 300px; border-radius: 40px 40px 52px 52px; background: var(--tinta); transform: rotate(-1.2deg);
+    padding: 44px 50px 0; text-align: center; }
+  .frase { font-family: var(--font-testo); font-weight: 400; font-size: 32px; line-height: 1.45; }
+  .firma { margin-top: 10px; font-family: var(--font-testo); font-weight: 700; font-size: 30px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- fondo: una foto ravvicinata e scura dei prodotti -->
+  <img class="fondo" src="../esempio/cornetti-scuri.jpg" alt="">
+  <!-- sopra: 2 parole, maiuscolo -->
+  <p class="sopra">Dicono di noi</p>
+
+  <div class="scheda">
+    <!-- titolo: 2 righe di 8-12 caratteri, maiuscolo -->
+    <h1 class="titolo">Perché<br>ci tornano</h1>
+
+    <!-- polaroid: la foto del prodotto recensito, numero e nome in 1-2 parole -->
+    <div class="polaroid">
+      <img src="../esempio/mani-cornetto.jpg" alt="">
+      <span class="num">01</span>
+      <span class="nome">Cornetto<br>al burro</span>
+    </div>
+    <div class="puntina"></div>
+
+    <!-- stelle: il voto, da 1 a 5 piene -->
+    <p class="stelle">★★★★☆</p>
+
+    <!-- frase: la recensione, 18-26 parole, e il nome del cliente -->
+    <div class="fascia">
+      <p class="frase">«Friabile fuori, morbido dentro. Sa di burro vero e arriva ancora tiepido. La colazione del sabato è diventata questa.»</p>
+      <p class="firma">Giulia Ferri</p>
+    </div>
+  </div>
+</body>
+</html>

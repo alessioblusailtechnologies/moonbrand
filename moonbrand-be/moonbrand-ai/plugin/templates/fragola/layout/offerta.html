@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Unbounded', sans-serif; --font-testo: 'Unbounded', sans-serif; }
+  /* il testo sull'accento: bianco se l'accento è scuro o medio, nero se è molto chiaro */
+  :root { --su-accento: oklch(from var(--accento) clamp(0, (0.8 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testata { position: absolute; left: 78px; right: 64px; top: 82px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 40px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--secondario); }
+  .testata svg { fill: none; stroke: var(--secondario); stroke-width: 2.5; stroke-linecap: round; }
+
+  .titolo { position: absolute; left: 62px; top: 146px; margin: 0; font-family: var(--font-titoli); font-weight: 800; font-size: 150px; line-height: 0.88; letter-spacing: -0.04em; text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+
+  .bollo { position: absolute; left: 768px; top: 300px; width: 250px; height: 250px; transform: rotate(-14deg); }
+  .bollo svg { position: absolute; inset: 0; fill: var(--accento); }
+  .bollo p { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 60px; line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase; color: var(--su-accento); }
+  .bollo p small { font-size: 42px; }
+
+  .tratteggio { position: absolute; left: 68px; width: 960px; top: 446px; height: 20px; background: repeating-linear-gradient(90deg, var(--secondario) 0 52px, transparent 52px 78px); }
+
+  .foto { position: absolute; left: 200px; top: 476px; width: 700px; height: 760px; object-fit: cover; object-position: 50% 62%; mix-blend-mode: multiply; }
+  .onde { position: absolute; fill: none; stroke: color-mix(in oklch, var(--secondario) 55%, var(--sfondo)); stroke-width: 6; stroke-linecap: round; }
+
+  .scacchi { position: absolute; left: 75px; top: 1250px; width: 950px; height: 100px;
+    background: conic-gradient(var(--secondario) 0 25%, transparent 0 50%, var(--secondario) 0 75%, transparent 0) 0 0 / 100px 100px; }
+</style>
+</head>
+<body>
+  <!-- testata: tre parole in maiuscolo separate da asterischi (nome, tipo di attività, occasione) -->
+  <div class="testata">
+    <span class="logo">Ortensia</span>
+    <svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 2 V 28 M2 15 H 28 M6 6 L 24 24 M24 6 L 6 24"/></svg>
+    <span>Forno</span>
+    <svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 2 V 28 M2 15 H 28 M6 6 L 24 24 M24 6 L 6 24"/></svg>
+    <span>Promo</span>
+  </div>
+
+  <!-- titolo: due righe in maiuscolo pesante, la prima di max 8 lettere, la seconda più corta (lascia posto al bollo) -->
+  <h1 class="titolo">Biscotti</h1>
+  <h1 class="titolo" style="top: 278px;">a metà</h1>
+
+  <div class="tratteggio"></div>
+
+  <!-- bollo: lo sconto, una cifra e una parola -->
+  <div class="bollo">
+    <svg viewBox="0 0 250 250"><path id="bordo" d=""/></svg>
+    <p>50%<small>sconto</small></p>
+  </div>
+
+
+  <!-- foto: il prodotto in pila su fondo bianco, al centro -->
+  <img class="foto" src="../esempio/pila-biscotti.jpg" alt="">
+  <svg class="onde" style="left: 160px; top: 600px;" width="150" height="240" viewBox="0 0 150 240"><path d="M100 10 C 70 40, 130 70, 100 110 C 70 150, 130 180, 100 230"/><path d="M60 40 C 30 70, 90 100, 60 140 C 30 180, 90 200, 64 228"/><path d="M24 80 C 4 106, 44 130, 24 160"/></svg>
+  <svg class="onde" style="left: 820px; top: 860px;" width="150" height="240" viewBox="0 0 150 240"><path d="M40 10 C 70 40, 10 70, 40 110 C 70 150, 10 180, 40 230"/><path d="M80 40 C 110 70, 50 100, 80 140 C 110 180, 50 200, 76 228"/><path d="M116 80 C 136 106, 96 130, 116 160"/></svg>
+
+  <!-- scacchiera in basso, due file -->
+  <div class="scacchi"></div>
+
+  <script>
+    // il bordo del bollo a festone
+    (function () {
+      const c = 125, n = 22; let d = '';
+      for (let i = 0; i <= n * 2; i++) {
+        const a = (i / (n * 2)) * Math.PI * 2, r = i % 2 ? 113 : 125;
+        d += (i ? ' L ' : 'M ') + (c + r * Math.cos(a)).toFixed(1) + ' ' + (c + r * Math.sin(a)).toFixed(1);
+      }
+      document.getElementById('bordo').setAttribute('d', d + ' Z');
+    })();
+  </script>
+</body>
+</html>

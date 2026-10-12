@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Montserrat:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Bodoni Moda', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 290px; top: 150px; width: 735px; height: 960px; object-fit: cover; object-position: 50% 50%; }
+
+  .verticale { position: absolute; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+  .titolo { left: 56px; top: 260px; height: 760px; font-family: var(--font-titoli); font-weight: 400; font-size: 112px; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; text-align: left; }
+  .sotto { left: 185px; top: 260px; height: 760px; font-size: 30px; line-height: 1.25; letter-spacing: 0.14em; text-transform: uppercase; text-align: left; }
+
+  .piccolo { position: absolute; left: 62px; top: 1050px; width: 200px; font-weight: 400; font-size: 26px; line-height: 1.15; }
+  .sito { position: absolute; left: 290px; top: 1150px; width: 735px; text-align: center; font-size: 26px; letter-spacing: 0.16em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto nuovo, verticale, su fondo chiaro -->
+  <img class="foto" src="../esempio/panini.jpg" width="735" height="960" alt="">
+
+  <!-- titolo: 2 parole in verticale che si leggono dal basso, al massimo 11 lettere in tutto -->
+  <h1 class="verticale titolo">Pane nuovo</h1>
+
+  <!-- sotto: cosa è, 3-5 parole in verticale su due righe -->
+  <p class="verticale sotto">Biologico e<br>senza glutine</p>
+
+  <!-- piccolo: tre parole corte, una per riga -->
+  <p class="piccolo">buono<br>e<br>leggero</p>
+
+  <!-- sito: l'indirizzo del sito, maiuscolo spaziato -->
+  <p class="sito">fornomerlo.it</p>
+</body>
+</html>

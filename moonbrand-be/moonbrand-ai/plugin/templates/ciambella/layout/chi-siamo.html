@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Arimo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Pinyon Script', cursive; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; top: 198px; height: 529px; object-fit: cover; display: block; }
+  .uno { left: 156px; width: 482px; }
+  .due { left: 709px; width: 371px; }
+  .titolo { position: absolute; left: 30px; top: 700px; width: 960px; font-family: var(--font-titoli); font-weight: 400; font-size: 236px; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+  .testo { position: absolute; left: 163px; top: 958px; width: 787px; font-size: 31px; line-height: 1.52; letter-spacing: 0.07em; text-align: justify; }
+</style>
+</head>
+<body>
+  <!-- foto: due foto affiancate alla stessa altezza; a sinistra il locale o il banco, a destra un dettaglio (macchina, attrezzi), tagliata dal bordo destro -->
+  <img class="foto uno" src="../esempio/bancone.jpg" alt="">
+  <img class="foto due" src="../esempio/espresso.jpg" alt="">
+
+  <!-- titolo: 2 parole, una riga, che si appoggia sul piede delle foto -->
+  <h1 class="titolo" data-max="1010">Chi siamo</h1>
+
+  <!-- testo: chi siete e cosa fate ogni giorno, 25-35 parole -->
+  <p class="testo">Dal 1987 impastiamo ogni notte pane, cornetti e torte con farine macinate a pietra, per offrirvi una colazione fatta bene, un caffè preparato con cura e un posto dove fermarvi volentieri.</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        const max = parseFloat(el.dataset.max);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+        while (larghezza() > max && size > 20) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

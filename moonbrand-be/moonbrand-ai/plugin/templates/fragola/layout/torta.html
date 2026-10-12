@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Bodoni Moda', serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; }
+
+  .sito { position: absolute; right: 84px; top: 112px; font-size: 27px; letter-spacing: -0.01em; text-transform: uppercase; }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 214px; text-align: center; font-family: var(--font-titoli); font-size: 58px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 290px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 290px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; color: var(--accento); white-space: nowrap; }
+  .stella { position: absolute; left: 836px; top: 984px; fill: var(--chiaro); }
+  .nome { position: absolute; left: 74px; top: 1148px; font-size: 38px; line-height: 1.1; text-transform: uppercase; letter-spacing: -0.01em; }
+  .nota { position: absolute; right: 84px; top: 1192px; text-align: right; font-size: 18px; line-height: 1.2; text-transform: uppercase; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: un dolce su fondo chiaro e uniforme, centrato nella metà bassa, con briciole attorno -->
+  <img class="foto" src="../esempio/torta-fragole.jpg" alt="">
+
+  <!-- sito: in alto a destra -->
+  <p class="sito">fornoortensia.it</p>
+
+  <!-- sopra: 2-4 parole in maiuscolo sopra la parola grande -->
+  <p class="sopra">Una fetta di</p>
+  <!-- titolo: una parola sola, max 5 lettere, in maiuscolo grandissimo; la torta la copre in parte -->
+  <h1 class="titolo">Torta</h1>
+
+  <!-- scintilla piccola chiara accanto al dolce, come nel modello -->
+  <svg class="stella" width="44" height="44" viewBox="0 0 44 44"><path d="M22 0 C 23.5 16, 28 20.5, 44 22 C 28 23.5, 23.5 28, 22 44 C 20.5 28, 16 23.5, 0 22 C 16 20.5, 20.5 16, 22 0 Z"/></svg>
+
+  <!-- nome: il dolce in due righe, in basso a sinistra -->
+  <p class="nome">Meringata<br>alle fragole</p>
+  <!-- nota: 5-8 parole piccole in due righe, in basso a destra -->
+  <p class="nota">Fatta stamattina,<br>fino a esaurimento</p>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #85564D; --secondario: #B6A18E; --accento: #9C6B5F; --sfondo: #E8E0D8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Libre Baskerville', serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--principale); font-family: var(--font-testo); }
+
+  .avviso { position: absolute; right: 64px; top: 58px; text-align: right; font-size: 24px; line-height: 1.35; letter-spacing: 0.14em; text-transform: uppercase; }
+  .ovale { position: absolute; left: 334px; top: 290px; width: 520px; height: 662px; border-radius: 50%; overflow: hidden; }
+  .ovale img { width: 520px; height: 662px; object-fit: cover; display: block; }
+  .giro { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .giro text { font-family: var(--font-titoli); font-size: 34px; letter-spacing: 0.22em; fill: var(--principale); text-transform: uppercase; }
+
+  .firma { position: absolute; left: 72px; top: 1150px; font-size: 24px; line-height: 1.5; letter-spacing: 0.16em; }
+  .firma .logo { display: block; text-transform: uppercase; }
+  .indirizzo { position: absolute; right: 64px; top: 1200px; width: 520px; text-align: center; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .indirizzo svg { display: block; margin: 0 auto 12px; width: 26px; height: 34px; }
+</style>
+</head>
+<body>
+  <!-- avviso: 2 righe brevi in maiuscolo, un'offerta o una notizia (3-4 parole per riga) -->
+  <p class="avviso">Consegna gratis<br>solo questa settimana</p>
+
+  <!-- foto: il prodotto da vicino, tagliato nell'ovale -->
+  <div class="ovale"><img src="../esempio/cornetti-sfoglia.jpg" alt=""></div>
+
+  <!-- titolo: la stessa frase di 3-4 parole due volte, sul giro attorno all'ovale -->
+  <svg class="giro" viewBox="0 0 1080 1350">
+    <path id="giro" fill="none" d="M 433 960 A 322 393 0 1 1 905 722"/>
+    <text><textPath href="#giro" startOffset="0" textLength="770" lengthAdjust="spacing">Amore al primo morso</textPath></text>
+    <text><textPath href="#giro" startOffset="830" textLength="770" lengthAdjust="spacing">Amore al primo morso</textPath></text>
+  </svg>
+
+  <!-- firma: nome dell'attività e sito -->
+  <p class="firma"><span class="logo">Pasticceria Gemma</span>www.pasticceriagemma.it</p>
+
+  <!-- indirizzo: via, città, sotto il segnaposto -->
+  <p class="indirizzo">
+    <svg viewBox="0 0 26 34"><path d="M13 0C5.8 0 0 5.6 0 12.6 0 22 13 34 13 34S26 22 26 12.6C26 5.6 20.2 0 13 0Zm0 17.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" fill="var(--chiaro)"/></svg>
+    Via Saragozza 42, Bologna
+  </p>
+</body>
+</html>

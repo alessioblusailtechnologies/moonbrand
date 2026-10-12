@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  .etichetta { color: var(--principale); }
+  .polaroid { position: absolute; width: 290px; height: 432px; background: #fff; padding: 36px 8px 0; box-shadow: 0 0 0 1px #e9e9e9, 3px 6px 14px rgba(0,0,0,0.13); }
+  .polaroid img { width: 274px; height: 328px; object-fit: cover; display: block; }
+  .nota { position: absolute; font-family: 'Nothing You Could Do', cursive; font-size: 38px; line-height: 1; color: var(--principale); white-space: nowrap; }
+  .segno { position: absolute; fill: none; stroke: var(--principale); stroke-width: 2.2; stroke-linecap: round; }
+</style>
+</head>
+<body>
+  <!-- profilo: il profilo social del brand -->
+  <p class="etichetta" style="left: 108px; top: 106px;">@fornomaddalena</p>
+  <!-- data: il giorno o la settimana, corto -->
+  <p class="etichetta" style="right: 108px; top: 106px;">12 ottobre</p>
+
+  <!-- foto: quattro scatti del forno, verticali (il caffè, il banco, una teglia, le mani al lavoro) -->
+  <div class="polaroid" style="left: 212px; top: 207px; transform: rotate(-0.8deg);"><img src="../esempio/espresso.jpg" alt="" style="object-position: 50% 40%;"></div>
+  <div class="polaroid" style="left: 586px; top: 222px; transform: rotate(1.4deg);"><img src="../esempio/bomboloni.jpg" alt="" style="object-position: 30% 50%;"></div>
+  <div class="polaroid" style="left: 202px; top: 705px; transform: rotate(0.9deg);"><img src="../esempio/impasto.jpg" alt="" style="object-position: 62% 45%;"></div>
+  <div class="polaroid" style="left: 568px; top: 712px; transform: rotate(-0.7deg);"><img src="../esempio/fornaia.jpg" alt="" style="object-position: 50% 55%;"></div>
+
+  <!-- nota: 1 parola scritta a mano con la freccia verso la prima foto -->
+  <p class="nota" style="left: 58px; top: 318px; transform: rotate(-9deg);">caffè</p>
+  <svg class="segno" style="left: 100px; top: 360px;" width="140" height="70" viewBox="0 0 140 70"><path d="M8 4 C 14 40, 60 56, 128 44"/><path d="M8 4 l-5 12 M8 4 l10 9"/></svg>
+
+  <!-- nota: 1-2 parole scritte a mano con la freccia dall'ultima foto -->
+  <svg class="segno" style="left: 838px; top: 780px;" width="110" height="80" viewBox="0 0 110 80"><path d="M4 18 C 50 -4, 86 10, 100 62"/><path d="M100 62 l-11 -6 M100 62 l3 -12"/></svg>
+  <p class="nota" style="left: 866px; top: 862px; transform: rotate(-8deg); font-size: 34px;">per domani</p>
+
+  <!-- rubrica: 2-3 parole in maiuscolo, il nome della serie -->
+  <p class="etichetta" style="left: 108px; top: 1216px;">Il rullino del forno</p>
+  <!-- firma: 2 parole in maiuscolo -->
+  <p class="etichetta" style="right: 108px; top: 1216px;">Note di bottega</p>
+</body>
+</html>

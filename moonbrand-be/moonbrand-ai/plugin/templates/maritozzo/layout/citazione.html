@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400&family=Montserrat:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #D7452C; --secondario: #2B2826; --accento: #D7452C; --sfondo: #F3EADB; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la cornice: due filetti dritti sui lati e uno interno con gli angoli scavati a quarto di cerchio */
+  .cornice { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .cornice path, .cornice rect { fill: none; stroke: var(--accento); stroke-width: 2.5; }
+  .citazione { position: absolute; left: 150px; right: 150px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 92px; line-height: 1.04; }
+</style>
+</head>
+<body>
+  <svg class="cornice" viewBox="0 0 1080 1350">
+    <rect x="22" y="22" width="1036" height="1306"/>
+    <rect x="34" y="34" width="1012" height="1282"/>
+    <path d="M150 50 H930 A100 100 0 0 0 1030 150 V1200 A100 100 0 0 0 930 1300 H150 A100 100 0 0 0 50 1200 V150 A100 100 0 0 0 150 50 Z"/>
+  </svg>
+
+  <!-- citazione: 12-18 parole tra virgolette, una frase leggera sul dolce o sul pane -->
+  <p class="citazione">"La torta: nessuna bella storia è mai cominciata con un'insalata."</p>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,300..500&family=Roboto+Mono:wght@400&family=La+Belle+Aurore&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Roboto Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto: la mano entra dal basso e tiene il prodotto, il fondo chiaro si fonde con lo sfondo */
+  .foto { position: absolute; left: -40px; top: 0; width: 1160px; height: 1740px; object-fit: cover; object-position: 50% 50%; mix-blend-mode: multiply; filter: brightness(1.32) contrast(1.05) saturate(1.05); }
+
+  .riga { position: absolute; top: 126px; font-size: 25px; letter-spacing: 0.01em; text-transform: uppercase; }
+  .ovale { position: absolute; left: 50%; top: 106px; transform: translateX(-50%); padding: 12px 40px; border: 2px solid var(--principale); border-radius: 50%; font-family: var(--font-titoli); font-stretch: 75%; font-size: 36px; line-height: 1.1; white-space: nowrap; }
+
+  .titolo { position: absolute; font-family: var(--font-titoli); font-stretch: 68%; font-weight: 400; color: var(--accento); letter-spacing: -0.035em; line-height: 0.8; white-space: nowrap; }
+  .t1 { left: 32px; top: 210px; font-size: 248px; }
+  .t2 { left: 190px; top: 410px; font-size: 248px; }
+
+  .motto { position: absolute; left: 810px; top: 292px; font-size: 25px; line-height: 1.22; text-transform: uppercase; }
+  .testo { position: absolute; left: 66px; top: 700px; width: 250px; font-size: 24px; line-height: 1.2; text-transform: uppercase; }
+  .nota { position: absolute; font-family: 'La Belle Aurore', cursive; font-size: 40px; line-height: 1.05; color: var(--principale); }
+  .freccia { position: absolute; fill: none; stroke: var(--principale); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .indirizzo { position: absolute; left: 785px; top: 1182px; width: 250px; font-size: 25px; line-height: 1.22; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: una mano che tiene un prodotto da forno davanti a un fondo chiaro, verticale -->
+  <img class="foto" src="../esempio/mano-cornetto.jpg" alt="">
+
+  <!-- testata: profilo social a sinistra, nome del forno nell'ovale al centro, una data a destra -->
+  <p class="riga" style="left: 66px;">@fornoortensia</p>
+  <p class="ovale logo">Ortensia</p>
+  <p class="riga" style="right: 88px;">12.10.2026</p>
+
+  <!-- titolo: due righe, la prima corta che finisce con «&» (1 parola), la seconda di 1-2 parole, max 9 lettere -->
+  <h1 class="titolo t1">Pane &amp;</h1>
+  <h1 class="titolo t2">Dolcezze</h1>
+
+  <!-- motto: 4-6 parole in tre righe corte, accanto al titolo -->
+  <p class="motto">Dove ogni<br>morso sa<br>di casa</p>
+
+  <!-- testo: 12-16 parole in maiuscolo, colonna stretta a sinistra -->
+  <p class="testo">Crosta croccante fuori, mollica soffice dentro: sfornato ogni mattina alle sei.</p>
+
+  <!-- note a mano: 2-3 parole ciascuna, con la loro freccia -->
+  <svg class="freccia" style="left: 140px; top: 950px;" width="110" height="70" viewBox="0 0 110 70"><path d="M8 62 C 30 40, 55 26, 92 14"/><path d="M70 8 L 94 13 L 80 32"/></svg>
+  <p class="nota" style="left: 76px; top: 1040px; transform: rotate(-12deg);">Sfornato<br>&nbsp;&nbsp;stamattina</p>
+  <svg class="freccia" style="left: 870px; top: 790px;" width="110" height="170" viewBox="0 0 110 170"><path d="M60 162 C 30 140, 40 100, 70 105 C 95 110, 80 140, 60 128 C 40 115, 60 70, 75 40 C 70 30, 45 22, 18 30"/><path d="M36 12 L 16 30 L 40 40"/></svg>
+  <p class="nota" style="left: 786px; top: 985px; transform: rotate(-12deg);">Croccante fuori,<br>&nbsp;&nbsp;morbido dentro</p>
+
+  <!-- indirizzo: via e città, due righe -->
+  <p class="indirizzo">Via Saragozza 41, Bologna</p>
+
+  <script>
+    // con un font più largo il titolo si rimpicciolisce fino a stare nel suo spazio (la prima riga prima del motto)
+    document.fonts.ready.then(() => {
+      for (const [sel, limite] of [['.t1', 790], ['.t2', 1050]]) {
+        const el = document.querySelector(sel);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        while (el.getBoundingClientRect().right > limite && size > 80) { size -= 4; el.style.fontSize = size + 'px'; }
+      }
+    });
+  </script>
+</body>
+</html>

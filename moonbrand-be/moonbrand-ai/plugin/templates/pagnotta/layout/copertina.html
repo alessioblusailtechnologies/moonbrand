@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Young Serif', serif; --font-testo: 'Poppins', sans-serif; }
+  /* testo sui fondi pieni: chiaro se il fondo è scuro, scuro se è chiaro */
+  :root {
+    --su-principale: oklch(from var(--principale) clamp(0.22, (0.74 - l) * 1000, 0.95) min(c, 0.05) h);
+    --su-secondario: oklch(from var(--secondario) clamp(0.22, (0.74 - l) * 1000, 0.95) min(c, 0.05) h);
+    --su-accento: oklch(from var(--accento) clamp(0.22, (0.8 - l) * 1000, 0.97) min(c, 0.04) h);
+    --scacco: color-mix(in oklch, var(--accento) 60%, var(--sfondo));
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); font-family: var(--font-testo); }
+
+  /* scacchi in alto: due file di quadrati sfalsati */
+  .scacchi { position: absolute; left: 0; top: 0; width: 1080px; height: 80px; }
+
+  .titolo { position: absolute; left: 0; top: 96px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400;
+    font-size: 180px; line-height: 150px; letter-spacing: -0.02em; color: var(--su-principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .foto { position: absolute; display: block; object-fit: cover; }
+  .f1 { left: 0; top: 480px; width: 270px; height: 575px; }
+  .f2 { left: 330px; top: 432px; width: 418px; height: 671px; }
+  .f3 { left: 808px; top: 482px; width: 272px; height: 573px; }
+  /* nastro di carta sopra ogni foto */
+  .nastro { position: absolute; height: 32px; background: color-mix(in oklch, var(--sfondo) 62%, transparent); }
+  .n1 { left: 6px; top: 452px; width: 190px; transform: rotate(-0.6deg); }
+  .n2 { left: 432px; top: 412px; width: 218px; transform: rotate(0.5deg); }
+  .n3 { left: 895px; top: 454px; width: 184px; transform: rotate(0.8deg); }
+
+  .piede { position: absolute; left: 0; top: 1208px; width: 1080px; height: 142px; background: var(--accento); }
+  .bottone { position: absolute; left: 45px; top: 1248px; width: 308px; height: 72px; border-radius: 36px; border: 3px solid var(--su-accento);
+    background: var(--secondario); color: var(--su-secondario); display: flex; align-items: center; justify-content: center;
+    font-size: 27px; font-weight: 600; text-transform: uppercase; }
+  .contatti { position: absolute; right: 70px; top: 1240px; text-align: right; font-size: 29px; line-height: 38px; color: var(--su-accento); }
+</style>
+</head>
+<body>
+  <svg class="scacchi" viewBox="0 0 1080 80">
+    <defs><pattern id="s" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="40" height="40" style="fill: var(--scacco)"/><rect x="40" y="40" width="40" height="40" style="fill: var(--scacco)"/>
+    </pattern></defs>
+    <rect width="1080" height="80" fill="url(#s)"/>
+  </svg>
+
+  <!-- titolo: la novità in 3-5 parole su due righe di 7-10 caratteri -->
+  <h1 class="titolo"><span>Novità</span><span>dal forno</span></h1>
+
+  <!-- foto: tre prodotti, una verticale grande al centro e due ai lati tagliate dal bordo, ognuna con un nastro di carta sopra -->
+  <img class="foto f1" src="../esempio/torta.jpg" alt="" style="object-position: 30% 60%;">
+  <img class="foto f2" src="../esempio/cornetti.jpg" alt="">
+  <img class="foto f3" src="../esempio/biscotti-pila.jpg" alt="" style="object-position: 40% 60%;">
+  <div class="nastro n1"></div><div class="nastro n2"></div><div class="nastro n3"></div>
+
+  <div class="piede"></div>
+  <!-- bottone: l'invito, 2-3 parole -->
+  <p class="bottone">Ordina ora</p>
+  <!-- contatti: sito e indirizzo, una riga ciascuno -->
+  <p class="contatti">www.fornomariani.it<br>Via Roma 18, Bergamo</p>
+</body>
+</html>

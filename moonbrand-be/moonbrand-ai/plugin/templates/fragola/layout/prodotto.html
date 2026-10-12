@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,300..500&family=Questrial&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Questrial', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto su fondo bianco si fonde con lo sfondo: occupa la metà bassa, il prodotto al centro */
+  .foto { position: absolute; left: 0; top: 470px; width: 1080px; height: 880px; object-fit: cover; object-position: 50% 30%; mix-blend-mode: multiply; }
+
+  .profilo { position: absolute; left: 0; width: 1080px; top: 106px; text-align: center; font-size: 18px; letter-spacing: 0.28em; text-transform: uppercase; }
+  .domanda { position: absolute; left: 0; width: 1080px; top: 216px; text-align: center; font-size: 28px; letter-spacing: 0.01em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 278px; text-align: center; font-family: var(--font-titoli); font-stretch: 66%; font-weight: 400; font-size: 210px; line-height: 0.9; letter-spacing: -0.04em; color: var(--accento); white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto tenuto in mano su un fondo bianco o chiarissimo, verticale -->
+  <img class="foto" src="../esempio/cornetto-crema.jpg" alt="">
+
+  <!-- profilo: il social del forno, piccolo e spaziato -->
+  <p class="profilo logo">@fornoortensia</p>
+
+  <!-- domanda: 3-6 parole in maiuscolo sopra il titolo -->
+  <p class="domanda">Il tuo buongiorno preferito?</p>
+
+  <!-- titolo: il nome del prodotto, una parola con il punto, max 9 lettere -->
+  <h1 class="titolo">Cornetto.</h1>
+</body>
+</html>

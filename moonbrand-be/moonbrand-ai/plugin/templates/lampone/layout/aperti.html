@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wdth,wght@62.5..100,100..900&family=Archivo:wdth,wght@62..125,100..900&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #820A0B; --secondario: #E3E2DD; --accento: #F8E8D0; --sfondo: #F5F4F0; }
+  :root { --font-titoli: 'Noto Serif', serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --mano: oklch(from var(--accento) max(l, 0.88) c h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #2A1A14; color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: blur(1.5px) saturate(0.9); }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, #1A0D08 38%, transparent); }
+
+  .angolo { position: absolute; font-family: var(--font-testo); font-size: 19px; font-weight: 400; font-stretch: 80%; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
+  .su { top: 114px; } .giu { top: 1218px; }
+  .sx { left: 112px; } .dx { right: 112px; }
+
+  .titolo { position: absolute; left: 0; top: 380px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 87.5%; font-size: 230px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+  .mano { position: absolute; left: 0; top: 560px; width: 1080px; padding-left: 40px; text-align: center; font-family: 'Pinyon Script', cursive; font-size: 210px; line-height: 1; color: var(--mano); white-space: nowrap; }
+  .orari { position: absolute; left: 0; top: 948px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 87.5%; font-size: 40px; line-height: 1; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- foto: una foto vera del banco o dei dolci, sfocata e scurita, i dolci in primo piano in basso -->
+  <img class="foto" src="../esempio/vetrina.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- angoli: in alto il profilo e la data, in basso l'occasione e il tipo di locale (1-2 parole) -->
+  <p class="angolo su sx">@fornogelsomino</p>
+  <p class="angolo su dx">12 ottobre</p>
+
+  <!-- titolo: una parola minuscola, 5-7 caratteri -->
+  <h1 class="titolo" data-max="920">siamo</h1>
+  <!-- scritta a mano: una parola sotto il titolo, che lo tocca, 5-8 caratteri -->
+  <p class="mano">Aperti</p>
+  <!-- orari: giorni e ore in una riga, 18-26 caratteri -->
+  <p class="orari">Tutti i giorni, ore 7-20</p>
+
+  <p class="angolo giu sx">Inaugurazione</p>
+  <p class="angolo giu dx">Forno e caffè</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        const max = Number(el.dataset.max);
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return Math.max(0, ...[...r.getClientRects()].map((q) => q.width)); };
+        while (larghezza() > max && size > 24) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Anton&family=Montserrat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #57190C; --secondario: #C8926C; --accento: #F7B0C0; --sfondo: #FADDE2; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* tinte derivate: crema (lo sfondo schiarito), chiaro sulle foto e sui fondi scuri */
+  :root { --crema: color-mix(in oklab, var(--sfondo) 32%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    /* tinta: lo sfondo con un velo d'accento, così schede e linguette si vedono anche se lo sfondo del brand è bianco */
+    --tinta: color-mix(in oklab, var(--sfondo) 82%, var(--accento)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; }
+  .corsivo { font-family: 'Sacramento', cursive; font-weight: 400; line-height: 1; }
+  .alto { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; }
+  .spaziato { font-family: var(--font-testo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .smerlo { position: absolute; display: block; }
+  .disegni { position: absolute; inset: 0; background: var(--principale); opacity: 0.07;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px; }
+  .logo { font-family: var(--font-titoli); color: var(--principale); text-align: center; line-height: 0.9; }
+
+
+  body { background: var(--accento); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; }
+  .foglio { position: absolute; left: 160px; top: 170px; width: 760px; height: 700px; background: white;
+    clip-path: polygon(0 0, 100% 0, 100% 86%, 96% 89%, 92% 85%, 87% 90%, 82% 87%, 77% 93%, 71% 88%, 66% 95%, 60% 90%, 54% 97%, 49% 92%, 43% 98%, 37% 92%, 31% 96%, 25% 90%, 19% 94%, 13% 88%, 7% 92%, 3% 87%, 0 91%); }
+  .buchi i { position: absolute; top: 196px; width: 30px; height: 30px; border-radius: 50%; background: var(--accento); margin-left: 160px; }
+  .etichetta { position: absolute; left: 0; width: 1080px; top: 290px; text-align: center; }
+  .etichetta span { display: inline-block; background: var(--accento); color: var(--chiaro); font-size: 62px; padding: 10px 22px 6px; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 410px; text-align: center; font-size: 200px; }
+  .titolo .corsivo { font-size: 150px; margin-left: 18px; letter-spacing: 0; position: relative; top: -50px; }
+  .sotto { position: absolute; left: 0; width: 1080px; top: 620px; text-align: center; font-size: 110px; }
+  .scadenza { position: absolute; left: 0; width: 1080px; top: 760px; text-align: center; font-size: 26px; }
+
+</style>
+</head>
+<body>
+  <!-- foto: un dolce su fondo chiaro, il soggetto nella metà bassa -->
+  <img class="foto" src="../esempio/biscotti-torre.jpg" alt="">
+
+  <div class="foglio"></div>
+  <div class="buchi"><i style="left:75px"></i><i style="left:175px"></i><i style="left:275px"></i><i style="left:375px"></i><i style="left:475px"></i><i style="left:575px"></i><i style="left:675px"></i></div>
+  <!-- etichetta: 2-3 parole, l'annuncio -->
+  <p class="etichetta alto"><span>Sconti in corso</span></p>
+  <!-- titolo: lo sconto, con «di sconto» scritto a mano accanto -->
+  <h1 class="titolo">20%<span class="corsivo">off</span></h1>
+  <!-- sotto: su cosa vale, 2 parole -->
+  <p class="sotto titolo">su tutto</p>
+  <!-- scadenza: fino a quando, 2-3 parole -->
+  <p class="scadenza spaziato">fino a domenica!</p>
+
+</body>
+</html>

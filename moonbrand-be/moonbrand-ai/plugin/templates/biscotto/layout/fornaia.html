@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Anton&family=Montserrat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #57190C; --secondario: #C8926C; --accento: #F7B0C0; --sfondo: #FADDE2; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* tinte derivate: crema (lo sfondo schiarito), chiaro sulle foto e sui fondi scuri */
+  :root { --crema: color-mix(in oklab, var(--sfondo) 32%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    /* tinta: lo sfondo con un velo d'accento, così schede e linguette si vedono anche se lo sfondo del brand è bianco */
+    --tinta: color-mix(in oklab, var(--sfondo) 82%, var(--accento)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; }
+  .corsivo { font-family: 'Sacramento', cursive; font-weight: 400; line-height: 1; }
+  .alto { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; }
+  .spaziato { font-family: var(--font-testo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .smerlo { position: absolute; display: block; }
+  .disegni { position: absolute; inset: 0; background: var(--principale); opacity: 0.07;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px; }
+  .logo { font-family: var(--font-titoli); color: var(--principale); text-align: center; line-height: 0.9; }
+
+
+  .titolo { position: absolute; left: 0; width: 1080px; top: 96px; text-align: center; font-size: 150px; }
+  .foto { position: absolute; left: 130px; top: 420px; width: 820px; height: 640px; object-fit: cover; object-position: 50% 30%; }
+  .nome { position: absolute; left: 260px; top: 1000px; width: 560px; height: 140px; background: var(--crema); transform: rotate(-4deg);
+    display: flex; align-items: center; justify-content: center; font-size: 100px; padding-top: 14px; }
+  .freccia { position: absolute; left: 700px; top: 1150px; width: 140px; height: 180px; }
+  .freccia path { fill: none; stroke: var(--crema); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+
+</style>
+</head>
+<body>
+  <!-- titolo: 3-4 parole su due righe, chi c'è dietro il banco -->
+  <h1 class="titolo">conosci<br>la fornaia</h1>
+  <!-- foto: la persona al lavoro, orizzontale, viso in alto -->
+  <img class="foto" src="../esempio/fornaia.jpg" alt="">
+  <!-- nome: nome e cognome scritti a mano -->
+  <p class="nome corsivo">Lucia Ferri</p>
+  <svg class="freccia" viewBox="0 0 140 180"><path d="M40 168 C 90 140 110 90 90 20 M70 40 L 90 18 L 110 44"/></svg>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  body { background: #2a1d17; }
+  .fondo { left: 0; width: 1080px; height: 1760px; top: -400px; object-position: 50% 50%; filter: brightness(0.82) contrast(1.05); }
+  .carta { position: absolute; left: 242px; top: 740px; width: 616px; height: 470px; background: color-mix(in srgb, var(--secondario) 85%, #fff); color: var(--su-secondario); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+  .nastro { position: absolute; left: 190px; top: -14px; width: 236px; height: 30px; background: rgba(235,235,230,0.6); transform: rotate(-0.6deg); }
+  .titolo-piccolo { font-family: var(--font-titoli); font-weight: 400; position: absolute; left: 26px; bottom: 32px; width: 330px; font-size: 32px; line-height: 1.6; text-transform: uppercase; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; word-spacing: 0.25em; }
+  .data { position: absolute; right: 26px; bottom: 38px; font-family: 'Libre Caslon Text', serif; font-style: italic; font-size: 44px; letter-spacing: -0.03em; color: color-mix(in srgb, var(--su-secondario) 70%, transparent); }
+</style>
+</head>
+<body>
+  <!-- fondo: il prodotto nuovo con un gesto (cioccolato versato, zucchero, glassa); il prodotto spunta sopra la carta -->
+  <img class="fondo" src="../esempio/bigne.jpg" alt="">
+
+  <div class="carta">
+    <div class="nastro"></div>
+    <!-- titolo: 3-5 parole in maiuscolo, sottolineate, su due righe -->
+    <p class="titolo-piccolo">Novità di questa settimana</p>
+    <!-- data: il giorno, corto -->
+    <p class="data">14.10</p>
+  </div>
+</body>
+</html>

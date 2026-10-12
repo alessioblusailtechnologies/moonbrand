@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .virgolette { position: absolute; left: 100px; top: 250px; font-family: var(--font-titoli); font-weight: 900; font-size: 240px; line-height: 1; color: var(--accento); }
+  .frase { position: absolute; left: 108px; top: 430px; width: 340px; font-size: 45px; font-weight: 300; line-height: 1.5; color: color-mix(in srgb, var(--principale) 55%, var(--sfondo)); }
+  .autore { position: absolute; left: 108px; top: 975px; width: 400px; font-size: 24px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+
+  .ombra { position: absolute; left: 567px; top: 175px; width: 423px; height: 1040px; background: var(--accento); }
+  .foto { position: absolute; left: 525px; top: 125px; width: 423px; height: 1040px; object-fit: cover; object-position: 50% 50%; }
+</style>
+</head>
+<body>
+  <!-- virgolette: restano, aprono la citazione -->
+  <p class="virgolette">&ldquo;</p>
+
+  <!-- frase: la citazione, 12-18 parole, va a capo stretta nella colonna -->
+  <p class="frase">Nessuno si accorge se fuori è inverno o estate quando è felice.</p>
+
+  <!-- autore: chi l'ha detta, nome e cognome -->
+  <p class="autore">Anton Čechov</p>
+
+  <!-- foto: verticale, un dettaglio da vicino (sfoglia, zucchero, impasto); il blocco pieno dietro è spostato in basso a destra -->
+  <div class="ombra"></div>
+  <img class="foto" src="../esempio/mandorla.jpg" width="423" height="1040" alt="">
+</body>
+</html>

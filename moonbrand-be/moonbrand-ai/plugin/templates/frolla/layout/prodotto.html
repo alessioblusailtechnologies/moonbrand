@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3E2116; --secondario: #7B4325; --accento: #A8673E; --sfondo: #F6ECE3; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Josefin Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 112px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 124px; line-height: 1.04; letter-spacing: 0.05em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .foto { position: absolute; left: 70px; top: 400px; width: 940px; height: 720px; object-fit: cover; object-position: 50% 62%;
+    -webkit-mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 72%, transparent 100%); mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 72%, transparent 100%); }
+
+  /* Bollino a festone sul bordo della foto */
+  .bollino { position: absolute; left: 730px; top: 700px; width: 270px; height: 270px; }
+  .bollino svg { position: absolute; inset: 0; width: 270px; height: 270px; }
+  .bollino .festone { fill: var(--secondario); }
+  .bollino .dentro { fill: var(--sfondo); }
+  .bollino .filo { fill: none; stroke: var(--accento); stroke-width: 2; }
+  .bollino p { position: absolute; left: 0; width: 270px; text-align: center; }
+  .bollino .solo { top: 78px; font-size: 34px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .bollino .prezzo { top: 116px; font-family: var(--font-titoli); font-weight: 600; font-size: 54px; line-height: 1.1; }
+
+  .invito { position: absolute; left: 0; top: 1150px; width: 1080px; text-align: center; font-size: 40px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+  .filetto { position: absolute; left: 140px; top: 1212px; width: 800px; height: 2px; background: color-mix(in srgb, var(--accento) 55%, transparent); }
+  .profilo { position: absolute; left: 0; top: 1240px; width: 1080px; text-align: center; font-size: 30px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--principale) 75%, transparent); }
+</style>
+</head>
+<body>
+  <!-- titolo: il prodotto del giorno, 2 righe di 5-11 caratteri, in maiuscolo -->
+  <h1 class="titolo"><span>Torta</span><span>del giorno</span></h1>
+
+  <!-- foto: il prodotto su un piatto, su fondo chiaro, grande al centro -->
+  <img class="foto" src="../esempio/fetta-cioccolato.jpg" alt="">
+
+  <!-- bollino: il prezzo, «solo» e la cifra in euro -->
+  <div class="bollino">
+    <svg viewBox="0 0 240 240"><g class="festone"><circle cx="120" cy="120" r="100"/><circle cx="220.0" cy="120.0" r="15"/><circle cx="215.9" cy="148.2" r="15"/><circle cx="204.1" cy="174.1" r="15"/><circle cx="185.5" cy="195.6" r="15"/><circle cx="161.5" cy="211.0" r="15"/><circle cx="134.2" cy="219.0" r="15"/><circle cx="105.8" cy="219.0" r="15"/><circle cx="78.5" cy="211.0" r="15"/><circle cx="54.5" cy="195.6" r="15"/><circle cx="35.9" cy="174.1" r="15"/><circle cx="24.1" cy="148.2" r="15"/><circle cx="20.0" cy="120.0" r="15"/><circle cx="24.1" cy="91.8" r="15"/><circle cx="35.9" cy="65.9" r="15"/><circle cx="54.5" cy="44.4" r="15"/><circle cx="78.5" cy="29.0" r="15"/><circle cx="105.8" cy="21.0" r="15"/><circle cx="134.2" cy="21.0" r="15"/><circle cx="161.5" cy="29.0" r="15"/><circle cx="185.5" cy="44.4" r="15"/><circle cx="204.1" cy="65.9" r="15"/><circle cx="215.9" cy="91.8" r="15"/></g><circle class="dentro" cx="120" cy="120" r="94"/><circle class="filo" cx="120" cy="120" r="86"/></svg>
+    <p class="solo">Solo</p>
+    <p class="prezzo">4,50 €</p>
+  </div>
+
+  <!-- invito: 2 parole in maiuscolo -->
+  <p class="invito">Ordina ora</p>
+  <div class="filetto"></div>
+  <!-- profilo: il profilo social o il sito del brand -->
+  <p class="profilo">@fornofrolla</p>
+</body>
+</html>

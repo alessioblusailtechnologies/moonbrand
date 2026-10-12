@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'Anton', sans-serif; --font-testo: 'Young Serif', serif; }
+  /* il testo sul secondario: chiaro se il secondario è scuro, scuro se è chiaro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .etichette { position: absolute; left: 92px; right: 92px; top: 124px; display: flex; justify-content: space-between; font-family: var(--font-titoli); font-size: 33px; text-transform: uppercase; }
+  .grande { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-size: 304px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap; }
+  .grande.su { top: 166px; }
+  .grande.giu { top: 606px; }
+
+  .piatto { position: absolute; left: 318px; top: 284px; width: 500px; height: 500px; border-radius: 50%; overflow: hidden; box-shadow: 0 26px 44px color-mix(in srgb, var(--principale) 22%, transparent); }
+  .piatto img { width: 548px; height: 842px; object-fit: cover; margin: -200px 0 0 -24px; display: block; }
+  .bollo { position: absolute; left: 768px; top: 486px; width: 190px; height: 190px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--secondario); color: var(--su-secondario);
+    clip-path: polygon(50% 0%, 59.4% 5.6%, 70.4% 4.7%, 75.9% 14.3%, 85.9% 18.8%, 86.2% 29.8%, 93.3% 38.2%, 89.1% 48.4%, 92.6% 58.9%, 84.6% 66.5%, 82.3% 77.3%, 71.7% 80.3%, 65.7% 89.6%, 54.7% 88.5%, 45.3% 94.4%, 36.2% 88.1%, 25.3% 89.7%, 19.5% 80.2%, 9.4% 76.0%, 9.1% 65.0%, 1.8% 56.6%, 5.9% 46.4%, 2.2% 35.9%, 10.3% 28.3%, 12.5% 17.5%, 23.1% 14.6%, 29.1% 5.3%, 40.1% 6.4%); }
+  .bollo b { font-family: var(--font-testo); font-weight: 400; font-size: 44px; line-height: 1; }
+  .bollo span { font-family: var(--font-testo); font-size: 25px; line-height: 1.05; text-transform: uppercase; }
+
+  .testo { position: absolute; left: 110px; width: 860px; top: 990px; text-align: center; font-size: 33px; line-height: 1.3; }
+  .filetto { position: absolute; left: 100px; right: 100px; top: 1188px; height: 2px; background: var(--principale); }
+  .piede { position: absolute; left: 100px; right: 100px; top: 1218px; display: flex; justify-content: space-between; align-items: center; font-size: 24px; line-height: 1.25; }
+  .piede .logo { display: flex; align-items: center; gap: 14px; text-transform: uppercase; }
+  .piede .logo i { width: 46px; height: 46px; border-radius: 50%; background: var(--secondario); display: block; }
+  .contatti { text-align: right; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- etichette: tre parole sul prodotto, una per lato e una al centro -->
+  <div class="etichette"><span>Doppio</span><span>Cioccolato</span><span>Fondente</span></div>
+
+  <!-- prodotto: il nome del prodotto ripetuto due volte, 6-8 lettere, maiuscolo -->
+  <h1 class="grande su" data-max="990">Brownie</h1>
+  <p class="grande giu" aria-hidden="true" data-max="990">Brownie</p>
+
+  <!-- foto: il prodotto su un piatto rotondo, dall'alto, ritagliata a cerchio sopra le due parole -->
+  <div class="piatto"><img src="../esempio/brownie.jpg" alt=""></div>
+
+  <!-- sconto: la percentuale e la parola «sconto», nel bollo smerlato -->
+  <div class="bollo"><b>30%</b><span>sconto</span></div>
+
+  <!-- testo: com'è fatto il prodotto, 22-30 parole -->
+  <p class="testo">Il nostro brownie al doppio cioccolato: cacao fondente e gocce di cioccolato, cuore morbido e crosticina croccante. Solo questa settimana.</p>
+
+  <div class="filetto"></div>
+  <div class="piede">
+    <!-- logo: il nome del brand su due righe, con il marchio tondo -->
+    <div class="logo"><i></i><span>Pasticceria<br>Bruna</span></div>
+    <!-- contatti: telefono e sito -->
+    <div class="contatti">+39 080 555 1234<br>pasticceriabruna.it</div>
+  </div>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => {
+          const righe = [];
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const r of range.getClientRects()) righe.push(r.width);
+          }
+          return Math.max(0, ...righe);
+        };
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

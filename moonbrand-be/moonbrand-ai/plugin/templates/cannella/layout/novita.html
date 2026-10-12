@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,300&family=Montserrat:wght@600&family=Allison&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #BE1B2C; --secondario: #F2EEE2; --accento: #CA1B2C; --sfondo: #F2D6D2; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* il testo chiaro sulla foto: la tinta dello sfondo schiarita, leggibile anche con un brand dallo sfondo scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 45%; display: block; }
+  .mano { position: absolute; left: 0; width: 1080px; text-align: center; font-family: 'Allison', cursive; font-size: 104px; line-height: 1; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 300px; text-align: center; font-family: var(--font-titoli); }
+  .titolo .dritto { display: block; font-weight: 700; font-size: 168px; line-height: 150px; letter-spacing: -0.03em; }
+  .titolo .corsivo { display: block; font-style: italic; font-weight: 300; font-size: 160px; line-height: 134px; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
+  .bottone { position: absolute; left: 50%; top: 1052px; transform: translateX(-50%); padding: 14px 40px; border: 2px solid var(--chiaro); border-radius: 40px; font-size: 26px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- foto: una crema, una glassa o un impasto da vicino, che riempie tutto -->
+  <img class="foto" src="../esempio/crema-cacao.jpg" alt="">
+
+  <!-- scritta a mano sopra il titolo: 1-2 parole -->
+  <p class="mano" style="top: 218px;">assaggia</p>
+  <!-- titolo: 2 parole dritte, poi 2 righe in corsivo maiuscolo di 4-8 lettere -->
+  <h1 class="titolo"><span class="dritto">Il nuovo</span><span class="corsivo">menu dei</span><span class="corsivo">dolci</span></h1>
+  <!-- scritta a mano sotto: 2-3 parole -->
+  <p class="mano" style="top: 900px;">Buona merenda!</p>
+  <!-- bottone: 2 parole -->
+  <div class="bottone">Ordina ora</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=Open+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 60px; top: 175px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 600;
+    font-size: 104px; line-height: 1.12; letter-spacing: 0.01em; }
+
+  /* Il prodotto da solo al centro, fondo bianco fuso con lo sfondo. */
+  .foto { position: absolute; left: 130px; top: 520px; width: 820px; height: 545px; object-fit: cover; mix-blend-mode: multiply; }
+
+  .riga { position: absolute; left: 60px; top: 1130px; width: 960px; text-align: center; font-family: var(--font-testo); font-weight: 700;
+    font-size: 36px; line-height: 1.35; letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 righe di 10-16 caratteri -->
+  <h1 class="titolo">Il buongiorno<br>sa di girella</h1>
+
+  <!-- foto: un solo prodotto scontornato su fondo bianco, al centro -->
+  <img class="foto" src="../esempio/girelle.jpg" alt="">
+
+  <!-- riga: 2 righe brevi, maiuscolo spaziato -->
+  <p class="riga">Sfornate<br>ogni mattina.</p>
+</body>
+</html>

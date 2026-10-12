@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #D7452C; --secondario: #2B2826; --accento: #D7452C; --sfondo: #F3EADB; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root {
+    --su-accento: oklch(from var(--accento) clamp(0, (0.66 - l) * 1000, 1) 0 0);
+    --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .logo { position: absolute; left: 54px; top: 30px; padding: 10px 26px; border-radius: 40px; background: var(--accento); color: var(--su-accento); font-size: 25px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+  .etichetta { position: absolute; right: 50px; top: 44px; color: var(--accento); font-size: 26px; font-weight: 700; text-transform: uppercase; }
+  /* il titolo grande in tre righe, maiuscolo spaziato, sopra la foto */
+  .titolo { position: absolute; left: 56px; top: 128px; width: 990px; font-family: var(--font-titoli); font-weight: 400; font-size: 186px; line-height: 0.92em; letter-spacing: 0.06em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+  .invito { position: absolute; left: 50px; top: 1000px; width: 410px; color: var(--chiaro); font-size: 24px; font-weight: 300; line-height: 1.4; text-transform: uppercase; }
+  .azione { position: absolute; left: 50px; top: 1112px; width: 380px; color: var(--chiaro); font-size: 24px; font-weight: 700; line-height: 1.4; text-transform: uppercase; }
+  .riquadro { position: absolute; right: 50px; top: 970px; width: 466px; height: 214px; border: 2px solid var(--chiaro); border-radius: 18px; color: var(--chiaro); text-align: center; padding-top: 30px; }
+  .riquadro strong { display: block; font-size: 52px; font-weight: 400; line-height: 1.02; text-transform: uppercase; }
+  .riquadro small { display: block; margin-top: 10px; font-size: 24px; font-weight: 300; text-transform: uppercase; }
+  .filetto { position: absolute; left: 50px; right: 0; top: 1228px; height: 2px; background: var(--chiaro); opacity: 0.7; }
+  .piede { position: absolute; left: 50px; right: 50px; top: 1258px; display: flex; align-items: center; gap: 30px; color: var(--chiaro); font-size: 24px; font-weight: 400; text-transform: uppercase; white-space: nowrap; }
+  .piede .info { font-weight: 700; margin-right: auto; }
+  .piede span { display: flex; align-items: center; gap: 12px; }
+  .piede svg { width: 24px; height: 24px; flex: none; }
+</style>
+</head>
+<body>
+  <img class="foto" src="../esempio/ciambellone.jpg" alt="">
+
+  <!-- logo: il nome del brand nell'etichetta in alto a sinistra -->
+  <div class="logo">Forno Corallo</div>
+  <!-- etichetta: 1 parola, il tipo di post -->
+  <div class="etichetta">Promozione</div>
+
+  <!-- titolo: 3 righe di 5-8 lettere, in maiuscolo -->
+  <h1 class="titolo" data-max="990"><span>Un dolce</span><span>fresco</span><span>per te!</span></h1>
+
+  <!-- invito: 8-12 parole -->
+  <p class="invito">Una promozione speciale sui dolci appena sfornati</p>
+  <!-- azione: 6-10 parole -->
+  <p class="azione">Prenota la tua ciambella e passa in negozio!</p>
+
+  <!-- offerta: sconto in 2 righe brevi e scadenza -->
+  <div class="riquadro"><strong>Fino al<br>30% in meno</strong><small>Valida fino al 15 maggio</small></div>
+
+  <div class="filetto"></div>
+  <!-- piede: invito breve, sito e indirizzo -->
+  <div class="piede">
+    <span class="info">Per informazioni</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c3 3 4 6.5 4 10s-1 7-4 10M12 2c-3 3-4 6.5-4 10s1 7 4 10"/></svg>www.fornocorallo.it</span>
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Via dei Mille 18, Bari</span>
+  </div>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => Math.max(0, ...[...el.children].map((c) => {
+          const r = document.createRange();
+          r.selectNodeContents(c);
+          return r.getBoundingClientRect().width;
+        }));
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

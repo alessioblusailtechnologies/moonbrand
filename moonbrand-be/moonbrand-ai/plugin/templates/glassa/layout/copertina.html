@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .corsivo { font-family: 'Great Vibes', cursive; font-weight: 400; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  body { background: var(--chiaro); }
+  /* la foto su fondo chiaro si fonde col fondo: bordi sfumati e moltiplica */
+  .foto { position: absolute; left: -150px; top: 330px; width: 1380px; height: 920px; object-fit: cover; display: block; mix-blend-mode: multiply;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); }
+  .riga { position: absolute; left: 72px; right: 72px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 500; letter-spacing: 0.01em; }
+  .riga.alto { top: 88px; text-transform: uppercase; }
+  .riga.basso { bottom: 70px; }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 150px; text-align: center; font-size: 124px; line-height: 1; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 238px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 244px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; }
+  .stella { color: var(--secondario); width: 96px; height: 110px; left: 180px; top: 800px; transform: rotate(-12deg); }
+  .scia { color: var(--secondario); width: 70px; height: 110px; left: 140px; top: 900px; }
+  .freccia { color: var(--secondario); width: 120px; height: 150px; left: 800px; top: 900px; }
+  .nota { position: absolute; left: 760px; top: 1060px; font-size: 78px; color: var(--principale); }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto solo dall'alto su un piatto, su fondo bianco o chiaro (si fonde col fondo della slide) -->
+  <img class="foto" src="../esempio/cornetto-piatto.jpg" alt="">
+
+  <!-- riga in alto: un saluto a sinistra, una data o una ricorrenza a destra (2-3 parole) -->
+  <div class="riga alto"><span>Benvenuti!</span><span>12 \ 10 \ 2026</span></div>
+
+  <!-- sopra il titolo: 1-2 parole in corsivo -->
+  <p class="sopra corsivo">Il piccolo</p>
+  <!-- titolo: una parola sola, grande, il nome o il prodotto -->
+  <h1 class="titolo">Forno</h1>
+
+  <svg class="doodle stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle scia" viewBox="0 0 70 110"><path d="M40 6 L28 30 M30 22 L16 50 M26 46 L14 72 M22 70 L10 98 M44 34 L36 54"/></svg>
+  <svg class="doodle freccia" viewBox="0 0 120 150"><path d="M30 10 C62 4 84 30 66 52 C52 70 26 60 36 44 C48 26 88 50 82 96 C80 112 74 124 66 136 M52 126 L66 138 L76 120"/></svg>
+  <!-- nota: il nome del prodotto in foto, 1 parola in corsivo -->
+  <p class="nota corsivo">Cornetto</p>
+
+  <!-- riga in basso: profilo social, indirizzo, sito -->
+  <div class="riga basso"><span>@ilpiccoloforno</span><span>Via Garibaldi 12, Bologna</span><span>ilpiccoloforno.it</span></div>
+</body>
+</html>

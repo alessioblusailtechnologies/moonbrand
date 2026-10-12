@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Pinyon+Script&family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5E2A1C; --secondario: #7F5943; --accento: #F3EFEA; --sfondo: #E9E1D6; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'Source Sans 3', sans-serif; }
+  /* il testo sul secondario: chiaro se il secondario è scuro, scuro se è chiaro, con la sua tinta */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.18, (0.66 - l) * 1000, 0.97) min(c, 0.012) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); }
+
+  .corsivo { position: absolute; left: 470px; top: 236px; font-family: 'Pinyon Script', cursive; font-size: 92px; line-height: 1; white-space: nowrap; transform: rotate(8deg); }
+  .titolo { position: absolute; left: 176px; top: 340px; font-family: var(--font-titoli); font-weight: 400; font-size: 134px; line-height: 0.98; }
+  .titolo span { display: block; }
+  .titolo span + span { margin-left: -44px; }
+  .testo { position: absolute; left: 604px; top: 612px; width: 400px; font-size: 30px; line-height: 1.5; letter-spacing: 0.05em; }
+  .profilo { position: absolute; left: 0; width: 1080px; top: 1170px; text-align: center; font-weight: 700; font-size: 27px; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+  <!-- corsivo: una parola scritta a mano, la rubrica -->
+  <p class="corsivo">Chi siamo</p>
+  <!-- titolo: 2-3 parole su due righe, la seconda più lunga -->
+  <h1 class="titolo"><span>Fatto</span><span>a mano</span></h1>
+
+  <!-- testo: 55-70 parole, cosa crede e come lavora il forno -->
+  <p class="testo">Apriamo alle sei perché il pane deve essere pronto quando passi per andare al lavoro. Usiamo farine di mulini vicini, il lievito madre che ci ha lasciato il nonno e un forno che scaldiamo dalla notte. Facciamo poche cose, ogni giorno, finché finiscono.</p>
+
+  <!-- profilo: il profilo social del brand -->
+  <p class="profilo logo">@fornobelcastro</p>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--accento); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 55% 50%; }
+
+  /* le lettere giganti in accento, sottili, che scendono in diagonale sulla foto */
+  .lettera { position: absolute; font-family: var(--font-titoli); font-weight: 300; font-stretch: 87.5%; line-height: 1; color: var(--accento); }
+  .q { left: 60px; top: 40px; font-size: 800px; }
+  .q span { position: absolute; }
+  .e { left: 400px; top: 700px; font-size: 190px; }
+  .a { left: 520px; top: 570px; font-size: 720px; }
+
+  .logo { position: absolute; left: 470px; top: 64px; width: 260px; height: 50px; border: 2px solid var(--accento); border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: un impasto o una sfoglia da vicino, a tutto campo, tagliata fuori dai bordi -->
+  <img class="foto" src="../esempio/treccia-cioccolato.jpg" alt="">
+
+  <!-- titolo: due lettere e il segno in mezzo (Q & A, D & R, F & Q); una lettera per elemento -->
+  <div class="lettera q">D<span class="e">&amp;</span><span class="a">R</span></div>
+
+  <!-- logo: il nome del forno nell'ovale a filo -->
+  <div class="logo">Forno Ardizzone</div>
+</body>
+</html>

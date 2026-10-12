@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Lora', serif; --font-testo: 'Lora', serif; }
+  /* Tutto il testo sta sul fondo pieno: la tinta dello sfondo schiarita. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: linear-gradient(180deg, var(--secondario) 0%, color-mix(in srgb, var(--secondario) 70%, var(--accento)) 100%); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -60px; top: 560px; width: 760px; height: 820px; object-fit: cover; object-position: 50% 40%;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 55%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 55%, #000 55%, transparent 100%); }
+
+  .segni { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .segni .linea { fill: none; stroke: var(--chiaro); stroke-width: 2.5; }
+  .segni .stella { fill: var(--chiaro); }
+
+  .logo { position: absolute; left: 290px; top: 160px; width: 480px; text-align: center; font-family: 'Quicksand', sans-serif; font-weight: 500; font-size: 40px; letter-spacing: 0.01em; }
+
+  .titolo { position: absolute; left: 0; top: 362px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 76px; line-height: 1.1; }
+
+  .righe { position: absolute; left: 568px; top: 530px; width: 402px; list-style: none; }
+  .righe li { display: flex; justify-content: space-between; align-items: baseline; height: 114px; padding-top: 40px; border-bottom: 3px solid var(--chiaro); font-size: 32px; }
+  .righe .nome { font-style: italic; }
+  .profilo { position: absolute; left: 568px; top: 1185px; width: 402px; text-align: right; font-size: 30px; font-style: italic; }
+</style>
+</head>
+<body>
+  <!-- foto: cesto di pane o di dolci, sfuma nel fondo in basso a sinistra -->
+  <img class="foto" src="../esempio/cesto.jpg" width="760" height="820" alt="">
+
+  <!-- segni: ovale del logo con due stelline, filetti del titolo con stelline in punta, arco attorno al cesto; restano -->
+  <svg class="segni" viewBox="0 0 1080 1350" aria-hidden="true">
+    <ellipse class="linea" cx="530" cy="185" rx="215" ry="100" transform="rotate(-8 530 185)"/>
+    <path class="stella" d="M650,62 l5,16 l16,5 l-16,5 l-5,16 l-5,-16 l-16,-5 l16,-5 z"/>
+    <path class="stella" d="M410,272 l5,16 l16,5 l-16,5 l-5,16 l-5,-16 l-16,-5 l16,-5 z"/>
+    <line class="linea" x1="112" y1="410" x2="255" y2="410"/>
+    <line class="linea" x1="825" y1="410" x2="968" y2="410"/>
+    <path class="stella" d="M110,392 l5,13 l13,5 l-13,5 l-5,13 l-5,-13 l-13,-5 l13,-5 z"/>
+    <path class="stella" d="M970,392 l5,13 l13,5 l-13,5 l-5,13 l-5,-13 l-13,-5 l13,-5 z"/>
+    <path class="linea" d="M0,1290 C220,1180 470,1010 488,860 C500,770 460,760 420,775"/>
+  </svg>
+
+  <!-- logo: il nome del forno dentro l'ovale (l'agente ci mette il logo se c'è) -->
+  <p class="logo">Forno Merlo</p>
+
+  <!-- titolo: 2-3 parole -->
+  <h1 class="titolo">Listino del pane</h1>
+
+  <!-- righe: cinque prodotti, prezzo a sinistra e nome in corsivo a destra (nome di 1-3 parole) -->
+  <ul class="righe">
+    <li><span>€ 4,50</span><span class="nome">Pane integrale</span></li>
+    <li><span>€ 5,00</span><span class="nome">Senza glutine</span></li>
+    <li><span>€ 3,80</span><span class="nome">Pane comune</span></li>
+    <li><span>€ 5,20</span><span class="nome">Ai cinque cereali</span></li>
+    <li><span>€ 4,80</span><span class="nome">Pane di segale</span></li>
+  </ul>
+
+  <!-- profilo: il profilo social in corsivo -->
+  <p class="profilo">@fornomerlo</p>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* il testo sull'accento: il principale se l'accento è chiaro, bianco se è scuro */
+  :root { --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--accento); color: var(--su-accento); font-family: var(--font-testo); }
+
+  /* la sigla gigante inclinata che sale verso destra, con un'ombra morbida */
+  .sigla { position: absolute; left: 40px; top: 70px; width: 1000px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 87.5%; font-size: 400px; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; transform: rotate(-24deg); transform-origin: 50% 50%; color: var(--su-accento); text-shadow: 0 18px 30px color-mix(in srgb, black 22%, transparent); white-space: nowrap; }
+
+  /* due colonne: domanda e risposta, con l'intestazione sottile */
+  .col { position: absolute; top: 805px; width: 420px; text-align: center; }
+  .col h2 { font-family: var(--font-testo); font-size: 30px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+  .col p { margin-top: 96px; font-size: 27px; line-height: 1.32; font-weight: 600; }
+</style>
+</head>
+<body>
+  <!-- sigla: tre lettere (FAQ) o una parola corta, 3-4 lettere -->
+  <div class="sigla">Faq</div>
+
+  <div class="col" style="left: 80px;">
+    <h2>Domanda</h2>
+    <!-- domanda: 6-12 parole -->
+    <p>Avete dolci senza glutine o senza latte?</p>
+  </div>
+  <div class="col" style="left: 580px;">
+    <h2>Risposta</h2>
+    <!-- risposta: 15-25 parole -->
+    <p>Sì, ogni giorno prepariamo crostate e biscotti senza glutine e vegani, così tutti trovano qualcosa di buono.</p>
+  </div>
+</body>
+</html>

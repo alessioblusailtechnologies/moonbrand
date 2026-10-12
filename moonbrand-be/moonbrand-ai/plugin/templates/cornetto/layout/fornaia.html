@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* testi chiari sul fondo scuro: la tinta dello sfondo schiarita */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+  .logo { position: absolute; font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; text-align: center; padding: 8px 0; border: 2px solid var(--secondario); border-radius: 14px; }
+
+  .titolo { position: absolute; left: 0; width: 1080px; top: 92px; text-align: center; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 200px; line-height: 0.86; letter-spacing: -0.035em; }
+  .foto { position: absolute; left: 260px; top: 420px; width: 560px; height: 560px; border-radius: 50%; object-fit: cover; object-position: 40% 30%; }
+  .testo { position: absolute; left: 90px; width: 900px; top: 1020px; font-size: 24px; line-height: 1.35; text-align: justify; hyphens: auto; }
+  .testo + .testo { top: 1150px; }
+  .logo { left: 405px; top: 1264px; width: 270px; }
+</style>
+</head>
+<body>
+  <!-- titolo: 3-4 parole su due righe, chi c'è dietro il banco -->
+  <h1 class="titolo">Ecco chi<br>impasta</h1>
+
+  <!-- foto: ritratto di chi lavora nel forno, tagliato in un cerchio che copre il fondo del titolo -->
+  <img class="foto" src="../esempio/fornaia.jpg" alt="">
+
+  <!-- testo: due paragrafi di 25-35 parole in prima persona -->
+  <p class="testo">Ciao! Sono Marta, fornaia e sognatrice dietro al Forno Rosmarì. Tutto è cominciato con qualche ciambellone per gli amici, e oggi è un angolo caldo dove ogni ricetta racconta una storia.</p>
+  <p class="testo">Il mio obiettivo è portare un po' di felicità nella tua giornata, un cornetto alla volta. Qui tutto è fatto con ingredienti veri, passione e tanto cuore.</p>
+
+  <!-- logo: il nome del forno in un riquadro arrotondato -->
+  <div class="logo">Forno Rosmarì</div>
+</body>
+</html>

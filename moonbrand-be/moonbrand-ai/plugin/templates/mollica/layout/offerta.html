@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,600;1,600&family=Open+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Le forme piene in una tinta chiara del secondario: ci stanno sopra testi scuri e foto fuse col multiply. */
+  :root { --tinta: oklch(from var(--secondario) max(l, 0.85) min(c, 0.07) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Il fondo: mollica da vicino sotto un velo dello sfondo. */
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; }
+  .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--sfondo) 72%, transparent); }
+
+  .titolo { position: absolute; left: 40px; top: 175px; width: 1000px; text-align: center; font-family: var(--font-titoli); font-weight: 600;
+    font-size: 70px; line-height: 1; text-transform: uppercase; }
+  /* La seconda riga in corsivo tra due filetti che arrivano ai bordi. */
+  .sotto { position: absolute; left: 0; top: 262px; width: 1080px; display: flex; align-items: center; gap: 22px; }
+  .sotto::before, .sotto::after { content: ""; flex: 1; height: 3px; background: var(--principale); }
+  .sotto span { font-family: var(--font-titoli); font-style: italic; font-weight: 600; font-size: 62px; }
+
+  .foto { position: absolute; left: 40px; top: 400px; width: 1000px; height: 640px; object-fit: cover; mix-blend-mode: multiply; }
+
+  /* L'esplosione con la scritta, in alto a sinistra sopra la foto. */
+  .scoppio { position: absolute; left: 92px; top: 405px; width: 250px; height: 210px; }
+  .scoppio svg { position: absolute; inset: 0; }
+  .scoppio p { position: absolute; left: 0; top: 0; width: 250px; height: 210px; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: var(--font-testo); font-weight: 800; font-size: 31px; line-height: 1.05; transform: rotate(-8deg); }
+
+  .testo { position: absolute; left: 110px; top: 1010px; width: 860px; text-align: center; font-family: var(--font-testo); font-weight: 600; font-size: 30px; line-height: 1.6; }
+  .bottone { position: absolute; left: 250px; top: 1150px; width: 580px; height: 66px; background: var(--accento); color: var(--sfondo);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-testo); font-weight: 700; font-size: 25px; }
+</style>
+</head>
+<body>
+  <!-- fondo: una foto ravvicinata di mollica o crosta, sotto il velo -->
+  <img class="fondo" src="../esempio/mollica.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- titolo: l'offerta, 14-20 caratteri, maiuscolo -->
+  <h1 class="titolo">Sconto del 10% su</h1>
+  <!-- sotto: 2-4 parole in corsivo tra i filetti -->
+  <p class="sotto"><span>tutto il pane fresco</span></p>
+
+  <!-- foto: i prodotti in offerta scontornati su fondo bianco -->
+  <img class="foto" src="../esempio/filone.jpg" alt="">
+
+  <!-- scoppio: 1-2 parole brevi su due righe -->
+  <div class="scoppio">
+    <svg viewBox="0 0 250 210" width="250" height="210">
+      <path d="M125 18 L143 52 L178 30 L176 70 L222 66 L196 98 L238 120 L192 132 L210 172 L168 158 L158 196 L132 164 L104 198 L96 160 L52 178 L68 138 L18 128 L60 104 L28 70 L74 74 L72 32 L108 54 Z"
+        fill="var(--tinta)" stroke="var(--principale)" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M20 40 L40 56 M8 72 L32 78 M46 14 L58 36" stroke="var(--principale)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <p>Senza<br>glutine</p>
+  </div>
+
+  <!-- testo: 18-26 parole su due righe -->
+  <p class="testo">Caldo, morbido e sfornato ogni giorno. Da questa settimana anche le pagnotte senza glutine, per tutti.</p>
+
+  <!-- bottone: l'invito, 4-7 parole -->
+  <p class="bottone">Passa a provarlo in negozio</p>
+</body>
+</html>

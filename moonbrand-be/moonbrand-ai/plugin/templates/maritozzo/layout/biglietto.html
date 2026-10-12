@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #D7452C; --secondario: #2B2826; --accento: #D7452C; --sfondo: #F3EADB; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root {
+    --su-accento: oklch(from var(--accento) clamp(0, (0.66 - l) * 1000, 1) 0 0);
+    --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 55%; display: block; }
+  .logo { position: absolute; left: 50%; top: 140px; transform: translateX(-50%); padding: 10px 26px; border-radius: 40px; background: var(--accento); color: var(--su-accento); font-size: 25px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+  /* il biglietto: bordi alto e basso traforati, una fila di fori a metà, la linguetta in basso */
+  .biglietto { position: absolute; left: 306px; top: 300px; width: 468px; height: 920px; background: var(--chiaro); border-radius: 18px;
+    -webkit-mask:
+      radial-gradient(circle 10px at 50% 0, #0000 98%, #000) -6px 0 / 31px 100% repeat-x,
+      radial-gradient(circle 10px at 50% 100%, #0000 98%, #000) -6px 0 / 31px 100% repeat-x,
+      radial-gradient(circle 9px at 50% 460px, #0000 98%, #000) -6px 0 / 31px 100% repeat-x,
+      radial-gradient(54px 30px at 50% 100%, #0000 98%, #000);
+    -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .scotch { position: absolute; left: 470px; top: 262px; width: 190px; height: 92px; background: rgba(226, 228, 224, 0.82); transform: rotate(22deg); }
+  .giorno { position: absolute; left: 306px; width: 468px; text-align: center; color: var(--secondario); }
+  .ora { display: block; font-family: var(--font-titoli); font-size: 30px; text-transform: uppercase; }
+  .data { display: block; margin-top: 16px; color: var(--principale); font-family: var(--font-titoli); font-size: 92px; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+  .cosa { display: block; margin-top: 22px; font-family: var(--font-titoli); font-size: 38px; line-height: 1.2; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <img class="foto" src="../esempio/girella-carta.jpg" alt="">
+
+  <!-- logo: il nome del brand nell'etichetta in alto -->
+  <div class="logo">Forno Corallo</div>
+
+  <div class="biglietto"></div>
+  <div class="scotch"></div>
+
+  <!-- due giorni: orario, data (giorno e mese corto), cosa succede in 2 righe di 2-3 parole -->
+  <div class="giorno" style="top: 370px;">
+    <span class="ora">7:00 - 13:00</span>
+    <span class="data">29 nov</span>
+    <span class="cosa">Girelle<br>a metà prezzo</span>
+  </div>
+  <div class="giorno" style="top: 820px;">
+    <span class="ora">7:00 - 13:00</span>
+    <span class="data">30 nov</span>
+    <span class="cosa">Colazione<br>offerta da noi</span>
+  </div>
+</body>
+</html>

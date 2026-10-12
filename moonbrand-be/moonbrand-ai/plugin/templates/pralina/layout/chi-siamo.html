@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #85564D; --secondario: #B6A18E; --accento: #9C6B5F; --sfondo: #E8E0D8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Libre Baskerville', serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1040px; object-fit: cover; }
+  .onda { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .pane { position: absolute; left: 14px; top: 950px; width: 300px; height: 120px; }
+  .stelle { position: absolute; left: 890px; top: 870px; width: 130px; height: 100px; }
+
+  .titolo { position: absolute; left: 0; top: 1046px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 58px; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1; }
+  .barra { position: absolute; left: 284px; top: 1112px; width: 570px; height: 14px; background: var(--secondario); }
+  .testo { position: absolute; left: 150px; top: 1200px; width: 780px; text-align: center; font-size: 27px; line-height: 1.6; letter-spacing: 0.16em; }
+</style>
+</head>
+<body>
+  <!-- foto: la vetrina o il laboratorio, in alto; l'onda la taglia sotto -->
+  <img class="foto" src="../esempio/vetrina.jpg" alt="">
+  <svg class="onda" viewBox="0 0 1080 1350"><path d="M0 800 C 160 805 330 1020 515 1020 C 700 1020 790 800 945 795 C 1000 793 1040 785 1080 776 L 1080 1350 L 0 1350 Z" fill="var(--sfondo)"/></svg>
+
+  <!-- disegno a filo: un pane con la sua scia, a sinistra sull'onda -->
+  <svg class="pane" viewBox="0 0 300 120" fill="none" stroke="var(--principale)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 92 C 30 70 60 104 88 90"/>
+    <path d="M88 90 C 76 52 112 26 152 26 C 196 26 230 52 222 88 C 186 102 120 102 88 90 Z"/>
+    <path d="M118 44 C 128 58 126 72 114 84"/>
+    <path d="M150 34 C 160 50 158 68 148 86"/>
+    <path d="M184 40 C 194 56 192 72 182 86"/>
+    <path d="M222 88 C 246 72 262 102 292 80"/>
+  </svg>
+
+  <!-- scintille: tre stelline chiare a destra dell'onda -->
+  <svg class="stelle" viewBox="0 0 130 100" fill="var(--chiaro)">
+    <path d="M40 10 C 43 40 50 47 80 50 C 50 53 43 60 40 90 C 37 60 30 53 0 50 C 30 47 37 40 40 10 Z"/>
+    <path d="M104 0 C 105 12 108 15 120 16 C 108 17 105 20 104 32 C 103 20 100 17 88 16 C 100 15 103 12 104 0 Z"/>
+    <path d="M114 56 C 115 70 118 73 130 74 C 118 75 115 78 114 92 C 113 78 110 75 98 74 C 110 73 113 70 114 56 Z"/>
+  </svg>
+
+  <!-- titolo: 2 parole in maiuscolo -->
+  <h1 class="titolo">Chi siamo</h1>
+  <div class="barra"></div>
+
+  <!-- testo: due righe sull'attività, 12-18 parole -->
+  <p class="testo">Dal 1987 impastiamo ogni notte a Bologna, con il lievito madre della nonna Gemma.</p>
+</body>
+</html>

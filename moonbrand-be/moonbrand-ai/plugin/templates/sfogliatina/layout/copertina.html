@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --ombra: color-mix(in srgb, var(--secondario) 75%, black); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la parola ripetuta: corsivo stretto, cinque righe che escono dai bordi */
+  .righe { position: absolute; left: 20px; top: 0; width: 1040px; height: 1350px; display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0 0; }
+  .riga { display: block; white-space: nowrap; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-stretch: 62.5%; font-size: 330px; line-height: 0.8; letter-spacing: -0.01em; text-transform: uppercase; text-shadow: 0 6px 14px color-mix(in srgb, var(--principale) 18%, transparent); }
+
+  /* il prodotto scontornato con l'ombra piena spostata in basso a sinistra */
+  .pezzo { position: absolute; filter: drop-shadow(-12px 16px 0 var(--ombra)); }
+  .pezzo svg { display: block; width: 100%; height: 100%; overflow: visible; }
+</style>
+</head>
+<body>
+  <!-- parola: una sola parola di 6-8 lettere ripetuta sulle cinque righe (il nome del forno o il prodotto) -->
+  <div class="righe">
+    <span class="riga">Sfoglia</span>
+    <span class="riga">Sfoglia</span>
+    <span class="riga">Sfoglia</span>
+    <span class="riga">Sfoglia</span>
+    <span class="riga">Sfoglia</span>
+  </div>
+
+  <!-- scontorno: la maschera del prodotto (bianco = prodotto, nero = fondo), stessa misura della foto -->
+  <svg width="0" height="0" style="position: absolute;" aria-hidden="true"><defs><mask id="scontorno" maskUnits="userSpaceOnUse" x="0" y="0" width="772" height="688"><image href="../esempio/cornetto-maschera.jpg" width="772" height="688"/></mask></defs></svg>
+
+  <!-- prodotto: lo stesso prodotto scontornato ripetuto sette volte in diagonale (foto ritagliata + maschera) -->
+  <div class="pezzo" style="left: 330px; top: 0px; width: 380px; height: 339px; transform: rotate(4deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: 790px; top: 215px; width: 330px; height: 294px; transform: rotate(1deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: -80px; top: 390px; width: 350px; height: 312px; transform: rotate(6deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: 330px; top: 560px; width: 400px; height: 356px; transform: rotate(3deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: 800px; top: 760px; width: 330px; height: 294px; transform: rotate(5deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: -70px; top: 930px; width: 350px; height: 312px; transform: rotate(0deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+  <div class="pezzo" style="left: 320px; top: 1100px; width: 380px; height: 339px; transform: rotate(4deg);"><svg viewBox="0 0 772 688"><image href="../esempio/cornetto-scontornato.jpg" width="772" height="688" mask="url(#scontorno)"/></svg></div>
+
+  <script>
+    // Ogni riga riempie la larghezza (1040 px) con qualunque font e parola, senza uscire dai bordi.
+    const adatta = () => document.querySelectorAll('.riga').forEach((riga) => {
+      riga.style.fontSize = '330px';
+      riga.style.fontSize = `${Math.min(340, Math.floor(330 * 1036 / riga.scrollWidth))}px`;
+    });
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

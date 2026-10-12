@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wdth,wght@62.5..100,100..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #820A0B; --secondario: #E3E2DD; --accento: #F8E8D0; --sfondo: #F5F4F0; }
+  :root { --font-titoli: 'Noto Serif', serif; --font-testo: 'Archivo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .oggetto { position: absolute; left: 175px; top: 120px; width: 380px; height: 440px; object-fit: contain; transform: rotate(-68deg); mix-blend-mode: multiply; }
+  .testo { position: absolute; left: 770px; top: 222px; width: 214px; font-family: var(--font-testo); font-size: 19px; line-height: 1.22; text-align: justify; }
+  .titolo { position: absolute; left: 38px; top: 612px; font-family: var(--font-titoli); font-weight: 500; font-stretch: 70%; font-size: 142px; line-height: 1; letter-spacing: -0.015em; white-space: nowrap; }
+  .foto { position: absolute; left: 0; top: 798px; width: 1080px; height: 552px; object-fit: cover; object-position: 50% 60%; }
+</style>
+</head>
+<body>
+  <!-- oggetto: un prodotto su fondo chiaro, scontornato o su un piatto bianco, in alto a sinistra -->
+  <img class="oggetto" src="../esempio/cornetto.jpg" alt="">
+
+  <!-- testo: come lavorate, 40-55 parole, giustificato in colonna stretta -->
+  <p class="testo" lang="it">Farine scelte, tempi lunghi e piccole infornate guidano tutto quello che facciamo. Dal primo espresso del mattino all'ultima glassa sui dolci, ogni dettaglio è pensato per portare calore, gusto e un po' di allegria nella vostra giornata.</p>
+
+  <!-- titolo: 2-3 parole in minuscolo con l'iniziale grande, una riga sola, 12-16 caratteri -->
+  <h1 class="titolo" data-max="1000">Come lavoriamo</h1>
+
+  <!-- foto: una foto vera del prodotto da vicino, che riempie la parte bassa -->
+  <img class="foto" src="../esempio/cornetti.jpg" alt="">
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        const max = Number(el.dataset.max);
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return Math.max(0, ...[...r.getClientRects()].map((q) => q.width)); };
+        while (larghezza() > max && size > 24) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

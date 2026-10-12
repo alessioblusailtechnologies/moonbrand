@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Old Standard TT', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .centro { position: absolute; left: 0; width: 1080px; text-align: center; white-space: nowrap; }
+  .nome { top: 140px; font-family: var(--font-titoli); font-size: 46px; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; }
+  .anno { top: 198px; font-size: 26px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .titolo1 { top: 286px; font-family: var(--font-titoli); font-size: 146px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
+  .titolo2 { top: 390px; font-family: var(--font-titoli); font-style: italic; font-size: 128px; line-height: 1; letter-spacing: 0.07em; color: var(--accento); }
+
+  /* tre prodotti su fondo bianco, fusi con lo sfondo; quelli ai lati tagliati dal bordo */
+  .foto { position: absolute; object-fit: cover; mix-blend-mode: multiply; }
+
+  .prezzo { position: absolute; left: 400px; top: 925px; width: 280px; height: 146px; border: 2px solid var(--principale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-size: 68px; line-height: 1; }
+  .freccia { position: absolute; top: 984px; fill: none; stroke: var(--principale); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .prodotto { top: 1118px; font-family: var(--font-titoli); font-size: 42px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; color: var(--accento); }
+  .indirizzo { top: 1204px; font-size: 27px; letter-spacing: 0.01em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- nome del forno e anno di apertura, centrati in alto -->
+  <p class="centro nome logo">Ortensia</p>
+  <p class="centro anno">Dal 1987</p>
+
+  <!-- titolo: prima riga dritta in maiuscolo (2-3 parole), seconda una parola in corsivo -->
+  <h1 class="centro titolo1">È ora di</h1>
+  <h1 class="centro titolo2">colazione</h1>
+
+  <!-- foto: tre prodotti su fondo bianco; al centro quello in offerta, ai lati due tagliati dal bordo -->
+  <img class="foto" src="../esempio/bombolone.jpg" alt="" style="left: -150px; top: 560px; width: 370px; height: 380px; object-position: 50% 28%;">
+  <img class="foto" src="../esempio/biscotti.jpg" alt="" style="left: 250px; top: 540px; width: 580px; height: 380px; object-position: 50% 74%;">
+  <img class="foto" src="../esempio/ciambella.jpg" alt="" style="left: 870px; top: 590px; width: 380px; height: 320px; object-position: 30% 56%;">
+
+  <!-- prezzo: nell'ovale tra due frecce -->
+  <svg class="freccia" style="left: 228px;" width="140" height="28" viewBox="0 0 140 28"><path d="M138 14 H 4 M18 3 L 4 14 L 18 25"/></svg>
+  <p class="prezzo">€ 4,50</p>
+  <svg class="freccia" style="left: 712px;" width="140" height="28" viewBox="0 0 140 28"><path d="M2 14 H 136 M122 3 L 136 14 L 122 25"/></svg>
+
+  <!-- prodotto: il nome in maiuscolo, 2-5 parole -->
+  <p class="centro prodotto">Biscotti al cioccolato</p>
+  <!-- indirizzo: via e città -->
+  <p class="centro indirizzo">Via Saragozza 41, Bologna</p>
+</body>
+</html>

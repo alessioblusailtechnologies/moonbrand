@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,300&family=Alegreya:ital,wght@0,800;1,400&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Alegreya', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .mano { font-family: 'Nothing You Could Do', cursive; }
+
+  /* la foto su fondo bianco si fonde con lo sfondo */
+  .foto { position: absolute; left: -287px; top: -36px; width: 1263px; height: 2246px; object-fit: cover; display: block; mix-blend-mode: multiply; filter: brightness(1.24) contrast(1.08); transform: rotate(-28deg); transform-origin: 847px 756px; }
+
+  .angolo { position: absolute; top: 60px; font-weight: 800; font-size: 25px; line-height: 1.1; text-transform: uppercase; }
+  .angolo.sx { left: 56px; }
+  .angolo.dx { right: 56px; text-align: right; }
+
+  .titolo { position: absolute; left: 92px; top: 196px; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 300; font-size: 156px; line-height: 0.9; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .nota { position: absolute; left: 858px; top: 318px; width: 170px; height: 140px; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-6deg); }
+  .nota svg { position: absolute; inset: 0; overflow: visible; }
+  .nota p { position: relative; font-size: 32px; line-height: 1.1; }
+  .freccia { position: absolute; overflow: visible; }
+
+  .sotto { position: absolute; left: 460px; width: 520px; top: 1004px; text-align: center; font-weight: 800; font-size: 42px; line-height: 1.02; }
+  .testo { position: absolute; left: 136px; top: 1146px; width: 760px; padding-left: 26px; border-left: 2px solid var(--secondario); font-style: italic; font-size: 30px; line-height: 1.3; }
+</style>
+</head>
+<body>
+  <!-- foto: un solo prodotto da forno su fondo bianco, grande, sotto il titolo -->
+  <img class="foto" src="../esempio/croissant.jpg" alt="">
+
+  <!-- logo: il profilo o il nome del brand su due righe, in alto a sinistra -->
+  <p class="angolo sx logo">@pasticceria<br>bruna</p>
+  <!-- telefono: in alto a destra -->
+  <p class="angolo dx">+39 080<br>555 1234</p>
+
+  <!-- titolo: due righe maiuscole strette, 6-11 caratteri ciascuna -->
+  <h1 class="titolo" data-max="740"><span>Il cornetto</span><span>ti aspetta</span></h1>
+
+  <!-- nota: scritta a mano dentro un ovale, una percentuale o un prezzo -->
+  <div class="nota">
+    <svg viewBox="0 0 170 140" preserveAspectRatio="none"><path d="M54 12 C 120 -2, 168 34, 166 74 C 164 118, 112 138, 72 134 C 26 130, 2 100, 6 66 C 10 32, 46 10, 104 10" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round"/></svg>
+    <p class="mano">-15%<br>oggi</p>
+  </div>
+  <svg class="freccia" style="left: 850px; top: 470px;" width="90" height="70" viewBox="0 0 90 70"><path d="M82 4 C 80 34, 52 50, 10 54 M10 54 L 26 40 M10 54 L 28 66" fill="none" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+  <!-- sottotitolo: due righe, 5-8 parole in tutto -->
+  <p class="sotto">Friabile, burroso e<br>buono da non crederci</p>
+  <svg class="freccia" style="left: 952px; top: 990px;" width="40" height="40" viewBox="0 0 40 40"><path d="M14 4 L 18 16 M30 10 L 22 20 M36 26 L 24 26" stroke="var(--secondario)" stroke-width="3" stroke-linecap="round"/></svg>
+
+  <!-- testo: due frasi, 18-28 parole, con il filetto a sinistra -->
+  <p class="testo">Concediti la colazione come si deve. I nostri cornetti escono dal forno ogni mattina alle sei, ancora tiepidi quando apri la porta.</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => {
+          const righe = [];
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const r of range.getClientRects()) righe.push(r.width);
+          }
+          return Math.max(0, ...righe);
+        };
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

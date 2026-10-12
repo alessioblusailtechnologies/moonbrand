@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,500&family=Montserrat:wght@500;800&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .come { position: absolute; left: 0; top: 214px; width: 1080px; text-align: center; font-family: var(--font-testo); font-weight: 800; font-size: 132px; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; top: 380px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 500; font-size: 104px; line-height: 1; letter-spacing: -0.04em; }
+  .corsivo { position: absolute; left: 0; top: 478px; width: 1080px; text-align: center; font-family: 'Pinyon Script', cursive; font-size: 150px; line-height: 1; white-space: nowrap; }
+  .tondo { position: absolute; left: 14px; top: 636px; width: 908px; height: 908px; border-radius: 50%; overflow: hidden; }
+  .tondo img { position: absolute; left: -446px; top: -222px; width: 1930px; height: 1448px; object-fit: cover; display: block; }
+  .bottone { position: absolute; left: 507px; top: 769px; width: 436px; height: 70px; border-radius: 35px; display: flex; align-items: center; justify-content: center;
+    background: var(--sfondo); border: 3px solid var(--accento); font-size: 24px; font-weight: 500; }
+</style>
+</head>
+<body>
+  <!-- prima riga: 1-2 parole in maiuscolo nero -->
+  <p class="come" data-max="980">Come</p>
+
+  <!-- titolo: 3-4 parole, serif stretto -->
+  <h1 class="titolo" data-max="980">ordinare dal menu</h1>
+
+  <!-- corsivo: 2 parole scritte a mano, chiude la frase -->
+  <p class="corsivo">Anche online</p>
+
+  <!-- foto: un prodotto rotondo visto dall'alto, ritagliato in un cerchio grande che esce dal fondo -->
+  <div class="tondo"><img src="../esempio/waffle-gelato.jpg" alt=""></div>
+
+  <!-- bottone: 3-5 parole, l'invito a leggere -->
+  <p class="bottone">Leggi come funziona</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        const max = parseFloat(el.dataset.max);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+        while (larghezza() > max && size > 20) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

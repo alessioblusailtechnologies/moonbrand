@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E2E1F; --secondario: #9B7C5F; --accento: #C2A586; --sfondo: #F5F0EA; }
+  :root { --font-titoli: 'Kaushan Script', cursive; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.04) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+  .etichetta { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .anelli { color: var(--accento); stroke-width: 7; }
+  .tratto { color: var(--principale); stroke-width: 3; }
+
+  /* titolo in corsivo tra due raggiere di tratti, come un'insegna scritta a mano */
+  .testata { position: absolute; left: 0; width: 1080px; top: 96px; display: flex; justify-content: center; align-items: center; gap: 26px; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; font-size: 150px; line-height: 1.1; white-space: nowrap; }
+  .raggi { width: 76px; height: 100px; flex: none; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; }
+  .raggi.destra { transform: scaleX(-1); }
+
+  .testo { position: absolute; left: 108px; top: 290px; width: 560px; font-size: 33px; line-height: 1.45; font-weight: 700; }
+  .profilo { position: absolute; left: 108px; top: 530px; font-size: 28px; text-decoration: underline; text-underline-offset: 5px; }
+  .sconto { position: absolute; left: 740px; top: 300px; width: 170px; text-align: center; font-size: 64px; line-height: 1.02; }
+
+  .foto { position: absolute; left: 320px; top: 480px; width: 760px; height: 800px; object-fit: cover; display: block; transform: scaleX(-1); mix-blend-mode: multiply; filter: brightness(1.05);
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); }
+
+  .invito { position: absolute; left: 108px; top: 940px; font-size: 54px; line-height: 1.05; }
+  .logo { position: absolute; left: 108px; top: 1150px; font-size: 44px; }
+  .sito { position: absolute; left: 108px; top: 1210px; font-size: 30px; }
+
+  .freccia-su { width: 80px; height: 140px; left: 880px; top: 368px; transform: rotate(180deg); }
+  .cuore { width: 104px; height: 124px; left: 680px; top: 440px; transform: rotate(-8deg); }
+  .stella { width: 104px; height: 120px; left: 108px; top: 750px; transform: rotate(-12deg); }
+  .freccia-sx { width: 200px; height: 90px; left: 240px; top: 968px; }
+  .anelli-giu { width: 320px; height: 470px; left: 790px; top: 860px; }
+</style>
+</head>
+<body>
+  <div class="testata">
+    <svg class="raggi" viewBox="0 0 76 100"><path d="M6 18 L64 40 M4 52 L64 52 M6 86 L64 64"/></svg>
+    <!-- titolo: il prodotto in corsivo, 1-2 parole, al massimo 12 lettere -->
+    <h1 class="titolo">Crostata</h1>
+    <svg class="raggi destra" viewBox="0 0 76 100"><path d="M6 18 L64 40 M4 52 L64 52 M6 86 L64 64"/></svg>
+  </div>
+
+  <!-- testo: 15-22 parole sul prodotto -->
+  <p class="testo">Frolla al burro, ciliegie mature e una griglia dorata intrecciata a mano, come quella della nonna.</p>
+  <!-- profilo: il profilo social -->
+  <p class="profilo">@fornobellavista</p>
+
+  <!-- sconto: la cifra e una parola, su due righe -->
+  <p class="sconto etichetta">20%<br>sconto</p>
+
+  <!-- foto: una fetta del prodotto dall'alto, su un fondo liscio chiaro -->
+  <img class="foto" src="../esempio/crostata.jpg" alt="">
+
+  <svg class="doodle tratto freccia-su" viewBox="0 0 100 150"><path d="M70 6 C40 14 30 44 52 54 C74 64 80 36 58 34 C30 32 18 80 34 140 M18 120 L34 142 L52 122"/></svg>
+  <svg class="doodle tratto cuore" viewBox="0 0 100 110"><path d="M50 98 C30 76 6 58 8 34 C10 14 34 8 47 30 C54 10 82 4 90 26 C98 52 72 76 50 98 C44 80 42 62 34 50"/></svg>
+  <svg class="doodle tratto stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle tratto freccia-sx" viewBox="0 0 200 90"><path d="M190 30 C170 6 136 14 146 40 C156 64 184 46 166 34 C140 18 90 70 14 60 M34 44 L12 60 L34 76"/></svg>
+  <svg class="doodle anelli anelli-giu" viewBox="0 0 320 470"><path d="M20 30 C110 120 200 250 280 400 C296 430 270 444 254 414 C190 300 120 190 40 100 C20 76 44 60 66 84 C150 170 230 300 300 450 M40 290 C100 350 150 410 180 470"/></svg>
+
+  <!-- invito: 2 parole in maiuscolo su due righe -->
+  <p class="invito etichetta">Ordina<br>ora</p>
+  <!-- logo: il nome del forno -->
+  <p class="logo etichetta">Forno Bellavista</p>
+  <!-- sito: l'indirizzo del sito -->
+  <p class="sito">www.fornobellavista.it</p>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Arimo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'IBM Plex Mono', monospace; --font-testo: 'Arimo', sans-serif; }
+  :root { --nero: color-mix(in srgb, #000000 86%, var(--principale)); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--nero); font-family: var(--font-testo); }
+
+  .stella { position: absolute; width: 34px; height: 34px; fill: var(--principale); }
+  .frecce { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; fill: none; stroke: var(--principale); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .titolo { position: absolute; left: 0; top: 56px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 116px; line-height: 116px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .nota { position: absolute; top: 436px; font-size: 30px; line-height: 40px; }
+
+  .foto { position: absolute; left: 0; top: 548px; width: 1080px; height: 612px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .filo { position: absolute; left: 14px; top: 1112px; width: 880px; height: 3px; background: var(--chiaro); }
+
+  .ordina { position: absolute; left: -36px; top: 1104px; width: 290px; height: 190px; border-radius: 50%; transform: rotate(-14deg); background: var(--sfondo); border: 3px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-weight: 700; font-size: 32px; line-height: 36px; text-transform: uppercase; color: var(--secondario); }
+  .ordina span { transform: rotate(14deg); padding-left: 40px; }
+  .telefono { position: absolute; left: 290px; top: 1184px; width: 420px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 32px; color: var(--principale); white-space: pre; }
+
+  .fascia { position: absolute; left: 0; top: 1262px; width: 1080px; height: 88px; background: var(--principale); }
+  .indirizzo { position: absolute; left: 0; top: 1284px; width: 980px; text-align: center; font-family: var(--font-titoli); font-size: 28px; letter-spacing: 0.04em; color: var(--sfondo); }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol></defs></svg>
+
+  <!-- titolo: 3 righe di 6-11 caratteri -->
+  <h1 class="titolo"><span>Assaggia la</span><span>nostra</span><span>ricetta</span></h1>
+
+  <svg class="stella" style="left:46px;top:322px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:858px;top:322px"><use href="#stella"/></svg>
+
+  <!-- note: due cose vere sul prodotto, 2 righe di 1-2 parole ciascuna -->
+  <p class="nota" style="left:16px">Appena<br>sfornati</p>
+  <p class="nota" style="right:120px;text-align:right">Burro di<br>montagna</p>
+
+  <!-- foto: i prodotti ammucchiati da vicino, a tutta larghezza -->
+  <img class="foto" src="../esempio/cornetti-teglia.jpg" alt="">
+  <div class="filo"></div>
+
+  <svg class="frecce" viewBox="0 0 1080 1350">
+    <path d="M160 470C205 462 245 490 252 552"/><path d="M234 534L252 556L266 532"/>
+    <path d="M712 470C676 470 650 500 652 552"/><path d="M638 532L652 556L668 534"/>
+  </svg>
+
+  <!-- ordina: l'invito, 2 parole -->
+  <p class="ordina"><span>Ordina<br>ora</span></p>
+  <!-- telefono -->
+  <p class="telefono">051 - 234 - 5678</p>
+  <svg class="stella" style="left:752px;top:1186px"><use href="#stella"/></svg>
+
+  <div class="fascia"></div>
+  <!-- indirizzo: via e città -->
+  <p class="indirizzo">Via dei Mille 14, Bologna</p>
+  <svg class="stella" style="left:930px;top:1290px;fill:var(--sfondo)"><use href="#stella"/></svg>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Source+Sans+3:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5E2A1C; --secondario: #7F5943; --accento: #F3EFEA; --sfondo: #E9E1D6; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'Source Sans 3', sans-serif; }
+  /* il testo sul secondario: chiaro se il secondario è scuro, scuro se è chiaro, con la sua tinta */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.18, (0.66 - l) * 1000, 0.97) min(c, 0.012) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); }
+
+  .arco { position: absolute; left: 0; top: 0; }
+  .arco text { font-family: var(--font-titoli); font-size: 64px; fill: var(--su-secondario); letter-spacing: 0.01em; }
+  .foto { position: absolute; left: 256px; top: 402px; width: 566px; height: 726px; border-radius: 50%; object-fit: cover; object-position: 72% 50%; display: block; }
+  .nota { position: absolute; font-size: 38px; line-height: 1.2; white-space: nowrap; color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+</style>
+</head>
+<body>
+  <!-- titolo: 4-6 parole su un arco, la novità della stagione -->
+  <svg class="arco" width="1080" height="420" viewBox="0 0 1080 420">
+    <path id="curva" d="M110 356 Q 540 156 970 356" fill="none"/>
+    <text><textPath href="#curva" startOffset="50%" text-anchor="middle" textLength="800" lengthAdjust="spacingAndGlyphs">Nuova stagione, nuovi dolci</textPath></text>
+  </svg>
+
+  <!-- foto: un dolce o un prodotto nuovo, tagliata a ovale verticale -->
+  <img class="foto" src="../esempio/torta-fragole.jpg" alt="">
+
+  <!-- note: 2 qualità di 2 parole, una in alto a sinistra e una in basso a destra, sopra il bordo della foto -->
+  <p class="nota" style="left: 172px; top: 588px;">fragole fresche</p>
+  <p class="nota" style="left: 606px; top: 944px;">pan di spagna</p>
+</body>
+</html>

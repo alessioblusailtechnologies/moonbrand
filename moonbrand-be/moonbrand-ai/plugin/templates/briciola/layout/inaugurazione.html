@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,800;7..72,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161311; --secondario: #D3B48E; --accento: #C2864E; --sfondo: #EEEDEA; }
+  :root { --font-titoli: 'Literata', serif; --font-testo: 'Newsreader', serif; }
+  /* il testo sui riquadri colorati: nero se il colore è chiaro, bianco se è scuro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.62 - l) * 1000, 1) 0 0); --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  /* lo sfondo anche su html, così il body ha un fondo suo e i ritagli si fondono */
+  html { background: var(--sfondo); }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-variation-settings: 'opsz' 12; line-height: 0.88; letter-spacing: -0.02em; }
+  /* le foto ritagliate su fondo bianco: il filtro «scontorna» rende trasparente il bianco, così stanno su ogni colore */
+  .ritaglio { position: absolute; display: block; object-fit: cover; filter: url(#scontorna); }
+  /* carta stropicciata sopra lo sfondo */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: grayscale(1) contrast(1.2); mix-blend-mode: multiply; opacity: 0.6; }
+  .striscia { position: absolute; left: 0; top: 0; width: 200px; height: 1350px; background: var(--sfondo); }
+  .puntini { position: absolute; left: 92px; top: 56px; width: 12px; }
+  .puntini i { display: block; width: 12px; height: 12px; border-radius: 50%; background: var(--accento); margin-bottom: 56px; }
+  .foto { position: absolute; left: 200px; top: 0; width: 880px; height: 1350px; object-fit: cover; filter: brightness(0.7); }
+  .verticale { position: absolute; transform-origin: 0 0; transform: rotate(-90deg); white-space: nowrap; }
+  .grande { left: 36px; top: 1300px; font-size: 190px; font-weight: 400; line-height: 0.8; color: var(--principale); }
+  .titolo.verticale { left: 226px; top: 960px; font-size: 186px; line-height: 0.8; color: var(--accento); }
+  .nome { position: absolute; right: 44px; top: 70px; text-align: right; font-size: 40px; line-height: 1.15; color: var(--accento); }
+  .stella { position: absolute; width: 44px; height: 44px; fill: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  .ovale { position: absolute; right: 30px; border: 2.5px solid oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .data { top: 960px; width: 520px; height: 120px; font-family: var(--font-titoli); font-weight: 900; font-variation-settings: 'opsz' 12; font-size: 72px; color: var(--accento); }
+  .dove { top: 1150px; width: 500px; height: 110px; font-size: 52px; color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  .linea { position: absolute; right: 30px; width: 520px; height: 2px; background: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); opacity: 0.8; }
+</style>
+</head>
+<body>
+  <div class="striscia"></div>
+  <div class="puntini"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <!-- foto: il banco o il forno, verticale, accanto alla striscia -->
+  <img class="foto" src="../esempio/girelle-teglia.jpg" alt="">
+
+  <!-- titolo: 2 parole verticali, la prima leggera nella striscia, la seconda piena sulla foto -->
+  <p class="verticale grande">grande</p>
+  <h1 class="titolo verticale">apertura</h1>
+
+  <!-- nome: il nome del brand su due righe -->
+  <p class="nome logo">forno<br>ardito</p>
+
+  <svg class="stella" style="left: 520px; top: 150px;" viewBox="0 0 44 44"><path d="M22 0 C 23 16, 28 21, 44 22 C 28 23, 23 28, 22 44 C 21 28, 16 23, 0 22 C 16 21, 21 16, 22 0 Z"/></svg>
+  <svg class="stella" style="left: 520px; top: 760px;" viewBox="0 0 44 44"><path d="M22 0 C 23 16, 28 21, 44 22 C 28 23, 23 28, 22 44 C 21 28, 16 23, 0 22 C 16 21, 21 16, 22 0 Z"/></svg>
+
+  <!-- data dell'evento, in un ovale -->
+  <p class="ovale data">04.11.2026</p>
+  <div class="linea" style="top: 1110px;"></div>
+  <!-- dove: indirizzo breve, in un ovale -->
+  <p class="ovale dove">via Garibaldi 12</p>
+  <div class="linea" style="top: 1290px;"></div>
+</body>
+</html>

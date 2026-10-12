@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Montserrat:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #BE1B2C; --secondario: #F2EEE2; --accento: #CA1B2C; --sfondo: #F2D6D2; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* il testo sull'accento: chiaro se l'accento è scuro, il principale se è chiaro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --su-accento: oklch(from var(--accento) clamp(0, (0.66 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la carta del sacchetto: grana e pieghe */
+  .carta { position: absolute; inset: 0; width: 1080px; height: 1350px; mix-blend-mode: multiply; opacity: 0.5; }
+  .piega { position: absolute; background: color-mix(in srgb, var(--principale) 10%, transparent); }
+  .arco { position: absolute; left: 199px; top: 327px; width: 687px; height: 690px; border-radius: 344px 344px 0 0; overflow: hidden; }
+  .arco img { display: block; width: 687px; height: 690px; object-fit: cover; object-position: 50% 62%; }
+  .curvo { position: absolute; left: 0; top: 0; width: 1080px; height: 600px; overflow: visible; }
+  .curvo text { font-family: var(--font-titoli); font-weight: 500; font-size: 98px; fill: var(--principale); letter-spacing: 0.02em; }
+  .nome { position: absolute; left: 297px; top: 992px; width: 519px; height: 187px; border-radius: 36px; border: 3px solid color-mix(in srgb, var(--accento) 70%, black); background: var(--accento); color: var(--su-accento); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 42px; line-height: 1.12; text-transform: uppercase; }
+  .scotch { position: absolute; left: 49px; top: 1160px; width: 525px; height: 190px; background: rgb(255 255 255 / 0.22); border: 2px solid rgb(255 255 255 / 0.35); transform: rotate(-1.2deg); }
+</style>
+</head>
+<body>
+  <svg class="carta" aria-hidden="true"><filter id="grana"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.02" numOctaves="4" seed="9"/><feDiffuseLighting lighting-color="#fff" surfaceScale="2"><feDistantLight azimuth="235" elevation="58"/></feDiffuseLighting></filter><rect width="100%" height="100%" filter="url(#grana)"/></svg>
+  <div class="piega" style="left: 0; top: 128px; width: 1080px; height: 3px;"></div>
+  <div class="piega" style="left: 0; top: 1218px; width: 1080px; height: 3px;"></div>
+  <div class="piega" style="left: 14px; top: 0; width: 3px; height: 1350px;"></div>
+
+  <!-- titolo curvo: la rubrica, 18-24 caratteri, sopra l'arco -->
+  <svg class="curvo" aria-hidden="false"><path id="curva" d="M 70 500 A 530 530 0 0 1 1010 500" fill="none"/><text text-anchor="middle"><textPath href="#curva" startOffset="50%">Il preferito del mese</textPath></text></svg>
+
+  <!-- foto: un solo prodotto su fondo pulito, dentro l'arco -->
+  <div class="arco"><img src="../esempio/tortina-fragola.jpg" alt=""></div>
+
+  <!-- nome: il prodotto in 2 righe brevi -->
+  <div class="nome">Tortina<br>alle fragole</div>
+
+  <div class="scotch"></div>
+  <script>
+    // Con un font del brand più largo il titolo curvo si rimpicciolisce finché sta nell'arco (al massimo 880 px di testo).
+    const adatta = () => {
+      const testo = document.querySelector('.curvo text');
+      testo.style.fontSize = '';
+      let size = parseFloat(getComputedStyle(testo).fontSize);
+      while (testo.getComputedTextLength() > 880 && size > 40) { size -= 2; testo.style.fontSize = `${size}px`; }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

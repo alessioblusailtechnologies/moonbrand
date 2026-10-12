@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3D2420; --secondario: #A8705E; --accento: #D9C39A; --sfondo: #F0E1D1; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; filter: brightness(0.72) contrast(1.05); }
+  .logo { position: absolute; left: 0; width: 1080px; top: 74px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 36px; line-height: 1; text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 446px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-synthesis: none; font-size: 168px; line-height: 1.02;  text-transform: uppercase; }
+  .testo { position: absolute; left: 230px; width: 620px; top: 860px; text-align: center; font-size: 25px; line-height: 1.4; }
+  .firma { position: absolute; left: 0; width: 1080px; bottom: 76px; text-align: center; font-size: 24px; font-style: italic; opacity: 0.8; }
+  .stella { width: 110px; height: 120px; left: 96px; top: 168px; transform: rotate(-10deg); }
+</style>
+</head>
+<body>
+  <!-- foto: un primo piano di prodotti appena sfornati, scurita perché il titolo chiaro si legga -->
+  <img class="foto" src="../esempio/biscotti.jpg" alt="">
+
+  <!-- logo: il nome del forno -->
+  <p class="logo">Il Piccolo Forno</p>
+  <svg class="doodle stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+
+  <!-- titolo: 2 parole grandi, una per riga -->
+  <h1 class="titolo">Appena<br>sfornati</h1>
+  <!-- testo: 20-30 parole, centrato -->
+  <p class="testo">Ogni mattina alle sei accendiamo il forno: biscotti, cornetti e pane escono caldi per la tua colazione. Passa a prenderli finché sono tiepidi.</p>
+
+  <!-- firma: il profilo social -->
+  <p class="firma">@ilpiccoloforno</p>
+</body>
+</html>

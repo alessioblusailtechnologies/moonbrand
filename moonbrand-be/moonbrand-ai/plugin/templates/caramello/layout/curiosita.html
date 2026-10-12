@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  /* testi e linee chiari sulla carta: la tinta dello sfondo, schiarita se il fondo del brand è scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--chiaro); font-family: var(--font-testo); }
+  /* la carta stropicciata tinta del secondario */
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; filter: grayscale(1) brightness(3.1) contrast(1.1); mix-blend-mode: multiply; }
+  svg.linee { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .titolo { position: absolute; left: 132px; top: 312px; font-family: var(--font-titoli); font-weight: 400; font-size: 236px; line-height: 1.05; text-transform: uppercase; letter-spacing: -0.035em; }
+  .titolo em { display: block; font-style: italic; }
+  .titolo span { display: block; }
+</style>
+</head>
+<body>
+  <!-- foto: una carta o un tessuto stropicciato, resta solo la sua trama -->
+  <img class="foto" src="../esempio/carta-kraft.jpg" alt="">
+
+  <!-- gli archi sottili in alto e in basso, come nel modello -->
+  <svg class="linee" viewBox="0 0 1080 1350" fill="none" stroke="var(--chiaro)" stroke-width="2.5">
+    <path d="M40 140 C 220 -10, 560 -30, 820 60"/>
+    <path d="M460 -20 C 640 40, 900 30, 1100 -10"/>
+    <path d="M600 180 C 740 40, 920 10, 1100 40"/>
+    <path d="M-20 1370 C 140 1250, 380 1200, 540 1240"/>
+    <path d="M520 1370 C 640 1250, 900 1210, 1100 1250"/>
+    <path d="M700 1260 C 820 1230, 960 1240, 1100 1300"/>
+  </svg>
+
+  <!-- titolo: una domanda di 3 parole brevi, una per riga, quella in mezzo in corsivo -->
+  <h1 class="titolo"><span>Lo</span><em>sapevi</em><span>che?</span></h1>
+</body>
+</html>

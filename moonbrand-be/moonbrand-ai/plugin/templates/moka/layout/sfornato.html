@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,300..700&family=Pinyon+Script&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2420; --secondario: #8A5A36; --accento: #5F7448; --sfondo: #EEEAE3; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Lato', sans-serif; }
+  /* il chiaro dei testi sulle foto: la tinta dello sfondo, sempre chiara */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.68 - l) * 1000, 1) 0 0);
+    --su-secondario: oklch(from var(--secondario) clamp(0, (0.68 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .maiuscolo { font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 400; text-transform: uppercase; line-height: 0.86; letter-spacing: -0.01em; white-space: nowrap; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; line-height: 1; white-space: nowrap; }
+  .marchio { font-family: var(--font-testo); font-weight: 700; font-size: 27px; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+  /* i titoli con data-adatta si stringono finché ogni riga sta nella larghezza indicata (i font del brand possono essere più larghi) */
+  .adatta > span { display: block; width: fit-content; }
+  .stella { position: absolute; width: 44px; height: 66px; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.17 0 0 0 0 0.15 0 0 0 -22 13.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  body { background: #000; color: var(--chiaro); }
+  .fondo { object-position: 40% 50%; filter: brightness(0.5) saturate(0.9); }
+  .titolo { position: absolute; left: 0; top: 130px; width: 1080px; text-align: center; font-size: 150px; }
+  .parola { position: absolute; left: 0; top: 262px; width: 1080px; text-align: center; font-size: 200px; padding-left: 40px; }
+  .titolo span { margin: 0 auto; }
+  .finestra { position: absolute; left: 230px; top: 462px; width: 670px; height: 810px; border-radius: 30px; overflow: hidden; background: var(--chiaro); color: var(--accento); }
+  .finestra .testa { height: 156px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; }
+  .finestra img { display: block; width: 670px; height: 566px; object-fit: cover; }
+  .finestra .tasti { display: flex; height: 88px; }
+  .finestra .tasti span { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
+  .finestra .tasti span + span { border-left: 2px solid color-mix(in oklch, var(--accento) 60%, transparent); }
+  .cursore { position: absolute; left: 632px; top: 1222px; width: 54px; height: 76px; }
+</style>
+</head>
+<body>
+  <!-- fondo: il banco o la vetrina, scuro -->
+  <img class="fondo" src="../esempio/banco.jpg" alt="">
+
+  <!-- titolo: 2-3 parole maiuscole su una riga -->
+  <h1 class="titolo maiuscolo adatta" data-adatta="960"><span>Appena usciti</span></h1>
+  <!-- parola: 1-2 parole in corsivo che chiudono il titolo -->
+  <div class="parola corsivo">dal forno</div>
+
+  <svg class="stella" style="left: 944px; top: 340px; color: var(--chiaro);" viewBox="0 0 40 60"><path d="M20 2 C21 22 25 28 38 30 C25 32 21 38 20 58 C19 38 15 32 2 30 C15 28 19 22 20 2Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
+
+  <!-- finestra: la notifica di condivisione del telefono con la foto del prodotto; testa e tasti restano come sono -->
+  <div class="finestra">
+    <div class="testa">AirDrop</div>
+    <img src="../esempio/girelle.jpg" alt="">
+    <div class="tasti"><span>Rifiuta</span><span>Accetta</span></div>
+  </div>
+  <!-- cursore: la freccia del puntatore sul tasto -->
+  <svg class="cursore" viewBox="0 0 27 38"><path d="M2 2 L2 30 L9 23 L14 35 L19 33 L14 21 L24 21 Z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg>
+
+
+  <script>
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-adatta]')) {
+        el.style.fontSize = '';
+        const max = Number(el.dataset.adatta);
+        const righe = el.children.length ? [...el.children] : [el];
+        let misura = parseFloat(getComputedStyle(el).fontSize);
+        while (Math.max(...righe.map((r) => r.getBoundingClientRect().width)) > max && misura > 40) { misura *= 0.97; el.style.fontSize = misura + 'px'; }
+      }
+    };
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

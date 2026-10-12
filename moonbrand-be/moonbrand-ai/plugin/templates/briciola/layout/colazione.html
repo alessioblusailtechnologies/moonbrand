@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,800;7..72,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161311; --secondario: #D3B48E; --accento: #C2864E; --sfondo: #EEEDEA; }
+  :root { --font-titoli: 'Literata', serif; --font-testo: 'Newsreader', serif; }
+  /* il testo sui riquadri colorati: nero se il colore è chiaro, bianco se è scuro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.62 - l) * 1000, 1) 0 0); --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  /* lo sfondo anche su html, così il body ha un fondo suo e i ritagli si fondono */
+  html { background: var(--sfondo); }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-variation-settings: 'opsz' 12; line-height: 0.88; letter-spacing: -0.02em; }
+  /* le foto ritagliate su fondo bianco: il filtro «scontorna» rende trasparente il bianco, così stanno su ogni colore */
+  .ritaglio { position: absolute; display: block; object-fit: cover; filter: url(#scontorna); }
+  /* carta stropicciata sopra lo sfondo */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: grayscale(1) contrast(1.2); mix-blend-mode: multiply; opacity: 0.6; }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 96px; text-align: center; font-size: 46px; }
+  .iniziale { position: absolute; left: 56px; top: 196px; font-size: 360px; line-height: 0.8; letter-spacing: 0; }
+  .resto { position: absolute; left: 318px; top: 300px; font-size: 112px; font-weight: 300; line-height: 1; }
+  .foto { left: 150px; top: 420px; width: 720px; height: 480px; object-fit: contain; }
+  .aggiunta { position: absolute; right: 70px; top: 880px; text-align: right; font-size: 88px; font-weight: 300; line-height: 0.82; }
+  .prezzo { position: absolute; left: 0; width: 1080px; top: 1080px; text-align: center; font-size: 60px; }
+  .profilo { position: absolute; left: 0; width: 1080px; top: 1240px; text-align: center; font-size: 26px; }
+  .arco { position: absolute; fill: none; stroke: var(--principale); stroke-width: 2.5; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute;"><filter id="scontorna" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -4 -4 -4 0 11.6" result="chiave"/><feComposite in="chiave" in2="SourceAlpha" operator="in"/></filter></svg>
+  <!-- sopra: 2-4 parole, il momento della giornata -->
+  <p class="sopra">l'ora della colazione</p>
+
+  <!-- titolo: la prima lettera enorme e piena, il resto della parola leggero accanto -->
+  <h1><span class="titolo iniziale">C</span><span class="resto">affè</span></h1>
+
+  <!-- archi sottili: entrano dai bordi -->
+  <svg class="arco" style="left: 760px; top: 260px; width: 320px; height: 200px;" viewBox="0 0 320 200"><path d="M10 10 C 140 4, 280 40, 330 190"/></svg>
+  <svg class="arco" style="left: 0; top: 880px; width: 320px; height: 240px;" viewBox="0 0 320 240"><path d="M-10 10 C 10 150, 120 220, 300 226"/></svg>
+
+  <!-- foto: un prodotto ritagliato su fondo bianco, grande -->
+  <img class="ritaglio foto" src="../esempio/cornetto.jpg" alt="">
+
+  <!-- aggiunta: «+» e 2 parole su due righe -->
+  <p class="aggiunta">+ cornetto<br>caldo</p>
+
+  <!-- prezzo -->
+  <p class="prezzo">2,20 €</p>
+  <!-- profilo del brand -->
+  <p class="profilo">@fornoardito</p>
+</body>
+</html>

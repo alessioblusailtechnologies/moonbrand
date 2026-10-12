@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; filter: saturate(0.9); }
+  /* il pannello velato dello sfondo con il filo scuro e gli angoli tondi, come nel modello */
+  .pannello { position: absolute; left: 155px; top: 60px; width: 770px; height: 1215px; border-radius: 44px;
+    border: 3px solid var(--principale); background: color-mix(in oklch, var(--sfondo) 80%, transparent); }
+  .titolo { position: absolute; left: 0; width: 764px; top: 70px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 700;
+    font-size: 86px; line-height: 0.98; text-transform: uppercase; letter-spacing: -0.01em; }
+  .righe { position: absolute; left: 90px; top: 308px; width: 616px; font-size: 44px; line-height: 100px; }
+  .riga { display: flex; justify-content: space-between; }
+  .piede { position: absolute; left: 0; width: 764px; top: 1068px; text-align: center; font-size: 31px; line-height: 1.75; font-style: italic; }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto da vicino che riempie la slide, si vede attraverso il pannello -->
+  <img class="foto" src="../esempio/girelle.jpg" alt="">
+
+  <div class="pannello">
+    <!-- titolo: 2 parole su due righe, maiuscolo corsivo -->
+    <h1 class="titolo">Orari di<br>apertura</h1>
+    <!-- righe: i sette giorni con l'orario -->
+    <div class="righe">
+      <div class="riga"><span>Lunedì</span><span>chiuso</span></div>
+      <div class="riga"><span>Martedì</span><span>6:30 - 19:30</span></div>
+      <div class="riga"><span>Mercoledì</span><span>6:30 - 19:30</span></div>
+      <div class="riga"><span>Giovedì</span><span>6:30 - 19:30</span></div>
+      <div class="riga"><span>Venerdì</span><span>6:30 - 19:30</span></div>
+      <div class="riga"><span>Sabato</span><span>7:00 - 20:00</span></div>
+      <div class="riga"><span>Domenica</span><span>7:00 - 13:00</span></div>
+    </div>
+    <!-- piede: indirizzo e telefono -->
+    <p class="piede">Via Santo Stefano 41, Bologna<br>051 234 5678</p>
+  </div>
+</body>
+</html>

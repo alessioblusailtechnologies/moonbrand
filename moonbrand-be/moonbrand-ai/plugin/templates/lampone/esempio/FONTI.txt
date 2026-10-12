@@ -1,0 +1,16 @@
+Foto d'esempio, licenza gratuita (Pexels License, Unsplash License per forno.jpg).
+Le foto «scontornata» sono ritagliate su fondo bianco (in pagina vanno in multiply sul fondo chiaro).
+
+lamponi.jpg            https://www.pexels.com/photo/2682661/    (lamponi da vicino, tagliata in 4:5)
+cheesecake.jpg         https://www.pexels.com/photo/1126359/    (fetta di cheesecake ai frutti rossi, scontornata)
+torta-frutti.jpg       https://www.pexels.com/photo/827513/     (tortine ai frutti di bosco da vicino)
+crostata-fragole.jpg   https://www.pexels.com/photo/6638357/    (torta con fragole e crema, tagliata sulla torta)
+vetrina.jpg            https://www.pexels.com/photo/31101247/   (pasticcini in vetrina, tagliata in 4:5)
+cornetti.jpg           https://www.pexels.com/photo/30403209/   (cornetti appena sfornati sul banco)
+cornetto.jpg           https://www.pexels.com/photo/9725746/    (cornetto, scontornato)
+cappuccino.jpg         https://www.pexels.com/photo/544113/     (cappuccino dall'alto, scontornato)
+caffe-freddo.jpg       https://www.pexels.com/photo/11136849/   (caffè latte freddo in tazza di vetro, scontornato)
+filone.jpg             https://www.pexels.com/photo/1756064/    (filone infarinato, scontornato)
+ciambelle.jpg          https://www.pexels.com/photo/9619310/    (ciambelle glassate da vicino)
+forno.jpg              Unsplash, foto dbZKBEc_cgE (cornetti al cioccolato nel forno, da vicino)
+                       https://unsplash.com/photos/dbZKBEc_cgE

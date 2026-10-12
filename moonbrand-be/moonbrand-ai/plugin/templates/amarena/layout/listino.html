@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  /* il fondo dietro la scheda: lo sfondo un po' più scuro e caldo; la spiga a tratto nel secondario schiarito */
+  :root { --fondo: oklch(from var(--sfondo) calc(l - 0.03) calc(c + 0.022) h); --tratto: color-mix(in oklch, var(--secondario) 62%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--fondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .spiga { position: absolute; left: 600px; top: 60px; width: 400px; height: 1180px; transform: rotate(18deg); fill: none; stroke: var(--tratto); stroke-width: 2.2; stroke-linecap: round; }
+  .scheda { position: absolute; left: 207px; top: 253px; width: 668px; height: 846px; background: var(--sfondo); border-radius: 14px; padding: 76px 74px 0 52px; }
+  .marchio { line-height: 1; }
+  .marchio b { display: block; font-family: var(--font-testo); font-weight: 700; font-size: 62px; letter-spacing: -0.015em; line-height: 0.95; text-transform: uppercase; }
+  .marchio span { display: block; font-family: var(--font-titoli); font-size: 46px; letter-spacing: -0.01em; line-height: 1; }
+  .voci { list-style: none; margin-top: 76px; }
+  .voci li { display: flex; justify-content: space-between; align-items: center; height: 96px; }
+  .voci p { width: 280px; font-size: 27px; font-weight: 400; line-height: 1.25; }
+  .voci strong { font-family: var(--font-titoli); font-weight: 400; font-size: 42px; width: 88px; }
+</style>
+</head>
+<body>
+  <svg class="spiga" viewBox="0 0 200 640" aria-hidden="true">
+    <defs><path id="chicco" d="M0,0 C-20,-6 -32,-26 -30,-52 C-12,-44 -1,-24 0,0 Z M-30,-52 L-44,-104"/></defs>
+    <line x1="100" y1="640" x2="100" y2="90"/>
+    <use href="#chicco" transform="translate(100,560)"/>
+    <use href="#chicco" transform="translate(100,536) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,508)"/>
+    <use href="#chicco" transform="translate(100,484) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,456)"/>
+    <use href="#chicco" transform="translate(100,432) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,404)"/>
+    <use href="#chicco" transform="translate(100,380) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,352)"/>
+    <use href="#chicco" transform="translate(100,328) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,300)"/>
+    <use href="#chicco" transform="translate(100,276) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,248)"/>
+    <use href="#chicco" transform="translate(100,224) scale(-1,1)"/>
+    <use href="#chicco" transform="translate(100,196)"/>
+    <use href="#chicco" transform="translate(100,172) scale(-1,1)"/>
+  </svg>
+
+  <div class="scheda">
+    <!-- logo: il nome del brand, la prima parola in maiuscolo, la seconda in serif -->
+    <h1 class="marchio logo"><b>Rosina</b><span>Pasticceria</span></h1>
+    <!-- voci: 4-5 prodotti, nome di 2-4 parole su due righe e prezzo in euro -->
+    <ul class="voci">
+      <li><p>Cornetto burro e mandorle</p><strong>€ 2</strong></li>
+      <li><p>Sfogliatella riccia alla ricotta</p><strong>€ 3</strong></li>
+      <li><p>Torta di nocciole e miele</p><strong>€ 4</strong></li>
+      <li><p>Tartelletta crema e fragole</p><strong>€ 5</strong></li>
+      <li><p>Babà al limone di Amalfi</p><strong>€ 4</strong></li>
+    </ul>
+  </div>
+</body>
+</html>

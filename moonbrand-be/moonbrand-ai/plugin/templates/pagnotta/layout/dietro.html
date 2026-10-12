@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Bodoni Moda', serif; --font-testo: 'Young Serif', serif; }
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.22, (0.74 - l) * 1000, 0.93) min(c, 0.04) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); }
+
+  .logo { position: absolute; left: 422px; top: 110px; width: 240px; height: 78px; border: 2px solid var(--su-secondario); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 30px; }
+
+  /* la parola grande in verticale, dal basso verso l'alto, lungo il bordo sinistro */
+  .verticale { position: absolute; left: 0; top: 1108px; transform-origin: 0 0; transform: rotate(-90deg); font-family: var(--font-titoli); font-weight: 400;
+    font-size: 250px; line-height: normal; letter-spacing: -0.02em; white-space: nowrap; font-variation-settings: 'opsz' 96; }
+
+  .foto { position: absolute; display: block; object-fit: cover; }
+  .grande { left: 285px; top: 380px; width: 533px; height: 668px; object-position: 46% 50%; }
+  .p1 { left: 770px; top: 462px; width: 238px; height: 230px; }
+  .p2 { left: 770px; top: 735px; width: 238px; height: 230px; }
+
+  .seguito { position: absolute; left: 300px; top: 1040px; font-family: var(--font-titoli); font-size: 60px; line-height: 70px; white-space: nowrap; font-variation-settings: 'opsz' 96; }
+  .filetto { position: absolute; left: 625px; top: 1094px; width: 455px; height: 2px; background: color-mix(in oklch, var(--su-secondario) 70%, transparent); }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand nell'ovale -->
+  <p class="logo">Forno Mariani</p>
+
+  <!-- foto: una grande del laboratorio con una persona al lavoro e due piccole di dettaglio che la sormontano a destra -->
+  <img class="foto grande" src="../esempio/pasticciera.jpg" alt="">
+  <img class="foto p1" src="../esempio/impasto.jpg" alt="" style="object-position: 50% 62%;">
+  <img class="foto p2" src="../esempio/sac-a-poche.jpg" alt="" style="object-position: 50% 70%;">
+
+  <!-- titolo: una parola di 5-7 lettere in verticale, minuscola, e il seguito di 2-3 parole in orizzontale con il filetto -->
+  <h1 class="verticale">dietro</h1>
+  <p class="seguito">le quinte</p>
+  <div class="filetto"></div>
+</body>
+</html>

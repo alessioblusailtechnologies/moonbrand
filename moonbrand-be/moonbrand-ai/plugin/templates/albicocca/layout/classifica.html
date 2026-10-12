@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'IBM Plex Mono', monospace; --font-testo: 'Arimo', sans-serif; }
+  :root { --nero: color-mix(in srgb, #000000 86%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--nero); font-family: var(--font-testo); }
+
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .fondo .pieno { fill: var(--principale); }
+  .fondo .tratto { fill: none; stroke: var(--principale); stroke-width: 3; stroke-linecap: round; }
+  .fondo .chiaro { fill: none; stroke: var(--sfondo); stroke-width: 3; }
+  .stella { position: absolute; width: 34px; height: 34px; fill: var(--principale); }
+
+  .titolo { position: absolute; left: 0; top: 70px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 118px; line-height: 122px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .schede { position: absolute; left: 50px; top: 496px; width: 980px; display: flex; gap: 46px; }
+  .scheda { width: 296px; height: 512px; padding: 8px 8px 0; border-radius: 148px 148px 44px 44px; background: var(--sfondo); text-align: center; }
+  .scheda img { display: block; width: 280px; height: 272px; object-fit: cover; border-radius: 140px 140px 0 0; }
+  .scheda h2 { margin-top: 26px; font-family: var(--font-testo); font-weight: 400; font-size: 31px; line-height: 38px; }
+  .cuori { display: flex; justify-content: center; gap: 9px; margin-top: 20px; }
+  .cuori svg { width: 30px; height: 28px; fill: var(--principale); }
+  .cuori svg.vuoto { fill: color-mix(in srgb, var(--nero) 22%, var(--sfondo)); }
+  .scheda p { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; font-weight: 700; font-size: 28px; color: var(--principale); }
+  .scheda p::before, .scheda p::after { content: ''; width: 40px; height: 2px; background: var(--principale); }
+
+  .ordina { position: absolute; left: 324px; top: 1080px; width: 334px; height: 230px; border-radius: 50%; transform: rotate(-10deg); border: 3px solid var(--sfondo);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 30px; line-height: 40px; color: var(--sfondo); }
+  .ordina span { transform: rotate(10deg); }
+  .piede { position: absolute; top: 1222px; font-size: 27px; text-transform: uppercase; color: var(--sfondo); }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol>
+    <symbol id="cuore" viewBox="0 0 24 22"><path d="M12 22C5 16.6 0 12.4 0 6.8C0 3 2.9 0 6.5 0C8.8 0 10.8 1.2 12 3.1C13.2 1.2 15.2 0 17.5 0C21.1 0 24 3 24 6.8C24 12.4 19 16.6 12 22Z"/></symbol>
+  </defs></svg>
+
+  <svg class="fondo" viewBox="0 0 1080 1350">
+    <path class="tratto" d="M-4 200C70 120 170 50 280 -4"/>
+    <path class="tratto" d="M950 478C1000 430 1050 380 1084 330"/>
+    <path class="pieno" d="M0 772C120 700 210 560 300 548C380 540 390 560 420 548C520 520 580 530 660 530C760 530 900 690 1080 716L1080 1350L0 1350Z"/>
+    <line class="chiaro" x1="42" y1="1190" x2="300" y2="1190"/>
+    <line class="chiaro" x1="712" y1="1190" x2="970" y2="1190"/>
+  </svg>
+
+  <svg class="stella" style="left:820px;top:96px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:30px;top:404px"><use href="#stella"/></svg>
+
+  <!-- titolo: 3 righe di 5-11 caratteri, la prima più corta -->
+  <h1 class="titolo"><span>Top 3</span><span>del bancone</span><span>di ottobre</span></h1>
+
+  <!-- schede: tre prodotti, foto ad arco, nome di 1-2 parole, voto in cuori, prezzo -->
+  <div class="schede">
+    <div class="scheda">
+      <img src="../esempio/girelle.jpg" alt="">
+      <h2>Girella</h2>
+      <div class="cuori"><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg></div>
+      <p>2,00 €</p>
+    </div>
+    <div class="scheda">
+      <img src="../esempio/cornetto-piatto.jpg" alt="">
+      <h2>Cornetto</h2>
+      <div class="cuori"><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg class="vuoto"><use href="#cuore"/></svg></div>
+      <p>1,50 €</p>
+    </div>
+    <div class="scheda">
+      <img src="../esempio/sfoglie.jpg" alt="">
+      <h2>Saccottino</h2>
+      <div class="cuori"><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg><use href="#cuore"/></svg><svg class="vuoto"><use href="#cuore"/></svg></div>
+      <p>2,50 €</p>
+    </div>
+  </div>
+
+  <!-- ordina: invito e numero di telefono -->
+  <p class="ordina"><span>Ordina<br>051 234 5678</span></p>
+
+  <!-- piede: a sinistra l'invito, a destra l'indirizzo -->
+  <p class="piede" style="left:42px">Passa da noi</p>
+  <p class="piede" style="right:110px">Via dei Mille 14</p>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  body { background: #000; }
+  .fondo { object-position: 50% 50%; filter: brightness(0.78); }
+  .etichetta { color: var(--chiaro); font-size: 19px; }
+  .carta { position: absolute; left: 206px; top: 410px; width: 668px; height: 620px; background: var(--secondario); color: var(--su-secondario); box-shadow: 0 10px 28px rgba(0,0,0,0.28); }
+  .molla { position: absolute; left: 254px; top: -64px; width: 160px; height: 84px; }
+  .titolo { position: absolute; left: 0; width: 668px; top: 140px; text-align: center; font-size: 66px; line-height: 0.88; text-transform: uppercase; letter-spacing: -0.04em; }
+  .testo { position: absolute; left: 92px; width: 484px; top: 318px; font-size: 21px; line-height: 1.38; text-align: justify; hyphens: auto; }
+  .firma { position: absolute; left: 0; width: 668px; top: 470px; text-align: center; font-family: 'Ballet', cursive; font-size: 64px; line-height: 1; }
+</style>
+</head>
+<body>
+  <!-- fondo: un prodotto da vicino su una gratella o un banco, a tutto campo -->
+  <img class="fondo" src="../esempio/croissant-griglia.jpg" alt="">
+
+  <!-- profilo e data -->
+  <p class="etichetta" style="left: 110px; top: 116px;">@fornomaddalena</p>
+  <p class="etichetta" style="right: 110px; top: 116px;">12 ottobre</p>
+
+  <div class="carta">
+    <!-- la molla che tiene il foglio: un oggetto di metallo, resta grigia -->
+    <svg class="molla" viewBox="0 0 160 84"><path d="M58 4 h44 a6 6 0 0 1 6 6 v34 h-56 v-34 a6 6 0 0 1 6 -6 z" fill="#c9cbcd" stroke="#9a9da1" stroke-width="2"/><circle cx="80" cy="22" r="7" fill="#7d8186"/><rect x="2" y="44" width="156" height="14" rx="3" fill="#d9dbdd" stroke="#9a9da1" stroke-width="2"/><rect x="2" y="58" width="156" height="10" fill="#1d1d1f"/><rect x="2" y="68" width="156" height="6" fill="#c3c5c8"/></svg>
+    <!-- titolo: 2-3 parole in maiuscolo su due righe -->
+    <h1 class="titolo"><span>Parole</span><span>dei clienti</span></h1>
+    <!-- testo: la recensione, 25-40 parole -->
+    <p class="testo">Il cornetto al pistacchio più buono del quartiere, e la crostata della domenica ormai è un rito. Ti accolgono col sorriso anche alle sette del mattino.</p>
+    <!-- firma: nome e iniziale del cliente -->
+    <p class="firma">Giulia R.</p>
+  </div>
+
+  <!-- rubrica e invito: 2-3 parole in maiuscolo ciascuno -->
+  <p class="etichetta" style="left: 110px; top: 1218px;">Dai clienti</p>
+  <p class="etichetta" style="right: 110px; top: 1218px;">Vieni a trovarci</p>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,200..500&family=Poppins:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3A2216; --secondario: #8E4A26; --accento: #F862C0; --sfondo: #F3ECE0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Poppins', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -20px; top: -70px; width: 1120px; height: 1690px; object-fit: cover; object-position: 50% 50%; }
+
+  .marchio { position: absolute; left: 50%; top: 70px; transform: translateX(-50%); width: 136px; height: 136px; border-radius: 50%; border: 2px solid var(--chiaro); display: flex; align-items: center; justify-content: center; text-align: center; }
+  .marchio::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; border: 1px solid var(--chiaro); }
+  .marchio span { font-family: var(--font-titoli); font-size: 24px; line-height: 0.95; text-transform: uppercase; letter-spacing: 0.02em; }
+
+  .titolo { position: absolute; left: 0; width: 1080px; top: 222px; text-align: center; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 300; font-size: 172px; line-height: 0.86; letter-spacing: -0.05em; color: var(--accento); }
+  .sotto { position: absolute; left: 0; width: 1080px; top: 532px; text-align: center; font-style: italic; font-size: 25px; line-height: 1.12; letter-spacing: -0.02em; }
+  .sito { position: absolute; left: 0; width: 1080px; top: 1272px; text-align: center; font-size: 24px; letter-spacing: 0.16em; }
+</style>
+</head>
+<body>
+  <!-- foto: un dolce su fondo scuro e caldo (tessuto, legno), il dolce nella metà bassa -->
+  <img class="foto" src="../esempio/tiramisu.jpg" alt="">
+
+  <!-- marchio: il nome del forno in un timbro rotondo, in alto al centro -->
+  <div class="marchio logo"><span>Forno<br>Ortensia</span></div>
+
+  <!-- titolo: il nome del dolce su due righe, 1-2 parole per riga -->
+  <h1 class="titolo">Tiramisù<br>al caffè</h1>
+
+  <!-- sotto: 5-8 parole in corsivo, due righe -->
+  <p class="sotto">Un cucchiaio di bontà,<br>preparato ogni giorno.</p>
+
+  <!-- sito: in basso al centro, spaziato -->
+  <p class="sito">www.fornoortensia.it</p>
+</body>
+</html>

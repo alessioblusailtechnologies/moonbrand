@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Arimo:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'IBM Plex Mono', monospace; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); font-family: var(--font-testo); }
+
+  .stella { position: absolute; width: 36px; height: 36px; fill: var(--principale); }
+  .linea { position: absolute; left: 150px; width: 770px; height: 3px; background: var(--principale); }
+
+  .titolo { position: absolute; left: 0; top: 92px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 196px; line-height: 172px; letter-spacing: -0.03em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .offerta { position: absolute; left: 0; top: 488px; width: 1080px; text-align: center; font-family: var(--font-testo); font-style: italic; font-weight: 700; font-size: 66px; line-height: 76px; text-transform: uppercase; color: var(--secondario); }
+
+  .cornice { position: absolute; left: 164px; top: 606px; width: 750px; height: 506px; padding: 9px; border: 3px solid var(--principale); border-radius: 48px; }
+  .cornice img { display: block; width: 726px; height: 482px; object-fit: cover; border-radius: 40px; }
+
+  .quando { position: absolute; left: 40px; top: 588px; width: 270px; height: 186px; border-radius: 50%; transform: rotate(-16deg); background: var(--accento); border: 3px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--font-titoli); font-size: 30px; line-height: 36px; text-transform: uppercase; color: color-mix(in srgb, var(--secondario) 60%, #000000); }
+  .quando span { transform: rotate(16deg); }
+
+  .frase { position: absolute; left: 0; top: 1164px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 34px; color: var(--principale); white-space: nowrap; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol></defs></svg>
+
+  <div class="linea" style="top:44px"></div>
+  <svg class="stella" style="left:66px;top:28px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:962px;top:28px"><use href="#stella"/></svg>
+
+  <!-- titolo: 2 righe, 7 e 5 caratteri circa -->
+  <h1 class="titolo"><span>Weekend</span><span>dolce</span></h1>
+  <svg class="stella" style="left:210px;top:362px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:840px;top:340px"><use href="#stella"/></svg>
+
+  <!-- offerta: la promozione in 3-4 parole -->
+  <p class="offerta">Prendi 3 paghi 2</p>
+
+  <!-- foto: i prodotti in offerta, nella cornice ad angoli tondi -->
+  <div class="cornice"><img src="../esempio/fette-fragola.jpg" alt=""></div>
+
+  <!-- quando: fino a quando vale, 3 righe brevi -->
+  <p class="quando"><span>Solo<br>questo<br>mese</span></p>
+
+  <!-- frase: 4-6 parole -->
+  <p class="frase">Addolcisci il tuo fine settimana!</p>
+
+  <div class="linea" style="top:1262px"></div>
+  <svg class="stella" style="left:66px;top:1246px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:962px;top:1246px"><use href="#stella"/></svg>
+</body>
+</html>

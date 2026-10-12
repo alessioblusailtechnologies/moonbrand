@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --nero: color-mix(in srgb, #000000 86%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--nero); font-family: var(--font-testo); }
+
+  .disegno { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; fill: none; stroke: var(--principale); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .stella { position: absolute; width: 36px; height: 36px; fill: var(--principale); }
+
+  .titolo { position: absolute; left: 40px; top: 40px; font-family: var(--font-titoli); font-weight: 800; font-size: 182px; line-height: 168px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .sagoma { position: absolute; left: 210px; top: 260px; width: 860px; height: 607px; background: var(--sfondo);
+    clip-path: polygon(6% 28%, 13% 18%, 35% 13%, 64% 13%, 86% 18%, 93% 28%, 94% 69%, 93% 81%, 68% 92%, 51% 94%, 26% 92%, 7% 81%, 5% 69%); }
+  .torta { position: absolute; left: 210px; top: 260px; width: 860px; height: 607px; object-fit: cover; mix-blend-mode: multiply; }
+
+  .nome { position: absolute; left: 40px; top: 960px; font-family: var(--font-testo); font-weight: 700; font-size: 48px; line-height: 52px; text-transform: uppercase; }
+  .testo { position: absolute; left: 40px; top: 1078px; width: 480px; font-size: 26px; line-height: 40px; }
+
+  .prezzo { position: absolute; left: 552px; top: 1084px; width: 404px; height: 130px; border-top: 2px solid color-mix(in srgb, var(--nero) 45%, var(--sfondo)); border-bottom: 2px solid color-mix(in srgb, var(--nero) 45%, var(--sfondo));
+    display: flex; align-items: baseline; justify-content: space-between; padding: 36px 0 0; font-weight: 700; font-size: 44px; }
+  .prezzo small { font-weight: 400; font-size: 24px; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol></defs></svg>
+
+  <!-- titolo: 2 parole, una per riga, la seconda più corta (ci passa sopra la torta) -->
+  <h1 class="titolo"><span>Sfornata</span><span>oggi</span></h1>
+
+  <!-- foto: la torta intera scontornata su fondo bianco (si fonde con lo sfondo), che copre la fine del titolo; la sagoma dietro segue il contorno -->
+  <div class="sagoma"></div>
+  <img class="torta" src="../esempio/torta-noci.jpg" alt="">
+
+  <svg class="disegno" viewBox="0 0 1080 1350">
+    <path d="M150 400C110 500 130 610 222 640"/><path d="M198 624L224 641L200 658"/>
+  </svg>
+  <svg class="stella" style="left:880px;top:290px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:122px;top:730px"><use href="#stella"/></svg>
+
+  <!-- nome: il prodotto, 2 righe di 8-12 caratteri -->
+  <h2 class="nome">Torta caffè<br>e noci</h2>
+  <!-- testo: 14-20 parole sul prodotto -->
+  <p class="testo">Pan di Spagna al caffè, crema al mascarpone, ganache fondente e noci tostate sopra</p>
+
+  <!-- prezzo: la parola, il prezzo e l'unità -->
+  <p class="prezzo"><span>Prezzo</span><span>3,00 € <small>/fetta</small></span></p>
+</body>
+</html>

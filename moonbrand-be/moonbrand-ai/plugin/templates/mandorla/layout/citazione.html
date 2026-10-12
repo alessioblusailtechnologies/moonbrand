@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; display: block; }
+  /* velo leggero e uniforme del principale scurito, perché la frase si legga */
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: color-mix(in oklab, var(--principale) 40%, black); opacity: 0.3; }
+
+  .frase { position: absolute; left: 108px; top: 130px; width: 860px; font-family: var(--font-titoli); font-weight: 400; font-size: 116px; line-height: 134px; text-indent: -0.4em; }
+</style>
+</head>
+<body>
+  <!-- foto: piena pagina, il forno o un dolce che cuoce; la parte alta scura e tranquilla per la frase -->
+  <img class="foto" src="../esempio/torta-forno.jpg" alt="">
+  <div class="velo"></div>
+
+  <!-- frase: una massima tra virgolette, 4-7 parole su 3 righe, in alto a sinistra -->
+  <p class="frase">“Il pane<br>buono non<br>ha fretta.”</p>
+</body>
+</html>

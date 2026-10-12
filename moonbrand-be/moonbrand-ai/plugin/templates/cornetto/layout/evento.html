@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&family=Questrial&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .logo { position: absolute; font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; text-align: center; padding: 8px 0; border: 2px solid var(--accento); border-radius: 14px; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+
+  .logo { left: 405px; top: 84px; width: 270px; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 196px; text-align: center; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 150px; line-height: 1; letter-spacing: -0.03em; text-transform: uppercase; }
+  .titolo .corsivo { display: block; text-transform: none; font-size: 150px; letter-spacing: 0; line-height: 1; margin-top: -6px; transform: translateX(-30px); }
+  .foto { position: absolute; left: 368px; top: 540px; width: 344px; height: 344px; border-radius: 50%; object-fit: cover; }
+  .calendario { position: absolute; left: 0; top: 922px; width: 1080px; height: 428px; border-top: 2px solid var(--accento); }
+  .calendario .riga { position: absolute; left: 0; top: 70px; width: 1080px; border-top: 2px solid var(--accento); }
+  .calendario .col { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--accento); }
+  .giorno { position: absolute; top: 0; width: 331px; text-align: center; }
+  .giorno span { display: block; height: 70px; line-height: 70px; font-size: 24px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .giorno b { display: block; margin-top: 74px; font-family: 'Questrial', sans-serif; font-weight: 400; font-size: 150px; line-height: 1; }
+  .cerchio { position: absolute; left: 392px; top: 1018px; width: 300px; height: 270px; fill: none; stroke: var(--accento); stroke-width: 5; stroke-linecap: round; }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del forno in un riquadro arrotondato -->
+  <div class="logo">Forno Rosmarì</div>
+
+  <!-- titolo: una parola in maiuscolo e 1-2 in corsivo sotto -->
+  <h1 class="titolo">Mercatino<span class="corsivo">di Natale</span></h1>
+
+  <!-- foto: un solo dolce visto dall'alto, tagliato nel cerchio -->
+  <img class="foto" src="../esempio/biscotto.jpg" alt="">
+
+  <!-- calendario: tre giorni di fila, nome del giorno e numero; il giorno dell'evento è cerchiato -->
+  <div class="calendario">
+    <div class="riga"></div>
+    <div class="col" style="left: 40px;"></div>
+    <div class="col" style="left: 374px;"></div>
+    <div class="col" style="left: 706px;"></div>
+    <div class="col" style="left: 1038px;"></div>
+    <div class="giorno" style="left: 42px;"><span>Venerdì</span><b>11</b></div>
+    <div class="giorno" style="left: 375px;"><span>Sabato</span><b>12</b></div>
+    <div class="giorno" style="left: 707px;"><span>Domenica</span><b>13</b></div>
+  </div>
+  <svg class="cerchio" viewBox="0 0 300 270"><path d="M120 18 C 205 4, 288 60, 282 140 C 276 222, 196 262, 136 256 C 62 250, 14 200, 18 132 C 22 66, 80 22, 160 14 C 176 12, 192 16, 204 22"/></svg>
+</body>
+</html>

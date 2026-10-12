@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Le forme piene in una tinta chiara del secondario: ci stanno sopra testi scuri e foto fuse col multiply. */
+  :root { --tinta: oklch(from var(--secondario) max(l, 0.85) min(c, 0.07) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Tre righe del titolo che si toccano: il mese in corsivo, la parola grande, il prodotto. */
+  .mese { position: absolute; left: 168px; top: 62px; font-family: var(--font-titoli); font-style: italic; font-weight: 700; font-size: 92px; line-height: 0.95; letter-spacing: -0.01em; }
+  .grande { position: absolute; left: 0; top: 152px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 200px; line-height: 0.82; letter-spacing: -0.045em; }
+  .prodotto { position: absolute; left: 0; top: 330px; width: 1080px; text-align: center; padding-left: 120px; font-family: var(--font-titoli); font-weight: 600; font-size: 74px; line-height: 1; letter-spacing: -0.02em; }
+
+  /* Quattro prodotti tondi in griglia, il nome in corsivo sotto ciascuno. */
+  .tondo { position: absolute; width: 290px; height: 290px; border-radius: 50%; object-fit: cover; }
+  .nome { position: absolute; width: 380px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 600; font-size: 44px; line-height: 1; letter-spacing: -0.02em; }
+  .a { left: 205px; top: 432px; }  .b { left: 585px; top: 432px; }
+  .c { left: 205px; top: 830px; }  .d { left: 585px; top: 830px; }
+  .na { left: 160px; top: 732px; } .nb { left: 540px; top: 732px; }
+  .nc { left: 160px; top: 1130px; } .nd { left: 540px; top: 1130px; }
+
+  .bottone { position: absolute; left: 340px; top: 1218px; width: 400px; height: 62px; border-radius: 31px; background: var(--tinta); border: 2px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-weight: 500; font-size: 30px; letter-spacing: -0.01em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- mese: una parola in corsivo -->
+  <p class="mese">Ottobre</p>
+  <!-- grande: una parola di 6-8 lettere -->
+  <h1 class="grande">prenota</h1>
+  <!-- prodotto: 1-2 parole -->
+  <p class="prodotto">i biscotti</p>
+
+  <!-- tondi: quattro prodotti ritagliati in tondo, con il nome di 1-2 parole sotto -->
+  <img class="tondo a" src="../esempio/biscotto-1.jpg" alt="">
+  <img class="tondo b" src="../esempio/biscotto-2.jpg" alt="">
+  <img class="tondo c" src="../esempio/biscotto-3.jpg" alt="">
+  <img class="tondo d" src="../esempio/biscotto-4.jpg" alt="">
+  <p class="nome na">cioccolato</p>
+  <p class="nome nb">nocciola</p>
+  <p class="nome nc">avena e miele</p>
+  <p class="nome nd">uvetta</p>
+
+  <!-- bottone: l'invito, 2-4 parole -->
+  <p class="bottone">Scrivici per ordinare</p>
+</body>
+</html>

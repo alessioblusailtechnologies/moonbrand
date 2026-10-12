@@ -1,0 +1,13 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License).
+
+biscotti.jpg        https://www.pexels.com/photo/4110541/
+waffle.jpg          https://www.pexels.com/photo/12586023/
+bancone.jpg         https://www.pexels.com/photo/10438814/
+espresso.jpg        https://www.pexels.com/photo/302898/
+latte-freddo.jpg    https://www.pexels.com/photo/11100423/
+via.jpg             https://www.pexels.com/photo/16773422/
+waffle-gelato.jpg   https://www.pexels.com/photo/5659302/
+cannella.jpg        https://www.pexels.com/photo/11146437/
+caffe-ghiaccio.jpg  https://www.pexels.com/photo/15023081/
+latte-ghiaccio.jpg  https://www.pexels.com/photo/8605616/
+matcha.jpg          https://www.pexels.com/photo/6249729/

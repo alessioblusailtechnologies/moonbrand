@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Pinyon+Script&family=Poppins:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5E2A1C; --secondario: #7F5943; --accento: #F3EFEA; --sfondo: #E9E1D6; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .etichetta { position: absolute; left: 92px; top: 128px; height: 70px; padding: 0 30px; border: 2.5px solid var(--principale); border-radius: 35px;
+    display: flex; align-items: center; font-size: 31px; white-space: nowrap; }
+  .sconto { position: absolute; right: 118px; top: 140px; font-size: 31px; white-space: nowrap; }
+  .corsivo { position: absolute; left: 0; width: 1080px; top: 236px; text-align: center; font-family: 'Pinyon Script', cursive; font-size: 236px; line-height: 1; color: var(--secondario); white-space: nowrap; padding-left: 90px; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 452px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 250px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; color: var(--secondario); white-space: nowrap; }
+  .foto { position: absolute; left: 30px; top: 760px; width: 1024px; height: 1024px; border-radius: 50%; object-fit: cover; display: block; }
+</style>
+</head>
+<body>
+  <!-- etichetta: 2 parole in minuscolo, la novità -->
+  <p class="etichetta">nuovo gusto</p>
+  <!-- sconto: 3-5 parole, quanto si risparmia -->
+  <p class="sconto">sconto del 15% fino a domenica</p>
+
+  <!-- corsivo: una parola scritta a mano, sopra il titolo -->
+  <p class="corsivo">Offerta</p>
+  <!-- titolo: una parola sola in maiuscolo, 5-7 lettere -->
+  <h1 class="titolo">Dolce</h1>
+
+  <!-- foto: un piatto visto dall'alto su fondo chiaro, tagliato in tondo e che esce dal fondo -->
+  <img class="foto" src="../esempio/cornetto-piatto.jpg" alt="">
+</body>
+</html>

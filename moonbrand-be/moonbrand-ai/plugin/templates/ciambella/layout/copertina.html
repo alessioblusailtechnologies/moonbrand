@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Figtree', sans-serif; --font-testo: 'Figtree', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 70%; display: block; }
+  .titolo { position: absolute; left: 60px; top: 150px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-size: 96px; line-height: 1.05; letter-spacing: -0.035em; }
+  .sotto { position: absolute; left: 60px; top: 270px; width: 960px; text-align: center; font-family: var(--font-testo); font-style: italic; font-weight: 400; font-size: 50px; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto del giorno su un fondo chiaro e tranquillo, che lascia libero il terzo alto -->
+  <img class="foto" src="../esempio/biscotti.jpg" alt="">
+
+  <!-- titolo: un saluto o una frase breve, 2-3 parole, una riga -->
+  <h1 class="titolo">Buongiorno!</h1>
+
+  <!-- sottotitolo: in corsivo, cosa c'è di pronto, 3-5 parole -->
+  <p class="sotto">i biscotti sono appena sfornati</p>
+</body>
+</html>

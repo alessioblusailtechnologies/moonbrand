@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3E2116; --secondario: #7B4325; --accento: #A8673E; --sfondo: #F6ECE3; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Josefin Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 0; top: 196px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 140px; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .cuore { position: absolute; left: 512px; top: 382px; width: 56px; height: 51px; }
+  .cuore path { fill: var(--principale); }
+  .testo { position: absolute; left: 0; top: 480px; width: 1080px; text-align: center; font-size: 42px; line-height: 1.5; letter-spacing: 0.1em; text-transform: uppercase; }
+  .testo span { display: block; }
+
+  .foto { position: absolute; left: 0; top: 790px; width: 1080px; height: 560px; object-fit: cover; object-position: 50% 45%; display: block;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40%); mask-image: linear-gradient(to bottom, transparent 0, #000 40%); }
+</style>
+</head>
+<body>
+  <!-- titolo: una parola o due, in maiuscolo, con il punto esclamativo -->
+  <h1 class="titolo">Grazie!</h1>
+  <svg class="cuore" viewBox="0 0 24 22"><path d="M12 21.3 10.3 19.8C4.2 14.3 0 10.6 0 6.1 0 2.6 2.7 0 6.2 0c2 0 3.9.9 5.8 3 1.9-2.1 3.8-3 5.8-3C21.3 0 24 2.6 24 6.1c0 4.5-4.2 8.2-10.3 13.7z"/></svg>
+  <!-- testo: per cosa, 2 righe di 14-22 caratteri -->
+  <p class="testo"><span>Per il vostro affetto</span><span>alla nostra bottega</span></p>
+
+  <!-- foto: prodotti da forno in basso a tutta larghezza, che salgono dal bordo -->
+  <img class="foto" src="../esempio/cornetti-pila.jpg" alt="">
+</body>
+</html>

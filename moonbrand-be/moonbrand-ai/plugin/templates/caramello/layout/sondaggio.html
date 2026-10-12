@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1F1612; --secondario: #B88E68; --accento: #7E5235; --sfondo: #FDF5EC; }
+  :root { --font-titoli: 'Playfair Display', serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .fascia { position: absolute; left: 0; width: 1080px; background: var(--accento); }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 110px; text-align: center; font-family: var(--font-titoli); font-weight: 500;
+    font-size: 118px; line-height: 1.1; letter-spacing: -0.01em; color: var(--accento); }
+  /* due foto sfalsate, con un bordo chiaro sottile */
+  .scatto { position: absolute; object-fit: cover; display: block; border: 8px solid color-mix(in oklch, var(--sfondo) 50%, white); }
+  .s1 { left: 96px; top: 363px; width: 446px; height: 728px; }
+  .s2 { left: 540px; top: 524px; width: 446px; height: 716px; }
+  .voce { position: absolute; font-size: 62px; font-weight: 500; line-height: 1.2; letter-spacing: 0.04em; color: var(--accento); }
+</style>
+</head>
+<body>
+  <div class="fascia" style="top: 0; height: 24px;"></div>
+
+  <!-- titolo: la scelta, 2-4 parole -->
+  <h1 class="titolo">Questo o quello</h1>
+
+  <!-- foto 1 e 2: i due prodotti da scegliere, verticali -->
+  <img class="scatto s1" src="../esempio/cannoli.jpg" alt="">
+  <img class="scatto s2" src="../esempio/tiramisu.jpg" alt="">
+
+  <!-- voci: il nome dei due prodotti, una parola ciascuno -->
+  <p class="voce" style="right: 98px; top: 392px;">Tiramisù</p>
+  <p class="voce" style="left: 90px; top: 1128px;">Cannolo</p>
+
+  <div class="fascia" style="bottom: 0; height: 24px;"></div>
+</body>
+</html>

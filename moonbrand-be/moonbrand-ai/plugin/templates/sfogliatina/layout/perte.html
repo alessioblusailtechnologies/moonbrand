@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 30% 50%; filter: brightness(0.72); }
+
+  .logo { position: absolute; left: 0; top: 92px; width: 1080px; text-align: center; font-size: 24px; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--accento); }
+
+  /* titolo a incastro: una parola maiuscola stretta e alta, sopra una riga minuscola inclinata che la attraversa */
+  .alto { position: absolute; left: 0; top: 185px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 62.5%; font-size: 340px; line-height: 0.8; letter-spacing: -0.03em; text-transform: uppercase; color: var(--accento); }
+  .basso { position: absolute; left: 0; top: 165px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 75%; font-size: 190px; line-height: 0.9; color: var(--accento); padding-left: 300px; text-transform: none; letter-spacing: 0; transform: rotate(-13deg); }
+
+  /* in basso: un titoletto in grassetto e due righe di testo, centrati */
+  .sottotitolo { position: absolute; left: 0; top: 1088px; width: 1080px; text-align: center; font-size: 40px; font-weight: 700; color: var(--accento); }
+  .testo { position: absolute; left: 190px; top: 1150px; width: 700px; text-align: center; font-size: 27px; line-height: 1.4; font-weight: 400; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: un tavolino del locale apparecchiato, luce naturale, con aria in alto -->
+  <img class="foto" src="../esempio/caffe-tavolino.jpg" alt="">
+
+  <!-- logo: il nome del forno, spaziato, in alto al centro -->
+  <div class="logo">Forno Ardizzone</div>
+
+  <!-- titolo: una parola alta (4-6 lettere) e sotto una riga corta minuscola che la incrocia -->
+  <div class="alto">Solo<span class="basso">per te</span></div>
+
+  <!-- sottotitolo: 2-4 parole -->
+  <div class="sottotitolo">Il caffè come piace a te</div>
+  <!-- testo: una frase di 15-25 parole su due righe -->
+  <p class="testo">Dall'espresso al cappuccino d'avena, ogni tazza è fatta al momento per accompagnare il tuo cornetto.</p>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  body { background: var(--beige); }
+  .titolo { position: absolute; left: 96px; top: 150px; font-size: 92px; }
+  .frase { position: absolute; left: 96px; top: 466px; width: 330px; font-family: var(--font-titoli); font-size: 42px; line-height: 1.38; }
+  .riga { position: absolute; left: 96px; top: 708px; width: 300px; border-top: 1px solid color-mix(in oklab, var(--principale) 25%, transparent); }
+  .testo { position: absolute; left: 96px; top: 760px; width: 310px; font-size: 24px; line-height: 1.7; opacity: 0.8; }
+  .testo + .testo { top: 958px; }
+  .arco-linea { position: absolute; left: 448px; top: 330px; width: 572px; height: 884px; border: 2px solid color-mix(in oklab, var(--accento) 50%, transparent); border-radius: 286px 286px 0 0; }
+  .foto { position: absolute; left: 462px; top: 344px; width: 544px; height: 856px; border-radius: 272px 272px 0 0; object-position: 50% 40%; }
+</style>
+</head>
+<body>
+  <!-- etichetta: numero e rubrica, 2-4 parole -->
+  <p class="etichetta">02 / Gli stili</p>
+
+  <!-- titolo: 1 parola -->
+  <h1 class="titolo">Botanica</h1>
+
+  <!-- frase: 4-6 parole su tre righe -->
+  <p class="frase">La natura, tradotta in zucchero.</p>
+  <div class="riga"></div>
+  <!-- testo: due paragrafi brevi, 8-12 parole ciascuno -->
+  <p class="testo">Petali e foglie danno linee morbide a una base semplice.</p>
+  <p class="testo">Scegli un solo mazzo o un ramo che scende.</p>
+
+  <!-- foto: verticale, il prodotto al centro, tagliata ad arco -->
+  <div class="arco-linea"></div>
+  <img class="foto" src="../esempio/torta-fiori.jpg" width="544" height="856" alt="">
+
+  <div class="piede">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pasticceria Olmo</span>
+    <!-- pagina: numero della slide nel carosello -->
+    <span>03 / 07</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1915; --secondario: #BAA68E; --accento: #522D1A; --sfondo: #F4F1E8; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'PT Serif', serif; }
+  /* testo chiaro sulle foto: la tinta dello sfondo schiarita; testo sul secondario: chiaro se il secondario è medio o scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --su-secondario: oklch(from var(--secondario) clamp(0.16, (0.8 - l) * 1000, 0.97) min(c, 0.03) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; letter-spacing: -0.01em; }
+  .corsivo { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  body { background: oklch(from var(--sfondo) max(l, 0.96) min(c, 0.03) h); }
+  .righe { position: absolute; left: 52px; top: 70px; width: 976px; }
+  .righe p { font-size: 128px; line-height: 205px; height: 205px; text-align: justify; text-align-last: justify; white-space: nowrap; letter-spacing: 0.02em; }
+  .dolce { position: absolute; left: 100px; top: 300px; width: 880px; height: 729px; filter: drop-shadow(8px 16px 14px color-mix(in srgb, var(--principale) 25%, transparent)); }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 parole maiuscole ripetute su sei righe, larghe quanto la pagina -->
+  <div class="righe titolo">
+    <p data-adatta="976">MENU NUOVO</p><p data-adatta="976">MENU NUOVO</p><p data-adatta="976">MENU NUOVO</p><p data-adatta="976">MENU NUOVO</p><p data-adatta="976">MENU NUOVO</p><p data-adatta="976">MENU NUOVO</p>
+  </div>
+
+  <!-- foto: il prodotto nuovo scontornato (foto su fondo chiaro e la sua maschera -maschera.jpg, bianco = prodotto), grande al centro sopra le scritte -->
+  <svg class="dolce" viewBox="0 0 1255 1040"><mask id="m-girella"><image href="../esempio/girella-maschera.jpg" width="1255" height="1040"/></mask><image href="../esempio/girella.jpg" width="1255" height="1040" mask="url(#m-girella)"/></svg>
+  <script>
+    // Con un font del brand più largo i titoli su una riga si rimpiccioliscono finché stanno nella misura scritta in data-adatta.
+    const adatta = () => document.querySelectorAll('[data-adatta]').forEach((el) => {
+      el.style.fontSize = '';
+      const max = Number(el.dataset.adatta);
+      const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      while (larghezza() > max && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+    });
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tinos&family=Arimo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Tinos', serif; --font-testo: 'Arimo', sans-serif; }
+  /* testi chiari sul fondo pieno e sulla foto: la tinta dello sfondo schiarita */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .arco { position: absolute; left: 0; top: 0; width: 1080px; height: 520px; overflow: visible; }
+  .arco text { font-family: var(--font-titoli); font-size: 66px; fill: var(--chiaro); letter-spacing: 0.01em; }
+  .ovale { position: absolute; left: 256px; top: 404px; width: 568px; height: 724px; border-radius: 50%; object-fit: cover; object-position: 50% 55%; display: block; }
+  .nota { position: absolute; font-size: 36px; letter-spacing: -0.005em; white-space: nowrap; }
+  .uno { left: 196px; top: 560px; }
+  .due { left: 636px; top: 1012px; }
+</style>
+</head>
+<body>
+  <!-- titolo: 4-5 parole su una riga che si curva ad arco sopra l'ovale -->
+  <svg class="arco" viewBox="0 0 1080 520">
+    <path id="curva" d="M 110 352 Q 540 186 970 352" fill="none"/>
+    <text data-max="840"><textPath href="#curva" startOffset="50%" text-anchor="middle">Nuova stagione, nuovi sapori</textPath></text>
+  </svg>
+
+  <!-- foto: la novità (una bevanda, un dolce) ritagliata in un ovale verticale al centro -->
+  <img class="ovale" src="../esempio/latte-freddo.jpg" alt="">
+
+  <!-- note: due etichette di 2 parole, una in alto a sinistra e una in basso a destra, a cavallo del bordo dell'ovale -->
+  <p class="nota uno">gusto pieno</p>
+  <p class="nota due">sorso vellutato</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        const max = parseFloat(el.dataset.max);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+        while (larghezza() > max && size > 20) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

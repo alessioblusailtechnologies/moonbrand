@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,700;1,700&family=Arimo:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'IBM Plex Mono', monospace; --font-testo: 'Arimo', sans-serif; }
+  :root { --nero: color-mix(in srgb, #000000 86%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--nero); font-family: var(--font-testo); }
+
+  .disegno { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .macchia { fill: var(--accento); }
+  .freccia { fill: none; stroke: var(--principale); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .stella { position: absolute; width: 34px; height: 34px; fill: var(--principale); }
+
+  .titolo { position: absolute; left: 38px; top: 30px; font-family: var(--font-titoli); font-weight: 700; font-size: 98px; line-height: 104px; letter-spacing: -0.02em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .nome { position: absolute; font-family: var(--font-titoli); font-style: italic; font-weight: 700; font-size: 56px; line-height: 64px; letter-spacing: -0.02em; text-transform: uppercase; color: color-mix(in srgb, var(--secondario) 60%, #000000); }
+
+  .sagoma { position: absolute; background: var(--sfondo); }
+  .foto { position: absolute; object-fit: cover; mix-blend-mode: multiply; }
+  .cornetto, .sagoma.c { left: 96px; top: 36px; width: 792px; height: 792px; }
+  .sagoma.c { clip-path: polygon(11% 48%, 18% 39%, 33% 31%, 50% 26%, 60% 27%, 69% 31%, 74% 33%, 80% 40%, 86% 56%, 93% 75%, 92% 78%, 87% 81%, 72% 82%, 63% 81%, 53% 79%, 39% 76%, 35% 74%, 13% 55%); }
+  .bicchiere, .sagoma.b { left: 290px; top: 628px; width: 420px; height: 468px; }
+  .sagoma.b { clip-path: polygon(11% 35%, 12% 32%, 14% 29%, 42% 23%, 53% 24%, 69% 27%, 71% 31%, 74% 76%, 72% 82%, 67% 87%, 64% 89%, 58% 92%, 53% 93%, 37% 93%, 28% 90%, 23% 87%, 20% 84%, 17% 80%, 11% 38%); }
+
+  .prezzo { position: absolute; left: 790px; top: 540px; }
+  .prezzo small { display: block; font-size: 32px; line-height: 38px; }
+  .prezzo strong { display: block; font-weight: 700; font-size: 84px; line-height: 92px; letter-spacing: -0.03em; color: var(--principale); }
+  .linea { position: absolute; left: 788px; width: 240px; height: 3px; background: var(--principale); }
+  .invito { position: absolute; left: 790px; top: 790px; width: 250px; font-style: italic; font-size: 29px; line-height: 44px; color: var(--principale); }
+
+  .piede { position: absolute; top: 1124px; font-weight: 700; font-size: 28px; line-height: 44px; text-transform: uppercase; color: var(--principale); }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol></defs></svg>
+
+  <svg class="disegno" viewBox="0 0 1080 1350">
+    <path class="macchia" d="M720 368C860 370 920 470 880 600C846 710 760 830 610 960C520 1040 300 1040 170 990C70 950 70 850 110 760C150 670 260 600 420 520C540 460 600 366 720 368Z"/>
+  </svg>
+
+  <!-- titolo: 3 righe di 3-9 caratteri, allineato a sinistra -->
+  <h1 class="titolo"><span>Offerta</span><span>del</span><span>lunedì</span></h1>
+
+  <!-- foto: due prodotti scontornati su fondo bianco (si fondono con lo sfondo), uno sopra l'altro sulla macchia; le sagome dietro seguono il contorno -->
+  <div class="sagoma c"></div>
+  <img class="foto cornetto" src="../esempio/cornetto.jpg" alt="">
+  <div class="sagoma b"></div>
+  <img class="foto bicchiere" src="../esempio/latte-freddo.jpg" alt="">
+
+  <!-- nomi: i due prodotti, 2 righe ciascuno -->
+  <p class="nome" style="right:120px;top:150px;text-align:right">Cornetto<br>alla crema</p>
+  <p class="nome" style="left:52px;top:810px">Latte<br>freddo</p>
+
+  <svg class="disegno" viewBox="0 0 1080 1350">
+    <path class="freccia" d="M854 322C892 360 880 420 812 444"/><path class="freccia" d="M832 426L810 446L838 456"/>
+    <path class="freccia" d="M152 776C170 720 220 698 272 712"/><path class="freccia" d="M248 694L274 712L250 730"/>
+  </svg>
+
+  <svg class="stella" style="left:900px;top:64px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:70px;top:390px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:944px;top:440px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:124px;top:1040px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:890px;top:1040px"><use href="#stella"/></svg>
+
+  <!-- prezzo: una parola e il prezzo dei due insieme -->
+  <p class="prezzo"><small>Solo</small><strong>3,50 €</strong></p>
+  <div class="linea" style="top:730px"></div>
+  <!-- invito: 6-8 parole -->
+  <p class="invito">Inizia la giornata con qualcosa di dolce</p>
+  <div class="linea" style="top:980px"></div>
+
+  <!-- piede: a sinistra l'invito, a destra l'indirizzo, 2 righe ciascuno -->
+  <p class="piede" style="right:822px;text-align:right">Ti aspettiamo<br>dalle 7</p>
+  <p class="piede" style="left:790px">Via dei Mille<br>14, Bologna</p>
+  <div class="linea" style="left:40px;width:978px;top:1266px"></div>
+</body>
+</html>

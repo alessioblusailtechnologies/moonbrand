@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1915; --secondario: #BAA68E; --accento: #522D1A; --sfondo: #F4F1E8; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'PT Serif', serif; }
+  /* testo chiaro sulle foto: la tinta dello sfondo schiarita; testo sul secondario: chiaro se il secondario è medio o scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --su-secondario: oklch(from var(--secondario) clamp(0.16, (0.8 - l) * 1000, 0.97) min(c, 0.03) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; letter-spacing: -0.01em; }
+  .corsivo { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  body { background: var(--secondario); color: var(--su-secondario); }
+  .titolo { position: absolute; left: 0; top: 96px; width: 1080px; text-align: center; font-size: 92px; line-height: 1; }
+  .voce { position: absolute; font-family: var(--font-titoli); font-size: 34px; line-height: 1.2; white-space: nowrap; }
+  .voce span { margin-left: 20px; }
+  .prodotto { position: absolute; filter: drop-shadow(10px 14px 10px color-mix(in srgb, var(--principale) 35%, transparent)); }
+  .freccia { position: absolute; fill: none; stroke: var(--accento); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+  .orari { position: absolute; left: 0; top: 1218px; width: 1080px; text-align: center; font-size: 27px; line-height: 1.25; }
+  .orari .corsivo { font-size: 32px; display: block; }
+</style>
+</head>
+<body>
+  <!-- titolo: 3-4 parole, il tema della lista -->
+  <h1 class="titolo">I preferiti del mese</h1>
+
+  <!-- prodotti: quattro, scontornati (foto su fondo chiaro e la sua maschera -maschera.jpg, bianco = prodotto), nome breve e prezzo -->
+  <svg class="prodotto" style="left: 250px; top: 300px; width: 300px; height: 422px;" viewBox="0 0 270 380"><mask id="m-cioccolato"><image href="../esempio/cioccolato-maschera.jpg" width="270" height="380"/></mask><image href="../esempio/cioccolato.jpg" width="270" height="380" mask="url(#m-cioccolato)"/></svg>
+  <svg class="prodotto" style="left: 615px; top: 270px; width: 210px; height: 457px;" viewBox="0 0 450 980"><mask id="m-caffe-freddo"><image href="../esempio/caffe-freddo-maschera.jpg" width="450" height="980"/></mask><image href="../esempio/caffe-freddo.jpg" width="450" height="980" mask="url(#m-caffe-freddo)"/></svg>
+  <svg class="prodotto" style="left: 260px; top: 760px; width: 270px; height: 434px;" viewBox="0 0 305 490"><mask id="m-cornetto"><image href="../esempio/cornetto-maschera.jpg" width="305" height="490"/></mask><image href="../esempio/cornetto.jpg" width="305" height="490" mask="url(#m-cornetto)"/></svg>
+  <svg class="prodotto" style="left: 590px; top: 770px; width: 300px; height: 416px;" viewBox="0 0 310 430"><mask id="m-mandorle"><image href="../esempio/mandorle-maschera.jpg" width="310" height="430"/></mask><image href="../esempio/mandorle.jpg" width="310" height="430" mask="url(#m-mandorle)"/></svg>
+
+  <!-- voci: nome di 1-2 parole con il punto e prezzo -->
+  <p class="voce" style="left: 60px; top: 236px;">Cioccolato.<span>€1,60</span></p>
+  <p class="voce" style="right: 44px; top: 300px;">Caffè freddo.<br>€2,50</p>
+  <p class="voce" style="left: 60px; top: 1150px;">Cornetto.<span>€1,30</span></p>
+  <p class="voce" style="right: 44px; top: 1120px;">Mandorle.<br>€1,80</p>
+
+  <!-- frecce disegnate a mano dalle voci ai prodotti -->
+  <svg class="freccia" style="left: 90px; top: 300px;" width="170" height="250" viewBox="0 0 170 250"><path d="M156 232 C 70 220, 20 150, 34 14"/><path d="M16 36 L 34 12 L 54 34"/></svg>
+  <svg class="freccia" style="left: 880px; top: 400px;" width="140" height="230" viewBox="0 0 140 230"><path d="M10 210 C 110 190, 130 90, 76 14"/><path d="M60 34 L 76 12 L 100 26"/></svg>
+  <svg class="freccia" style="left: 70px; top: 880px;" width="200" height="260" viewBox="0 0 200 260"><path d="M186 22 C 80 30, 30 120, 50 244"/><path d="M32 222 L 50 246 L 70 224"/></svg>
+  <svg class="freccia" style="left: 880px; top: 880px;" width="150" height="230" viewBox="0 0 150 230"><path d="M14 22 C 110 40, 140 120, 96 214"/><path d="M80 194 L 96 216 L 120 200"/></svg>
+
+  <!-- orari: «orari di apertura:» in corsivo e una riga di orari -->
+  <p class="orari"><span class="corsivo">orari di apertura:</span>tutti i giorni 7:00 - 20:00</p>
+</body>
+</html>

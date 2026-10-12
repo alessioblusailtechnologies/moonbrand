@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Young Serif', serif; }
+  :root {
+    --fondo: color-mix(in oklch, var(--sfondo) 82%, var(--accento));
+    --carta: color-mix(in oklch, var(--sfondo) 35%, white);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--fondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .striscia { position: absolute; left: 935px; top: 0; width: 145px; height: 1350px; display: block; object-fit: cover; object-position: 38% 50%; }
+
+  .riga { position: absolute; left: 0; font-family: var(--font-titoli); font-weight: 400; font-size: 218px; line-height: 218px; letter-spacing: -0.005em; white-space: nowrap; }
+  .r1 { left: 6px; top: 158px; color: var(--secondario); }
+  .r2 { left: 92px; top: 398px; color: var(--secondario); }
+  .r3 { left: 56px; top: 640px; color: var(--principale); }
+  .r4 { left: 88px; top: 852px; color: var(--principale); }
+
+  /* due cartellini di carta storti */
+  .cartellino { position: absolute; background: var(--carta); border-radius: 28px; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-titoli); color: var(--principale); white-space: nowrap; }
+  .c1 { left: 462px; top: 50px; width: 378px; height: 104px; font-size: 40px; transform: rotate(3deg); }
+  .c2 { left: 114px; top: 598px; width: 480px; height: 90px; font-size: 38px; text-transform: uppercase; transform: rotate(-3deg); }
+
+  .cornetto { position: absolute; left: 660px; top: 120px; width: 270px; height: 429px; transform: rotate(-62deg); }
+  .cupcake { position: absolute; left: -70px; top: 1040px; width: 380px; height: 429px; }
+
+  .quando { position: absolute; display: block; background: var(--carta); white-space: nowrap; }
+  .q1 { left: 560px; top: 1084px; padding: 4px 22px; font-size: 34px; color: var(--principale); }
+  .q2 { left: 500px; top: 1138px; padding: 0 16px; font-size: 38px; color: color-mix(in oklch, var(--secondario) 80%, black); }
+  .q3 { left: 506px; top: 1186px; padding: 0 16px; font-size: 38px; color: color-mix(in oklch, var(--secondario) 80%, black); }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto da vicino in una striscia verticale lungo il bordo destro -->
+  <img class="striscia" src="../esempio/cornetti.jpg" alt="">
+
+  <!-- cartellino: una frase breve, 3-4 parole -->
+  <p class="cartellino c1">La vita è breve.</p>
+
+  <!-- titolo: 4 righe di 2-6 caratteri, le prime due nel secondario, le altre nel principale -->
+  <h1 class="riga r1">IL</h1>
+  <h1 class="riga r2">FORNO</h1>
+  <h1 class="riga r3">VA IN</h1>
+  <h1 class="riga r4">PIAZZA</h1>
+
+  <!-- cartellino: il seguito della frase, 2-3 parole, sopra la terza riga del titolo -->
+  <p class="cartellino c2">Prendi la torta</p>
+
+  <!-- foto: prodotti scontornati (foto su fondo chiaro e la sua maschera -maschera.jpg, bianco = prodotto): uno in alto a destra sul titolo, uno nell'angolo in basso a sinistra tagliato dai bordi -->
+  <svg class="cornetto" viewBox="0 0 640 1018"><mask id="m-cornetto"><image href="../esempio/cornetto-maschera.jpg" width="640" height="1018"/></mask><image href="../esempio/cornetto.jpg" width="640" height="1018" mask="url(#m-cornetto)"/></svg>
+  <svg class="cupcake" viewBox="0 0 700 790"><mask id="m-cupcake"><image href="../esempio/cupcake-maschera.jpg" width="700" height="790"/></mask><image href="../esempio/cupcake.jpg" width="700" height="790" mask="url(#m-cupcake)"/></svg>
+
+  <!-- quando e dove: date, orari e luogo, ognuno sul suo ritaglio di carta -->
+  <p class="quando q1">20-23 dicembre</p>
+  <p class="quando q2">dalle 9 alle 20</p>
+  <p class="quando q3">Piazza Vecchia, Bergamo</p>
+</body>
+</html>

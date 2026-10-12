@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #BE1B2C; --secondario: #F2EEE2; --accento: #CA1B2C; --sfondo: #F2D6D2; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .testata { position: absolute; left: 58px; right: 58px; top: 66px; display: flex; justify-content: space-between; font-size: 52px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 190px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 200px; line-height: 0.98em; letter-spacing: -0.02em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+  .foto { position: absolute; left: 262px; top: 640px; width: 556px; height: 710px; object-fit: cover; object-position: 50% 40%; display: block; }
+  .lato { position: absolute; top: 770px; font-size: 27px; font-weight: 700; line-height: 1.05; text-transform: uppercase; letter-spacing: -0.01em; }
+  .lato.sinistra { left: 36px; width: 214px; }
+  .lato.destra { right: 36px; width: 214px; text-align: right; }
+  .logo { position: absolute; left: 50%; top: 1214px; transform: translateX(-50%); padding: 12px 30px; border: 3px solid var(--accento); border-radius: 14px; background: var(--sfondo); color: var(--accento); font-size: 24px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- testata: a sinistra il nome del locale, a destra 2-3 parole d'invito -->
+  <div class="testata"><span>Forno Rosa</span><span>Ti aspettiamo</span></div>
+
+  <!-- titolo: l'evento in 2 righe brevi, 6-8 caratteri l'una, in maiuscolo -->
+  <h1 class="titolo" data-max="1000"><span>Brunch</span><span>&amp; pranzo</span></h1>
+
+  <!-- foto: mani con un prodotto, verticale, tagliata dal fondo -->
+  <img class="foto" src="../esempio/croissant-mani.jpg" alt="">
+
+  <!-- data: giorno e ora, 2 righe -->
+  <p class="lato sinistra">Domenica 12<br>ore 10:30</p>
+  <!-- indirizzo: via e città, 3 righe brevi -->
+  <p class="lato destra">Via dei<br>Mille 18,<br>Bari</p>
+
+  <!-- logo: il nome del brand nell'etichetta in basso -->
+  <div class="logo">Forno Rosa</div>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px
+    // lungo la riga; data-verticale per il titolo ruotato). Interlinea in em, così le righe restano vicine.
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => {
+          const righe = [];
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const r of range.getClientRects()) righe.push(el.dataset.verticale !== undefined ? r.height : r.width);
+          }
+          return Math.max(0, ...righe);
+        };
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #BE1B2C; --secondario: #F2EEE2; --accento: #CA1B2C; --sfondo: #F2D6D2; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--principale); font-family: var(--font-testo); }
+
+  /* le righe verticali della tenda: sfondo e secondario a fasce uguali */
+  .righe { position: absolute; inset: 0; display: flex; }
+  .righe i { flex: 0 0 52px; height: 1350px; }
+  .righe i:nth-child(odd) { background: var(--sfondo); }
+  /* la fascia chiara: il secondario schiarito, così con un secondario acceso la scritta resta leggibile */
+  .righe i:nth-child(even) { background: oklch(from var(--secondario) max(l, 0.9) min(c, 0.05) h); }
+  .strisce { position: absolute; left: 187px; top: 290px; width: 710px; display: flex; flex-direction: column; gap: 10px; background: oklch(from var(--secondario) max(l, 0.9) min(c, 0.05) h); }
+  .strisce img { display: block; width: 710px; height: 227px; object-fit: cover; }
+  .scritta { position: absolute; left: 0; width: 1080px; top: 1030px; text-align: center; font-size: 38px; font-weight: 700; letter-spacing: 0.42em; text-indent: 0.42em; color: var(--principale); text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="righe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <!-- foto: tre strisce orizzontali, tre momenti della stessa mattina (un dolce, il caffè, il forno) -->
+  <div class="strisce">
+    <img src="../esempio/girella-glassa.jpg" alt="" style="object-position: 50% 62%;">
+    <img src="../esempio/cappuccino-tavolo.jpg" alt="" style="object-position: 50% 62%;">
+    <img src="../esempio/cornetto.jpg" alt="" style="object-position: 30% 60%;">
+  </div>
+
+  <!-- scritta: 2 parole spaziate, 10-14 lettere in tutto -->
+  <p class="scritta">Buon mattino</p>
+</body>
+</html>

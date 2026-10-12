@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,800;7..72,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161311; --secondario: #D3B48E; --accento: #C2864E; --sfondo: #EEEDEA; }
+  :root { --font-titoli: 'Literata', serif; --font-testo: 'Newsreader', serif; }
+  /* il testo sui riquadri colorati: nero se il colore è chiaro, bianco se è scuro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.62 - l) * 1000, 1) 0 0); --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  /* lo sfondo anche su html, così il body ha un fondo suo e i ritagli si fondono */
+  html { background: var(--sfondo); }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-variation-settings: 'opsz' 12; line-height: 0.88; letter-spacing: -0.02em; }
+  /* le foto ritagliate su fondo bianco: il filtro «scontorna» rende trasparente il bianco, così stanno su ogni colore */
+  .ritaglio { position: absolute; display: block; object-fit: cover; filter: url(#scontorna); }
+  /* carta stropicciata sopra lo sfondo */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; filter: grayscale(1) contrast(1.2); mix-blend-mode: multiply; opacity: 0.6; }
+  .logo { position: absolute; left: 0; width: 1080px; top: 52px; text-align: center; font-size: 28px; }
+  .sopra { position: absolute; left: 0; width: 1080px; top: 118px; text-align: center; font-size: 104px; font-weight: 300; line-height: 1; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 214px; text-align: center; font-size: 208px; letter-spacing: -0.035em; }
+  .riquadro { position: absolute; left: 190px; top: 438px; width: 700px; height: 176px; border: 2px solid var(--principale); border-radius: 88px; text-align: center; padding-top: 22px; }
+  .riquadro h2 { font-family: var(--font-testo); font-weight: 400; font-size: 58px; line-height: 1.05; }
+  .riquadro p { font-size: 24px; line-height: 1.2; margin: 8px auto 0; width: 560px; }
+  .fascia { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: var(--accento); clip-path: polygon(0 1010px, 1080px 860px, 1080px 1350px, 0 1350px); }
+  .piatto { position: absolute; left: 285px; top: 640px; width: 590px; height: 590px; border-radius: 50%; overflow: hidden; }
+  .piatto img { position: absolute; left: -40px; top: -205px; width: 634px; height: 951px; object-fit: cover; display: block; }
+  .prezzo { position: absolute; left: 60px; width: auto; text-align: left; top: 1196px; font-size: 96px; color: var(--su-accento); }
+  .dove { position: absolute; right: 56px; top: 1222px; text-align: right; font-size: 26px; line-height: 1.35; color: var(--su-accento); }
+  .filetto { position: absolute; left: 30px; right: 30px; top: 1322px; height: 2px; background: var(--su-accento); }
+</style>
+</head>
+<body>
+  <!-- logo: il nome del brand -->
+  <p class="logo">Forno Ardito</p>
+
+  <!-- sopra: 1 parola leggera -->
+  <p class="sopra">Speciale</p>
+  <!-- titolo: 1 parola di 6-8 lettere, enorme -->
+  <h1 class="titolo">Merenda</h1>
+
+  <!-- riquadro: il nome del dolce (2-4 parole) e gli ingredienti (12-18 parole) -->
+  <div class="riquadro">
+    <h2>Girelle alla cannella</h2>
+    <p>(burro, zucchero di canna, cannella di Ceylon, farina tipo 1 e un pizzico di sale)</p>
+  </div>
+
+  <div class="fascia"></div>
+  <!-- foto: il dolce sul piatto visto dall'alto, ritagliata a cerchio sul bordo del piatto -->
+  <div class="piatto"><img src="../esempio/girelle-piatto.jpg" alt=""></div>
+
+  <!-- prezzo -->
+  <p class="titolo prezzo">4,50 €</p>
+  <!-- dove: profilo e indirizzo -->
+  <p class="dove">@fornoardito<br>Via Garibaldi 12, Bari</p>
+  <div class="filetto"></div>
+</body>
+</html>

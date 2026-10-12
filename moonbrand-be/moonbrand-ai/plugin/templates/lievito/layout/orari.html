@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E3F31; --secondario: #A8957E; --accento: #C4532F; --sfondo: #E8E1D7; }
+  :root { --font-titoli: 'Gelasio', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 45%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --corsivo: 'Sacramento', cursive; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; }
+  .etichetta { position: absolute; left: 0; top: 58px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--principale); }
+  .etichetta::after { content: ""; display: block; width: 10px; height: 2px; margin: 8px auto 0; background: currentColor; }
+
+  .centrino { position: absolute; left: 112px; top: 222px; width: 900px; height: 900px; filter: drop-shadow(0 10px 14px rgba(0,0,0,.22)); }
+
+  .titolo { position: absolute; left: 262px; top: 448px; width: 600px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 86px; line-height: 84px; text-transform: uppercase; color: var(--accento); }
+  .titolo span { display: block; }
+  .righe { position: absolute; left: 322px; top: 650px; width: 480px; }
+  .riga { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; }
+  .riga + .riga { border-top: 2px dashed var(--accento); }
+  .giorni { font-family: var(--font-titoli); font-size: 34px; text-transform: uppercase; }
+  .ore { font-size: 31px; letter-spacing: .04em; }
+  .nota { position: absolute; left: 322px; top: 812px; width: 480px; text-align: center; font-size: 21px; font-style: italic; letter-spacing: .08em; text-transform: uppercase; }
+
+  .logo { position: absolute; left: 340px; top: 1190px; width: 400px; text-align: center; color: var(--chiaro); }
+  .logo b { display: block; font-family: var(--font-titoli); font-weight: 500; font-size: 34px; letter-spacing: .03em; text-transform: uppercase; }
+  .logo i { display: block; margin-top: -2px; font-family: var(--corsivo); font-style: normal; font-size: 36px; line-height: 1; }
+</style>
+</head>
+<body>
+  <!-- foto: prodotti dall'alto su un fondo chiaro, il centrino ci sta sopra -->
+  <img class="foto" src="../esempio/cornetti.jpg" alt="">
+  <!-- etichetta: 2-3 parole -->
+  <p class="etichetta">Ci trovi qui</p>
+
+  <!-- centrino: pizzo di carta tondo con i fori da cui si vede la foto -->
+  <svg class="centrino" viewBox="0 0 900 900" aria-hidden="true">
+    <defs>
+      <mask id="pizzo" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="900">
+        <path d="M864 450 Q910.5 501.9 853.6 542.1 Q887.4 603.1 823 629.6 Q842.4 696.5 773.7 708.1 Q777.7 777.7 708.1 773.7 Q696.5 842.4 629.6 823 Q603.1 887.4 542.1 853.6 Q501.9 910.5 450 864 Q398.1 910.5 357.9 853.6 Q296.9 887.4 270.4 823 Q203.5 842.4 191.9 773.7 Q122.3 777.7 126.3 708.1 Q57.6 696.5 77 629.6 Q12.6 603.1 46.4 542.1 Q-10.5 501.9 36 450 Q-10.5 398.1 46.4 357.9 Q12.6 296.9 77 270.4 Q57.6 203.5 126.3 191.9 Q122.3 122.3 191.9 126.3 Q203.5 57.6 270.4 77 Q296.9 12.6 357.9 46.4 Q398.1 -10.5 450 36 Q501.9 -10.5 542.1 46.4 Q603.1 12.6 629.6 77 Q696.5 57.6 708.1 126.3 Q777.7 122.3 773.7 191.9 Q842.4 203.5 823 270.4 Q887.4 296.9 853.6 357.9 Q910.5 398.1 864 450 Z" fill="#fff"/>
+        <g fill="#000">
+        <circle cx="868" cy="450" r="7"/>
+        <circle cx="865.4" cy="496.8" r="7"/>
+        <circle cx="857.5" cy="543" r="7"/>
+        <circle cx="844.5" cy="588.1" r="7"/>
+        <circle cx="826.6" cy="631.4" r="7"/>
+        <circle cx="803.9" cy="672.4" r="7"/>
+        <circle cx="776.8" cy="710.6" r="7"/>
+        <circle cx="745.6" cy="745.6" r="7"/>
+        <circle cx="710.6" cy="776.8" r="7"/>
+        <circle cx="672.4" cy="803.9" r="7"/>
+        <circle cx="631.4" cy="826.6" r="7"/>
+        <circle cx="588.1" cy="844.5" r="7"/>
+        <circle cx="543" cy="857.5" r="7"/>
+        <circle cx="496.8" cy="865.4" r="7"/>
+        <circle cx="450" cy="868" r="7"/>
+        <circle cx="403.2" cy="865.4" r="7"/>
+        <circle cx="357" cy="857.5" r="7"/>
+        <circle cx="311.9" cy="844.5" r="7"/>
+        <circle cx="268.6" cy="826.6" r="7"/>
+        <circle cx="227.6" cy="803.9" r="7"/>
+        <circle cx="189.4" cy="776.8" r="7"/>
+        <circle cx="154.4" cy="745.6" r="7"/>
+        <circle cx="123.2" cy="710.6" r="7"/>
+        <circle cx="96.1" cy="672.4" r="7"/>
+        <circle cx="73.4" cy="631.4" r="7"/>
+        <circle cx="55.5" cy="588.1" r="7"/>
+        <circle cx="42.5" cy="543" r="7"/>
+        <circle cx="34.6" cy="496.8" r="7"/>
+        <circle cx="32" cy="450" r="7"/>
+        <circle cx="34.6" cy="403.2" r="7"/>
+        <circle cx="42.5" cy="357" r="7"/>
+        <circle cx="55.5" cy="311.9" r="7"/>
+        <circle cx="73.4" cy="268.6" r="7"/>
+        <circle cx="96.1" cy="227.6" r="7"/>
+        <circle cx="123.2" cy="189.4" r="7"/>
+        <circle cx="154.4" cy="154.4" r="7"/>
+        <circle cx="189.4" cy="123.2" r="7"/>
+        <circle cx="227.6" cy="96.1" r="7"/>
+        <circle cx="268.6" cy="73.4" r="7"/>
+        <circle cx="311.9" cy="55.5" r="7"/>
+        <circle cx="357" cy="42.5" r="7"/>
+        <circle cx="403.2" cy="34.6" r="7"/>
+        <circle cx="450" cy="32" r="7"/>
+        <circle cx="496.8" cy="34.6" r="7"/>
+        <circle cx="543" cy="42.5" r="7"/>
+        <circle cx="588.1" cy="55.5" r="7"/>
+        <circle cx="631.4" cy="73.4" r="7"/>
+        <circle cx="672.4" cy="96.1" r="7"/>
+        <circle cx="710.6" cy="123.2" r="7"/>
+        <circle cx="745.6" cy="154.4" r="7"/>
+        <circle cx="776.8" cy="189.4" r="7"/>
+        <circle cx="803.9" cy="227.6" r="7"/>
+        <circle cx="826.6" cy="268.6" r="7"/>
+        <circle cx="844.5" cy="311.9" r="7"/>
+        <circle cx="857.5" cy="357" r="7"/>
+        <circle cx="865.4" cy="403.2" r="7"/>
+        <circle cx="841" cy="478" r="10"/>
+        <circle cx="833" cy="533.3" r="10"/>
+        <circle cx="817.3" cy="587" r="10"/>
+        <circle cx="794.1" cy="637.9" r="10"/>
+        <circle cx="763.8" cy="684.9" r="10"/>
+        <circle cx="727.2" cy="727.2" r="10"/>
+        <circle cx="684.9" cy="763.8" r="10"/>
+        <circle cx="637.9" cy="794.1" r="10"/>
+        <circle cx="587" cy="817.3" r="10"/>
+        <circle cx="533.3" cy="833" r="10"/>
+        <circle cx="478" cy="841" r="10"/>
+        <circle cx="422" cy="841" r="10"/>
+        <circle cx="366.7" cy="833" r="10"/>
+        <circle cx="313" cy="817.3" r="10"/>
+        <circle cx="262.1" cy="794.1" r="10"/>
+        <circle cx="215.1" cy="763.8" r="10"/>
+        <circle cx="172.8" cy="727.2" r="10"/>
+        <circle cx="136.2" cy="684.9" r="10"/>
+        <circle cx="105.9" cy="637.9" r="10"/>
+        <circle cx="82.7" cy="587" r="10"/>
+        <circle cx="67" cy="533.3" r="10"/>
+        <circle cx="59" cy="478" r="10"/>
+        <circle cx="59" cy="422" r="10"/>
+        <circle cx="67" cy="366.7" r="10"/>
+        <circle cx="82.7" cy="313" r="10"/>
+        <circle cx="105.9" cy="262.1" r="10"/>
+        <circle cx="136.2" cy="215.1" r="10"/>
+        <circle cx="172.8" cy="172.8" r="10"/>
+        <circle cx="215.1" cy="136.2" r="10"/>
+        <circle cx="262.1" cy="105.9" r="10"/>
+        <circle cx="313" cy="82.7" r="10"/>
+        <circle cx="366.7" cy="67" r="10"/>
+        <circle cx="422" cy="59" r="10"/>
+        <circle cx="478" cy="59" r="10"/>
+        <circle cx="533.3" cy="67" r="10"/>
+        <circle cx="587" cy="82.7" r="10"/>
+        <circle cx="637.9" cy="105.9" r="10"/>
+        <circle cx="684.9" cy="136.2" r="10"/>
+        <circle cx="727.2" cy="172.8" r="10"/>
+        <circle cx="763.8" cy="215.1" r="10"/>
+        <circle cx="794.1" cy="262.1" r="10"/>
+        <circle cx="817.3" cy="313" r="10"/>
+        <circle cx="833" cy="366.7" r="10"/>
+        <circle cx="841" cy="422" r="10"/>
+        <circle cx="780" cy="450" r="5"/>
+        <circle cx="778.2" cy="484.5" r="5"/>
+        <circle cx="772.8" cy="518.6" r="5"/>
+        <circle cx="763.8" cy="552" r="5"/>
+        <circle cx="751.5" cy="584.2" r="5"/>
+        <circle cx="735.8" cy="615" r="5"/>
+        <circle cx="717" cy="644" r="5"/>
+        <circle cx="695.2" cy="670.8" r="5"/>
+        <circle cx="670.8" cy="695.2" r="5"/>
+        <circle cx="644" cy="717" r="5"/>
+        <circle cx="615" cy="735.8" r="5"/>
+        <circle cx="584.2" cy="751.5" r="5"/>
+        <circle cx="552" cy="763.8" r="5"/>
+        <circle cx="518.6" cy="772.8" r="5"/>
+        <circle cx="484.5" cy="778.2" r="5"/>
+        <circle cx="450" cy="780" r="5"/>
+        <circle cx="415.5" cy="778.2" r="5"/>
+        <circle cx="381.4" cy="772.8" r="5"/>
+        <circle cx="348" cy="763.8" r="5"/>
+        <circle cx="315.8" cy="751.5" r="5"/>
+        <circle cx="285" cy="735.8" r="5"/>
+        <circle cx="256" cy="717" r="5"/>
+        <circle cx="229.2" cy="695.2" r="5"/>
+        <circle cx="204.8" cy="670.8" r="5"/>
+        <circle cx="183" cy="644" r="5"/>
+        <circle cx="164.2" cy="615" r="5"/>
+        <circle cx="148.5" cy="584.2" r="5"/>
+        <circle cx="136.2" cy="552" r="5"/>
+        <circle cx="127.2" cy="518.6" r="5"/>
+        <circle cx="121.8" cy="484.5" r="5"/>
+        <circle cx="120" cy="450" r="5"/>
+        <circle cx="121.8" cy="415.5" r="5"/>
+        <circle cx="127.2" cy="381.4" r="5"/>
+        <circle cx="136.2" cy="348" r="5"/>
+        <circle cx="148.5" cy="315.8" r="5"/>
+        <circle cx="164.2" cy="285" r="5"/>
+        <circle cx="183" cy="256" r="5"/>
+        <circle cx="204.8" cy="229.2" r="5"/>
+        <circle cx="229.2" cy="204.8" r="5"/>
+        <circle cx="256" cy="183" r="5"/>
+        <circle cx="285" cy="164.2" r="5"/>
+        <circle cx="315.8" cy="148.5" r="5"/>
+        <circle cx="348" cy="136.2" r="5"/>
+        <circle cx="381.4" cy="127.2" r="5"/>
+        <circle cx="415.5" cy="121.8" r="5"/>
+        <circle cx="450" cy="120" r="5"/>
+        <circle cx="484.5" cy="121.8" r="5"/>
+        <circle cx="518.6" cy="127.2" r="5"/>
+        <circle cx="552" cy="136.2" r="5"/>
+        <circle cx="584.2" cy="148.5" r="5"/>
+        <circle cx="615" cy="164.2" r="5"/>
+        <circle cx="644" cy="183" r="5"/>
+        <circle cx="670.8" cy="204.8" r="5"/>
+        <circle cx="695.2" cy="229.2" r="5"/>
+        <circle cx="717" cy="256" r="5"/>
+        <circle cx="735.8" cy="285" r="5"/>
+        <circle cx="751.5" cy="315.8" r="5"/>
+        <circle cx="763.8" cy="348" r="5"/>
+        <circle cx="772.8" cy="381.4" r="5"/>
+        <circle cx="778.2" cy="415.5" r="5"/>
+        <ellipse cx="810" cy="450" rx="16" ry="5" transform="rotate(0 810 450)"/>
+        <ellipse cx="804.5" cy="512.5" rx="16" ry="5" transform="rotate(10 804.5 512.5)"/>
+        <ellipse cx="788.3" cy="573.1" rx="16" ry="5" transform="rotate(20 788.3 573.1)"/>
+        <ellipse cx="761.8" cy="630" rx="16" ry="5" transform="rotate(30 761.8 630)"/>
+        <ellipse cx="725.8" cy="681.4" rx="16" ry="5" transform="rotate(40 725.8 681.4)"/>
+        <ellipse cx="681.4" cy="725.8" rx="16" ry="5" transform="rotate(50 681.4 725.8)"/>
+        <ellipse cx="630" cy="761.8" rx="16" ry="5" transform="rotate(60 630 761.8)"/>
+        <ellipse cx="573.1" cy="788.3" rx="16" ry="5" transform="rotate(70 573.1 788.3)"/>
+        <ellipse cx="512.5" cy="804.5" rx="16" ry="5" transform="rotate(80 512.5 804.5)"/>
+        <ellipse cx="450" cy="810" rx="16" ry="5" transform="rotate(90 450 810)"/>
+        <ellipse cx="387.5" cy="804.5" rx="16" ry="5" transform="rotate(100 387.5 804.5)"/>
+        <ellipse cx="326.9" cy="788.3" rx="16" ry="5" transform="rotate(110 326.9 788.3)"/>
+        <ellipse cx="270" cy="761.8" rx="16" ry="5" transform="rotate(120 270 761.8)"/>
+        <ellipse cx="218.6" cy="725.8" rx="16" ry="5" transform="rotate(130 218.6 725.8)"/>
+        <ellipse cx="174.2" cy="681.4" rx="16" ry="5" transform="rotate(140 174.2 681.4)"/>
+        <ellipse cx="138.2" cy="630" rx="16" ry="5" transform="rotate(150 138.2 630)"/>
+        <ellipse cx="111.7" cy="573.1" rx="16" ry="5" transform="rotate(160 111.7 573.1)"/>
+        <ellipse cx="95.5" cy="512.5" rx="16" ry="5" transform="rotate(170 95.5 512.5)"/>
+        <ellipse cx="90" cy="450" rx="16" ry="5" transform="rotate(180 90 450)"/>
+        <ellipse cx="95.5" cy="387.5" rx="16" ry="5" transform="rotate(190 95.5 387.5)"/>
+        <ellipse cx="111.7" cy="326.9" rx="16" ry="5" transform="rotate(200 111.7 326.9)"/>
+        <ellipse cx="138.2" cy="270" rx="16" ry="5" transform="rotate(210 138.2 270)"/>
+        <ellipse cx="174.2" cy="218.6" rx="16" ry="5" transform="rotate(220 174.2 218.6)"/>
+        <ellipse cx="218.6" cy="174.2" rx="16" ry="5" transform="rotate(230 218.6 174.2)"/>
+        <ellipse cx="270" cy="138.2" rx="16" ry="5" transform="rotate(240 270 138.2)"/>
+        <ellipse cx="326.9" cy="111.7" rx="16" ry="5" transform="rotate(250 326.9 111.7)"/>
+        <ellipse cx="387.5" cy="95.5" rx="16" ry="5" transform="rotate(260 387.5 95.5)"/>
+        <ellipse cx="450" cy="90" rx="16" ry="5" transform="rotate(270 450 90)"/>
+        <ellipse cx="512.5" cy="95.5" rx="16" ry="5" transform="rotate(280 512.5 95.5)"/>
+        <ellipse cx="573.1" cy="111.7" rx="16" ry="5" transform="rotate(290 573.1 111.7)"/>
+        <ellipse cx="630" cy="138.2" rx="16" ry="5" transform="rotate(300 630 138.2)"/>
+        <ellipse cx="681.4" cy="174.2" rx="16" ry="5" transform="rotate(310 681.4 174.2)"/>
+        <ellipse cx="725.8" cy="218.6" rx="16" ry="5" transform="rotate(320 725.8 218.6)"/>
+        <ellipse cx="761.8" cy="270" rx="16" ry="5" transform="rotate(330 761.8 270)"/>
+        <ellipse cx="788.3" cy="326.9" rx="16" ry="5" transform="rotate(340 788.3 326.9)"/>
+        <ellipse cx="804.5" cy="387.5" rx="16" ry="5" transform="rotate(350 804.5 387.5)"/>
+        <ellipse cx="750.4" cy="503" rx="9" ry="20" transform="rotate(100 750.4 503)"/>
+        <ellipse cx="714.1" cy="602.5" rx="9" ry="20" transform="rotate(120 714.1 602.5)"/>
+        <ellipse cx="646.1" cy="683.6" rx="9" ry="20" transform="rotate(140 646.1 683.6)"/>
+        <ellipse cx="554.3" cy="736.6" rx="9" ry="20" transform="rotate(160 554.3 736.6)"/>
+        <ellipse cx="450" cy="755" rx="9" ry="20" transform="rotate(180 450 755)"/>
+        <ellipse cx="345.7" cy="736.6" rx="9" ry="20" transform="rotate(200 345.7 736.6)"/>
+        <ellipse cx="253.9" cy="683.6" rx="9" ry="20" transform="rotate(220 253.9 683.6)"/>
+        <ellipse cx="185.9" cy="602.5" rx="9" ry="20" transform="rotate(240 185.9 602.5)"/>
+        <ellipse cx="149.6" cy="503" rx="9" ry="20" transform="rotate(260 149.6 503)"/>
+        <ellipse cx="149.6" cy="397" rx="9" ry="20" transform="rotate(280 149.6 397)"/>
+        <ellipse cx="185.9" cy="297.5" rx="9" ry="20" transform="rotate(300 185.9 297.5)"/>
+        <ellipse cx="253.9" cy="216.4" rx="9" ry="20" transform="rotate(320 253.9 216.4)"/>
+        <ellipse cx="345.7" cy="163.4" rx="9" ry="20" transform="rotate(340 345.7 163.4)"/>
+        <ellipse cx="450" cy="145" rx="9" ry="20" transform="rotate(360 450 145)"/>
+        <ellipse cx="554.3" cy="163.4" rx="9" ry="20" transform="rotate(380 554.3 163.4)"/>
+        <ellipse cx="646.1" cy="216.4" rx="9" ry="20" transform="rotate(400 646.1 216.4)"/>
+        <ellipse cx="714.1" cy="297.5" rx="9" ry="20" transform="rotate(420 714.1 297.5)"/>
+        <ellipse cx="750.4" cy="397" rx="9" ry="20" transform="rotate(440 750.4 397)"/>
+        </g>
+      </mask>
+    </defs>
+    <rect width="900" height="900" style="fill: var(--carta)" mask="url(#pizzo)"/>
+    <circle cx="450" cy="450" r="282" fill="none" style="stroke: color-mix(in srgb, var(--secondario) 45%, transparent)" stroke-width="2"/>
+  </svg>
+
+  <!-- titolo: 2 righe di 5-10 caratteri -->
+  <h1 class="titolo"><span>Orari</span><span>del forno</span></h1>
+  <!-- orari: 2-3 righe, giorni a sinistra e ore a destra -->
+  <div class="righe">
+    <p class="riga"><span class="giorni">Mar-Ven</span><span class="ore">7:00-19:30</span></p>
+    <p class="riga"><span class="giorni">Sab-Dom</span><span class="ore">7:00-13:00</span></p>
+  </div>
+  <!-- nota: 2-3 parole -->
+  <p class="nota">*Lunedì chiuso</p>
+
+  <!-- logo: il nome del brand con il motto sotto, chiaro sulla foto -->
+  <div class="logo"><b>Forno Merighi</b><i>pane e dolci</i></div>
+</body>
+</html>

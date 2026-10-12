@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .logo { position: absolute; font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; text-align: center; padding: 8px 0; border: 2px solid var(--accento); border-radius: 14px; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+  /* la carta stropicciata del modello: grana leggera sul fondo */
+  .carta { position: absolute; inset: 0; pointer-events: none; opacity: 0.16; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='540' height='540'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='4' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .5 0 0 0 0 .45 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .logo { left: 405px; top: 64px; width: 270px; }
+  .titolo { position: absolute; left: 0; width: 1080px; top: 196px; text-align: center; white-space: nowrap; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 132px; line-height: 1; letter-spacing: -0.03em; }
+  .titolo .corsivo { font-size: 150px; letter-spacing: 0; margin-right: 6px; }
+  .griglia { position: absolute; left: 96px; top: 430px; width: 888px; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .voce { padding: 20px 26px 24px; border-left: 2px solid var(--accento); }
+  .voce:nth-child(3n+1) { border-left: 0; padding-left: 0; }
+  .voce:nth-child(-n+3) { border-bottom: 2px solid var(--accento); }
+  .voce h2 { font-family: var(--font-testo); font-weight: 400; font-size: 30px; line-height: 1.2; margin-bottom: 12px; }
+  .voce p { font-size: 24px; line-height: 1.25; text-align: justify; hyphens: auto; }
+  .foto { position: absolute; left: 0; top: 920px; width: 1080px; height: 430px; object-fit: cover; object-position: 50% 52%; }
+</style>
+</head>
+<body>
+  <div class="carta"></div>
+
+  <!-- logo: il nome del forno in un riquadro arrotondato -->
+  <div class="logo">Forno Rosmarì</div>
+
+  <!-- titolo: una parola in corsivo e una in serif sulla stessa riga -->
+  <h1 class="titolo"><span class="corsivo">Il nostro</span>Menu</h1>
+
+  <!-- voci: 6 prodotti, nome di 1-2 parole e descrizione di 8-12 parole -->
+  <div class="griglia">
+    <div class="voce"><h2>Cornetto</h2><p>Sfoglia al burro con dodici ore di lievitazione.</p></div>
+    <div class="voce"><h2>Pane di Altamura</h2><p>Semola rimacinata e pasta madre, mollica gialla e profumata.</p></div>
+    <div class="voce"><h2>Pain au chocolat</h2><p>Due barrette di fondente dentro una sfoglia friabile.</p></div>
+    <div class="voce"><h2>Focaccia</h2><p>Alta e soffice, olio extravergine e sale grosso.</p></div>
+    <div class="voce"><h2>Ciambellone</h2><p>Come quello della nonna, al limone e yogurt.</p></div>
+    <div class="voce"><h2>Taralli</h2><p>Al finocchietto, croccanti, fatti a mano uno a uno.</p></div>
+  </div>
+
+  <!-- foto: un prodotto da forno in primo piano che esce dal bordo in basso -->
+  <img class="foto" src="../esempio/cornetto.jpg" alt="">
+</body>
+</html>

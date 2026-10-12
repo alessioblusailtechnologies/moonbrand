@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; display: block; }
+
+  .scheda { position: absolute; left: 210px; top: 760px; width: 660px; height: 312px; border-radius: 30px; background: var(--sfondo);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--principale) 30%, transparent); }
+  /* Il tondo con la foto piccola sta a cavallo del bordo alto, in un anello del colore della scheda. */
+  .tondo { position: absolute; left: 448px; top: 652px; width: 184px; height: 184px; border-radius: 50%; background: var(--sfondo); padding: 12px; }
+  .tondo img { display: block; width: 160px; height: 160px; border-radius: 50%; object-fit: cover; object-position: 30% 40%; }
+  .titolo { position: absolute; left: 210px; top: 876px; width: 660px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-size: 56px; line-height: 1; letter-spacing: -0.045em; text-transform: uppercase; }
+  .testo { position: absolute; left: 250px; top: 944px; width: 580px; text-align: center; font-size: 31px; line-height: 1.08; letter-spacing: -0.03em; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto da vicinissimo, lucido e dorato, a tutto post -->
+  <img class="foto" src="../esempio/teglia.jpg" alt="">
+
+  <div class="scheda"></div>
+  <!-- tondo: un dettaglio del prodotto, la stessa foto o un'altra, ritagliata nel tondo -->
+  <div class="tondo"><img src="../esempio/cornetti.jpg" alt=""></div>
+  <!-- titolo: la domanda della curiosità, 2-3 parole -->
+  <h2 class="titolo">Lo sapevi?</h2>
+  <!-- testo: la curiosità in 8-14 parole, 2 righe -->
+  <p class="testo">Il lievito madre dà al pane il suo gusto leggermente acidulo.</p>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  body { background: #fff; }
+  .polaroid { position: absolute; left: 300px; top: 232px; width: 490px; height: 580px; background: #fff; padding: 22px 22px 0; transform: rotate(4deg); box-shadow: 0 0 0 2px #e4e4e4, 6px 8px 18px rgba(0,0,0,0.12); }
+  .polaroid img { width: 446px; height: 446px; object-fit: cover; object-position: 40% 50%; display: block; }
+  .polaroid p { margin-top: 38px; text-align: center; font-family: var(--font-titoli); font-weight: 900; font-stretch: 100%; font-size: 23px; letter-spacing: -0.04em; text-transform: uppercase; color: var(--principale); }
+  .titolo { position: absolute; left: 30px; width: 1020px; top: 800px; font-size: 150px; text-transform: uppercase; text-align: center; letter-spacing: -0.05em; line-height: 0.84; transform: rotate(-6deg); color: var(--principale); }
+</style>
+</head>
+<body>
+  <!-- foto: il dolce da prenotare, quadrata, nella polaroid -->
+  <div class="polaroid"><img src="../esempio/vetrina-paste.jpg" alt="">
+    <!-- didascalia: 2-4 parole in maiuscolo, il periodo -->
+    <p>Prenotazioni per dicembre</p>
+  </div>
+
+  <!-- titolo: 2 parole in maiuscolo su due righe, la notizia -->
+  <h1 class="titolo"><span>Preordini</span><span>aperti</span></h1>
+</body>
+</html>

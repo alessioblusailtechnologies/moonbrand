@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Kalam:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #C5752E; --secondario: #865338; --accento: #BE9869; --sfondo: #FDEBD3; }
+  :root { --font-titoli: 'Young Serif', serif; --font-testo: 'Young Serif', serif; }
+  :root {
+    --su-principale: oklch(from var(--principale) clamp(0.22, (0.74 - l) * 1000, 0.95) min(c, 0.05) h);
+    /* la riga tra virgolette: più scura del principale se è chiaro, più chiara se è scuro */
+    --quieto: oklch(from var(--principale) calc(l - 0.3 + clamp(0, (0.5 - l) * 1000, 0.95)) c h);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: #FFFFFF; font-family: var(--font-testo); }
+
+  /* tovaglia a quadretti: righe e colonne del principale trasparenti che si incrociano */
+  .quadretti { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+
+  .pannello { position: absolute; left: 68px; top: 80px; width: 947px; height: 1182px; border-radius: 28px; background: var(--principale); color: var(--su-principale); }
+
+  .titolo { position: absolute; left: 68px; top: 118px; width: 947px; text-align: center; font-family: var(--font-titoli); font-weight: 400;
+    font-size: 262px; line-height: 270px; letter-spacing: -0.01em; white-space: nowrap; color: var(--su-principale); }
+  .mito { position: absolute; left: 68px; top: 390px; width: 947px; text-align: center; font-size: 33px; line-height: 40px; text-transform: uppercase; color: var(--quieto); }
+  .verita { position: absolute; left: 110px; top: 482px; width: 863px; text-align: center; font-family: var(--font-titoli); font-size: 58px; line-height: 74px; color: var(--su-principale); }
+
+  .pane { position: absolute; left: 160px; top: 790px; width: 780px; height: 327px; transform: rotate(-5deg); filter: drop-shadow(0 34px 22px rgb(0 0 0 / 0.22)); }
+  .voglia { position: absolute; left: 120px; top: 752px; font-family: 'Kalam', cursive; font-size: 40px; line-height: 40px; color: var(--su-principale); transform: rotate(-16deg); }
+
+  .consiglio { position: absolute; left: 68px; top: 1205px; width: 947px; text-align: center; font-size: 24px; color: var(--su-principale); }
+</style>
+</head>
+<body>
+  <svg class="quadretti" viewBox="0 0 1080 1350">
+    <defs><pattern id="q" width="150" height="150" patternUnits="userSpaceOnUse" x="-8" y="-6">
+      <rect x="0" y="0" width="150" height="75" style="fill: var(--principale)" fill-opacity="0.6"/>
+      <rect x="0" y="0" width="75" height="150" style="fill: var(--principale)" fill-opacity="0.6"/>
+    </pattern></defs>
+    <rect width="1080" height="1350" fill="url(#q)"/>
+  </svg>
+
+  <div class="pannello"></div>
+
+  <!-- titolo: una parola sola con i due punti -->
+  <h1 class="titolo">MITO:</h1>
+
+  <!-- mito: la convinzione sbagliata tra virgolette, 5-8 parole -->
+  <p class="mito">«Il pane fresco deve essere morbido.»</p>
+
+  <!-- verità: la risposta che smonta il mito, 9-14 parole su tre righe -->
+  <p class="verita">VERITÀ: un buon pane ha la crosta croccante e la mollica umida ed elastica.</p>
+
+  <!-- foto: il prodotto scontornato (foto su fondo chiaro e la sua maschera -maschera.jpg, bianco = prodotto), inclinato, con l'ombra -->
+  <svg class="pane" viewBox="0 0 1206 506"><mask id="m-filone"><image href="../esempio/filone-maschera.jpg" width="1206" height="506"/></mask><image href="../esempio/filone.jpg" width="1206" height="506" mask="url(#m-filone)"/></svg>
+
+  <!-- scritta a mano: 2-3 parole, accanto alla foto -->
+  <p class="voglia">Voglia<br>di pane!</p>
+
+  <!-- consiglio: una riga, 10-14 parole -->
+  <p class="consiglio">Più morbido? Conservalo col taglio in giù e scaldalo prima di servirlo.</p>
+</body>
+</html>

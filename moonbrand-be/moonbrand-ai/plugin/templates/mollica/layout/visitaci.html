@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A442F; --secondario: #E2C7AC; --accento: #61432B; --sfondo: #F6F4E7; }
+  :root { --font-titoli: 'EB Garamond', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* Le forme piene in una tinta chiara del secondario: ci stanno sopra testi scuri e foto fuse col multiply. */
+  :root { --tinta: oklch(from var(--secondario) max(l, 0.85) min(c, 0.07) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 60px; top: 150px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 600;
+    font-size: 116px; line-height: 1.08; letter-spacing: 0.01em; }
+
+  /* La metà bassa piena, con un grande angolo tondo in alto a sinistra. */
+  .base { position: absolute; left: 0; top: 700px; width: 1080px; height: 650px; background: var(--tinta); border-top-left-radius: 300px 230px; }
+
+  /* Il prodotto scontornato a cavallo tra sfondo e base. */
+  .foto { position: absolute; left: 250px; top: 520px; width: 580px; height: 610px; object-fit: cover; mix-blend-mode: multiply; }
+
+  .frase { position: absolute; left: 60px; top: 1210px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 54px; line-height: 1; }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 righe di 6-12 caratteri -->
+  <h1 class="titolo">Assaggialo<br>oggi!</h1>
+
+  <div class="base"></div>
+
+  <!-- foto: il prodotto scontornato su fondo bianco, a cavallo tra le due metà -->
+  <img class="foto" src="../esempio/pancarre.jpg" alt="">
+
+  <!-- frase: l'invito, 4-7 parole -->
+  <p class="frase">Passa in forno e prendi il tuo!</p>
+</body>
+</html>

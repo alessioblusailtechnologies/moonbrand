@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testo chiaro sul fondo secondario; se il secondario è molto chiaro diventa una sua versione scura */
+  :root { --chiaro-su-secondario: oklch(from var(--secondario) calc(0.36 + clamp(0, (0.84 - l) * 1000, 1) * 0.6) min(c * 0.5, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--chiaro-su-secondario); font-family: var(--font-testo); }
+
+  .titolo { position: absolute; left: 60px; top: 118px; width: 960px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 104px; line-height: 120px; }
+
+  .voci { position: absolute; left: 145px; top: 446px; width: 860px; list-style: none; }
+  .voci li { display: flex; align-items: center; height: 232px; margin-bottom: 36px; }
+  .voci img { flex: none; width: 432px; height: 232px; object-fit: cover; display: block; }
+  .voci span { flex: 1; text-align: center; padding-left: 20px; font-size: 27px; line-height: 40px; letter-spacing: 0.2em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <!-- titolo: 2 righe da 2-3 parole, il tema della selezione -->
+  <h1 class="titolo">Le dolcezze<br>di stagione</h1>
+
+  <!-- voci: 3 prodotti, ognuno con la sua foto orizzontale e il nome su 2 righe in maiuscolo -->
+  <ul class="voci">
+    <li><img src="../esempio/crostata-frutti.jpg" alt="" style="object-position: 50% 58%;"><span>Crostata ai<br>frutti di bosco</span></li>
+    <li><img src="../esempio/crostata-pesche.jpg" alt="" style="object-position: 50% 30%;"><span>Crostata<br>di pesche</span></li>
+    <li><img src="../esempio/cheesecake.jpg" alt="" style="object-position: 50% 42%;"><span>Cheesecake<br>alle ciliegie</span></li>
+  </ul>
+</body>
+</html>

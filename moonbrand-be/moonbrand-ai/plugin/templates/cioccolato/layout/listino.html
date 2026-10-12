@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  .titolo { position: absolute; left: 96px; top: 150px; font-size: 62px; }
+  table { position: absolute; left: 96px; top: 280px; width: 888px; border-collapse: collapse; font-size: 24px; }
+  th { text-align: left; font-weight: 400; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; padding: 0 0 18px; border-bottom: 1px solid color-mix(in oklab, var(--principale) 25%, transparent); }
+  td { padding: 26px 0 24px; border-bottom: 1px solid color-mix(in oklab, var(--principale) 15%, transparent); }
+  tr:last-child td { border-bottom: 0; }
+  th:nth-child(1), td:nth-child(1) { width: 36%; }
+  th:nth-child(2), td:nth-child(2) { width: 42%; }
+  .nota { position: absolute; left: 96px; top: 624px; font-size: 19px; opacity: 0.65; }
+  .foto { position: absolute; left: 0; top: 700px; width: 1080px; height: 650px; object-position: 50% 62%; }
+</style>
+</head>
+<body>
+  <!-- etichetta: numero e rubrica, 2-4 parole -->
+  <p class="etichetta">05 / Quante fette</p>
+
+  <!-- titolo: 3-6 parole -->
+  <h1 class="titolo">Una guida per la tua torta</h1>
+
+  <!-- tabella: tre righe, tre colonne brevi (misura, piani o prezzo, porzioni) -->
+  <table>
+    <tr><th>Diametro</th><th>Altezza / piani</th><th>Porzioni</th></tr>
+    <tr><td>18 cm</td><td>1 piano, 10 cm</td><td>8-10 fette</td></tr>
+    <tr><td>22 cm</td><td>1 piano, 12 cm</td><td>14-16 fette</td></tr>
+    <tr><td>18 + 26 cm</td><td>2 piani</td><td>30-35 fette</td></tr>
+  </table>
+  <!-- nota: 6-12 parole sulla base del calcolo -->
+  <p class="nota">Calcolate su fette da 100 grammi, tagliate a spicchio.</p>
+
+  <!-- foto: orizzontale a tutta larghezza in basso, il prodotto a sinistra o al centro -->
+  <img class="foto" src="../esempio/torta-caramello.jpg" width="1080" height="650" alt="">
+</body>
+</html>

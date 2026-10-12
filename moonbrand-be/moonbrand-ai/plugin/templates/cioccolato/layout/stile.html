@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #33231C; --secondario: #DED3C1; --accento: #B39572; --sfondo: #F8F0E5; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testi chiari sui fondi scuri e sulle foto; il beige delle slide di mezzo è il secondario schiarito */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --beige: oklch(from var(--secondario) max(l, 0.86) min(c, 0.05) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  img { display: block; object-fit: cover; }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 1.16; letter-spacing: -0.01em; }
+  .etichetta { position: absolute; left: 96px; top: 84px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .piede { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; justify-content: space-between; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .scuro { background: var(--principale); color: var(--chiaro); }
+  .titolo { position: absolute; left: 96px; top: 150px; font-size: 92px; }
+  .sotto { position: absolute; left: 98px; top: 280px; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .foto { position: absolute; left: 0; top: 348px; width: 1080px; height: 704px; object-position: 50% 78%; }
+  .frase { position: absolute; left: 96px; top: 1088px; width: 880px; font-family: var(--font-titoli); font-size: 36px; line-height: 1.25; }
+  .testo { position: absolute; left: 96px; top: 1152px; width: 700px; font-size: 24px; line-height: 1.5; opacity: 0.8; }
+</style>
+</head>
+<body>
+  <!-- etichetta: numero e rubrica, 2-4 parole -->
+  <p class="etichetta">01 / Gli stili</p>
+
+  <!-- titolo: 1 parola, il nome dello stile o del prodotto -->
+  <h1 class="titolo">Essenziale</h1>
+  <!-- sotto: due caratteristiche brevi separate da una barra -->
+  <p class="sotto">Linee pulite / dettagli quieti</p>
+
+  <!-- foto: orizzontale a tutta larghezza, il prodotto piccolo su un piano con molta aria -->
+  <img class="foto" src="../esempio/torta-tavolo.jpg" width="1080" height="704" alt="">
+
+  <!-- frase: 5-8 parole -->
+  <p class="frase">Una superficie liscia, una forma semplice.</p>
+  <!-- testo: 10-18 parole -->
+  <p class="testo">Lascia che un dettaglio guidi tutto: la forma, un colore o un solo frutto.</p>
+
+  <div class="piede">
+    <!-- logo: il nome del brand -->
+    <span class="logo">Pasticceria Olmo</span>
+    <!-- pagina: numero della slide nel carosello -->
+    <span>02 / 07</span>
+  </div>
+</body>
+</html>

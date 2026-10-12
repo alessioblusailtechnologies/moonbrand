@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Arimo:ital,wght@0,400;0,700;1,700&family=Ballet:opsz@16..72&family=Libre+Caslon+Text:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #383330; --secondario: #FDF6EC; --accento: #FFA1DD; --sfondo: #F5F4F2; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  /* il testo sui fondi del brand: bianco se il fondo è scuro, quasi nero se è chiaro; il chiaro sulle foto */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --su-accento: oklch(from var(--accento) clamp(0.25, (0.66 - l) * 1000, 1) 0 0);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 900; font-stretch: 112%; letter-spacing: -0.035em; line-height: 0.92; }
+  .titolo span { display: block; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .profilo { position: absolute; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+  .etichetta { position: absolute; font-size: 20px; letter-spacing: -0.02em; text-transform: uppercase; }
+  body { background: #fff; }
+  .striscia { position: absolute; left: 0; top: 0; width: 315px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; }
+  .verticale { position: absolute; left: 340px; top: 32px; writing-mode: vertical-rl; font-size: 19px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in srgb, var(--principale) 70%, transparent); }
+  .freccia { position: absolute; left: 357px; top: 318px; width: 2px; height: 112px; background: var(--principale); }
+  .freccia::after { content: ''; position: absolute; left: -5px; bottom: 0; border: 6px solid transparent; border-top: 9px solid var(--principale); border-bottom: 0; }
+  .profilo { right: 48px; top: 32px; width: 268px; height: 54px; border: 2px solid var(--principale); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-style: italic; font-size: 18px; }
+  .titolo { position: absolute; left: 346px; bottom: 228px; font-size: 118px; line-height: 0.9; }
+  .testo { position: absolute; left: 348px; right: 48px; top: 1140px; font-size: 21px; line-height: 1.24; text-align: justify; hyphens: auto; color: color-mix(in srgb, var(--principale) 75%, transparent); }
+</style>
+</head>
+<body>
+  <!-- foto: un dettaglio dell'impasto o del prodotto, in una striscia alta a sinistra -->
+  <img class="striscia" src="../esempio/biscotti.jpg" alt="">
+
+  <!-- verticale: il titolo ripetuto, 2-3 parole -->
+  <p class="verticale">Il nostro metodo</p>
+  <div class="freccia"></div>
+
+  <!-- profilo: il profilo social del brand -->
+  <p class="profilo">@fornomaddalena</p>
+
+  <!-- titolo: 2-3 parole su due righe -->
+  <h1 class="titolo"><span>Il nostro</span><span>metodo</span></h1>
+
+  <!-- testo: come lavora il forno, 45-60 parole -->
+  <p class="testo">Lievito madre rinfrescato ogni mattina, farine macinate a pietra da un mulino della provincia e burro vero. Seguiamo le stagioni: castagne e zucca in autunno, agrumi in inverno, frutta fresca d'estate. Ogni impasto riposa almeno ventiquattro ore, perché un buon cornetto si sente già dal profumo.</p>
+</body>
+</html>

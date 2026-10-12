@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght,YTLC,YTUC@8..144,25..151,100..1000,416..570,528..760&family=Libre+Caslon+Text:ital@1&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A1B14; --secondario: #4A3226; --accento: #E2A94F; --sfondo: #F3EEE6; }
+  :root { --font-titoli: 'Roboto Flex', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo chiaro sui fondi scuri: lo sfondo del brand, schiarito se è scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 0; width: 1080px; top: 50px; text-align: center; font-size: 19px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-stretch: 25%; font-weight: 560; font-variation-settings: 'opsz' 144, 'YTLC' 570, 'YTUC' 760;
+    letter-spacing: -0.01em; line-height: 0.8; white-space: nowrap; }
+  .corsivo { font-family: 'Libre Caslon Text', serif; font-style: italic; }
+  .filetto { position: absolute; height: 2px; background: currentColor; opacity: 0.55; }
+  .profilo { position: absolute; left: 0; width: 1080px; bottom: 44px; text-align: center; font-size: 21px; font-weight: 600; letter-spacing: 0.12em; }
+  /* la foto del prodotto su fondo uniforme, chiaro (.chiaro) o nero (.scuro): il filtro toglie il fondo e il dolce passa davanti al titolo */
+  .chiaro { filter: url(#chiaro); }
+  .scuro { filter: url(#scuro); }
+  .ritaglio { position: absolute; overflow: hidden; }
+  .ritaglio img { position: absolute; display: block; }
+
+  body { background: var(--principale); color: var(--chiaro); }
+  .titolo { left: 0; width: 1080px; text-align: center; font-size: 390px; font-weight: 520; text-transform: uppercase; letter-spacing: -0.02em; }
+  .r1 { top: 112px; }
+  .r2 { top: 437px; }
+  .r3 { top: 762px; }
+  /* il taglio segue il bordo alto della fetta e lascia fuori il piatto */
+  .ritaglio { left: 240px; top: 530px; width: 840px; height: 820px; clip-path: polygon(0 170px, 240px 70px, 320px 30px, 630px 160px, 700px 230px, 840px 230px, 840px 820px, 0 820px); }
+  .ritaglio img { left: -128px; top: -452px; width: 1072px; height: 1608px; }
+  .nota { position: absolute; left: 90px; top: 1150px; width: 300px; font-size: 32px; line-height: 1.25; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute">
+    <filter id="chiaro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  7.33 -2.67 -12.67 0 5.8"/></filter>
+    <filter id="scuro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.33 1.33 1.33 0 -0.5"/></filter>
+  </svg>
+
+  <!-- logo: il nome del brand -->
+  <div class="testata logo">Pasticceria Bruna</div>
+
+  <!-- titolo: una parola (il gusto o il dolce) ripetuta su 3 righe -->
+  <div class="titolo r1" data-max="1020">Cioccolato</div>
+  <div class="titolo r2" data-max="1020">Cioccolato</div>
+  <div class="titolo r3" data-max="1020">Cioccolato</div>
+
+  <!-- foto: una fetta su fondo chiaro uniforme, in basso a destra sopra l'ultima riga -->
+  <div class="ritaglio"><img class="chiaro" src="../esempio/fetta-cioccolato.jpg" alt=""></div>
+
+  <!-- nota: 4-6 parole in corsivo -->
+  <p class="nota corsivo">Per chi ama il cioccolato</p>
+  <!-- profilo: il profilo social del brand -->
+  <div class="profilo">@pasticceriabruna</div>
+  <script>
+    // Con un font del brand più largo, ogni riga del titolo si rimpicciolisce finché sta nella sua misura (data-max, in px)
+    // e scende di metà della differenza, così il blocco del titolo resta al suo posto.
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = ''; el.style.marginTop = '';
+        const base = parseFloat(getComputedStyle(el).fontSize);
+        const range = document.createRange(); range.selectNodeContents(el);
+        const larga = range.getBoundingClientRect().width;
+        const max = Number(el.dataset.max);
+        if (larga > max) { const size = Math.floor(base * max / larga); el.style.fontSize = `${size}px`; el.style.marginTop = `${(base - size) * 0.4}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

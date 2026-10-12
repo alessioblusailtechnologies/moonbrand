@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Gochi+Hand&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #FEFFF1; --secondario: #7B3F20; --accento: #8C7563; --sfondo: #A59A90; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Gochi Hand', cursive; }
+  /* chiaro: i testi chiari sulle foto; carta: i fogli (la tinta dello sfondo molto schiarita) */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --carta: oklch(from var(--sfondo) max(l, 0.95) min(c, 0.025) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .grana { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; opacity: 0.22; mix-blend-mode: soft-light;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018' numOctaves='5' seed='7'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.86; letter-spacing: -0.01em; }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  .scontornato { position: absolute; overflow: visible; }
+  .logo { position: absolute; display: flex; flex-direction: column; align-items: center; width: 300px; }
+  .logo .segno { width: 172px; height: 96px; margin-bottom: -6px; }
+  .logo .nome { font-family: var(--font-titoli); font-size: 92px; line-height: 0.82; letter-spacing: -0.01em; }
+  .logo .motto { font-size: 19px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px; }
+  .piede { position: absolute; top: 1284px; font-size: 36px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.02em; white-space: nowrap; }
+  .piede.sx { left: 46px; }
+  .piede.dx { right: 46px; }
+  .sopra { position: absolute; left: 150px; top: 452px; font-size: 76px; font-weight: 400; color: var(--chiaro); }
+  .titolo { position: absolute; left: 110px; top: 528px; font-size: 222px; line-height: 0.88; color: var(--chiaro); }
+  .titolo span { display: block; }
+  .logo, .piede { color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto da vicinissimo, come una trama, riempie il post -->
+  <img class="foto" src="../esempio/cornetti.jpg" alt="" style="left: 0; top: 0; width: 1080px; height: 1350px; object-position: center 40%; filter: brightness(0.7);">
+
+  <!-- sopra: 2-3 parole a mano sopra il titolo -->
+  <p class="sopra">da noi trovi</p>
+  <!-- titolo: il prodotto su due righe, 4-7 lettere per riga, la seconda rientrata -->
+  <h1 class="titolo"><span>brioche</span><span style="padding-left: 190px;">calde!</span></h1>
+
+  <!-- logo: il segno e il nome del brand con la riga sotto; se il brand ha il file del logo va qui al posto di tutto il blocco -->
+  <div class="logo" style="left: 390px; top: 1104px;"><svg class="segno" viewBox="-14 -20 208 124" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><g transform="rotate(-12 90 42)"><path d="M12 52 C6 30 40 13 92 11 C142 9 173 22 170 41 C167 61 131 72 86 72 C46 72 16 66 12 52 Z"/><path d="M46 25 C57 32 65 42 69 54"/><path d="M80 20 C90 28 98 38 102 50"/><path d="M113 20 C123 28 130 37 133 48"/><path d="M150 46 l1 1 M157 40 l1 1 M159 50 l1 1 M146 54 l1 1"/></g></svg><span class="nome">briosa</span><span class="motto">panetteria &amp; pasticceria</span></div>
+
+  <!-- piede: indirizzo a sinistra, sito a destra, in maiuscolo -->
+  <p class="piede sx">Via dei Mille 18</p>
+  <p class="piede dx">www.briosa.it</p>
+</body>
+</html>

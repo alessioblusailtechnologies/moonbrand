@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wdth,wght@62.5..100,100..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #820A0B; --secondario: #E3E2DD; --accento: #F8E8D0; --sfondo: #F5F4F0; }
+  :root { --font-titoli: 'Noto Serif', serif; --font-testo: 'Archivo', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .grana { position: absolute; inset: 0; width: 1080px; height: 1350px; opacity: 0.22; mix-blend-mode: multiply; }
+
+  .angolo { position: absolute; font-family: var(--font-testo); font-size: 19px; font-weight: 400; font-stretch: 80%; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; }
+  .su { top: 114px; } .giu { top: 1218px; }
+  .sx { left: 112px; } .dx { right: 112px; }
+
+  .polaroid { position: absolute; left: 322px; top: 316px; width: 432px; height: 462px; padding: 24px 24px 82px; background: #FDFDFB; transform: rotate(-3.5deg); }
+  .polaroid img { display: block; width: 384px; height: 356px; object-fit: cover; }
+  .molla { position: absolute; left: 50%; top: -42px; width: 168px; height: 54px; transform: translateX(-50%); }
+  .molla .lama { position: absolute; left: 0; bottom: 0; width: 168px; height: 22px; background: linear-gradient(#D9DADC, #9B9DA1 60%, #C7C8CB); border-radius: 3px; }
+  .molla .testa { position: absolute; left: 58px; top: 0; width: 52px; height: 40px; background: linear-gradient(90deg, #A9ABAF, #E2E3E5 45%, #9EA0A4); border-radius: 10px 10px 2px 2px; }
+  .molla .testa::after { content: ''; position: absolute; left: 20px; top: 9px; width: 12px; height: 12px; border-radius: 50%; background: var(--principale); }
+
+  .titolo { position: absolute; left: 0; top: 776px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-stretch: 62.5%; font-size: 158px; line-height: 0.8; letter-spacing: -0.02em; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <svg class="grana" viewBox="0 0 1080 1350" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1080" height="1350" filter="url(#g)"/></svg>
+
+  <!-- angoli: in alto il profilo e la data, in basso due inviti brevi (2-3 parole) -->
+  <p class="angolo su sx">@fornogelsomino</p>
+  <p class="angolo su dx">12 ottobre</p>
+
+  <!-- foto: una foto vera di un dolce da vicino, nella polaroid appesa alla molla -->
+  <div class="polaroid">
+    <div class="molla"><span class="lama"></span><span class="testa"></span></div>
+    <img src="../esempio/torta-frutti.jpg" alt="">
+  </div>
+
+  <!-- titolo: 2 parole in maiuscolo, una per riga, 6-9 caratteri l'una -->
+  <h1 class="titolo" data-max="900">Ordini<br>speciali</h1>
+
+  <p class="angolo giu sx">Guarda il listino</p>
+  <p class="angolo giu dx">Vieni a trovarci</p>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        const max = Number(el.dataset.max);
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return Math.max(0, ...[...r.getClientRects()].map((q) => q.width)); };
+        while (larghezza() > max && size > 24) { size -= 2; el.style.fontSize = size + 'px'; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

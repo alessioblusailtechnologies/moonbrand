@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 40%; display: block; }
+  /* velo quasi pieno del principale scurito: la foto si intuisce appena */
+  .velo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; background: color-mix(in oklab, var(--principale) 42%, black); opacity: 0.74; }
+
+  .cornice { position: absolute; left: 161px; top: 270px; width: 758px; height: 878px; border: 2px solid color-mix(in srgb, var(--chiaro) 80%, transparent); }
+
+  .etichetta { position: absolute; left: 350px; top: 441px; width: 380px; height: 76px; display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--secondario) 25%, var(--sfondo)); color: var(--principale); font-size: 26px; letter-spacing: 0.2em; text-transform: uppercase; }
+
+  .testo { position: absolute; left: 230px; top: 664px; width: 620px; text-align: center; font-size: 28px; line-height: 44px; letter-spacing: 0.15em; text-transform: uppercase; }
+  .testo strong { font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- foto: il forno o il banco, scura; resta sotto il velo e si intuisce appena -->
+  <img class="foto" src="../esempio/forno-biscotti.jpg" alt="">
+  <div class="velo"></div>
+
+  <div class="cornice"></div>
+
+  <!-- etichetta: il nome della rubrica, 1-2 parole e i due punti -->
+  <p class="etichetta">Il consiglio:</p>
+
+  <!-- testo: il consiglio in 20-30 parole in maiuscolo, con 2-4 parole chiave in grassetto -->
+  <p class="testo">Per tenere il pane <strong>fresco più a lungo</strong> mettilo in un <strong>sacchetto di carta</strong> a <strong>temperatura ambiente</strong>. Niente frigo: lo secca.</p>
+</body>
+</html>

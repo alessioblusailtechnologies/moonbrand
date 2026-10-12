@@ -1,0 +1,12 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License).
+I file -maschera.jpg sono le sagome dei prodotti scontornati, ricavate dalle foto stesse.
+
+impasto.jpg                         https://www.pexels.com/photo/6287287/
+pagnotta.jpg                        https://www.pexels.com/photo/7175447/
+farina.jpg                          https://www.pexels.com/photo/784632/
+cornetti.jpg                        https://www.pexels.com/photo/10281101/
+pane.jpg                            https://www.pexels.com/photo/27418959/
+girella.jpg, girella-maschera.jpg   https://www.pexels.com/photo/8588846/
+brownie.jpg, brownie-maschera.jpg   https://www.pexels.com/photo/5386676/
+caffe-freddo.jpg (+ maschera)       https://www.pexels.com/photo/16785688/
+cornetto.jpg, cioccolato.jpg, mandorle.jpg (+ maschere)  https://www.pexels.com/photo/4828319/

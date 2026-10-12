@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E3F31; --secondario: #A8957E; --accento: #C4532F; --sfondo: #E8E1D7; }
+  :root { --font-titoli: 'Gelasio', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 45%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --corsivo: 'Sacramento', cursive; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 42% 50%; filter: brightness(.8); }
+  .etichetta { position: absolute; left: 0; top: 58px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--chiaro); }
+  .etichetta::after { content: ""; display: block; width: 10px; height: 2px; margin: 8px auto 0; background: currentColor; }
+
+  .carta { position: absolute; left: 246px; top: 228px; width: 588px; height: 388px; background: var(--carta); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+  .logo { position: absolute; left: 0; top: 128px; width: 588px; text-align: center; color: var(--accento); }
+  .logo b { display: block; font-family: var(--font-titoli); font-weight: 500; font-size: 52px; line-height: 56px; letter-spacing: .02em; text-transform: uppercase; }
+  .logo i { display: block; font-family: var(--corsivo); font-style: normal; font-size: 48px; line-height: 1; }
+
+  .rosso { position: absolute; left: 246px; top: 622px; width: 588px; height: 384px; background: var(--accento); color: var(--chiaro); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+  .profilo { position: absolute; left: 0; top: 34px; width: 588px; text-align: center; font-size: 18px; letter-spacing: .12em; text-transform: uppercase; }
+  .frase { position: absolute; left: 0; top: 104px; width: 588px; text-align: center; font-family: var(--corsivo); font-size: 64px; line-height: 64px; -webkit-text-stroke: 1px var(--chiaro); transform: rotate(-6deg); }
+  .frase span { display: block; }
+  .indirizzo { position: absolute; left: 0; top: 278px; width: 588px; text-align: center; font-size: 18px; line-height: 23px; letter-spacing: .06em; text-transform: uppercase; }
+
+  .firma { position: absolute; left: 0; top: 1262px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--chiaro); }
+  .firma::before { content: ""; display: block; width: 10px; height: 2px; margin: 0 auto 8px; background: currentColor; }
+</style>
+</head>
+<body>
+  <!-- foto: pane da vicino con carta o telo, toni scuri e caldi -->
+  <img class="foto" src="../esempio/pane-semi.jpg" alt="">
+  <!-- etichetta: 2-3 parole -->
+  <p class="etichetta">Cosa facciamo</p>
+
+  <!-- biglietto chiaro: solo il logo -->
+  <div class="carta">
+    <!-- logo: il nome del brand con il motto sotto -->
+    <div class="logo"><b>Forno Merighi</b><i>pane e dolci</i></div>
+  </div>
+
+  <!-- biglietto pieno: profilo, una frase in corsivo, indirizzo e telefono -->
+  <div class="rosso">
+    <p class="profilo">@forno.merighi</p>
+    <!-- frase: 4-7 parole in 2 righe -->
+    <p class="frase"><span>Poche teglie,</span><span>fatte per dividere.</span></p>
+    <!-- indirizzo: via, città, telefono -->
+    <p class="indirizzo">Via San Vitale 41, Bologna<br>051 234 5678</p>
+  </div>
+
+  <!-- firma: il profilo del brand -->
+  <p class="firma">@forno.merighi</p>
+</body>
+</html>

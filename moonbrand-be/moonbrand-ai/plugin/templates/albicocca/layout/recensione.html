@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,700;1,400&family=Arimo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'IBM Plex Mono', monospace; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); font-family: var(--font-testo); }
+
+  .stella { position: absolute; width: 36px; height: 36px; fill: var(--principale); }
+  .linea { position: absolute; left: 130px; top: 44px; width: 790px; height: 3px; background: var(--principale); }
+
+  .titolo { position: absolute; left: 0; top: 72px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 126px; line-height: 124px; letter-spacing: -0.02em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .disegno { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .macchia { fill: var(--accento); }
+  .fumetto { fill: var(--principale); }
+
+  .sagoma { position: absolute; left: 122px; top: 40px; width: 820px; height: 820px; background: var(--sfondo);
+    clip-path: polygon(26% 57%, 27% 56%, 30% 51%, 35% 43%, 39% 38%, 50% 34%, 52% 34%, 54% 35%, 56% 37%, 69% 54%, 70% 57%, 71% 58%, 71% 67%, 70% 70%, 69% 75%, 69% 76%, 68% 78%, 66% 79%, 64% 81%, 61% 81%, 57% 82%, 35% 82%, 29% 81%, 28% 80%, 28% 79%, 27% 77%, 26% 58%); }
+  .dolce { position: absolute; left: 122px; top: 40px; width: 820px; height: 820px; object-fit: cover; mix-blend-mode: multiply; }
+
+  .nome { position: absolute; left: 6px; top: 470px; width: 250px; height: 160px; border-radius: 50%; transform: rotate(-12deg); background: var(--accento); border: 3px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--font-titoli); font-style: italic; font-size: 28px; line-height: 34px; text-transform: uppercase; color: color-mix(in srgb, var(--secondario) 60%, #000000); }
+  .nome span { transform: rotate(12deg); }
+
+  .voto { position: absolute; left: 0; top: 884px; width: 1080px; display: flex; justify-content: center; gap: 14px; }
+  .voto svg { width: 46px; height: 44px; fill: var(--accento); }
+  .frase { position: absolute; left: 200px; top: 970px; width: 680px; text-align: center; font-size: 28px; line-height: 42px; color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  .firma { position: absolute; left: 0; top: 1118px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 700; font-size: 28px; color: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol>
+    <symbol id="voto" viewBox="0 0 24 23"><path d="M12 0L15.1 7.6L23.4 8.3L17.1 13.7L19 21.8L12 17.5L5 21.8L6.9 13.7L0.6 8.3L8.9 7.6Z"/></symbol>
+  </defs></svg>
+
+  <div class="linea"></div>
+  <svg class="stella" style="left:66px;top:28px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:966px;top:28px"><use href="#stella"/></svg>
+
+  <!-- titolo: 2 righe di 7-10 caratteri -->
+  <h1 class="titolo"><span>Parola ai</span><span>clienti</span></h1>
+
+  <svg class="disegno" viewBox="0 0 1080 1350">
+    <ellipse class="macchia" cx="470" cy="716" rx="350" ry="96"/>
+    <path class="fumetto" d="M452 828C740 826 960 900 958 1030C956 1150 740 1222 482 1222C210 1222 44 1150 44 1024C44 920 190 846 452 828ZM700 836L782 724L800 870Z"/>
+  </svg>
+
+  <!-- foto: il dolce della recensione scontornato su fondo bianco (si fonde con lo sfondo), appoggiato sulla macchia; la sagoma dietro segue il contorno -->
+  <div class="sagoma"></div>
+  <img class="dolce" src="../esempio/cupcake.jpg" alt="">
+
+  <!-- nome: il prodotto recensito, 2 righe brevi -->
+  <p class="nome"><span>Cupcake<br>alla carota</span></p>
+
+  <svg class="stella" style="left:106px;top:370px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:860px;top:370px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:106px;top:806px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:880px;top:806px"><use href="#stella"/></svg>
+  <svg class="stella" style="left:106px;top:1240px"><use href="#stella"/></svg>
+
+  <!-- voto: cinque stelle -->
+  <div class="voto"><svg><use href="#voto"/></svg><svg><use href="#voto"/></svg><svg><use href="#voto"/></svg><svg><use href="#voto"/></svg><svg><use href="#voto"/></svg></div>
+  <!-- frase: la recensione, 16-24 parole su 3 righe -->
+  <p class="frase">«Il cupcake alla carota è una delizia, soffice e profumato. Il più buono che ho mangiato in città.»</p>
+  <!-- firma: il profilo di chi scrive -->
+  <p class="firma">@giulia.bassi</p>
+</body>
+</html>

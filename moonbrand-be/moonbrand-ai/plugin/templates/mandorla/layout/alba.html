@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* testo sul fondo secondario: una sua versione scura se il secondario è chiaro, quasi bianca se è scuro */
+  :root { --su-secondario: oklch(from var(--secondario) calc(0.38 + clamp(0, (0.68 - l) * 1000, 1) * 0.58) min(c * 0.8, 0.08) h);
+          --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--su-secondario); font-family: var(--font-testo); }
+
+  /* carta stropicciata sul fondo pieno */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; mix-blend-mode: soft-light; opacity: 1; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 392px; height: 1350px; object-fit: cover; object-position: 30% 50%; display: block; }
+
+  /* etichetta, titolo e orari uno sotto l'altro: se il titolo va a capo una volta in più, gli orari scendono */
+  .colonna { position: absolute; left: 522px; top: 186px; width: 530px; }
+  .etichetta { font-size: 25px; line-height: 30px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .titolo { margin: 46px 0 0 -4px; font-family: var(--font-titoli); font-weight: 400; font-size: 108px; line-height: 114px; }
+
+  .orari { margin-top: 76px; list-style: none; }
+  .orari li { display: flex; align-items: center; gap: 32px; height: 86px; margin-bottom: 48px; }
+  .orari li:last-child { margin-bottom: 0; }
+  .ora { flex: none; width: 250px; height: 86px; display: flex; align-items: center; justify-content: center; background: var(--principale); color: var(--chiaro); font-size: 30px; letter-spacing: 0.1em; }
+  .cosa { font-size: 28px; line-height: 40px; letter-spacing: 0.16em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <svg class="carta" width="1080" height="1350"><filter id="carta" x="0" y="0" width="100%" height="100%"><feTurbulence type="turbulence" baseFrequency="0.004 0.006" numOctaves="6" seed="11"/><feDiffuseLighting lighting-color="#9B9B9B" surfaceScale="10"><feDistantLight azimuth="235" elevation="55"/></feDiffuseLighting></filter><rect width="1080" height="1350" filter="url(#carta)"/></svg>
+
+  <!-- foto: verticale a sinistra, il laboratorio o una finestra all'alba, luce calda -->
+  <img class="foto" src="../esempio/alba.jpg" alt="">
+
+  <div class="colonna">
+  <!-- etichetta: 2-3 parole in maiuscolo, la rubrica -->
+  <p class="etichetta">Dietro le quinte</p>
+
+  <!-- titolo: 3 righe di una o due parole -->
+  <h1 class="titolo">Si impasta<br>prima<br>dell'alba</h1>
+
+  <!-- orari: 4 righe, l'ora nel riquadro e cosa succede in 1-3 parole su una o due righe -->
+  <ul class="orari">
+    <li><span class="ora">3:00</span><span class="cosa">L'impasto</span></li>
+    <li><span class="ora">4:00</span><span class="cosa">Il pane<br>lievita</span></li>
+    <li><span class="ora">6:00</span><span class="cosa">In forno<br>i cornetti</span></li>
+    <li><span class="ora">7:00</span><span class="cosa">Si apre<br>la porta</span></li>
+  </ul>
+  </div>
+</body>
+</html>

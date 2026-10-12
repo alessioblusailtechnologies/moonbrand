@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #85564D; --secondario: #B6A18E; --accento: #9C6B5F; --sfondo: #E8E0D8; }
+  :root { --font-titoli: 'Libre Baskerville', serif; --font-testo: 'Libre Baskerville', serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .parole { position: absolute; left: 0; top: 22px; width: 1080px; height: 1215px; overflow: hidden; }
+  /* La parola sta in --parola (nello style del blocco) e si ripete tre volte per riga, tagliata ai bordi come nel modello. */
+  .parole i { display: block; height: 101px; margin-left: -6px; font-style: normal; font-family: var(--font-titoli); font-size: 86px; line-height: 101px; letter-spacing: 0.1em; color: var(--secondario); text-transform: uppercase; white-space: nowrap; }
+  .parole i:nth-child(even) { margin-left: -46px; }
+  .parole i::before { content: var(--parola) ' ' var(--parola) ' ' var(--parola); }
+  .cerchio { position: absolute; left: 175px; top: 265px; width: 730px; height: 730px; border-radius: 50%; object-fit: cover; }
+  .piede { position: absolute; left: 0; top: 1270px; width: 1080px; text-align: center; font-size: 24px; letter-spacing: 0.12em; }
+</style>
+</head>
+<body>
+  <!-- parola ripetuta: una parola di 4-6 lettere legata all'attività, da scrivere in --parola; il CSS la ripete su ogni riga -->
+  <div class="parole" style="--parola: 'Forno'" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <!-- foto: un prodotto da vicino nel cerchio al centro -->
+  <img class="cerchio" src="../esempio/cupcake-rosa.jpg" alt="">
+
+  <!-- piede: sito, profilo e telefono separati da barrette -->
+  <p class="piede">www.pasticceriagemma.it | @pasticceriagemma | 051 234 5678</p>
+</body>
+</html>

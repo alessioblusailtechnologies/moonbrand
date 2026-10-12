@@ -1,0 +1,12 @@
+Foto d'esempio, licenza gratuita (Pexels License), scaricate a 1600 px:
+
+biscotti-pila.jpg     copertina    https://www.pexels.com/photo/5436475/   (pila di biscotti al cioccolato su fondo scuro)
+cupcake-rosa.jpg      orari        https://www.pexels.com/photo/11073467/  (cupcake con crema rosa)
+cupcake-bianco.jpg    preferiti    https://www.pexels.com/photo/1055271/   (cupcake alla vaniglia su fondo bianco)
+cupcake-cacao.jpg     preferiti    https://www.pexels.com/photo/635409/    (cupcake con crema al cacao)
+cupcake-lamponi.jpg   preferiti    https://www.pexels.com/photo/8874015/   (cupcake con crema rossa e rosa)
+cupcake-fragola.jpg   preferiti    https://www.pexels.com/photo/7966061/   (tortino con panna e fragola)
+fornaia.jpg           fornaia      https://www.pexels.com/photo/8349713/   (fornaia in grembiule con una teglia)
+biscotti-teglia.jpg   recensione   https://www.pexels.com/photo/17701796/  (biscotti visti dall'alto su fondo chiaro)
+biscotti-torre.jpg    offerta      https://www.pexels.com/photo/14839146/  (torre di biscotti su fondo rosato)
+ciambella.jpg         gusto        https://www.pexels.com/photo/30648990/  (ciambella glassata con codette vista dall'alto)

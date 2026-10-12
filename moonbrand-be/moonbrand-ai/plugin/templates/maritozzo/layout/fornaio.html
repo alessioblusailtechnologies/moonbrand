@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #D7452C; --secondario: #2B2826; --accento: #D7452C; --sfondo: #F3EADB; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* carta vera con la piega, tinta dallo sfondo del brand */
+  .carta { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; mix-blend-mode: multiply; opacity: 0.55; filter: grayscale(1) contrast(1.15) brightness(1.08); }
+  .piega { position: absolute; left: 0; right: 0; top: 700px; height: 2px; background: rgba(0, 0, 0, 0.07); box-shadow: 0 2px 0 rgba(255, 255, 255, 0.45); }
+  .piega.verticale { left: 540px; right: auto; top: 0; bottom: 0; width: 2px; height: auto; box-shadow: 2px 0 0 rgba(255, 255, 255, 0.45); }
+  .sopra { position: absolute; left: 0; right: 0; top: 220px; text-align: center; font-size: 38px; font-weight: 700; text-transform: uppercase; }
+  /* il nome enorme, la foto lo copre in basso */
+  .titolo { position: absolute; left: 20px; right: 20px; top: 270px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 250px; line-height: 1; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+  .foto { position: absolute; left: 304px; top: 452px; width: 488px; height: 560px; object-fit: cover; object-position: 50% 25%; display: block; border: 1.5px solid var(--secondario); }
+  .scorri { position: absolute; left: 304px; top: 1040px; font-size: 28px; font-weight: 700; text-transform: uppercase; }
+  .freccia { position: absolute; left: 708px; top: 1060px; width: 90px; height: 90px; }
+  .asterisco { position: absolute; left: 504px; top: 1150px; width: 72px; height: 72px; }
+</style>
+</head>
+<body>
+  <img class="carta" src="../esempio/carta.jpg" alt="">
+  <div class="piega"></div>
+  <div class="piega verticale"></div>
+
+  <!-- sopra: 2-4 parole, chi presentiamo -->
+  <p class="sopra">Conosci la pasticcera</p>
+  <!-- titolo: il nome, 5-7 lettere -->
+  <h1 class="titolo" data-max="1040"><span>Giulia</span></h1>
+  <img class="foto" src="../esempio/pasticciera.jpg" alt="">
+
+  <!-- scorri: 3-4 parole che invitano a scorrere -->
+  <p class="scorri">Scorri e scopri</p>
+  <svg class="freccia" viewBox="0 0 90 90" fill="none" stroke="var(--accento)" stroke-width="2.5"><circle cx="45" cy="45" r="42"/><path d="M30 45h30M50 35l10 10-10 10"/></svg>
+  <svg class="asterisco" viewBox="0 0 72 72" fill="var(--accento)"><g transform="translate(36 36)"><rect x="-5" y="-34" width="10" height="68" rx="5"/><rect x="-5" y="-34" width="10" height="68" rx="5" transform="rotate(60)"/><rect x="-5" y="-34" width="10" height="68" rx="5" transform="rotate(-60)"/></g></svg>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => Math.max(0, ...[...el.children].map((c) => {
+          const r = document.createRange();
+          r.selectNodeContents(c);
+          return r.getBoundingClientRect().width;
+        }));
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

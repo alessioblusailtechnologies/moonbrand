@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3E2116; --secondario: #7B4325; --accento: #A8673E; --sfondo: #F6ECE3; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Josefin Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .sopra { position: absolute; left: 0; top: 104px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 84px; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; }
+  .titolo { position: absolute; left: 0; top: 178px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 500; font-size: 230px; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+
+  .foto { position: absolute; left: 124px; top: 470px; width: 832px; height: 600px; object-fit: cover; object-position: 50% 60%; display: block; }
+
+  .riga { position: absolute; left: 0; width: 1080px; text-align: center; text-transform: uppercase; }
+  .riga.orari { top: 1124px; font-size: 40px; font-weight: 600; letter-spacing: 0.08em; }
+  .riga.indirizzo { top: 1188px; font-size: 34px; letter-spacing: 0.08em; color: color-mix(in srgb, var(--principale) 85%, transparent); }
+</style>
+</head>
+<body>
+  <!-- sopra: 1-2 parole che preparano il titolo -->
+  <p class="sopra">Siamo</p>
+  <!-- titolo: una parola grandissima, 5-7 lettere -->
+  <h1 class="titolo">Aperti</h1>
+
+  <!-- foto: il negozio, il banco o la vetrina, rettangolo con i margini -->
+  <img class="foto" src="../esempio/vetrina.jpg" alt="">
+
+  <!-- orari: giorni e ore su una riga -->
+  <p class="riga orari">Lun - dom | 7:00 - 20:00</p>
+  <!-- indirizzo: via, numero e città -->
+  <p class="riga indirizzo">Via San Felice 24, Bologna</p>
+</body>
+</html>

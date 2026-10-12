@@ -1,0 +1,14 @@
+Foto d'esempio, licenza gratuita (Unsplash License):
+
+banco.jpg      Unsplash, foto 6Hr_GUI8dN0 (cornetti in primo piano, finestra sfocata dietro)
+               https://unsplash.com/photos/6Hr_GUI8dN0
+biscotti.jpg   Unsplash, foto P4EtUOqkKfc (biscotti con gocce di cioccolato dall'alto, fondo chiaro)
+               https://unsplash.com/photos/P4EtUOqkKfc
+brunch.jpg     Unsplash, foto ESXMLLiZcWU (cornetto farcito con pomodoro, mozzarella e insalata)
+               https://unsplash.com/photos/ESXMLLiZcWU
+cornetti.jpg   Unsplash, foto G45tO-hLoNY (cornetti dorati ammucchiati, da vicino)
+               https://unsplash.com/photos/G45tO-hLoNY
+impasto.jpg    Unsplash, foto 2uiZDQYTHBM (mani che lavorano una palla di impasto sul banco infarinato)
+               https://unsplash.com/photos/2uiZDQYTHBM
+teglia.jpg     Unsplash, foto Qa7sjSpsCjM (cornetti lucidi appena sfornati su una teglia)
+               https://unsplash.com/photos/Qa7sjSpsCjM

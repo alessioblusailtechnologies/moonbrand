@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Anton&family=Montserrat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #57190C; --secondario: #C8926C; --accento: #F7B0C0; --sfondo: #FADDE2; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* tinte derivate: crema (lo sfondo schiarito), chiaro sulle foto e sui fondi scuri */
+  :root { --crema: color-mix(in oklab, var(--sfondo) 32%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    /* tinta: lo sfondo con un velo d'accento, così schede e linguette si vedono anche se lo sfondo del brand è bianco */
+    --tinta: color-mix(in oklab, var(--sfondo) 82%, var(--accento)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; }
+  .corsivo { font-family: 'Sacramento', cursive; font-weight: 400; line-height: 1; }
+  .alto { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; }
+  .spaziato { font-family: var(--font-testo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .smerlo { position: absolute; display: block; }
+  .disegni { position: absolute; inset: 0; background: var(--principale); opacity: 0.07;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px; }
+  .logo { font-family: var(--font-titoli); color: var(--principale); text-align: center; line-height: 0.9; }
+
+
+  body { background: var(--crema); }
+  .segnalibro { position: absolute; left: 470px; top: 0; width: 140px; height: 200px; background: var(--principale); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+  .biscotto { position: absolute; left: 495px; top: 40px; width: 90px; height: 90px; }
+  .scheda { position: absolute; left: 110px; top: 400px; width: 860px; height: 520px; background: white; border-radius: 22px; }
+  .linguetta { position: absolute; left: 230px; top: 316px; width: 620px; white-space: nowrap; height: 124px; background: var(--tinta); border-radius: 22px 22px 0 0;
+    display: flex; align-items: center; justify-content: center; }
+  .titolo { font-size: 84px; padding-top: 6px; }
+  .stelle { position: absolute; left: 0; width: 1080px; top: 470px; text-align: center; color: var(--accento); font-size: 62px; letter-spacing: 0.18em; }
+  .testo { position: absolute; left: 220px; width: 640px; top: 580px; text-align: center; font-size: 30px; line-height: 1.6; font-weight: 500; }
+  .tondo { position: absolute; left: 820px; top: 820px; width: 230px; height: 230px; border-radius: 50%; object-fit: cover; }
+  .acquisto { position: absolute; left: 340px; width: 400px; top: 1090px; height: 58px; background: var(--principale); color: var(--crema); border-radius: 14px 14px 0 0;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .prodotto { position: absolute; left: 150px; width: 780px; top: 1146px; height: 100px; background: var(--tinta); border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 34px; }
+
+</style>
+</head>
+<body>
+  <div class="disegni"></div>
+  <div class="segnalibro"></div>
+  <svg class="biscotto" viewBox="0 0 90 90"><circle cx="45" cy="45" r="44" style="fill: var(--secondario)"/><g style="fill: var(--principale)"><circle cx="30" cy="28" r="6"/><circle cx="56" cy="24" r="5"/><circle cx="62" cy="50" r="7"/><circle cx="36" cy="58" r="6"/><circle cx="48" cy="40" r="4"/><circle cx="24" cy="45" r="4"/><circle cx="52" cy="70" r="5"/></g></svg>
+
+  <div class="scheda"></div>
+  <!-- titolo: 2 parole sulla linguetta -->
+  <div class="linguetta"><h1 class="titolo">dicono di noi</h1></div>
+  <p class="stelle">★★★★★</p>
+  <!-- testo: la recensione, 30-45 parole -->
+  <p class="testo">I biscotti ripieni sono una piccola pazzia: croccanti fuori, morbidi dentro e con il cioccolato che cola ancora tiepido. Li ho presi per la colazione della domenica e a pranzo non ne restava nemmeno uno.</p>
+  <!-- foto: il prodotto della recensione, in tondo -->
+  <img class="tondo" src="../esempio/biscotti-teglia.jpg" alt="">
+
+  <!-- acquisto: «ha preso» o «ha scelto», 2 parole -->
+  <p class="acquisto spaziato">ha preso i</p>
+  <!-- prodotto: il nome del prodotto, 1-3 parole -->
+  <p class="prodotto spaziato">Biscotti ripieni</p>
+
+</body>
+</html>

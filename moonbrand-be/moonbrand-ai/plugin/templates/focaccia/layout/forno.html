@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E2E1F; --secondario: #9B7C5F; --accento: #C2A586; --sfondo: #F5F0EA; }
+  :root { --font-titoli: 'Kaushan Script', cursive; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.04) h); --su-fascia: oklch(from var(--secondario) calc(clamp(0, (0.66 - l) * 1000, 1)) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--carta); color: var(--principale); font-family: var(--font-testo); }
+  .etichetta { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .doodle { position: absolute; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .anelli { color: var(--accento); stroke-width: 7; }
+  .tratto { color: var(--principale); stroke-width: 3; }
+
+  .fascia { position: absolute; left: 0; top: 0; width: 1080px; height: 105px; background: var(--secondario); color: var(--su-fascia); }
+  .fascia .logo { position: absolute; left: 117px; top: 32px; font-size: 40px; font-weight: 500; letter-spacing: 0.03em; }
+  .fascia .sito { position: absolute; left: 585px; top: 30px; display: flex; align-items: center; gap: 22px; font-size: 32px; text-decoration: underline; text-underline-offset: 6px; }
+  .fascia .sito svg { width: 38px; height: 38px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+
+  /* la mano col prodotto sale dal bordo in basso, su un fondo liscio che si fonde con la carta */
+  .foto { position: absolute; left: 90px; top: 60px; width: 1100px; height: 1467px; object-fit: cover; display: block; mix-blend-mode: multiply; filter: brightness(1.23) contrast(1.04);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 22%, #000 34%); mask-image: linear-gradient(to bottom, transparent 22%, #000 34%); }
+
+  .titolo { position: absolute; left: 76px; top: 150px; font-family: var(--font-titoli); font-weight: 400; font-size: 210px; line-height: 1; white-space: nowrap; }
+  .titolo .amp { font-size: 150px; margin-left: 30px; }
+  /* la seconda riga in bastoni stretto, nel secondario */
+  .sotto { position: absolute; left: 150px; top: 372px; font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 200px; line-height: 1; letter-spacing: -0.01em; color: var(--secondario); white-space: nowrap; }
+  .testo { position: absolute; left: 76px; top: 640px; width: 330px; font-size: 29px; line-height: 1.38; font-weight: 700; }
+  .firma { position: absolute; left: 94px; top: 1060px; font-size: 44px; line-height: 1.05; }
+  .profilo { position: absolute; left: 720px; top: 1200px; font-size: 26px; text-decoration: underline; text-underline-offset: 5px; }
+
+  .cuore { width: 100px; height: 130px; left: 985px; top: 140px; transform: rotate(20deg); }
+  .stella { width: 104px; height: 120px; left: 80px; top: 850px; transform: rotate(-10deg); }
+  .freccia { width: 90px; height: 120px; left: 186px; top: 920px; transform: rotate(200deg); }
+  .anelli-giu { width: 340px; height: 520px; left: 760px; top: 820px; }
+</style>
+</head>
+<body>
+  <div class="fascia">
+    <!-- logo: il nome del forno -->
+    <p class="logo etichetta">Forno Bellavista</p>
+    <!-- sito: l'indirizzo del sito -->
+    <p class="sito"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><ellipse cx="20" cy="20" rx="7" ry="16"/><path d="M4 20 H36"/></svg>fornobellavista.it</p>
+  </div>
+
+  <!-- foto: una mano che tiene un prodotto e sale dal bordo in basso, su un fondo liscio chiaro -->
+  <img class="foto" src="../esempio/panino-mano.jpg" alt="">
+
+  <!-- titolo: una parola in corsivo e la e commerciale -->
+  <h1 class="titolo">Forno<span class="amp">&amp;</span></h1>
+  <!-- sotto: una parola in bastoni stretto, al massimo 10 lettere -->
+  <p class="sotto">Pasticceria</p>
+
+  <!-- testo: 12-18 parole sul prodotto, a sinistra della foto -->
+  <p class="testo">Croccante fuori, morbido dentro: ogni morso sa di burro e di forno.</p>
+
+  <svg class="doodle tratto stella" viewBox="0 0 100 110"><path d="M52 4 C53 22 56 34 60 43 C72 44 84 44 96 47 C86 55 76 61 68 66 C72 79 76 92 78 104 C68 95 59 87 51 80 C42 87 32 95 21 102 C26 90 30 78 34 67 C24 60 14 54 5 48 C18 46 31 45 42 44 C46 32 49 18 52 4 Z"/></svg>
+  <svg class="doodle tratto freccia" viewBox="0 0 100 150"><path d="M70 6 C40 14 30 44 52 54 C74 64 80 36 58 34 C30 32 18 80 34 140 M18 120 L34 142 L52 122"/></svg>
+  <svg class="doodle tratto cuore" viewBox="0 0 100 110"><path d="M50 98 C30 76 6 58 8 34 C10 14 34 8 47 30 C54 10 82 4 90 26 C98 52 72 76 50 98 C44 80 42 62 34 50"/></svg>
+  <svg class="doodle anelli anelli-giu" viewBox="0 0 340 520"><path d="M20 30 C120 120 220 260 300 420 C316 452 290 466 272 436 C200 310 120 190 40 100 C20 76 44 60 66 84 C160 180 250 320 320 480 M60 300 C120 360 170 430 210 510"/></svg>
+
+  <!-- firma: 2-3 parole in maiuscolo su due righe -->
+  <p class="firma etichetta">Sfornati<br>stamattina</p>
+  <!-- profilo: il profilo social -->
+  <p class="profilo">@fornobellavista</p>
+</body>
+</html>

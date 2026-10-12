@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Arimo:wght@400;700&family=IBM+Plex+Mono:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #E35F52; --secondario: #5C4646; --accento: #F2D512; --sfondo: #E3DFDA; }
+  :root { --font-titoli: 'Archivo', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  :root { --scritta: 'IBM Plex Mono', monospace; --nero: color-mix(in srgb, #000000 86%, var(--principale)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--nero); font-family: var(--font-testo); }
+
+  .tratti { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; fill: none; stroke: var(--principale); stroke-width: 3; stroke-linecap: round; }
+  .stella { position: absolute; width: 34px; height: 34px; fill: var(--principale); }
+
+  .logo { position: absolute; left: 56px; top: 42px; font-family: var(--font-testo); font-weight: 700; font-size: 26px; letter-spacing: -0.01em; color: var(--secondario); }
+
+  .titolo { position: absolute; left: 0; top: 74px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 800; font-size: 232px; line-height: 218px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .sagoma { position: absolute; left: 120px; top: 410px; width: 880px; height: 495px; transform: rotate(-14deg); background: var(--sfondo);
+    clip-path: polygon(17% 49%, 20% 41%, 20% 40%, 43% 17%, 53% 12%, 57% 12%, 60% 13%, 73% 20%, 74% 20%, 75% 22%, 79% 31%, 84% 68%, 84% 71%, 84% 72%, 81% 74%, 80% 75%, 77% 76%, 73% 77%, 67% 77%, 55% 79%, 35% 82%, 24% 82%, 22% 81%, 20% 79%, 19% 77%, 18% 76%); }
+  .dolce { position: absolute; left: 120px; top: 410px; width: 880px; height: 495px; object-fit: cover; transform: rotate(-14deg); mix-blend-mode: multiply; }
+
+  .nome { position: absolute; left: 20px; top: 690px; width: 340px; height: 230px; transform: rotate(-16deg); border-radius: 50%; background: var(--accento); border: 3px solid var(--principale);
+    display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--scritta); font-style: italic; font-size: 38px; line-height: 46px; text-transform: uppercase; color: color-mix(in srgb, var(--secondario) 60%, #000000); }
+  .nome span { transform: rotate(16deg); }
+
+  .testo { position: absolute; left: 96px; top: 972px; width: 390px; font-size: 29px; line-height: 43px; }
+  .prezzo { position: absolute; right: 144px; top: 950px; text-align: right; }
+  .prezzo small { display: block; font-size: 30px; line-height: 40px; }
+  .prezzo strong { display: block; font-family: var(--font-titoli); font-weight: 800; font-size: 70px; line-height: 80px; color: var(--principale); }
+
+  .linea { position: absolute; left: 92px; top: 1144px; width: 848px; height: 3px; background: var(--principale); }
+  .piede { position: absolute; top: 1196px; font-weight: 700; font-size: 28px; line-height: 44px; text-transform: uppercase; color: var(--principale); }
+  .piede.sx { left: 96px; }
+  .piede.dx { right: 140px; text-align: right; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="stella" viewBox="0 0 24 24"><path d="M12 0C12.8 7.6 16.4 11.2 24 12C16.4 12.8 12.8 16.4 12 24C11.2 16.4 7.6 12.8 0 12C7.6 11.2 11.2 7.6 12 0Z"/></symbol></defs></svg>
+
+  <svg class="tratti" viewBox="0 0 1080 1350">
+    <path d="M345 62C400 28 470 6 545 -6"/>
+    <path d="M858 -4C935 90 945 190 905 262"/>
+    <path d="M208 150C60 250 -6 470 205 618"/>
+    <path d="M328 880C376 912 425 900 452 854"/>
+    <path d="M430 860L453 851L458 875"/>
+  </svg>
+
+  <!-- logo: il nome del brand o il file del logo -->
+  <div class="logo">Dolce Sosta</div>
+
+  <!-- titolo: 2 parole brevi, una per riga, 3-6 lettere -->
+  <h1 class="titolo"><span>Più</span><span>amata</span></h1>
+
+  <!-- foto: un dolce scontornato su fondo bianco (si fonde con lo sfondo), inclinato, che copre il fondo del titolo; la sagoma dietro segue il suo contorno -->
+  <div class="sagoma"></div>
+  <img class="dolce" src="../esempio/cheesecake-pistacchio.jpg" alt="">
+
+  <!-- nome: il prodotto, 2-4 parole su 3 righe -->
+  <p class="nome"><span>Cheesecake<br>al<br>pistacchio</span></p>
+
+  <svg class="stella" style="left:860px;top:812px"><use href="#stella"/></svg>
+
+  <!-- testo: 12-16 parole sul prodotto, 3 righe -->
+  <p class="testo">Crema al pistacchio di Bronte su una base di biscotto al burro</p>
+
+  <!-- prezzo: una parola e il prezzo -->
+  <p class="prezzo"><small>Solo</small><strong>4,50 €</strong></p>
+
+  <div class="linea"></div>
+  <!-- piede: a sinistra l'invito, a destra l'indirizzo, 2 righe ciascuno -->
+  <p class="piede sx">Vieni a trovarci<br>in pasticceria</p>
+  <p class="piede dx">Via dei Mille 14<br>Bologna</p>
+</body>
+</html>

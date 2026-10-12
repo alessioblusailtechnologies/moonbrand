@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A1B14; --secondario: #4A3226; --accento: #E2A94F; --sfondo: #F3EEE6; }
+  :root { --font-titoli: 'Bagel Fat One', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* il testo chiaro sui fondi scuri: lo sfondo del brand, schiarito se è scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .testata { position: absolute; left: 0; width: 1080px; top: 50px; text-align: center; font-size: 19px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
+  .titolo { position: absolute; font-family: var(--font-titoli); font-stretch: 25%; font-weight: 560; font-variation-settings: 'opsz' 144, 'YTLC' 570, 'YTUC' 760;
+    letter-spacing: -0.01em; line-height: 0.8; white-space: nowrap; }
+  .corsivo { font-family: 'Libre Caslon Text', serif; font-style: italic; }
+  .filetto { position: absolute; height: 2px; background: currentColor; opacity: 0.55; }
+  .profilo { position: absolute; left: 0; width: 1080px; bottom: 44px; text-align: center; font-size: 21px; font-weight: 600; letter-spacing: 0.12em; }
+  /* la foto del prodotto su fondo uniforme, chiaro (.chiaro) o nero (.scuro): il filtro toglie il fondo e il dolce passa davanti al titolo */
+  .chiaro { filter: url(#chiaro); }
+  .scuro { filter: url(#scuro); }
+  .ritaglio { position: absolute; overflow: hidden; }
+  .ritaglio img { position: absolute; display: block; }
+
+  .titolo { left: 0; width: 1080px; text-align: center; font-weight: 400; font-stretch: normal; font-variation-settings: normal; text-transform: uppercase; line-height: 1; letter-spacing: 0; }
+  .r1 { top: 105px; font-size: 230px; }
+  .r2 { top: 330px; font-size: 150px; }
+  .valida { position: absolute; left: 0; width: 1080px; top: 535px; text-align: center; font-size: 25px; font-weight: 500; }
+  .foto { position: absolute; left: -390px; top: -430px; width: 1920px; height: 2880px; }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute">
+    <filter id="chiaro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  7.33 -2.67 -12.67 0 5.8"/></filter>
+    <filter id="scuro" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.33 1.33 1.33 0 -0.5"/></filter>
+  </svg>
+
+  <!-- etichetta: 2 parole sopra il titolo, al posto del nome del brand -->
+  <div class="testata">Offerta dolce</div>
+
+  <!-- titolo: l'offerta in 2 righe corte, la prima più grande -->
+  <div class="titolo r1" data-max="1020">Prendi 3</div>
+  <div class="titolo r2" data-max="1020">paghi 2</div>
+
+  <!-- condizioni: 4-8 parole -->
+  <p class="valida">Su tutti i bignè, fino al 31 ottobre</p>
+
+  <!-- foto: mani che tengono il dolce su fondo chiaro uniforme, dal basso -->
+  <img class="foto chiaro" src="../esempio/mano-bigne.jpg" alt="">
+
+  <!-- logo: il profilo social del brand -->
+  <div class="profilo logo">@pasticceriabruna</div>
+  <script>
+    // Con un font del brand più largo, ogni riga del titolo si rimpicciolisce finché sta nella sua misura (data-max, in px)
+    // e scende di metà della differenza, così il blocco del titolo resta al suo posto.
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = ''; el.style.marginTop = '';
+        const base = parseFloat(getComputedStyle(el).fontSize);
+        const range = document.createRange(); range.selectNodeContents(el);
+        const larga = range.getBoundingClientRect().width;
+        const max = Number(el.dataset.max);
+        if (larga > max) { const size = Math.floor(base * max / larga); el.style.fontSize = `${size}px`; el.style.marginTop = `${(base - size) * 0.4}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  /* il testo sull'accento: chiaro se l'accento è scuro, scuro se è chiaro */
+  :root { --su-accento: oklch(from var(--accento) clamp(0.22, (0.64 - l) * 1000, 0.96) min(c, 0.035) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .logo { position: absolute; font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; text-align: center; padding: 8px 0; border: 2px solid currentColor; border-radius: 14px; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+
+  .foto { position: absolute; left: 0; top: 0; width: 540px; height: 1350px; object-fit: cover; object-position: 30% 50%; }
+  .colonna { position: absolute; right: 44px; top: 250px; width: 600px; text-align: right; }
+  .titolo { text-wrap: balance; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 84px; line-height: 0.95; letter-spacing: -0.03em; }
+  .titolo .corsivo { display: block; font-size: 120px; letter-spacing: 0; line-height: 1.05; }
+  .testo { margin: 34px 12px 0 auto; width: 340px; text-align: right; font-size: 24px; line-height: 1.45; }
+  .riquadro { position: absolute; left: 349px; top: 858px; width: 620px; height: 384px; background: var(--accento); color: var(--su-accento); border-radius: 18px; text-align: right; padding: 52px 40px 0; }
+  .riquadro .promo { font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 54px; line-height: 1.1; letter-spacing: -0.01em; }
+  .riquadro .quando { margin-top: 44px; font-size: 34px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .riquadro .logo { right: 40px; bottom: 46px; width: 266px; }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto in offerta da vicino, metà sinistra -->
+  <img class="foto" src="../esempio/biscotti.jpg" alt="">
+
+  <div class="colonna">
+  <!-- titolo: 2 parole in corsivo e 2-3 in serif sotto, allineate a destra -->
+  <h1 class="titolo"><span class="corsivo">Dolce offerta</span>della settimana</h1>
+
+  <!-- testo: 30-45 parole sull'offerta, allineato a destra -->
+  <p class="testo">Doppi biscotti, doppia gioia. Per tutta la settimana ne prendi due e ne paghi uno: gocce di cioccolato, nocciole o caramello salato. La scusa perfetta per una merenda in due.</p>
+  </div>
+
+  <!-- riquadro: l'offerta in 3-6 parole, quando vale in 2-4 parole, il logo -->
+  <div class="riquadro">
+    <p class="promo">2x1 su tutti i biscotti</p>
+    <p class="quando">Tutta la settimana</p>
+    <div class="logo">Forno Rosmarì</div>
+  </div>
+</body>
+</html>

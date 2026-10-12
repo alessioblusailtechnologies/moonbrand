@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #562427; --secondario: #966255; --accento: #9D2D29; --sfondo: #F1EDE1; }
+  :root { --font-titoli: 'DM Serif Display', serif; --font-testo: 'Red Hat Display', sans-serif; }
+  :root { --tratto: color-mix(in oklch, var(--secondario) 40%, var(--sfondo)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  .scheda { position: absolute; left: 185px; top: 333px; width: 712px; height: 688px; background: var(--sfondo); border: 1.5px solid color-mix(in oklch, var(--secondario) 70%, var(--sfondo)); border-radius: 12px; }
+  .disegno { position: absolute; left: 24px; top: 30px; width: 180px; height: 190px; fill: none; stroke: var(--tratto); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .titolo { position: absolute; left: 0; top: 128px; width: 712px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 112px; line-height: 0.93; letter-spacing: -0.015em; color: var(--secondario); }
+  .testo { position: absolute; left: 96px; top: 410px; width: 520px; text-align: center; font-size: 32px; font-weight: 400; line-height: 1.5; letter-spacing: -0.01em; color: var(--secondario); }
+  .nota { position: absolute; left: 0; top: 540px; width: 712px; text-align: center; font-family: var(--font-titoli); font-size: 21px; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: dolci visti dall'alto su un piano chiaro, sparsi ai bordi; il centro resta coperto dalla scheda -->
+  <img class="foto" src="../esempio/biscotti.jpg" alt="">
+
+  <div class="scheda">
+    <svg class="disegno" viewBox="0 0 180 190" aria-hidden="true">
+      <path d="M30,108 L46,176 L134,176 L150,108 Z"/>
+      <path d="M52,110 L60,176 M74,110 L78,176 M96,110 L96,176 M118,110 L114,176 M138,110 L130,176"/>
+      <path d="M22,108 C14,90 30,74 48,78 C48,58 70,48 88,58 C100,44 128,50 130,72 C150,70 166,88 158,108 Z"/>
+      <path d="M48,78 C60,86 76,86 88,78 M88,58 C96,70 112,74 130,72"/>
+      <circle cx="96" cy="40" r="14"/><circle cx="90" cy="36" r="2.5"/><circle cx="100" cy="44" r="2.5"/><circle cx="102" cy="34" r="2.5"/>
+    </svg>
+    <!-- titolo: il prodotto o la linea, 2-3 parole su due righe -->
+    <h1 class="titolo">Dolci senza<br>zucchero</h1>
+    <!-- testo: perché sceglierli, 8-12 parole su due righe -->
+    <p class="testo">Golosi uguale, pensati per chi vuole stare leggero.</p>
+    <!-- nota: un dettaglio, 2-3 parole -->
+    <p class="nota">Ingredienti biologici</p>
+  </div>
+</body>
+</html>

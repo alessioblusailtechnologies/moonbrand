@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--accento); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; filter: brightness(0.8); }
+
+  /* al centro: un'etichetta minuscola, la barra di caricamento e la frase in maiuscolo sottile */
+  .sopra { position: absolute; left: 0; top: 585px; width: 1080px; text-align: center; font-size: 22px; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accento); }
+  .barra { position: absolute; left: 240px; top: 640px; width: 600px; height: 40px; border: 3px solid var(--accento); border-radius: 20px; }
+  .pieno { position: absolute; left: 0; top: 0; width: 46%; height: 100%; border-radius: 20px; background: var(--accento); }
+  .titolo { position: absolute; left: 90px; top: 712px; width: 900px; text-align: center; font-family: var(--font-testo); font-size: 50px; font-weight: 300; line-height: 1.2; letter-spacing: 0.01em; text-transform: uppercase; color: var(--accento); }
+
+  .logo { position: absolute; left: 400px; top: 1218px; width: 280px; height: 56px; border: 2px solid var(--accento); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: tanti pezzi uguali da vicino (girelle, cornetti, sfoglie), un po' scura -->
+  <img class="foto" src="../esempio/girelle.jpg" alt="">
+
+  <!-- sopra: 2 parole -->
+  <div class="sopra">Nuova ricetta</div>
+  <!-- barra: quanto manca, la parte piena in percentuale (30-70%) -->
+  <div class="barra"><div class="pieno"></div></div>
+  <!-- titolo: 3-5 parole su una riga, senza puntini -->
+  <div class="titolo">Una novità sta arrivando</div>
+
+  <!-- logo: il nome del forno nell'ovale a filo, in basso -->
+  <div class="logo">Forno Ardizzone</div>
+</body>
+</html>

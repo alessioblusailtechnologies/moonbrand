@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,400..600&family=Pinyon+Script&family=Open+Sans:wght@400;600;700&family=Poppins:ital,wght@1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #8E4922; --secondario: #DCBDA0; --accento: #964A28; --sfondo: #FAEAD0; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Open Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .logo { position: absolute; font-family: 'Poppins', sans-serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -0.02em; white-space: nowrap; text-align: center; padding: 8px 0; border: 2px solid var(--accento); border-radius: 14px; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; }
+
+  .pagina { position: absolute; left: 0; top: 150px; width: 1080px; }
+  .titolo { margin-left: 64px; width: 980px; font-family: var(--font-titoli); font-stretch: 75%; font-weight: 400; font-size: 118px; line-height: 0.98; letter-spacing: -0.025em; }
+  .titolo .corsivo { font-size: 170px; letter-spacing: 0; margin-left: 18px; position: relative; top: 8px; white-space: nowrap; }
+  .fila { position: relative; height: 560px; margin-top: 76px; }
+  .foto { position: absolute; top: 0; height: 560px; object-fit: cover; border-radius: 26px; }
+  .logo { position: relative; margin: 56px 0 0 48px; width: 290px; }
+</style>
+</head>
+<body>
+  <div class="pagina">
+  <!-- titolo: 4-6 parole su due righe, l'ultima parola in corsivo -->
+  <h1 class="titolo">Dietro le quinte<br>del nostro <span class="corsivo">Forno</span></h1>
+
+  <div class="fila">
+  <!-- foto: tre momenti del lavoro (impasto, teglia, forno), la terza esce dal bordo destro -->
+  <img class="foto" style="left: 48px; width: 456px;" src="../esempio/impasto.jpg" alt="">
+  <img class="foto" style="left: 522px; width: 456px; object-position: 40% 50%;" src="../esempio/teglia.jpg" alt="">
+  <img class="foto" style="left: 996px; width: 456px; object-position: 30% 50%;" src="../esempio/pasta-madre.jpg" alt="">
+  </div>
+
+  <!-- logo: il nome del forno in un riquadro arrotondato -->
+  <div class="logo">Forno Rosmarì</div>
+  </div>
+</body>
+</html>

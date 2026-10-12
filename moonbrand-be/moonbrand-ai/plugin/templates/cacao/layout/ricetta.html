@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5,300&family=IBM+Plex+Sans+Condensed:wght@400&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'IBM Plex Sans Condensed', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  .testata { position: absolute; left: 0; top: 0; width: 1080px; height: 212px; background: var(--sfondo); }
+  .riga-su { position: absolute; left: 110px; right: 110px; top: 72px; display: flex; justify-content: space-between; font-size: 24px; text-transform: uppercase; }
+  .puntini { position: absolute; left: 0; width: 1080px; top: 140px; display: flex; justify-content: center; gap: 12px; }
+  .puntini i { width: 19px; height: 19px; border-radius: 50%; border: 2px solid var(--principale); display: block; }
+  .puntini i.qui { background: var(--principale); }
+
+  .foto { position: absolute; left: 0; top: 212px; width: 1080px; height: 1138px; object-fit: cover; object-position: 50% 30%; display: block; }
+
+  .scheda { position: absolute; left: 188px; top: 411px; width: 704px; height: 742px; background: var(--sfondo); }
+  .scheda img { position: absolute; left: 53px; top: 57px; width: 289px; height: 290px; object-fit: cover; display: block; }
+  .scheda .nota { position: absolute; left: 375px; font-size: 24px; text-transform: uppercase; }
+  .scheda .nota.a { top: 62px; }
+  .scheda .nota.b { top: 322px; }
+  .titolo { position: absolute; left: 53px; top: 410px; font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 300; font-size: 104px; line-height: 0.84; letter-spacing: -0.02em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+  .titolo .corsivo { font-size: 100px; line-height: 0.9; margin: -18px 0 0 140px; }
+</style>
+</head>
+<body>
+  <div class="testata">
+    <!-- testata: profilo, nome del brand e data, uguale su tutte le slide del carosello -->
+    <div class="riga-su"><span>@pasticceriabruna</span><span class="logo">Pasticceria Bruna</span><span>12.10.2026</span></div>
+    <!-- puntini: uno per slide del carosello, pieno quello della slide -->
+    <div class="puntini"><i class="qui"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <!-- foto: chi prepara, in cucina o al banco, a tutta pagina sotto la testata -->
+  <img class="foto" src="../esempio/cucina.jpg" alt="">
+
+  <div class="scheda">
+    <!-- foto piccola: il risultato finito, quadrata -->
+    <img src="../esempio/biscotti.jpg" alt="">
+    <!-- note: cosa è (2-3 parole) e l'invito a scorrere (2-3 parole) -->
+    <p class="nota a">Ricetta passo passo</p>
+    <p class="nota b">Scorri per imparare</p>
+    <!-- titolo: due righe maiuscole di 8-13 caratteri e una chiusa in corsivo di 2 parole -->
+    <h1 class="titolo" data-max="600"><span>Biscotti</span><span>al cioccolato</span><span class="corsivo">fatti in casa</span></h1>
+  </div>
+  <script>
+    // Con font del brand più larghi il titolo si rimpicciolisce finché ogni riga sta nella sua misura (data-max, in px).
+    const adatta = () => {
+      for (const el of document.querySelectorAll('[data-max]')) {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        const misura = () => {
+          const righe = [];
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const r of range.getClientRects()) righe.push(r.width);
+          }
+          return Math.max(0, ...righe);
+        };
+        while (misura() > Number(el.dataset.max) && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+      }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

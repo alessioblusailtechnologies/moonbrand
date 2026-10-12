@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Poppins:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2E2420; --secondario: #B98E6B; --accento: #5A2C1E; --sfondo: #FCF6F1; }
+  :root { --font-titoli: 'Yeseva One', serif; --font-testo: 'Poppins', sans-serif; }
+  /* Indirizzo e puntini sul fondo pieno: la tinta dello sfondo schiarita. */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--secondario); color: var(--accento); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: -390px; top: -350px; width: 1300px; height: 1300px; border-radius: 50%; object-fit: cover; object-position: 50% 55%; }
+  .puntini { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .puntini path { fill: none; stroke: var(--chiaro); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0 14; }
+  .tondo { position: absolute; left: 370px; top: 480px; width: 670px; height: 670px; border-radius: 50%; background: color-mix(in srgb, var(--sfondo) 70%, var(--secondario)); opacity: 0.9; }
+
+  .titolo { position: absolute; left: 370px; top: 480px; width: 670px; height: 670px; }
+  .titolo text { font-family: var(--font-titoli); font-size: 70px; fill: var(--accento); }
+  .stelle { position: absolute; left: 370px; top: 690px; width: 670px; text-align: center; font-size: 44px; letter-spacing: 0.06em; color: var(--accento); }
+  .testo { position: absolute; left: 455px; top: 770px; width: 500px; text-align: center; font-size: 27px; font-style: italic; font-weight: 700; line-height: 1.42; }
+  .firma { position: absolute; left: 455px; top: 975px; width: 500px; text-align: center; font-size: 26px; font-style: italic; font-weight: 700; }
+  .indirizzo { position: absolute; left: 96px; top: 1150px; width: 320px; font-size: 26px; font-style: italic; font-weight: 600; line-height: 1.4; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: vassoio di dolci visto dall'alto, tagliata dal grande tondo in alto a sinistra -->
+  <img class="foto" src="../esempio/girelle.jpg" width="1300" height="1300" alt="">
+
+  <!-- puntini: due curve tratteggiate che attraversano il post, restano -->
+  <svg class="puntini" viewBox="0 0 1080 1350" aria-hidden="true">
+    <path d="M430,0 Q760,330 1080,50"/>
+    <path d="M0,560 Q500,460 570,900 T520,1350"/>
+  </svg>
+
+  <div class="tondo"></div>
+
+  <!-- titolo: 1-2 parole curvate sul bordo alto del tondo chiaro -->
+  <svg class="titolo" viewBox="0 0 670 670" aria-hidden="true">
+    <defs><path id="arco" d="M90,270 A255,255 0 0,1 580,270"/></defs>
+    <text text-anchor="middle"><textPath href="#arco" startOffset="50%">Dicono di noi</textPath></text>
+  </svg>
+
+  <p class="stelle">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+
+  <!-- testo: la recensione vera di un cliente, 20-30 parole -->
+  <p class="testo">Qui si sente che tutto è fresco e fatto con cura. Vi consiglio i cornetti al cioccolato ancora caldi per una colazione da coccola.</p>
+
+  <!-- firma: nome del cliente -->
+  <p class="firma">Giulia</p>
+
+  <!-- indirizzo: via e città, due righe -->
+  <p class="indirizzo">Via Garibaldi 18,<br>Bergamo</p>
+</body>
+</html>

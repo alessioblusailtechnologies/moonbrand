@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=League+Spartan:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2B1009; --secondario: #5B3621; --accento: #D9D0C1; --sfondo: #FFF7EC; }
+  :root { --font-titoli: 'Young Serif', serif; --font-testo: 'League Spartan', sans-serif; }
+  /* il testo sul secondario: chiaro se il secondario è scuro, scuro se è chiaro */
+  :root { --su-secondario: oklch(from var(--secondario) clamp(0, (0.66 - l) * 1000, 1) 0.02 h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* la foto su fondo chiaro si fonde con lo sfondo */
+  .foto { position: absolute; left: 131px; top: 206px; width: 767px; height: 1151px; object-fit: cover; display: block; mix-blend-mode: multiply; filter: brightness(1.14) contrast(1.06); }
+
+  .testata { position: absolute; left: 0; top: 74px; width: 1080px; text-align: center; font-weight: 700; font-size: 31px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--principale); }
+  .titolo { position: absolute; left: 0; top: 104px; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 196px; line-height: 0.86; letter-spacing: -0.03em; color: var(--principale); }
+  .titolo span { display: block; }
+
+  .scatto { position: absolute; left: 250px; top: 470px; overflow: visible; }
+
+  .gusto { position: absolute; padding: 12px 34px 16px; border-radius: 40px; background: var(--secondario); color: var(--su-secondario); border: 3px solid var(--sfondo);
+    font-family: var(--font-titoli); font-size: 37px; line-height: 1.1; white-space: nowrap; }
+  .g1 { left: 190px; top: 806px; transform: rotate(11deg); }
+  .g2 { left: 600px; top: 930px; transform: rotate(-15deg); }
+  .g3 { left: 170px; top: 1100px; transform: rotate(5deg); }
+</style>
+</head>
+<body>
+  <!-- foto: il prodotto infilzato su una forchetta, dritta, su fondo bianco o chiaro; il pezzo sotto la fine del titolo -->
+  <img class="foto" src="../esempio/forchetta.jpg" alt="">
+
+  <!-- testata: il nome del brand e l'anno -->
+  <p class="testata"><span class="logo">Pasticceria Bruna</span> | 2026</p>
+
+  <!-- titolo: due righe di 5-9 caratteri, grandi e strette -->
+  <h1 class="titolo"><span>Cuore</span><span>fondente</span></h1>
+
+  <!-- scatto: tre tratti accanto al prodotto -->
+  <svg class="scatto" width="80" height="110" viewBox="0 0 80 110"><path d="M70 30 L 30 2 M64 56 L 6 54 M70 80 L 24 104" stroke="var(--secondario)" stroke-width="7" stroke-linecap="round"/></svg>
+
+  <!-- gusti: tre varianti del prodotto, 2-3 parole ciascuna, nelle pillole inclinate intorno alla forchetta -->
+  <span class="gusto g1">Al pistacchio</span>
+  <span class="gusto g2">Con le noci</span>
+  <span class="gusto g3">Cocco e mandorle</span>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&family=Ms+Madi&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--accento); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 0%; }
+
+  /* firma a mano sopra il titolo, poi il titolo in corsivo stretto maiuscolo su due righe */
+  .firma { position: absolute; left: 0; top: 70px; width: 1080px; text-align: center; font-family: 'Ms Madi', cursive; font-size: 92px; line-height: 1; color: var(--accento); }
+  .titolo { position: absolute; left: 60px; top: 150px; width: 960px; text-align: center; font-family: var(--font-titoli); font-style: italic; font-weight: 400; font-stretch: 62.5%; font-size: 148px; line-height: 0.86; white-space: nowrap; text-transform: uppercase; color: var(--accento); }
+
+  /* frecce disegnate a mano e nomi degli ingredienti */
+  .frecce { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; }
+  .frecce path { fill: none; stroke: var(--principale); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .voce { position: absolute; width: 260px; font-size: 40px; line-height: 1.3; font-weight: 400; color: var(--accento); text-align: center; }
+</style>
+</head>
+<body>
+  <!-- foto: un solo dolce di profilo su fondo neutro, al centro, che arriva al bordo basso -->
+  <img class="foto" src="../esempio/brownie-panna.jpg" alt="">
+
+  <!-- firma: 2-3 parole scritte a mano (la rubrica) -->
+  <div class="firma">Speciale di oggi</div>
+  <!-- titolo: il nome del dolce, 2-4 parole su due righe -->
+  <div class="titolo">Brownie<br>alla panna</div>
+
+  <!-- frecce: dal dettaglio del dolce verso il suo ingrediente; tre o quattro, dove il fondo è libero -->
+  <svg class="frecce" viewBox="0 0 1080 1350" aria-hidden="true">
+    <path d="M 560 480 C 610 430, 700 420, 790 450"/><path d="M 766 432 L 790 450 L 762 462"/>
+    <path d="M 430 660 C 360 620, 290 640, 260 720"/><path d="M 246 694 L 260 722 L 284 702"/>
+    <path d="M 700 770 C 770 750, 840 760, 880 805"/><path d="M 856 798 L 881 807 L 868 782"/>
+  </svg>
+
+  <!-- voci: un ingrediente per freccia, 1-2 parole -->
+  <div class="voce" style="left: 760px; top: 400px;">Panna<br>montata</div>
+  <div class="voce" style="left: 110px; top: 740px;">Ganache</div>
+  <div class="voce" style="left: 800px; top: 825px;">Nocciole<br>tostate</div>
+  <script>
+    // Con un font del brand più largo il titolo si rimpicciolisce finché ogni riga sta in 960 px.
+    const adatta = () => {
+      const titolo = document.querySelector('.titolo');
+      titolo.style.fontSize = '';
+      let size = 148;
+      while (titolo.scrollWidth > 960 && size > 60) { size -= 4; titolo.style.fontSize = `${size}px`; }
+    };
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

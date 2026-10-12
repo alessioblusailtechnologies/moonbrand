@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #3E2116; --secondario: #7B4325; --accento: #A8673E; --sfondo: #F6ECE3; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Josefin Sans', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  /* Foto in una forma morbida che esce a destra e in basso */
+  .forma { position: absolute; left: 600px; top: 300px; width: 660px; height: 1160px; overflow: hidden;
+    border-radius: 62% 38% 0 0 / 48% 30% 0 0; }
+  .forma img { display: block; width: 660px; height: 1160px; object-fit: cover; object-position: 30% 50%; }
+
+  .titolo { position: absolute; left: 110px; top: 150px; font-family: var(--font-titoli); font-weight: 500; font-size: 104px; line-height: 1.04; letter-spacing: 0.05em; text-transform: uppercase; }
+  .titolo span { display: block; white-space: nowrap; }
+
+  .lista { position: absolute; left: 116px; top: 500px; width: 480px; list-style: none; }
+  .lista li { position: relative; padding-left: 30px; margin-bottom: 76px; font-size: 30px; line-height: 1.2; letter-spacing: 0.05em; text-transform: uppercase; color: color-mix(in srgb, var(--principale) 88%, transparent); }
+  .lista li::before { content: ""; position: absolute; left: 0; top: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--principale); }
+
+  .chiusa { position: absolute; left: 116px; top: 1040px; font-size: 36px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .rombo { position: absolute; left: 124px; top: 1110px; width: 22px; height: 22px; background: var(--accento); transform: rotate(45deg); border-radius: 3px; }
+</style>
+</head>
+<body>
+  <!-- foto: prodotti da forno molto da vicino, nella forma che esce a destra -->
+  <div class="forma"><img src="../esempio/cornetti.jpg" alt=""></div>
+
+  <!-- titolo: 2 righe in maiuscolo, 4-8 caratteri ciascuna -->
+  <h1 class="titolo"><span>Oggi</span><span>al banco</span></h1>
+
+  <!-- lista: 4 prodotti, 2-4 parole ciascuno, una riga o due -->
+  <ul class="lista">
+    <li>Cornetto integrale</li>
+    <li>Muffin ai mirtilli</li>
+    <li>Girella alla cannella</li>
+    <li>Frollini al burro</li>
+  </ul>
+
+  <!-- chiusa: un invito breve, 2-3 parole, una riga -->
+  <p class="chiusa">Non perderli</p>
+  <div class="rombo"></div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Foto d'esempio, tutte con licenza gratuita (Pexels License).
+I file -maschera.jpg sono le sagome dei prodotti scontornati, ricavate dalle foto stesse.
+
+caffe.jpg, caffe-maschera.jpg         https://www.pexels.com/photo/10170269/  (caffè freddo con latte in un bicchiere, fondo bianco)
+banana.jpg, banana-maschera.jpg       https://www.pexels.com/photo/5419306/   (banana bread alle noci, fondo bianco)
+cornetto.jpg, cornetto-maschera.jpg   https://www.pexels.com/photo/4828357/   (cornetto aperto a metà)
+baguette.jpg                          https://www.pexels.com/photo/38597841/  (baguette affiancate, ruotata in verticale)
+pagnotte.jpg                          https://www.pexels.com/photo/7630745/   (pani impilati su fondo grigio, ritagliata)
+locale.jpg                            https://www.pexels.com/photo/37174129/  (interno di una pasticceria)
+pane.jpg                              https://www.pexels.com/photo/6608542/   (pane a lievitazione naturale tagliato)
+cornetti.jpg                          https://www.pexels.com/photo/35565554/  (cornetti da vicino)

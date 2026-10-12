@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #6B4126; --secondario: #D3A375; --accento: #E8BBA8; --sfondo: #F8F4EC; }
+  :root { --font-titoli: 'Cormorant Garamond', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 40% 50%; display: block; }
+
+  /* la scheda chiara velata sopra la foto */
+  .scheda { position: absolute; left: 206px; top: 228px; width: 680px; height: 890px; background: color-mix(in srgb, var(--chiaro) 88%, transparent); }
+  .titolo { position: absolute; left: 206px; top: 318px; width: 680px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 104px; line-height: 108px; color: var(--principale); }
+
+  .lista { position: absolute; left: 330px; top: 744px; width: 520px; list-style: none; }
+  .lista li { display: flex; align-items: center; gap: 30px; margin-bottom: 40px; font-size: 27px; line-height: 38px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .lista svg { flex: none; width: 46px; height: 46px; }
+  .lista svg .bollo { fill: var(--principale); stroke: var(--principale); stroke-width: 2.5; stroke-linejoin: round; }
+  .lista svg .spunta { fill: none; stroke: var(--chiaro); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+  <!-- foto: pane o dolci del banco dall'alto, piena pagina, toni caldi e scuri ai bordi -->
+  <img class="foto" src="../esempio/pane.jpg" alt="">
+
+  <div class="scheda"></div>
+
+  <!-- titolo: 3 righe di una o due parole, la proposta del momento -->
+  <h1 class="titolo">Speciali<br>del<br>weekend</h1>
+
+  <!-- lista: 3 prodotti, ciascuno 2 righe brevi in maiuscolo, con il bollino a spunta -->
+  <ul class="lista">
+    <li><svg viewBox="0 0 46 46"><polygon class="bollo" points="23.0,1.0 27.8,5.1 34.0,3.9 36.1,9.9 42.1,12.0 40.9,18.2 45.0,23.0 40.9,27.8 42.1,34.0 36.1,36.1 34.0,42.1 27.8,40.9 23.0,45.0 18.2,40.9 12.0,42.1 9.9,36.1 3.9,34.0 5.1,27.8 1.0,23.0 5.1,18.2 3.9,12.0 9.9,9.9 12.0,3.9 18.2,5.1"/><path class="spunta" d="M15 23.5l5.5 5.5 10.5-11"/></svg><span>Baguette<br>appena sfornate</span></li>
+    <li><svg viewBox="0 0 46 46"><polygon class="bollo" points="23.0,1.0 27.8,5.1 34.0,3.9 36.1,9.9 42.1,12.0 40.9,18.2 45.0,23.0 40.9,27.8 42.1,34.0 36.1,36.1 34.0,42.1 27.8,40.9 23.0,45.0 18.2,40.9 12.0,42.1 9.9,36.1 3.9,34.0 5.1,27.8 1.0,23.0 5.1,18.2 3.9,12.0 9.9,9.9 12.0,3.9 18.2,5.1"/><path class="spunta" d="M15 23.5l5.5 5.5 10.5-11"/></svg><span>Bignè<br>al cioccolato</span></li>
+    <li><svg viewBox="0 0 46 46"><polygon class="bollo" points="23.0,1.0 27.8,5.1 34.0,3.9 36.1,9.9 42.1,12.0 40.9,18.2 45.0,23.0 40.9,27.8 42.1,34.0 36.1,36.1 34.0,42.1 27.8,40.9 23.0,45.0 18.2,40.9 12.0,42.1 9.9,36.1 3.9,34.0 5.1,27.8 1.0,23.0 5.1,18.2 3.9,12.0 9.9,9.9 12.0,3.9 18.2,5.1"/><path class="spunta" d="M15 23.5l5.5 5.5 10.5-11"/></svg><span>Crostate<br>di stagione</span></li>
+  </ul>
+</body>
+</html>

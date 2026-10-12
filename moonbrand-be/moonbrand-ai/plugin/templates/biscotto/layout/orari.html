@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Anton&family=Montserrat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #57190C; --secondario: #C8926C; --accento: #F7B0C0; --sfondo: #FADDE2; }
+  :root { --font-titoli: 'Caprasimo', serif; --font-testo: 'Montserrat', sans-serif; }
+  /* tinte derivate: crema (lo sfondo schiarito), chiaro sulle foto e sui fondi scuri */
+  :root { --crema: color-mix(in oklab, var(--sfondo) 32%, white); --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    /* tinta: lo sfondo con un velo d'accento, così schede e linguette si vedono anche se lo sfondo del brand è bianco */
+    --tinta: color-mix(in oklab, var(--sfondo) 82%, var(--accento)); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; }
+  .corsivo { font-family: 'Sacramento', cursive; font-weight: 400; line-height: 1; }
+  .alto { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; }
+  .spaziato { font-family: var(--font-testo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .smerlo { position: absolute; display: block; }
+  .disegni { position: absolute; inset: 0; background: var(--principale); opacity: 0.07;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='60' cy='60' r='34'/%3E%3Ccircle cx='60' cy='60' r='11'/%3E%3Cpath d='M32 50 q10 -8 18 0 t18 0 t18 0'/%3E%3Ccircle cx='215' cy='95' r='30'/%3E%3Ccircle cx='205' cy='85' r='3'/%3E%3Ccircle cx='226' cy='100' r='3'/%3E%3Ccircle cx='210' cy='110' r='3'/%3E%3Ccircle cx='228' cy='80' r='3'/%3E%3Cpath d='M40 235 q50 -60 100 0 q-12 22 -50 22 q-38 0 -50 -22z'/%3E%3Cpath d='M65 215 l8 30 M90 205 v40 M115 215 l-8 30'/%3E%3Cpath d='M190 200 h60 l-8 56 h-44z'/%3E%3Cpath d='M186 200 q34 -46 68 0'/%3E%3C/svg%3E"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px; }
+  .logo { font-family: var(--font-titoli); color: var(--principale); text-align: center; line-height: 0.9; }
+
+
+  .alto-crema { position: absolute; left: 0; top: 0; width: 1080px; height: 640px; background: var(--crema); overflow: hidden; }
+  .foto { position: absolute; left: 0; top: 640px; width: 1080px; height: 710px; object-fit: cover; object-position: 50% 70%; }
+  .scheda { left: 120px; top: 360px; }
+  .titolo { position: absolute; left: 200px; width: 520px; top: 470px; font-size: 168px; text-align: center; }
+  .fascia { position: absolute; left: 236px; top: 832px; width: 448px; height: 84px; background: var(--accento); color: var(--su-accento);
+    display: flex; align-items: center; justify-content: center; font-size: 34px; }
+  .saluto { position: absolute; left: 180px; width: 560px; top: 950px; text-align: center; font-size: 92px; transform: rotate(-5deg); }
+  .bollo { position: absolute; left: 760px; top: 140px; width: 230px; height: 230px; border-radius: 50%; background: var(--tinta); display: flex; align-items: center; justify-content: center; }
+  .bollo .logo { font-size: 46px; }
+
+</style>
+</head>
+<body>
+  <div class="alto-crema"><div class="disegni"></div></div>
+  <!-- foto: dolci o vetrina, la metà bassa del post -->
+  <img class="foto" src="../esempio/cupcake-rosa.jpg" alt="">
+
+  <!-- logo: il marchio del forno nel bollo tondo -->
+  <div class="bollo"><p class="logo">Forno<br>Lulù</p></div>
+
+  <svg class="smerlo scheda" width="680" height="740" viewBox="0 0 680 740" style="fill: var(--tinta)"><rect x="34" y="34" width="612" height="672"/><circle cx="34.0" cy="34.0" r="34"/><circle cx="89.6" cy="34.0" r="34"/><circle cx="145.3" cy="34.0" r="34"/><circle cx="200.9" cy="34.0" r="34"/><circle cx="256.5" cy="34.0" r="34"/><circle cx="312.2" cy="34.0" r="34"/><circle cx="367.8" cy="34.0" r="34"/><circle cx="423.5" cy="34.0" r="34"/><circle cx="479.1" cy="34.0" r="34"/><circle cx="534.7" cy="34.0" r="34"/><circle cx="590.4" cy="34.0" r="34"/><circle cx="646.0" cy="34.0" r="34"/><circle cx="646.0" cy="90.0" r="34"/><circle cx="646.0" cy="146.0" r="34"/><circle cx="646.0" cy="202.0" r="34"/><circle cx="646.0" cy="258.0" r="34"/><circle cx="646.0" cy="314.0" r="34"/><circle cx="646.0" cy="370.0" r="34"/><circle cx="646.0" cy="426.0" r="34"/><circle cx="646.0" cy="482.0" r="34"/><circle cx="646.0" cy="538.0" r="34"/><circle cx="646.0" cy="594.0" r="34"/><circle cx="646.0" cy="650.0" r="34"/><circle cx="646.0" cy="706.0" r="34"/><circle cx="590.4" cy="706.0" r="34"/><circle cx="534.7" cy="706.0" r="34"/><circle cx="479.1" cy="706.0" r="34"/><circle cx="423.5" cy="706.0" r="34"/><circle cx="367.8" cy="706.0" r="34"/><circle cx="312.2" cy="706.0" r="34"/><circle cx="256.5" cy="706.0" r="34"/><circle cx="200.9" cy="706.0" r="34"/><circle cx="145.3" cy="706.0" r="34"/><circle cx="89.6" cy="706.0" r="34"/><circle cx="34.0" cy="706.0" r="34"/><circle cx="34.0" cy="650.0" r="34"/><circle cx="34.0" cy="594.0" r="34"/><circle cx="34.0" cy="538.0" r="34"/><circle cx="34.0" cy="482.0" r="34"/><circle cx="34.0" cy="426.0" r="34"/><circle cx="34.0" cy="370.0" r="34"/><circle cx="34.0" cy="314.0" r="34"/><circle cx="34.0" cy="258.0" r="34"/><circle cx="34.0" cy="202.0" r="34"/><circle cx="34.0" cy="146.0" r="34"/><circle cx="34.0" cy="90.0" r="34"/></svg>
+  <!-- titolo: 2 parole su due righe, l'annuncio -->
+  <h1 class="titolo">aperti<br>oggi</h1>
+  <!-- orario: l'orario o la data, 2-4 parole -->
+  <p class="fascia spaziato">dalle 7 alle 15</p>
+  <!-- saluto: 2-4 parole scritte a mano -->
+  <p class="saluto corsivo">vi aspettiamo!</p>
+
+</body>
+</html>

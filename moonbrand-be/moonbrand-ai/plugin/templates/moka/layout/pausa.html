@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wdth,wght@62.5..100,300..700&family=Pinyon+Script&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #2A2420; --secondario: #8A5A36; --accento: #5F7448; --sfondo: #EEEAE3; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Lato', sans-serif; }
+  /* il chiaro dei testi sulle foto: la tinta dello sfondo, sempre chiara */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+    --su-accento: oklch(from var(--accento) clamp(0, (0.68 - l) * 1000, 1) 0 0);
+    --su-secondario: oklch(from var(--secondario) clamp(0, (0.68 - l) * 1000, 1) 0 0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .maiuscolo { font-family: var(--font-titoli); font-stretch: 62.5%; font-weight: 400; text-transform: uppercase; line-height: 0.86; letter-spacing: -0.01em; white-space: nowrap; }
+  .corsivo { font-family: 'Pinyon Script', cursive; font-weight: 400; line-height: 1; white-space: nowrap; }
+  .marchio { font-family: var(--font-testo); font-weight: 700; font-size: 27px; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+  /* i titoli con data-adatta si stringono finché ogni riga sta nella larghezza indicata (i font del brand possono essere più larghi) */
+  .adatta > span { display: block; width: fit-content; }
+  .stella { position: absolute; width: 44px; height: 66px; }
+  .fondo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; display: block; }
+  .grana { position: absolute; inset: 0; pointer-events: none; opacity: 0.2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.17 0 0 0 0 0.15 0 0 0 -22 13.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  body { background: #000; color: var(--chiaro); }
+  .fondo { object-position: 30% 50%; filter: brightness(0.55) saturate(0.85); }
+  .profilo { position: absolute; left: 0; top: 90px; width: 1080px; text-align: center; color: var(--chiaro); }
+  .frase { position: absolute; left: 150px; top: 800px; font-size: 168px; line-height: 0.82; }
+  .frase span { display: block; }
+  .frase span:last-child { padding-left: 120px; }
+</style>
+</head>
+<body>
+  <!-- fondo: una mano che prepara il caffè o il prodotto, scuro -->
+  <img class="fondo" src="../esempio/latte-art.jpg" alt="">
+
+  <!-- profilo: il profilo del brand -->
+  <div class="profilo marchio logo">@fornoliberti</div>
+
+  <!-- frase: due righe in corsivo di 2-3 parole, la seconda rientrata -->
+  <h1 class="frase corsivo"><span>La vita corre,</span><span>il caffè aiuta</span></h1>
+
+  <svg class="stella" style="left: 120px; top: 1058px; color: var(--chiaro);" viewBox="0 0 40 60"><path d="M20 2 C21 22 25 28 38 30 C25 32 21 38 20 58 C19 38 15 32 2 30 C15 28 19 22 20 2Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
+</body>
+</html>

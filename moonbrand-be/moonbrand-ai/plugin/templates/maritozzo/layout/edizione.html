@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #D7452C; --secondario: #2B2826; --accento: #D7452C; --sfondo: #F3EADB; }
+  :root { --font-titoli: 'Old Standard TT', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root {
+    --su-accento: oklch(from var(--accento) clamp(0, (0.66 - l) * 1000, 1) 0 0);
+    --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 50%; display: block; }
+  /* il riquadro chiaro velato sopra la foto, con dentro un secondo riquadro più pieno per il nome */
+  .velo { position: absolute; left: 226px; top: 452px; width: 628px; height: 500px; border-radius: 22px; background: color-mix(in srgb, var(--chiaro) 82%, transparent); }
+  .titolo { position: absolute; left: 226px; width: 628px; top: 524px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 68px; line-height: 1.12; }
+  .nome { position: absolute; left: 276px; top: 700px; width: 528px; height: 186px; background: color-mix(in srgb, var(--chiaro) 92%, transparent); display: flex; align-items: center; justify-content: center; text-align: center; color: var(--secondario); font-size: 36px; font-weight: 700; text-transform: uppercase; }
+  .logo { position: absolute; left: 50%; top: 1238px; transform: translateX(-50%); padding: 10px 26px; border-radius: 40px; background: var(--accento); color: var(--su-accento); font-size: 25px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <img class="foto" src="../esempio/maritozzo.jpg" alt="">
+
+  <div class="velo"></div>
+  <!-- titolo: 2 righe di 2-3 parole, l'annuncio -->
+  <h1 class="titolo">Edizione limitata,<br>solo a ottobre</h1>
+  <!-- nome: il prodotto, 1-3 parole -->
+  <div class="nome">Maritozzi alla panna</div>
+
+  <!-- logo: il nome del brand nell'etichetta in basso -->
+  <div class="logo">Forno Corallo</div>
+</body>
+</html>

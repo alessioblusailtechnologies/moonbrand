@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1C1915; --secondario: #BAA68E; --accento: #522D1A; --sfondo: #F4F1E8; }
+  :root { --font-titoli: 'Gilda Display', serif; --font-testo: 'PT Serif', serif; }
+  /* testo chiaro sulle foto: la tinta dello sfondo schiarita; testo sul secondario: chiaro se il secondario è medio o scuro */
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); --su-secondario: oklch(from var(--secondario) clamp(0.16, (0.8 - l) * 1000, 0.97) min(c, 0.03) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+  .titolo { font-family: var(--font-titoli); font-weight: 400; letter-spacing: -0.01em; }
+  .corsivo { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; }
+  .foto { position: absolute; display: block; object-fit: cover; }
+  .foto { left: 0; top: 0; width: 1080px; height: 1350px; object-position: 50% 40%; filter: brightness(0.8); }
+  .logo { position: absolute; left: 0; top: 520px; width: 1080px; text-align: center; font-size: 220px; line-height: 1; color: var(--chiaro); }
+  .anno { position: absolute; left: 0; top: 756px; width: 1080px; text-align: center; font-size: 34px; color: var(--chiaro); }
+  .testo { position: absolute; left: 110px; width: 860px; top: 1060px; text-align: center; font-size: 31px; line-height: 1.36; color: var(--chiaro); }
+</style>
+</head>
+<body>
+  <!-- foto: mani al lavoro sul banco (impasto, farina), luce bassa e fondo scuro -->
+  <img class="foto" src="../esempio/impasto.jpg" alt="">
+
+  <!-- logo: il nome del forno con il punto, o il file del logo -->
+  <h1 class="logo titolo" data-adatta="960">Sfornato.</h1>
+  <!-- anno: «dal» e l'anno di apertura -->
+  <p class="anno">dal 2024</p>
+
+  <!-- testo: 30-40 parole, cosa si trova al forno e perché venire -->
+  <p class="testo">Pane, cornetti e dolci fatti ogni notte nel nostro laboratorio, con farine macinate a pietra e burro buono. Passa a trovarci per la colazione o prima di cena.</p>
+  <script>
+    // Con un font del brand più largo i titoli su una riga si rimpiccioliscono finché stanno nella misura scritta in data-adatta.
+    const adatta = () => document.querySelectorAll('[data-adatta]').forEach((el) => {
+      el.style.fontSize = '';
+      const max = Number(el.dataset.adatta);
+      const larghezza = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      while (larghezza() > max && size > 40) { size -= 2; el.style.fontSize = `${size}px`; }
+    });
+    adatta();
+    document.fonts.ready.then(adatta);
+  </script>
+</body>
+</html>

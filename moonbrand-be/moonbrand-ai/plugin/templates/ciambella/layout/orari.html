@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Arimo:wght@400;700&family=Tinos:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #5A4A3D; --secondario: #A9BE5F; --accento: #CF6FA0; --sfondo: #E7E6E2; }
+  :root { --font-titoli: 'Montserrat', sans-serif; --font-testo: 'Arimo', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 40% 50%; display: block; }
+  .foglio { position: absolute; left: 252px; top: 366px; width: 576px; height: 656px; background: #FFFFFF; padding: 96px 40px 0; text-align: center; }
+  .nastro { position: absolute; left: 362px; top: 326px; width: 352px; height: 84px; background: color-mix(in srgb, var(--secondario) 80%, transparent); transform: rotate(-0.6deg);
+    clip-path: polygon(0 6%, 4% 0, 9% 5%, 14% 0, 100% 2%, 97% 30%, 100% 55%, 97% 80%, 100% 100%, 0 97%, 3% 70%, 0 45%, 3% 22%); }
+  .titolo { font-family: var(--font-titoli); font-weight: 800; font-size: 76px; line-height: 1.04; letter-spacing: -0.01em; text-transform: uppercase; }
+  .attesa { margin-top: 40px; font-weight: 700; font-size: 29px; letter-spacing: 0.03em; }
+  .ore { margin-top: 6px; font-size: 29px; line-height: 1.5; letter-spacing: 0.03em; }
+  .saluto { margin-top: 40px; font-family: 'Tinos', serif; font-style: italic; font-size: 46px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto da forno in primo piano che riempie tutto il quadro -->
+  <img class="foto" src="../esempio/waffle.jpg" alt="">
+
+  <div class="foglio">
+    <!-- titolo: 2-3 parole in maiuscolo, su due righe -->
+    <h1 class="titolo">Orari di<br>apertura</h1>
+    <!-- frase: in grassetto, 3-5 parole -->
+    <p class="attesa">Vi aspettiamo al banco</p>
+    <!-- orari: due righe, giorni e ore -->
+    <p class="ore">Lun-Ven: 7:00-19:30<br>Sab-Dom: 8:00-13:00</p>
+    <!-- saluto: corsivo, 2-3 parole -->
+    <p class="saluto">a presto!</p>
+  </div>
+
+  <!-- nastro adesivo: tiene il foglio, resta -->
+  <div class="nastro"></div>
+</body>
+</html>

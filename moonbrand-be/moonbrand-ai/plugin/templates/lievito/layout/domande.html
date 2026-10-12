@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #4E3F31; --secondario: #A8957E; --accento: #C4532F; --sfondo: #E8E1D7; }
+  :root { --font-titoli: 'Gelasio', serif; --font-testo: 'Courier Prime', monospace; }
+  :root { --carta: color-mix(in srgb, var(--sfondo) 45%, white); --riga: color-mix(in srgb, var(--secondario) 55%, transparent); --corsivo: 'Sacramento', cursive; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--sfondo); color: var(--principale); font-family: var(--font-testo); }
+
+  .righe { position: absolute; left: 0; top: 0; width: 1080px; height: 455px; background-color: var(--carta);
+    background-image: repeating-linear-gradient(90deg, transparent 0 34px, var(--riga) 34px 37px, transparent 37px 44px, var(--riga) 44px 47px, transparent 47px 82px); }
+  .righe::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--riga); }
+  .etichetta { position: absolute; left: 0; top: 58px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; }
+  .etichetta::after { content: ""; display: block; width: 10px; height: 2px; margin: 8px auto 0; background: currentColor; }
+
+  .logo { position: absolute; left: 240px; top: 205px; width: 600px; padding: 18px 0; text-align: center; color: var(--accento); }
+  .logo b { display: block; font-family: var(--font-titoli); font-weight: 500; font-size: 60px; line-height: 64px; letter-spacing: .02em; text-transform: uppercase; }
+  .logo i { display: block; font-family: var(--corsivo); font-style: normal; font-size: 52px; line-height: 1; }
+
+  .lettera { position: absolute; left: 0; width: 1080px; text-align: center; font-family: var(--font-titoli); font-weight: 400; font-size: 132px; line-height: 1; }
+  .d { top: 560px; }
+  .r { top: 850px; }
+  .domanda { position: absolute; left: 240px; top: 730px; width: 600px; text-align: center; font-size: 27px; line-height: 34px; }
+  .filetto { position: absolute; left: 280px; top: 812px; width: 520px; border-top: 2px dashed var(--accento); }
+  .risposta { position: absolute; left: 290px; top: 1022px; width: 500px; font-size: 25px; line-height: 33px; text-align: justify; }
+
+  .firma { position: absolute; left: 0; top: 1262px; width: 1080px; text-align: center; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; }
+  .firma::before { content: ""; display: block; width: 10px; height: 2px; margin: 0 auto 8px; background: currentColor; }
+</style>
+</head>
+<body>
+  <!-- righe: carta a righe verticali doppie nella fascia in alto -->
+  <div class="righe"></div>
+  <!-- etichetta: 1-2 parole -->
+  <p class="etichetta">Domande</p>
+  <!-- logo: il nome del brand con il motto sotto, al centro della fascia a righe -->
+  <div class="logo"><b>Forno Merighi</b><i>pane e dolci</i></div>
+
+  <p class="lettera d">D</p>
+  <!-- domanda: 4-8 parole -->
+  <p class="domanda">Nel vostro pane ci sono conservanti?</p>
+  <div class="filetto"></div>
+  <p class="lettera r">R</p>
+  <!-- risposta: 25-40 parole -->
+  <p class="risposta">Nessuno. Per questo il pane è al suo meglio nei primi due o tre giorni. Il giorno dopo passalo qualche minuto in forno caldo e torna come appena sfornato.</p>
+
+  <!-- firma: il profilo del brand -->
+  <p class="firma">@forno.merighi</p>
+</body>
+</html>

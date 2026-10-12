@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #161412; --secondario: #FFCB00; --accento: #BC1D14; --sfondo: #F4F2F3; }
+  :root { --font-titoli: 'Poppins', sans-serif; --font-testo: 'Poppins', sans-serif; }
+  /* La carta del blocco note: lo sfondo del brand appena ingiallito. */
+  :root { --carta: color-mix(in srgb, var(--sfondo) 86%, #C9C2A0); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--principale); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 70%; display: block; }
+
+  .foglio { position: absolute; left: 292px; top: 300px; width: 536px; height: 740px; background: var(--carta);
+    clip-path: polygon(0 4%, 2% 3%, 3% 6%, 9% 6%, 9% 3%, 12% 2.4%, 14% 6%, 19% 6%, 19% 2.8%, 23% 3.4%, 24% 6%, 29% 6%, 29% 2.6%, 33% 2%, 34% 6%, 39% 6%, 39% 3.2%, 43% 2.6%, 44% 6%, 49% 6%, 49% 2.2%, 53% 3%, 54% 6%, 59% 6%, 59% 2.8%, 63% 2%, 64% 6%, 69% 6%, 69% 3.4%, 73% 2.6%, 74% 6%, 79% 6%, 79% 2.2%, 83% 2.8%, 84% 6%, 89% 6%, 89% 3%, 93% 2.4%, 94% 6%, 98% 5%, 100% 3%, 100% 98%, 96% 100%, 0 100%); }
+  .righe { position: absolute; left: 0; top: 0; width: 536px; height: 740px; }
+  .titolo { position: absolute; left: 44px; top: 128px; font-family: var(--font-titoli); font-weight: 700; font-size: 84px; line-height: 1; letter-spacing: -0.035em; color: var(--accento); white-space: nowrap; }
+  .disegno { position: absolute; left: 100px; top: 262px; width: 330px; height: 198px; }
+  .ore { position: absolute; left: 44px; top: 476px; font-weight: 600; font-size: 31px; line-height: 1.05; letter-spacing: -0.02em; }
+  .giorni { position: absolute; left: 44px; top: 552px; font-weight: 600; font-size: 42px; line-height: 1.02; letter-spacing: -0.03em; }
+  .logo { position: absolute; left: 318px; top: 500px; font-family: 'Mrs Saint Delafield', cursive; font-size: 96px; line-height: 1; transform: rotate(-12deg); }
+</style>
+</head>
+<body>
+  <!-- foto: un prodotto da forno in primo piano sul banco, fondo del locale sfocato e caldo -->
+  <img class="foto" src="../esempio/banco.jpg" alt="">
+
+  <div class="foglio">
+    <!-- righe del foglio -->
+    <svg class="righe" viewBox="0 0 536 740" stroke="color-mix(in srgb, var(--principale) 22%, transparent)" stroke-width="2"><line x1="0" y1="116" x2="536" y2="116"/><line x1="0" y1="162" x2="536" y2="162"/><line x1="0" y1="208" x2="536" y2="208"/><line x1="0" y1="254" x2="536" y2="254"/><line x1="0" y1="300" x2="536" y2="300"/><line x1="0" y1="346" x2="536" y2="346"/><line x1="0" y1="392" x2="536" y2="392"/><line x1="0" y1="438" x2="536" y2="438"/><line x1="0" y1="484" x2="536" y2="484"/><line x1="0" y1="530" x2="536" y2="530"/><line x1="0" y1="576" x2="536" y2="576"/><line x1="0" y1="622" x2="536" y2="622"/><line x1="0" y1="668" x2="536" y2="668"/><line x1="0" y1="714" x2="536" y2="714"/></svg>
+    <!-- titolo: 1-2 parole minuscole, al massimo 10 lettere (orari, un annuncio breve) -->
+    <h1 class="titolo">siamo qui</h1>
+    <!-- disegno: un prodotto da forno disegnato a linea -->
+    <svg class="disegno" viewBox="50 70 400 240" fill="none" stroke="var(--principale)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <style>.fine { stroke-width: 3; }</style>
+    <path d="M78 300 Q44 259 73 236 Q59 175 105 157 Q131 97 192 97 Q250 68 308 97 Q369 97 395 157 Q441 175 427 236 Q456 259 422 300 Q382 285 382 260 Q358 242 346 215 Q313 206 286 184 Q250 190 214 184 Q187 206 154 215 Q142 242 118 260 Q118 285 78 300 Z"/>
+    <path d="M118 260 Q102 237 73 236 M154 215 Q139 178 105 157 M214 184 Q216 138 192 97 M286 184 Q284 138 308 97 M346 215 Q361 178 395 157 M382 260 Q398 237 427 236"/>
+    <path class="fine" d="M122 238 Q107 215 78 207 M133 224 Q121 199 94 188 M169 194 Q159 159 131 131 M188 185 Q183 148 159 117 M238 172 Q246 133 233 92 M262 172 Q275 134 267 92 M312 185 Q335 156 341 117 M331 194 Q358 169 369 131 M367 224 Q392 214 406 188 M378 238 Q405 231 422 207"/>
+  </svg>
+    <!-- ore: l'orario, 2 righe brevi -->
+    <p class="ore">dalle 7<br>alle 20</p>
+    <!-- giorni: i giorni di apertura, 2 righe -->
+    <p class="giorni">da lunedì<br>a sabato</p>
+    <!-- logo: il nome del forno come firma a mano -->
+    <div class="logo">Lievito</div>
+  </div>
+</body>
+</html>

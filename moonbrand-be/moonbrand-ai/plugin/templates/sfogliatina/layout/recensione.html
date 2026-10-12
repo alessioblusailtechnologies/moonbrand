@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --principale: #1B1A17; --secondario: #8B6B47; --accento: #F5D35A; --sfondo: #F3EEE5; }
+  :root { --font-titoli: 'Noto Serif Display', serif; --font-testo: 'Montserrat', sans-serif; }
+  :root { --chiaro: oklch(from var(--sfondo) max(l, 0.93) min(c, 0.06) h); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { position: relative; background: var(--principale); color: var(--chiaro); font-family: var(--font-testo); }
+
+  .foto { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; object-fit: cover; object-position: 50% 60%; filter: brightness(0.78); }
+
+  /* stelle e recensione in alto, giustificata, sopra il fondo libero della foto */
+  .stelle { position: absolute; left: 110px; top: 110px; display: flex; gap: 12px; }
+  .stelle svg { width: 46px; height: 46px; fill: var(--accento); }
+  .testo { position: absolute; left: 110px; top: 186px; width: 860px; font-size: 39px; line-height: 1.38; font-weight: 700; text-align: justify; color: var(--chiaro); }
+  .logo { position: absolute; right: 70px; top: 1250px; font-size: 22px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--accento); }
+</style>
+</head>
+<body>
+  <!-- foto: un solo prodotto su un piano neutro, con molto vuoto in alto per il testo -->
+  <img class="foto" src="../esempio/cornetto-cioccolato.jpg" alt="">
+
+  <div class="stelle" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9z"/></svg>
+  </div>
+
+  <!-- recensione: le parole vere di un cliente tra virgolette, 30-45 parole -->
+  <p class="testo">“Ci passo ogni mattina prima del lavoro. Il cornetto al cioccolato è croccante fuori e morbido dentro, e il caffè è sempre giusto. Si sente che qui la sfoglia la fanno davvero, a mano, all'alba.”</p>
+
+  <!-- logo: il nome del forno in basso a destra -->
+  <div class="logo">Forno Ardizzone</div>
+</body>
+</html>
