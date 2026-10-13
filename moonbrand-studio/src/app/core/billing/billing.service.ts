@@ -31,6 +31,7 @@ interface PaddleJs {
       customData?: Record<string, string>;
       settings?: { displayMode?: 'overlay'; locale?: string; theme?: 'light'; allowLogout?: boolean };
     }): void;
+    close(): void;
   };
 }
 declare global {
@@ -43,6 +44,10 @@ const PADDLE_JS = 'https://cdn.paddle.com/paddle/v2/paddle.js';
 // Dopo il pagamento il piano e i crediti arrivano con il webhook di Paddle, di solito in pochi secondi.
 const WAIT_MS = 45_000;
 const POLL_MS = 2_000;
+// Il tempo per vedere la conferma di Paddle prima che il checkout si chiuda da solo.
+const CLOSE_AFTER_MS = 1_500;
+// Un checkout chiuso senza la conferma: si rileggono i crediti per poco, se il pagamento era andato si vede.
+const CLOSED_WAIT_MS = 12_000;
 
 type Purchase = { kind: 'plan'; brandId: string; plan: SubscriptionPlanId } | { kind: 'topup'; brandId: string; before: number };
 
@@ -129,24 +134,43 @@ export class BillingService {
     }
   }
 
+  // Pagamento riuscito: il checkout si chiude da solo e lo studio aspetta il webhook. Chiuso a mano prima della conferma
+  // (o se la conferma non arriva): si guarda per poco se il pagamento c'è stato, senza dire niente se non c'è.
   private onEvent(event: PaddleEvent): void {
-    if (event.name !== 'checkout.completed' || !this.purchase) return;
+    console.info('[pagamenti] evento Paddle', event.name);
     const purchase = this.purchase;
-    this.purchase = null;
+    if (!purchase) return;
+    if (event.name === 'checkout.completed') {
+      this.purchase = null;
+      setTimeout(() => window.Paddle?.Checkout.close(), CLOSE_AFTER_MS);
+      void this.confirm(purchase, WAIT_MS, true);
+    } else if (event.name === 'checkout.closed') {
+      this.purchase = null;
+      void this.confirm(purchase, CLOSED_WAIT_MS, false);
+    }
+  }
+
+  private confirm(purchase: Purchase, ms: number, sure: boolean): Promise<void> {
     if (purchase.kind === 'plan') {
       const name = SUBSCRIPTION_PLANS[purchase.plan].name;
-      void this.wait(purchase.brandId, (credits) => credits.subscription?.status === 'active', 'plans.activated', { plan: name });
-    } else {
-      void this.wait(purchase.brandId, (credits) => credits.monthlyCredits > purchase.before, 'plans.topupDone', {});
+      return this.wait(purchase.brandId, (credits) => credits.subscription?.status === 'active', 'plans.activated', { plan: name }, ms, sure);
     }
+    return this.wait(purchase.brandId, (credits) => credits.monthlyCredits > purchase.before, 'plans.topupDone', {}, ms, sure);
   }
 
   // Rilegge i crediti finché il webhook non ha fatto il suo, poi lo dice. Se tarda, il pagamento c'è comunque: lo
   // studio lo mostrerà alla prossima lettura.
-  private async wait(brandId: string, done: (credits: CreditsResponse) => boolean, message: MessageKey, params: MessageParams): Promise<void> {
+  private async wait(
+    brandId: string,
+    done: (credits: CreditsResponse) => boolean,
+    message: MessageKey,
+    params: MessageParams,
+    ms = WAIT_MS,
+    sure = true,
+  ): Promise<void> {
     this.confirming.set(true);
     try {
-      const until = Date.now() + WAIT_MS;
+      const until = Date.now() + ms;
       while (Date.now() < until) {
         await this.credits.refresh();
         const credits = this.credits.credits();
@@ -156,7 +180,7 @@ export class BillingService {
         }
         await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       }
-      this.toast.show(this.i18n.t('plans.paymentPending'));
+      if (sure) this.toast.show(this.i18n.t('plans.paymentPending'));
     } finally {
       this.confirming.set(false);
     }
