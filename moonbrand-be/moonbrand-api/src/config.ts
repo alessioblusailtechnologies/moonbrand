@@ -41,6 +41,11 @@ const schema = z.object({
   // Il segreto della destinazione dei webhook su Paddle (POST /v1/webhooks/paddle): abbonamenti e crediti pagati.
   // Senza, il webhook risponde 503 e Paddle ripete gli eventi finché non arriva.
   PADDLE_WEBHOOK_SECRET: optional,
+  // L'API di Paddle (prezzi, cambio di piano, portale del cliente) e il token lato client per il checkout nello studio,
+  // dalla sandbox o dall'account vero (PADDLE_ENV). Senza, lo studio dice che i pagamenti non sono disponibili.
+  PADDLE_API_KEY: optional,
+  PADDLE_CLIENT_TOKEN: optional,
+  PADDLE_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
   // Solo negli ambienti di prova, mai in produzione: i canali si possono «collegare» per finta e i loro post risultano

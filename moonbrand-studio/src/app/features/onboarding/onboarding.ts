@@ -9,6 +9,7 @@ import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { BillingService } from '../../core/billing/billing.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
@@ -84,6 +85,7 @@ export class Onboarding {
   private readonly ai = inject(AiJobsService);
   private readonly auth = inject(AuthService);
   private readonly i18n = inject(I18nService);
+  private readonly billing = inject(BillingService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
   protected readonly connection = inject(ChannelConnectionService);
@@ -205,15 +207,19 @@ export class Onboarding {
     const brandId = this.store.brandId();
     if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
+    const plan = this.store.plan();
     let jobs: string[];
     try {
-      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), this.store.plan())).setupJobs;
+      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), plan)).setupJobs;
       this.store.reset();
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('onboarding.createFailed')));
       this.creating.set(false);
       return;
     }
+    // Il checkout del piano si apre sopra la preparazione: si paga mentre nascono stile e prime idee. Chiuderlo non
+    // ferma niente: il piano si attiva dopo dalle Impostazioni brand.
+    void this.billing.activatePlan(brandId, plan);
     await this.prepare(jobs);
     await this.router.navigateByUrl('/assistente');
   }

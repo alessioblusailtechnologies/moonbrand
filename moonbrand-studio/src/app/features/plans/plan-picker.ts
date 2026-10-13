@@ -5,8 +5,8 @@ import { SUBSCRIPTION_PLAN_IDS, SUBSCRIPTION_PLANS, type SubscriptionPlanId } fr
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
-// I tre piani da scegliere, nell'onboarding e nelle Impostazioni brand: cosa ci sta in un mese, poi i crediti. Il prezzo
-// per ora è da definire.
+// I tre piani da scegliere, nell'onboarding e nelle Impostazioni brand: il prezzo IVA esclusa (in euro: chi paga in
+// un'altra valuta la vede nel checkout di Paddle), cosa ci sta in un mese, poi i crediti.
 // current: il piano che il brand ha già, se ne ha uno.
 @Component({
   selector: 'mb-plan-picker',
@@ -25,7 +25,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
               <span class="badge accent">{{ 'plans.recommended' | t }}</span>
             }
           </span>
-          <span class="strong price">{{ 'plans.price' | t }}</span>
+          <span class="strong price">{{ 'plans.price' | t: { price: plan.price } }}</span>
           <span class="strong-sm">{{ plan.monthly }}</span>
           <span class="caption">{{ 'plans.credits' | t: { n: plan.credits } }}</span>
           <span class="caption fit">{{ plan.fit }}</span>
@@ -116,6 +116,7 @@ export class PlanPicker {
       return {
         id,
         name: plan.name,
+        price: new Intl.NumberFormat(intl, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(plan.priceEur),
         credits: plan.monthlyCredits.toLocaleString(intl),
         monthly: this.i18n.t('plans.monthly', plan.monthly),
         fit: this.i18n.t(`plans.fit.${id}`),

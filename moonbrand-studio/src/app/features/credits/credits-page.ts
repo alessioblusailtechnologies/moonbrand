@@ -3,8 +3,10 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, linkedSig
 import { firstValueFrom } from 'rxjs';
 
 import type { CreditActivity, CreditUsageResponse } from '@moonbrand/shared/api/contract';
-import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
+import { CREDIT_TOPUP, SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 
+import { BillingService } from '../../core/billing/billing.service';
+import { subscriptionLive } from '../../core/billing/subscription-status';
 import { BrandsService } from '../../core/brands/brands.service';
 import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
@@ -67,6 +69,20 @@ import { ToastService } from '../../ui/toast';
                 }
               </span>
             </div>
+            @if (card.current) {
+              @if (topup(); as offer) {
+                <div class="topup">
+                  @if (offer.subscribed) {
+                    <button class="btn btn-secondary btn-sm" type="button" [disabled]="billing.confirming()" (click)="buyTopup()">
+                      {{ 'plans.topup' | t }}
+                    </button>
+                    <span class="caption">{{ 'plans.topupHint' | t: { price: offer.price } }}</span>
+                  } @else {
+                    <span class="caption">{{ 'plans.topupNeedsPlan' | t }}</span>
+                  }
+                </div>
+              }
+            }
           </div>
         }
 
@@ -160,6 +176,15 @@ import { ToastService } from '../../ui/toast';
       align-items: center;
       gap: 28px;
       padding: 24px 28px;
+    }
+    .topup {
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      max-width: 220px;
+      text-align: right;
     }
     .gauge {
       position: relative;
@@ -310,6 +335,11 @@ import { ToastService } from '../../ui/toast';
         align-items: stretch;
         text-align: center;
       }
+      .topup {
+        align-items: center;
+        max-width: none;
+        text-align: center;
+      }
       .gauge {
         align-self: center;
       }
@@ -337,7 +367,24 @@ export class CreditsPage {
   private readonly toast = inject(ToastService);
   private readonly brands = inject(BrandsService);
   private readonly credits = inject(CreditsService);
+  protected readonly billing = inject(BillingService);
   protected readonly i18n = inject(I18nService);
+
+  // La ricarica da 1.000 crediti del brand attivo: si vende solo con un piano attivo, e con Ultra costa meno.
+  protected readonly topup = computed(() => {
+    const credits = this.credits.credits();
+    if (!credits) return null;
+    const euro = credits.plan === 'ultra' ? CREDIT_TOPUP.ultraPriceEur : CREDIT_TOPUP.priceEur;
+    return {
+      subscribed: subscriptionLive(credits.subscription),
+      price: new Intl.NumberFormat(this.i18n.intl(), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(euro),
+    };
+  });
+
+  protected buyTopup(): void {
+    const brandId = this.brands.activeBrand()?.id;
+    if (brandId) void this.billing.buyTopup(brandId);
+  }
 
   protected readonly usage = signal<CreditUsageResponse | null>(null);
   protected readonly loading = signal(true);

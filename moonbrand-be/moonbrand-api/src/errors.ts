@@ -53,7 +53,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
       request.log.error({ err: error }, 'errore non gestito');
       return reply.status(500).send({ status: 500, code: 'INTERNAL_ERROR', message: 'Il servizio non è momentaneamente disponibile.' });
     }
-    if (apiError.status >= 500) request.log.warn({ code: apiError.code }, apiError.message);
+    if (apiError.status >= 500) request.log.warn({ code: apiError.code, cause: apiError.cause }, apiError.message);
     return reply.status(apiError.status).send({ status: apiError.status, code: apiError.code, message: apiError.message });
   });
 

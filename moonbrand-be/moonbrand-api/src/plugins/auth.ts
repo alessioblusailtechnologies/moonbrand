@@ -40,6 +40,8 @@ const PUBLIC_ROUTES = new Set([
   '/v1/auth/password/reset',
   '/v1/auth/google',
   '/v1/auth/google/callback',
+  // Il token lato client di Paddle è pubblico: serve anche alla pagina dei link di pagamento, fuori dallo studio.
+  '/v1/billing/config',
   // Firmati da Zernio e da Paddle, non da un utente.
   ZERNIO_WEBHOOK,
   PADDLE_WEBHOOK,

@@ -3,11 +3,13 @@ import type pg from 'pg';
 import { z } from 'zod';
 
 import type {
+  BrandSubscription,
   CreditActivity,
   CreditActivityKind,
   CreditCategory,
   CreditsResponse,
   CreditUsageResponse,
+  SubscriptionStatus,
 } from '@moonbrand/shared/api/contract';
 import { DEFAULT_SUBSCRIPTION_PLAN, SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
@@ -24,8 +26,9 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
   app.get('/v1/credits', (request) =>
     withIdentity(pool, request.identity, async (db): Promise<CreditsResponse> => {
       const { brandId } = querySchema.parse(request.query);
+      const subscription = await brandSubscription(db, request.identity.accountId, brandId ?? null);
       const paid = await paidCredits(db, request.identity.accountId, brandId ?? null);
-      if (paid) return paid;
+      if (paid) return { ...paid, subscription };
       const { rows } = await db.query<{ plan: SubscriptionPlanId | null; used: string; added: string; renews_on: string }>(
         `with month as (select date_trunc('month', now() at time zone 'Europe/Rome') as start),
               brand as (
@@ -43,7 +46,7 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
       const plan = rows[0].plan ?? DEFAULT_SUBSCRIPTION_PLAN;
       const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits + Math.round(Number(rows[0].added));
       const usedThisMonth = Math.round(Number(rows[0].used));
-      return { plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: rows[0].renews_on };
+      return { plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: rows[0].renews_on, subscription };
     }),
   );
 
@@ -94,7 +97,7 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
 // scadono a fine periodo; le ricariche restano finché c'è l'abbonamento. Si consuma prima il piano: quello che in un
 // periodo chiuso è andato oltre il piano è uscito dalle ricariche. Senza un periodo in corso (abbonamento finito, o il
 // primo pagamento non ancora arrivato) vale il conto di prima, a mese di calendario.
-async function paidCredits(db: pg.ClientBase, accountId: string, brandId: string | null): Promise<CreditsResponse | null> {
+async function paidCredits(db: pg.ClientBase, accountId: string, brandId: string | null): Promise<Omit<CreditsResponse, 'subscription'> | null> {
   const { rows } = await db.query<{ plan: SubscriptionPlanId; period_amount: string; used: string; topups: string; overflow: string; renews_on: string }>(
     `with brand as (
        select b.id from presenza.brands b
@@ -130,6 +133,17 @@ async function paidCredits(db: pg.ClientBase, accountId: string, brandId: string
   const monthlyCredits = Math.round(Number(row.period_amount) + Math.max(Number(row.topups) - Number(row.overflow), 0));
   const usedThisMonth = Math.round(Number(row.used));
   return { plan: row.plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: row.renews_on };
+}
+
+async function brandSubscription(db: pg.ClientBase, accountId: string, brandId: string | null): Promise<BrandSubscription | null> {
+  const { rows } = await db.query<{ plan: SubscriptionPlanId; status: SubscriptionStatus; period_end: Date | null; cancels_at: Date | null }>(
+    `select s.plan, s.status, s.period_end, s.cancels_at from presenza.brand_subscriptions s
+     where s.brand_id = coalesce($2::uuid, (select a.active_brand_id from presenza.accounts a where a.id = $1))`,
+    [accountId, brandId],
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return { plan: row.plan, status: row.status, periodEnd: row.period_end?.toISOString() ?? null, cancelsAt: row.cancels_at?.toISOString() ?? null };
 }
 
 const usageSchema = z.object({

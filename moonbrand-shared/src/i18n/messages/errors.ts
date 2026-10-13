@@ -30,6 +30,10 @@ export const errors = defineMessages({
       SOCIAL_FAILED: 'Il collegamento del social non è riuscito: riprova.',
       SOCIAL_NOT_CONFIGURED: 'Il collegamento dei social non è disponibile.',
       SOCIAL_NOT_FOUND: 'Account social non trovato: ricomincia il collegamento.',
+      PAYMENTS_NOT_CONFIGURED: 'I pagamenti non sono ancora disponibili.',
+      PAYMENTS_FAILED: 'Il servizio dei pagamenti non risponde: riprova tra poco.',
+      ALREADY_SUBSCRIBED: 'Questo brand ha già un piano attivo: cambialo dalle Impostazioni brand.',
+      NO_SUBSCRIPTION: 'Attiva prima un piano per questo brand.',
     },
   },
   en: {
@@ -59,6 +63,10 @@ export const errors = defineMessages({
       SOCIAL_FAILED: 'Connecting the social account didn’t work: try again.',
       SOCIAL_NOT_CONFIGURED: 'Connecting social accounts isn’t available.',
       SOCIAL_NOT_FOUND: 'Social account not found: start the connection again.',
+      PAYMENTS_NOT_CONFIGURED: 'Payments aren’t available yet.',
+      PAYMENTS_FAILED: 'The payment service isn’t responding: try again shortly.',
+      ALREADY_SUBSCRIBED: 'This brand already has an active plan: change it from Brand settings.',
+      NO_SUBSCRIPTION: 'Activate a plan for this brand first.',
     },
   },
   fr: {
@@ -88,6 +96,10 @@ export const errors = defineMessages({
       SOCIAL_FAILED: "La connexion du réseau social n'a pas abouti : réessayez.",
       SOCIAL_NOT_CONFIGURED: "La connexion des réseaux sociaux n'est pas disponible.",
       SOCIAL_NOT_FOUND: 'Compte introuvable : recommencez la connexion.',
+      PAYMENTS_NOT_CONFIGURED: 'Les paiements ne sont pas encore disponibles.',
+      PAYMENTS_FAILED: 'Le service de paiement ne répond pas : réessayez dans un instant.',
+      ALREADY_SUBSCRIBED: 'Cette marque a déjà un forfait actif : changez-le dans les Paramètres de la marque.',
+      NO_SUBSCRIPTION: 'Activez d’abord un forfait pour cette marque.',
     },
   },
 });

@@ -14,7 +14,7 @@ export class CreditsService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
   private readonly brands = inject(BrandsService);
-  private readonly brandId = computed(() => this.brands.activeBrand()?.id ?? null);
+  readonly brandId = computed(() => this.brands.activeBrand()?.id ?? null);
 
   readonly credits = signal<CreditsResponse | null>(null);
 

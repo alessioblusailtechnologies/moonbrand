@@ -87,7 +87,7 @@ export class BrandsService {
     return created;
   }
 
-  // Per ora senza pagamento: il piano vale subito.
+  // Senza abbonamento salva il piano da attivare; con l'abbonamento lo cambia su Paddle (il piano nuovo arriva con il webhook).
   async changePlan(brandId: string, plan: SubscriptionPlanId): Promise<void> {
     await firstValueFrom(this.http.put<void>(`/v1/brands/${brandId}/plan`, { plan } satisfies UpdateBrandPlanRequest));
   }

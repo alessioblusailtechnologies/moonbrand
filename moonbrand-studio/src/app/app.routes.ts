@@ -24,6 +24,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/verify-email').then((m) => m.VerifyEmail),
   },
   { path: 'accesso-google', loadComponent: () => import('./features/auth/google-callback').then((m) => m.GoogleCallback) },
+  // Il link di pagamento di Paddle (carta da aggiornare, rinnovo da pagare): si apre anche senza essere dentro.
+  { path: 'abbonamento', loadComponent: () => import('./features/billing/billing-link').then((m) => m.BillingLink) },
   { path: 'conferma-email', loadComponent: () => import('./features/auth/confirm-email').then((m) => m.ConfirmEmail) },
   {
     path: '',

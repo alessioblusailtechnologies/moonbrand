@@ -14,7 +14,9 @@ import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
+import { PaddleApi } from './modules/billing/paddle-api';
 import { registerPaddleWebhook } from './modules/billing/paddle-webhook';
+import { registerBillingRoutes } from './modules/billing/routes';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
@@ -49,6 +51,9 @@ export interface AppOptions {
     | 'ZERNIO_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
     | 'PADDLE_WEBHOOK_SECRET'
+    | 'PADDLE_API_KEY'
+    | 'PADDLE_ENV'
+    | 'PADDLE_CLIENT_TOKEN'
     | 'STUDIO_ORIGINS'
     | 'SIMULATE_SOCIAL'
     | 'STUDIO_URL'
@@ -76,7 +81,8 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
-  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings);
+  const paddle = new PaddleApi(options.settings);
+  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, paddle);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
@@ -88,6 +94,7 @@ export function buildApp(options: AppOptions) {
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
   registerPaddleWebhook(app, options.pool, options.settings);
+  registerBillingRoutes(app, options.pool, paddle, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);

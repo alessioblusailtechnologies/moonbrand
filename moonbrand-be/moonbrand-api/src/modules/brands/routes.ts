@@ -2,8 +2,11 @@ import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
+import { SUBSCRIPTION_PLAN_IDS } from '@moonbrand/shared/domain/subscription';
 
 import type { Config } from '../../config';
+import type { PaddleApi } from '../billing/paddle-api';
+import { liveSubscription, ownedBrand } from '../billing/routes';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
@@ -37,6 +40,7 @@ export function registerBrandRoutes(
   files: BrandFiles,
   storage: MediaStorage,
   settings: Pick<Config, 'ZERNIO_API_KEY' | 'SIMULATE_SOCIAL'>,
+  paddle: PaddleApi,
 ): void {
   app.get('/v1/brands', (request) => listBrands(pool, request.identity));
 
@@ -85,11 +89,21 @@ export function registerBrandRoutes(
     return brand;
   });
 
-  // Dalle Impostazioni brand. Per ora senza pagamento: il piano scelto vale subito.
+  // Dalle Impostazioni brand. Con l'abbonamento il piano si cambia su Paddle e diventa del brand quando arriva il webhook;
+  // senza, è solo la scelta del piano da attivare con il checkout.
   app.put('/v1/brands/:brandId/plan', async (request, reply) => {
     const { brandId } = brandParams.parse(request.params);
     const { plan } = updateBrandPlanSchema.parse(request.body);
-    await changeBrandPlan(pool, request.identity, brandId, plan);
+    const owned = await ownedBrand(pool, request.identity, brandId);
+    if (liveSubscription(owned) && owned.subscription_id && owned.plan) {
+      if (owned.plan !== plan) {
+        const prices = await paddle.catalog();
+        const upgrade = SUBSCRIPTION_PLAN_IDS.indexOf(plan) > SUBSCRIPTION_PLAN_IDS.indexOf(owned.plan);
+        await paddle.changePlan(owned.subscription_id, prices.plans[plan], upgrade);
+      }
+    } else {
+      await changeBrandPlan(pool, request.identity, brandId, plan);
+    }
     return reply.code(204).send();
   });
 

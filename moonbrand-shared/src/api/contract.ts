@@ -689,6 +689,44 @@ export interface CreditsResponse {
   remaining: number;
   // Il giorno in cui i crediti si rinnovano, YYYY-MM-DD.
   renewsOn: string;
+  // L'abbonamento pagato del brand, su Paddle; null se il piano non è ancora attivato.
+  subscription: BrandSubscription | null;
+}
+
+// Gli stati di Paddle: past_due è un pagamento non riuscito che Paddle sta riprovando.
+export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'paused' | 'canceled';
+
+export interface BrandSubscription {
+  plan: SubscriptionPlanId;
+  status: SubscriptionStatus;
+  // Fine del periodo pagato, ISO.
+  periodEnd: string | null;
+  // La disdetta programmata: l'abbonamento resta attivo fino a questa data, ISO.
+  cancelsAt: string | null;
+}
+
+// Il checkout di Paddle si apre nello studio con Paddle.js: il token lato client e l'ambiente vengono dall'API.
+export interface BillingConfigResponse {
+  environment: 'sandbox' | 'production';
+  clientToken: string;
+}
+
+// plan: il piano da attivare su un brand che non ha ancora l'abbonamento; topup: una ricarica da 1.000 crediti.
+export interface CheckoutRequest {
+  brandId: string;
+  kind: 'plan' | 'topup';
+  plan?: SubscriptionPlanId;
+}
+
+export interface CheckoutResponse {
+  priceId: string;
+  // Paddle li copia sulla transazione e sull'abbonamento: il webhook ci ritrova il brand.
+  customData: { brandId: string; accountId: string };
+  customer: { id: string } | { email: string };
+}
+
+export interface BillingPortalResponse {
+  url: string;
 }
 
 // Come si sono consumati i crediti di un brand in un mese, attività per attività: chi usa moonbrand deve poterlo

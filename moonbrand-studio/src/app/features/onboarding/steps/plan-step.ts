@@ -4,14 +4,15 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { PlanPicker } from '../../plans/plan-picker';
 import { OnboardingStore } from '../onboarding.store';
 
-// Il piano del brand nuovo: parte da Pro, e si può cambiare dopo dalle Impostazioni brand. Il pagamento è simulato.
+// Il piano del brand nuovo: parte da Pro, e si può cambiare dopo dalle Impostazioni brand. Il checkout di Paddle si apre
+// appena il brand è creato.
 @Component({
   selector: 'mb-plan-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PlanPicker, TranslatePipe],
   template: `
     <mb-plan-picker [selected]="store.plan()" (chosen)="store.choosePlan($event)" />
-    <p class="caption">{{ 'plans.mockNote' | t }}</p>
+    <p class="caption">{{ 'plans.checkoutNote' | t }}</p>
   `,
   styles: `
     :host {

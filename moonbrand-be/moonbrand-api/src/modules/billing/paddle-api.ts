@@ -1,0 +1,86 @@
+import type { SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
+
+import type { Config } from '../../config';
+import { ApiError } from '../../errors';
+
+// Le chiamate all'API di Paddle (developer.paddle.com/api-reference), con la chiave del venditore: sandbox o live
+// secondo PADDLE_ENV. La chiave resta qui: allo studio vanno solo il token lato client e gli id dei prezzi.
+export type PaddleSettings = Pick<Config, 'PADDLE_API_KEY' | 'PADDLE_ENV'>;
+
+export interface Prices {
+  plans: Record<SubscriptionPlanId, string>;
+  topup: string;
+  topupUltra: string;
+}
+
+interface PriceEntity {
+  id: string;
+  custom_data: { plan?: SubscriptionPlanId; kind?: string; tier?: string } | null;
+}
+
+export class PaddleApi {
+  private prices: { value: Prices; at: number } | null = null;
+  private readonly settings: PaddleSettings;
+
+  constructor(settings: PaddleSettings) {
+    this.settings = settings;
+  }
+
+  get configured(): boolean {
+    return Boolean(this.settings.PADDLE_API_KEY);
+  }
+
+  private async call<T>(method: 'GET' | 'POST' | 'PATCH', path: string, body?: unknown): Promise<T> {
+    const key = this.settings.PADDLE_API_KEY;
+    if (!key) throw new ApiError(503, 'PAYMENTS_NOT_CONFIGURED', 'I pagamenti non sono configurati.');
+    const base = this.settings.PADDLE_ENV === 'production' ? 'https://api.paddle.com' : 'https://sandbox-api.paddle.com';
+    const response = await fetch(`${base}${path}`, {
+      method,
+      headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+      ...(body !== undefined && { body: JSON.stringify(body) }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const json = (await response.json().catch(() => null)) as { data?: T; error?: { code?: string; detail?: string } } | null;
+    if (!response.ok || !json?.data) {
+      const error = new ApiError(502, 'PAYMENTS_FAILED', 'Il servizio dei pagamenti non risponde: riprova tra poco.');
+      error.cause = `Paddle ${method} ${path}: ${response.status} ${json?.error?.code ?? ''} ${json?.error?.detail ?? ''}`;
+      throw error;
+    }
+    return json.data;
+  }
+
+  // I prezzi del catalogo, riconosciuti dai loro custom_data (plan; kind topup con tier standard o ultra): così sandbox e
+  // live hanno ciascuno i suoi id senza doverli copiare in configurazione. Si rileggono ogni 10 minuti.
+  async catalog(): Promise<Prices> {
+    if (this.prices && Date.now() - this.prices.at < 10 * 60_000) return this.prices.value;
+    const list = await this.call<PriceEntity[]>('GET', '/prices?status=active&per_page=200');
+    const plan = (id: SubscriptionPlanId) => list.find((price) => price.custom_data?.plan === id)?.id;
+    const topup = (tier: string) => list.find((price) => price.custom_data?.kind === 'topup' && price.custom_data.tier === tier)?.id;
+    const value = { plans: { start: plan('start'), pro: plan('pro'), ultra: plan('ultra') }, topup: topup('standard'), topupUltra: topup('ultra') };
+    if (!value.plans.start || !value.plans.pro || !value.plans.ultra || !value.topup || !value.topupUltra) {
+      throw new ApiError(503, 'PAYMENTS_NOT_CONFIGURED', 'Nel catalogo di Paddle mancano dei prezzi.');
+    }
+    this.prices = { value: value as Prices, at: Date.now() };
+    return this.prices.value;
+  }
+
+  // Il cambio di piano di un abbonamento: chi sale paga subito la differenza del periodo, chi scende la ritrova sul
+  // rinnovo. Se il pagamento non riesce il piano resta quello di prima.
+  async changePlan(subscriptionId: string, priceId: string, upgrade: boolean): Promise<void> {
+    await this.call('PATCH', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+      items: [{ price_id: priceId, quantity: 1 }],
+      proration_billing_mode: upgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+      on_payment_failure: 'prevent_change',
+    });
+  }
+
+  // Il portale del cliente su Paddle: carta, disdetta, pagamenti e fatture da scaricare.
+  async portal(customerId: string, subscriptionIds: string[]): Promise<string> {
+    const session = await this.call<{ urls: { general: { overview: string } } }>(
+      'POST',
+      `/customers/${encodeURIComponent(customerId)}/portal-sessions`,
+      { subscription_ids: subscriptionIds },
+    );
+    return session.urls.general.overview;
+  }
+}
