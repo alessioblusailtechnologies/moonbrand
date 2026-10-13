@@ -392,18 +392,19 @@ export class CreditsPage {
   // Il mese scelto; null è il mese in corso, e cambiando brand si riparte da lì.
   protected readonly month = linkedSignal<string | null, string | null>({ source: this.brandId, computation: () => null });
 
-  // La card in alto: nel mese in corso il cerchio è quello della barra laterale (i crediti che restano, rosso sotto il
-  // 10%); nei mesi chiusi mostra quanto del piano si è consumato. Il piano è quello di oggi del brand.
+  // La card in alto: nel mese in corso è la barra laterale (i crediti che restano del periodo, che con l'abbonamento
+  // segue il periodo pagato e non il mese; rosso sotto il 10%); nei mesi chiusi mostra quanto del piano si è consumato.
+  // Il piano è quello di oggi del brand.
   protected readonly summary = computed(() => {
     const credits = this.credits.credits();
     const usage = this.usage();
     if (!credits || !usage) return null;
     const intl = this.i18n.intl();
     const total = credits.monthlyCredits;
-    const used = usage.used;
     const current = usage.month === usage.months[0];
+    const used = current ? credits.usedThisMonth : usage.used;
     const usedShare = Math.min(used / total, 1);
-    const left = Math.max(total - used, 0);
+    const left = Math.max(current ? credits.remaining : total - used, 0);
     const round = (value: number) => Math.round(value).toLocaleString(intl);
     return {
       current,
