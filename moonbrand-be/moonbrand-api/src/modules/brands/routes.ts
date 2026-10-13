@@ -2,11 +2,10 @@ import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type pg from 'pg';
 
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
-import { SUBSCRIPTION_PLAN_IDS } from '@moonbrand/shared/domain/subscription';
 
 import type { Config } from '../../config';
 import type { PaddleApi } from '../billing/paddle-api';
-import { liveSubscription, ownedBrand } from '../billing/routes';
+import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
 import type { MediaStorage } from '../media/storage';
@@ -98,8 +97,7 @@ export function registerBrandRoutes(
     if (liveSubscription(owned) && owned.subscription_id && owned.plan) {
       if (owned.plan !== plan) {
         const prices = await paddle.catalog();
-        const upgrade = SUBSCRIPTION_PLAN_IDS.indexOf(plan) > SUBSCRIPTION_PLAN_IDS.indexOf(owned.plan);
-        await paddle.changePlan(owned.subscription_id, prices.plans[plan], upgrade);
+        await paddle.changePlan(owned.subscription_id, prices.plans[plan], isUpgrade(owned.plan, plan));
       }
     } else {
       await changeBrandPlan(pool, request.identity, brandId, plan);

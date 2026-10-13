@@ -14,6 +14,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
 import { BillingService } from '../../core/billing/billing.service';
+import { PaymentModal } from '../billing/payment-modal';
 import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -40,7 +41,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, PaymentModal, TranslatePipe],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
   host: {
     '[style.--topbar-height.px]': 'topbarHeight()',
@@ -225,6 +226,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
       </main>
     </div>
     <mb-brand-picker />
+    <mb-payment-modal />
   `,
   styles: `
     // La sidebar fa da cornice blu notte: la pagina è un pannello chiaro staccato di --frame dai bordi,

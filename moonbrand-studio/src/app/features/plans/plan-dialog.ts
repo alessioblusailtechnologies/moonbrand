@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
+import type { PlanPreviewResponse } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { BillingService } from '../../core/billing/billing.service';
@@ -12,8 +13,9 @@ import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
 import { PlanPicker } from './plan-picker';
 
-// Il piano dalle Impostazioni brand. Senza abbonamento si attiva con il checkout di Paddle; con l'abbonamento si cambia
-// su Paddle, che addebita o accredita la differenza, e il piano nuovo arriva con il webhook.
+// Il piano dalle Impostazioni brand. Senza abbonamento si attiva con il checkout di Paddle, che mostra lui gli importi.
+// Con l'abbonamento il cambio passa da una conferma con quanto si paga oggi e al rinnovo (l'anteprima di Paddle); poi
+// Paddle addebita o accredita la differenza e la modale dei pagamenti aspetta il piano nuovo.
 @Component({
   selector: 'mb-plan-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,21 +24,55 @@ import { PlanPicker } from './plan-picker';
   template: `
     <div class="backdrop" (click)="close()"></div>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="plan-title">
-      <div class="titles">
-        <h2 id="plan-title" class="dialog-title">{{ (subscribed() ? 'plans.dialogTitle' : 'plans.activateTitle') | t }}</h2>
-        <p class="caption">{{ (subscribed() ? 'plans.dialogHint' : 'plans.activateHint') | t }}</p>
-      </div>
-      <mb-plan-picker [selected]="picked()" [current]="subscribed() ? current() : null" [disabled]="busy()" (chosen)="picked.set($event)" />
-      <p class="caption">{{ (subscribed() ? 'plans.changeNote' : 'plans.checkoutNote') | t }}</p>
-      <div class="actions">
-        <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="close()">{{ 'common.cancel' | t }}</button>
-        <button class="btn btn-primary" type="button" [class.busy]="busy()" [attr.aria-disabled]="subscribed() && picked() === current()" (click)="activate()">
-          @if (busy()) {
-            <span class="spinner"></span>
+      @if (review(); as summary) {
+        <div class="titles">
+          <h2 id="plan-title" class="dialog-title">{{ 'plans.confirm.title' | t }}</h2>
+          <p class="caption">{{ summary.from }}</p>
+        </div>
+        <div class="bill">
+          <div class="bill-row">
+            <span class="strong-sm">{{ summary.todayLabel }}</span>
+            @if (summary.today) {
+              <span class="heading">{{ summary.today }}</span>
+            }
+          </div>
+          @if (summary.nextCredit) {
+            <p class="caption">{{ summary.nextCredit }}</p>
+          } @else if (summary.next) {
+            <div class="bill-row">
+              <span class="caption">{{ summary.nextLabel }}</span>
+              <span class="strong-sm">{{ summary.next }}</span>
+            </div>
           }
-          {{ (subscribed() ? 'plans.change' : 'plans.activate') | t: { plan: pickedName() } }}
-        </button>
-      </div>
+          <p class="caption">{{ summary.credits }}</p>
+        </div>
+        <p class="caption">{{ 'plans.confirm.taxes' | t }}</p>
+        <div class="actions">
+          <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="preview.set(null)">{{ 'plans.confirm.back' | t }}</button>
+          <button class="btn btn-primary" type="button" [class.busy]="busy()" (click)="confirm()">
+            @if (busy()) {
+              <span class="spinner"></span>
+            }
+            {{ summary.action }}
+          </button>
+        </div>
+      } @else {
+        <div class="titles">
+          <h2 id="plan-title" class="dialog-title">{{ (subscribed() ? 'plans.dialogTitle' : 'plans.activateTitle') | t }}</h2>
+          <p class="caption">{{ (subscribed() ? 'plans.dialogHint' : 'plans.activateHint') | t }}</p>
+        </div>
+        <mb-plan-picker [selected]="picked()" [current]="subscribed() ? current() : null" [disabled]="busy()" (chosen)="picked.set($event)" />
+        <p class="caption">{{ (subscribed() ? 'plans.changeNote' : 'plans.checkoutNote') | t }}</p>
+        <div class="actions">
+          <button class="btn btn-secondary" type="button" [disabled]="busy()" (click)="close()">{{ 'common.cancel' | t }}</button>
+          <button class="btn btn-primary" type="button" [class.busy]="busy()" [attr.aria-disabled]="subscribed() && picked() === current()" (click)="activate()">
+            @if (busy()) {
+              <span class="spinner"></span>
+            }
+            {{ (subscribed() ? 'plans.change' : 'plans.activate') | t: { plan: pickedName() } }}
+          </button>
+        </div>
+      }
     </div>
   `,
   styles: `
@@ -65,6 +101,9 @@ import { PlanPicker } from './plan-picker';
       transform: translate(-50%, -50%);
       animation: dialog-in 180ms var(--ease);
     }
+    .dialog:has(.bill) {
+      width: min(460px, calc(100vw - 32px));
+    }
     .titles {
       display: flex;
       flex-direction: column;
@@ -75,6 +114,20 @@ import { PlanPicker } from './plan-picker';
       color: var(--text-title);
       font-size: 17px;
       font-weight: 600;
+    }
+    .bill {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 18px;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-xl);
+    }
+    .bill-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
     }
     .actions {
       display: flex;
@@ -98,6 +151,31 @@ export class PlanDialog {
   protected readonly picked = linkedSignal(() => this.current());
   protected readonly pickedName = computed(() => SUBSCRIPTION_PLANS[this.picked()].name);
   protected readonly busy = signal(false);
+  protected readonly preview = signal<PlanPreviewResponse | null>(null);
+
+  // La conferma del cambio: gli importi di Paddle, già con le tasse, nella valuta del cliente.
+  protected readonly review = computed(() => {
+    const preview = this.preview();
+    if (!preview) return null;
+    const intl = this.i18n.intl();
+    const money = (cents: string) => new Intl.NumberFormat(intl, { style: 'currency', currency: preview.currency }).format(Math.abs(Number(cents)) / 100);
+    const date = preview.nextAt ? new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(preview.nextAt)) : '';
+    const today = preview.today && Number(preview.today) > 0 ? money(preview.today) : null;
+    const credit = preview.next !== null && Number(preview.next) < 0;
+    const to = SUBSCRIPTION_PLANS[this.picked()];
+    return {
+      from: this.i18n.t('plans.confirm.from', { from: SUBSCRIPTION_PLANS[this.current()].name, to: to.name }),
+      todayLabel: this.i18n.t(today ? 'plans.confirm.today' : 'plans.confirm.todayNone'),
+      today,
+      nextLabel: this.i18n.t('plans.confirm.next', { date }),
+      next: preview.next !== null && !credit ? money(preview.next) : null,
+      nextCredit: credit && preview.next ? this.i18n.t('plans.confirm.nextCredit', { date, amount: money(preview.next) }) : null,
+      credits: preview.upgrade
+        ? this.i18n.t('plans.confirm.creditsUp', { credits: to.monthlyCredits.toLocaleString(intl) })
+        : this.i18n.t('plans.confirm.creditsDown'),
+      action: today ? this.i18n.t('plans.confirm.pay', { amount: today }) : this.i18n.t('plans.confirm.go'),
+    };
+  });
 
   constructor() {
     lockPageScroll();
@@ -114,17 +192,31 @@ export class PlanDialog {
     this.busy.set(true);
     try {
       if (this.subscribed()) {
-        await this.brands.changePlan(brandId, plan);
-        void this.billing.waitForPlan(brandId, plan);
-      } else {
-        // Il piano scelto resta sul brand anche se il checkout si chiude senza pagare.
-        if (plan !== this.current()) await this.brands.changePlan(brandId, plan);
-        await this.credits.refresh();
-        if (!(await this.billing.activatePlan(brandId, plan))) {
-          this.busy.set(false);
-          return;
-        }
+        // Prima la conferma, con gli importi.
+        this.preview.set(await this.billing.previewPlan(brandId, plan));
+        this.busy.set(false);
+        return;
       }
+      // Il piano scelto resta sul brand anche se il checkout si chiude senza pagare.
+      if (plan !== this.current()) await this.brands.changePlan(brandId, plan);
+      await this.credits.refresh();
+      if (!(await this.billing.activatePlan(brandId, plan))) {
+        this.busy.set(false);
+        return;
+      }
+      this.busy.set(false);
+      this.closed.emit();
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t(this.subscribed() ? 'plans.confirm.previewFailed' : 'plans.activateFailed')));
+      this.busy.set(false);
+    }
+  }
+
+  protected async confirm(): Promise<void> {
+    if (this.busy()) return;
+    this.busy.set(true);
+    try {
+      await this.billing.changePlan(this.brandId(), this.picked());
       this.busy.set(false);
       this.closed.emit();
     } catch (error) {

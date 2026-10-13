@@ -8,9 +8,9 @@ import type {
   CheckoutRequest,
   CheckoutResponse,
   CreditsResponse,
+  PlanPreviewResponse,
 } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
-import type { MessageKey, MessageParams } from '@moonbrand/shared/i18n/translate';
 
 import { CreditsService } from '../credits/credits.service';
 import { errorMessage } from '../errors';
@@ -49,7 +49,12 @@ const CLOSE_AFTER_MS = 1_500;
 // Un checkout chiuso senza la conferma: si rileggono i crediti per poco, se il pagamento era andato si vede.
 const CLOSED_WAIT_MS = 12_000;
 
-type Purchase = { kind: 'plan'; brandId: string; plan: SubscriptionPlanId } | { kind: 'topup'; brandId: string; before: number };
+type Purchase =
+  | { kind: 'plan' | 'change'; brandId: string; plan: SubscriptionPlanId }
+  | { kind: 'topup'; brandId: string; before: number };
+
+// La modale dei pagamenti: il loader mentre Paddle conferma, poi l'esito.
+export type PaymentState = { phase: 'waiting'; title: string } | { phase: 'done' | 'pending'; title: string; body: string };
 
 // I pagamenti dallo studio: il checkout di Paddle sopra la pagina, per attivare il piano di un brand o comprare una
 // ricarica, e il portale di Paddle per carta, disdetta e fatture. Paddle è il venditore: incassa ed emette le fatture.
@@ -64,6 +69,7 @@ export class BillingService {
   private purchase: Purchase | null = null;
   // Un pagamento fatto che aspetta il webhook: il piano o la ricarica non sono ancora arrivati.
   readonly confirming = signal(false);
+  readonly payment = signal<PaymentState | null>(null);
 
   // Carica Paddle.js una volta e lo collega al nostro account Paddle. Anche la pagina /abbonamento passa da qui: con
   // un _ptxn nell'indirizzo (i link delle email di Paddle) il checkout si apre da solo.
@@ -95,10 +101,16 @@ export class BillingService {
     return this.open({ brandId, kind: 'topup' }, { kind: 'topup', brandId, before: this.credits.credits()?.monthlyCredits ?? 0 });
   }
 
-  // Il cambio di piano di un brand che ha già l'abbonamento: Paddle addebita o accredita la differenza, il piano nuovo
-  // arriva con il webhook.
-  async waitForPlan(brandId: string, plan: SubscriptionPlanId): Promise<void> {
-    await this.wait(brandId, (credits) => credits.subscription?.plan === plan, 'plans.changed', { plan: SUBSCRIPTION_PLANS[plan].name });
+  // Quanto costa passare a un altro piano, da far confermare prima del cambio.
+  previewPlan(brandId: string, plan: SubscriptionPlanId): Promise<PlanPreviewResponse> {
+    return firstValueFrom(this.http.post<PlanPreviewResponse>('/v1/billing/plan-preview', { brandId, plan }));
+  }
+
+  // Il cambio di piano confermato, su un brand che ha già l'abbonamento: Paddle addebita o accredita la differenza, il
+  // piano nuovo arriva con il webhook. La modale aspetta con un loader e poi dice com'è andata.
+  async changePlan(brandId: string, plan: SubscriptionPlanId): Promise<void> {
+    await firstValueFrom(this.http.put<void>(`/v1/brands/${brandId}/plan`, { plan }));
+    void this.wait({ kind: 'change', brandId, plan }, WAIT_MS, true);
   }
 
   async openPortal(brandId: string): Promise<void> {
@@ -134,8 +146,8 @@ export class BillingService {
     }
   }
 
-  // Pagamento riuscito: il checkout si chiude da solo e lo studio aspetta il webhook. Chiuso a mano prima della conferma
-  // (o se la conferma non arriva): si guarda per poco se il pagamento c'è stato, senza dire niente se non c'è.
+  // Pagamento riuscito: il checkout si chiude da solo e la modale aspetta il webhook. Chiuso a mano prima della conferma
+  // (o se la conferma non arriva): si guarda per poco se il pagamento c'è stato, e la modale compare solo se c'è.
   private onEvent(event: PaddleEvent): void {
     console.info('[pagamenti] evento Paddle', event.name);
     const purchase = this.purchase;
@@ -143,46 +155,56 @@ export class BillingService {
     if (event.name === 'checkout.completed') {
       this.purchase = null;
       setTimeout(() => window.Paddle?.Checkout.close(), CLOSE_AFTER_MS);
-      void this.confirm(purchase, WAIT_MS, true);
+      void this.wait(purchase, WAIT_MS, true);
     } else if (event.name === 'checkout.closed') {
       this.purchase = null;
-      void this.confirm(purchase, CLOSED_WAIT_MS, false);
+      void this.wait(purchase, CLOSED_WAIT_MS, false);
     }
   }
 
-  private confirm(purchase: Purchase, ms: number, sure: boolean): Promise<void> {
-    if (purchase.kind === 'plan') {
-      const name = SUBSCRIPTION_PLANS[purchase.plan].name;
-      return this.wait(purchase.brandId, (credits) => credits.subscription?.status === 'active', 'plans.activated', { plan: name }, ms, sure);
-    }
-    return this.wait(purchase.brandId, (credits) => credits.monthlyCredits > purchase.before, 'plans.topupDone', {}, ms, sure);
+  private arrived(purchase: Purchase, credits: CreditsResponse): boolean {
+    if (purchase.kind === 'topup') return credits.monthlyCredits > purchase.before;
+    if (purchase.kind === 'change') return credits.subscription?.plan === purchase.plan;
+    return credits.subscription?.status === 'active';
   }
 
-  // Rilegge i crediti finché il webhook non ha fatto il suo, poi lo dice. Se tarda, il pagamento c'è comunque: lo
-  // studio lo mostrerà alla prossima lettura.
-  private async wait(
-    brandId: string,
-    done: (credits: CreditsResponse) => boolean,
-    message: MessageKey,
-    params: MessageParams,
-    ms = WAIT_MS,
-    sure = true,
-  ): Promise<void> {
+  // Rilegge i crediti finché il webhook non ha fatto il suo. sure: il pagamento c'è stato di sicuro, la modale aspetta
+  // fin da subito e, se il webhook tarda, dice che il pagamento è ricevuto e il resto arriva tra poco.
+  private async wait(purchase: Purchase, ms: number, sure: boolean): Promise<void> {
+    if (sure) this.payment.set({ phase: 'waiting', title: this.waitingTitle(purchase) });
     this.confirming.set(true);
     try {
       const until = Date.now() + ms;
       while (Date.now() < until) {
         await this.credits.refresh();
         const credits = this.credits.credits();
-        if (credits && this.credits.brandId() === brandId && done(credits)) {
-          this.toast.show(this.i18n.t(message, params));
+        if (credits && this.credits.brandId() === purchase.brandId && this.arrived(purchase, credits)) {
+          this.payment.set({ phase: 'done', title: this.doneTitle(purchase), body: this.doneBody(credits) });
           return;
         }
         await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       }
-      if (sure) this.toast.show(this.i18n.t('plans.paymentPending'));
+      if (sure) this.payment.set({ phase: 'pending', title: this.i18n.t('plans.modal.pendingTitle'), body: this.i18n.t('plans.modal.pendingBody') });
     } finally {
       this.confirming.set(false);
     }
+  }
+
+  private waitingTitle(purchase: Purchase): string {
+    if (purchase.kind === 'topup') return this.i18n.t('plans.modal.waitingTopup');
+    const plan = SUBSCRIPTION_PLANS[purchase.plan].name;
+    return this.i18n.t(purchase.kind === 'change' ? 'plans.modal.waitingChange' : 'plans.modal.waitingPlan', { plan });
+  }
+
+  private doneTitle(purchase: Purchase): string {
+    if (purchase.kind === 'topup') return this.i18n.t('plans.modal.doneTopup');
+    const plan = SUBSCRIPTION_PLANS[purchase.plan].name;
+    return this.i18n.t(purchase.kind === 'change' ? 'plans.modal.doneChange' : 'plans.modal.donePlan', { plan });
+  }
+
+  private doneBody(credits: CreditsResponse): string {
+    const intl = this.i18n.intl();
+    const date = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`));
+    return this.i18n.t('plans.modal.doneCredits', { credits: Math.max(credits.remaining, 0).toLocaleString(intl), date });
   }
 }

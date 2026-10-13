@@ -13,6 +13,20 @@ export interface Prices {
   topupUltra: string;
 }
 
+// Importi nella valuta del cliente, in centesimi come li dà Paddle.
+export interface PlanPreview {
+  currency: string;
+  today: string | null;
+  next: string | null;
+  nextAt: string | null;
+}
+
+const planChange = (priceId: string, upgrade: boolean) => ({
+  items: [{ price_id: priceId, quantity: 1 }],
+  proration_billing_mode: upgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+  on_payment_failure: 'prevent_change',
+});
+
 interface PriceEntity {
   id: string;
   custom_data: { plan?: SubscriptionPlanId; kind?: string; tier?: string } | null;
@@ -67,11 +81,22 @@ export class PaddleApi {
   // Il cambio di piano di un abbonamento: chi sale paga subito la differenza del periodo, chi scende la ritrova sul
   // rinnovo. Se il pagamento non riesce il piano resta quello di prima.
   async changePlan(subscriptionId: string, priceId: string, upgrade: boolean): Promise<void> {
-    await this.call('PATCH', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
-      items: [{ price_id: priceId, quantity: 1 }],
-      proration_billing_mode: upgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
-      on_payment_failure: 'prevent_change',
-    });
+    await this.call('PATCH', `/subscriptions/${encodeURIComponent(subscriptionId)}`, planChange(priceId, upgrade));
+  }
+
+  // Lo stesso cambio, senza farlo: quanto si paga oggi e quanto al prossimo rinnovo, tasse comprese.
+  async previewPlan(subscriptionId: string, priceId: string, upgrade: boolean): Promise<PlanPreview> {
+    const preview = await this.call<{
+      currency_code: string;
+      immediate_transaction: { details: { totals: { total: string } } } | null;
+      next_transaction: { billing_period: { starts_at: string }; details: { totals: { total: string } } } | null;
+    }>('PATCH', `/subscriptions/${encodeURIComponent(subscriptionId)}/preview`, planChange(priceId, upgrade));
+    return {
+      currency: preview.currency_code,
+      today: preview.immediate_transaction?.details.totals.total ?? null,
+      next: preview.next_transaction?.details.totals.total ?? null,
+      nextAt: preview.next_transaction?.billing_period.starts_at ?? null,
+    };
   }
 
   // Il portale del cliente su Paddle: carta, disdetta, pagamenti e fatture da scaricare.

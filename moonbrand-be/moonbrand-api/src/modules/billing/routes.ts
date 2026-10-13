@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import type { BillingConfigResponse, BillingPortalResponse, CheckoutResponse } from '@moonbrand/shared/api/contract';
+import type { BillingConfigResponse, BillingPortalResponse, CheckoutResponse, PlanPreviewResponse } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLAN_IDS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import type { Config } from '../../config';
@@ -22,6 +22,13 @@ const checkoutSchema = z.object({
   plan: z.enum(SUBSCRIPTION_PLAN_IDS as [SubscriptionPlanId, ...SubscriptionPlanId[]]).optional(),
 });
 const brandSchema = z.object({ brandId: z.uuid('Brand non trovato.') });
+const previewSchema = z.object({
+  brandId: z.uuid('Brand non trovato.'),
+  plan: z.enum(SUBSCRIPTION_PLAN_IDS as [SubscriptionPlanId, ...SubscriptionPlanId[]]),
+});
+
+export const isUpgrade = (from: SubscriptionPlanId, to: SubscriptionPlanId): boolean =>
+  SUBSCRIPTION_PLAN_IDS.indexOf(to) > SUBSCRIPTION_PLAN_IDS.indexOf(from);
 
 interface Owned {
   account_id: string;
@@ -85,6 +92,19 @@ export function registerBillingRoutes(
       customData: { brandId, accountId: owned.account_id },
       customer: owned.customer_id ? { id: owned.customer_id } : { email: owned.email },
     };
+  });
+
+  // Prima di cambiare piano: quanto costa il cambio, per farlo confermare.
+  app.post('/v1/billing/plan-preview', async (request): Promise<PlanPreviewResponse> => {
+    const { brandId, plan } = previewSchema.parse(request.body);
+    const owned = await ownedBrand(pool, request.identity, brandId);
+    if (!liveSubscription(owned) || !owned.subscription_id || !owned.plan) {
+      throw ApiError.conflict('NO_SUBSCRIPTION', 'Questo brand non ha ancora un piano attivo.');
+    }
+    if (owned.plan === plan) throw ApiError.invalid('È già il piano del brand.');
+    const prices = await paddle.catalog();
+    const upgrade = isUpgrade(owned.plan, plan);
+    return { upgrade, ...(await paddle.previewPlan(owned.subscription_id, prices.plans[plan], upgrade)) };
   });
 
   app.post('/v1/billing/portal', async (request): Promise<BillingPortalResponse> => {

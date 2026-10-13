@@ -729,6 +729,16 @@ export interface CheckoutResponse {
   customer: { id: string } | { email: string };
 }
 
+// Il cambio di piano prima di confermarlo. Importi tasse comprese, nella valuta del cliente e in centesimi: oggi (null
+// se non si paga niente, scendendo di piano) e al prossimo rinnovo, ISO.
+export interface PlanPreviewResponse {
+  upgrade: boolean;
+  currency: string;
+  today: string | null;
+  next: string | null;
+  nextAt: string | null;
+}
+
 export interface BillingPortalResponse {
   url: string;
 }
