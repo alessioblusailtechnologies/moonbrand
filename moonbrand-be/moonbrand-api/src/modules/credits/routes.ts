@@ -24,6 +24,8 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
   app.get('/v1/credits', (request) =>
     withIdentity(pool, request.identity, async (db): Promise<CreditsResponse> => {
       const { brandId } = querySchema.parse(request.query);
+      const paid = await paidCredits(db, request.identity.accountId, brandId ?? null);
+      if (paid) return paid;
       const { rows } = await db.query<{ plan: SubscriptionPlanId | null; used: string; added: string; renews_on: string }>(
         `with month as (select date_trunc('month', now() at time zone 'Europe/Rome') as start),
               brand as (
@@ -85,6 +87,49 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
     );
     return { month: shown, months, ...summarize(rows) };
   });
+}
+
+// I crediti di un brand con l'abbonamento Paddle, nel periodo pagato in corso (migration paddle). Ogni periodo ha i
+// crediti del suo piano (l'ultimo movimento plan del periodo: un passaggio di piano a metà ne scrive un altro), che
+// scadono a fine periodo; le ricariche restano finché c'è l'abbonamento. Si consuma prima il piano: quello che in un
+// periodo chiuso è andato oltre il piano è uscito dalle ricariche. Senza un periodo in corso (abbonamento finito, o il
+// primo pagamento non ancora arrivato) vale il conto di prima, a mese di calendario.
+async function paidCredits(db: pg.ClientBase, accountId: string, brandId: string | null): Promise<CreditsResponse | null> {
+  const { rows } = await db.query<{ plan: SubscriptionPlanId; period_amount: string; used: string; topups: string; overflow: string; renews_on: string }>(
+    `with brand as (
+       select b.id from presenza.brands b
+       where b.id = coalesce($2::uuid, (select a.active_brand_id from presenza.accounts a where a.id = $1))
+     ), sub as (
+       select s.plan from presenza.brand_subscriptions s
+       where s.brand_id = (select id from brand) and s.status in ('active', 'trialing', 'past_due')
+     ), periods as (
+       select distinct on (m.period_start) m.period_start, m.period_end, m.amount
+       from presenza.credit_movements m
+       where m.brand_id = (select id from brand) and m.kind = 'plan' and m.period_start is not null
+       order by m.period_start, m.created_at desc
+     ), spent as (
+       select p.period_start, p.period_end, p.amount,
+         coalesce((select -sum(m.amount) from presenza.credit_movements m
+                   where m.brand_id = (select id from brand) and m.amount < 0
+                     and m.created_at >= p.period_start and m.created_at < p.period_end), 0) as used
+       from periods p
+     )
+     select (select plan from sub) as plan, c.amount as period_amount, c.used,
+       coalesce((select sum(m.amount) from presenza.credit_movements m
+                 where m.brand_id = (select id from brand) and m.kind = 'topup'), 0) as topups,
+       coalesce((select sum(greatest(s.used - s.amount, 0)) from spent s where s.period_end <= now()), 0) as overflow,
+       to_char(c.period_end at time zone 'Europe/Rome', 'YYYY-MM-DD') as renews_on
+     from spent c
+     where exists (select 1 from sub) and c.period_start <= now() and c.period_end > now()
+     order by c.period_start desc
+     limit 1`,
+    [accountId, brandId],
+  );
+  const row = rows[0];
+  if (!row) return null;
+  const monthlyCredits = Math.round(Number(row.period_amount) + Math.max(Number(row.topups) - Number(row.overflow), 0));
+  const usedThisMonth = Math.round(Number(row.used));
+  return { plan: row.plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: row.renews_on };
 }
 
 const usageSchema = z.object({

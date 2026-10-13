@@ -14,6 +14,7 @@ import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
+import { registerPaddleWebhook } from './modules/billing/paddle-webhook';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
@@ -47,6 +48,7 @@ export interface AppOptions {
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
+    | 'PADDLE_WEBHOOK_SECRET'
     | 'STUDIO_ORIGINS'
     | 'SIMULATE_SOCIAL'
     | 'STUDIO_URL'
@@ -85,6 +87,7 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
+  registerPaddleWebhook(app, options.pool, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);

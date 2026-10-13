@@ -38,6 +38,9 @@ const schema = z.object({
   // Il segreto del webhook registrato su Zernio (POST /v1/webhooks/zernio, eventi account.*): dice quando un social chiude
   // l'accesso. Senza, il webhook risponde 503 e un canale scollegato si scopre solo quando un post fallisce.
   ZERNIO_WEBHOOK_SECRET: optional,
+  // Il segreto della destinazione dei webhook su Paddle (POST /v1/webhooks/paddle): abbonamenti e crediti pagati.
+  // Senza, il webhook risponde 503 e Paddle ripete gli eventi finché non arriva.
+  PADDLE_WEBHOOK_SECRET: optional,
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
   // Solo negli ambienti di prova, mai in produzione: i canali si possono «collegare» per finta e i loro post risultano
