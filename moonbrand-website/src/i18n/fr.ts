@@ -679,6 +679,36 @@ export const fr: Copy = {
     ],
     seller: 'Moonbrand est un service de Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Tarente (Italie), n° TVA IT03419820737.',
   },
+  saleTerms: {
+    title: 'Conditions de vente via Paddle, crédits et utilisation de l’intelligence artificielle',
+    intro: 'Ces conditions font partie des Conditions générales ci-dessus, qui les incorporent par référence.',
+    sections: [
+      { title: 'Vendeur et paiements via Paddle', blocks: [
+        'Le contrat d’utilisation du Service est conclu avec Blusail Technologies S.r.l.s., titulaire de Moonbrand. Notre processus de commande est géré par notre revendeur en ligne Paddle.com. Paddle.com est le Merchant of Record pour toutes nos commandes : il encaisse les paiements, applique les taxes dues, émet les factures et traite les demandes d’assistance sur les paiements et les remboursements. Les achats sont également soumis aux conditions acheteur de Paddle ({buyerTerms}).',
+        'Les prix du site sont indiqués hors TVA ; le montant final, avec les taxes du pays de l’Utilisateur et dans sa devise, est affiché lors du paiement, avant de payer.',
+      ] },
+      { title: 'Formules, crédits et recharges', blocks: [
+        'Chaque marque a son propre abonnement mensuel, renouvelé automatiquement jusqu’à la résiliation. Chaque formule donne un nombre de crédits par mois, qui mesurent le travail de l’intelligence artificielle. Les crédits de la formule valent pour la période en cours et ne passent pas à la suivante.',
+        'Les crédits achetés avec une recharge n’expirent pas à la fin de la période et s’utilisent tant que la marque a une formule active ; si la formule est réactivée, ils redeviennent disponibles. Les crédits n’ont pas de valeur monétaire, ne sont pas convertibles en argent et ne se transfèrent pas à d’autres marques.',
+        'En passant à une formule supérieure, l’Utilisateur paie tout de suite la différence pour le reste de la période ; en passant à une formule inférieure, le nouveau prix s’applique au renouvellement suivant et d’ici là les crédits de la formule en cours restent.',
+      ] },
+      { title: 'Résiliation et remboursements', blocks: [
+        'L’Utilisateur peut résilier à tout moment depuis les réglages de la marque ou depuis le portail de Paddle : l’abonnement reste actif jusqu’à la fin de la période déjà payée, sans autre prélèvement.',
+        'Les remboursements suivent notre {refunds} : l’Utilisateur peut demander un remboursement dans les 14 jours suivant le premier paiement d’un abonnement ou l’achat d’une recharge, le cas échéant réduit en proportion des crédits déjà utilisés ; les paiements de renouvellement ne sont pas remboursés, sauf si la loi le prévoit. Avec le remboursement, les crédits de l’achat sont retirés et, pour un abonnement, la formule prend fin. Le droit de rétractation des Consommateurs décrit ci-dessus et les droits prévus par la loi restent acquis.',
+      ] },
+      { title: 'Contenus générés par l’intelligence artificielle', blocks: [
+        'Le Service utilise des modèles d’intelligence artificielle pour créer des textes, des images, des vidéos et de la musique à partir des demandes de l’Utilisateur et des éléments qu’il importe (logos, photos, vidéos, documents, liens). L’Utilisateur :',
+        [
+          'garantit détenir les droits sur les éléments qu’il importe et sur les personnes, marques et œuvres qui y figurent ;',
+          'est responsable de ses demandes et de l’usage des contenus générés, y compris leur publication sur les réseaux sociaux ;',
+          'vérifie les contenus avant de les publier : les résultats de l’IA peuvent contenir des erreurs, des inexactitudes ou des ressemblances avec des contenus de tiers, et Moonbrand n’en garantit ni l’exactitude ni l’adéquation à un usage particulier.',
+        ],
+        'Il est interdit d’utiliser le Service pour créer des contenus illicites ; des contenus sexuels impliquant des mineurs ou des personnes sans leur consentement, y compris les deepfakes ; des contenus haineux, harcelants ou diffamatoires ; des contenus portant atteinte aux droits d’auteur, aux marques ou à la vie privée de tiers, y compris la divulgation de données personnelles d’autrui ; des contenus trompeurs, comme de faux avis ou de fausses déclarations attribuées à des personnes réelles ; du spam ou des logiciels malveillants ; ou des tentatives de contourner les limites de sécurité des modèles.',
+        'Dans les limites de la loi et des conditions des fournisseurs des modèles, les contenus générés pour l’Utilisateur lui appartiennent et il peut les utiliser aussi à des fins commerciales ; Blusail Technologies S.r.l.s. ne les traite que pour fournir le Service. Le Titulaire peut retirer des contenus ou suspendre le compte en cas de violation.',
+        'Toute personne estimant qu’un contenu porte atteinte à ses droits peut le signaler à {email} en indiquant le contenu et le droit concerné : le contenu est examiné et, si le signalement est fondé, retiré ; en cas de violations répétées, le compte est fermé.',
+      ] },
+    ],
+  },
   notFound: {
     title: 'Page introuvable · Moonbrand',
     heading: 'Cette page n’existe pas.',

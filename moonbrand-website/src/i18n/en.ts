@@ -679,6 +679,36 @@ export const en: Copy = {
     ],
     seller: 'Moonbrand is a service of Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Taranto (Italy), VAT no. IT03419820737.',
   },
+  saleTerms: {
+    title: 'Terms of sale through Paddle, credits and use of artificial intelligence',
+    intro: 'These terms are part of the Terms above, which incorporate them by reference.',
+    sections: [
+      { title: 'Seller and payments through Paddle', blocks: [
+        'The contract for the use of the Service is made with Blusail Technologies S.r.l.s., owner of Moonbrand. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders: it collects payments, applies the applicable taxes, issues invoices and handles payment enquiries and refunds. Purchases are also subject to Paddle’s buyer terms ({buyerTerms}).',
+        'Prices on the website are shown excluding VAT; the final amount, with the taxes of the User’s country and in their currency, is shown in the checkout before payment.',
+      ] },
+      { title: 'Plans, credits and top-ups', blocks: [
+        'Each brand has its own monthly subscription, which renews automatically until cancelled. Each plan gives a number of credits per month, used to measure the work of the artificial intelligence. Plan credits are valid for the current period and do not carry over to the next one.',
+        'Credits bought with a top-up do not expire at the end of the period and can be used as long as the brand has an active plan; if the plan is reactivated, they become available again. Credits have no monetary value, cannot be exchanged for money and cannot be transferred to other brands.',
+        'When moving to a higher plan the User pays the difference for the rest of the period straight away; when moving to a lower plan the new price applies from the next renewal and until then the credits of the current plan remain.',
+      ] },
+      { title: 'Cancellation and refunds', blocks: [
+        'The User can cancel at any time from the brand settings or from Paddle’s portal: the subscription stays active until the end of the period already paid, with no further charges.',
+        'Refunds follow our {refunds}: the User can ask for a refund within 14 days of the first payment of a subscription or of buying a top-up, possibly reduced in proportion to the credits already used; renewal payments are not refunded, except where the law requires it. With the refund, the credits of the purchase are removed and, for a subscription, the plan ends. This does not affect the Consumers’ right of withdrawal described above or any rights under the law.',
+      ] },
+      { title: 'AI-generated content', blocks: [
+        'The Service uses artificial intelligence models to create text, images, video and music from the User’s requests and the materials they upload (logos, photos, videos, documents, links). The User:',
+        [
+          'warrants that they hold the rights to the materials they upload and to the people, trademarks and works shown in them;',
+          'is responsible for their requests and for the use of the generated content, including publishing it on social networks;',
+          'reviews the content before publishing it: AI output may contain errors, inaccuracies or similarities to third-party content, and Moonbrand does not guarantee its accuracy or fitness for a particular purpose.',
+        ],
+        'The Service must not be used to create unlawful content; sexual content involving minors or people without their consent, including deepfakes; hateful, harassing or defamatory content; content that infringes third parties’ copyright, trademarks or privacy, including disclosing other people’s personal data; deceptive content, such as fake reviews or false statements attributed to real people; spam or malware; or attempts to circumvent the models’ safety limits.',
+        'Within the limits of the law and of the model providers’ terms, content generated for the User belongs to the User, who may also use it commercially; Blusail Technologies S.r.l.s. processes it only to provide the Service. The Owner may remove content or suspend the account in case of a breach.',
+        'Anyone who believes content infringes their rights can report it to {email}, identifying the content and the right infringed: the content is reviewed and, if the report is well founded, removed; repeated infringements lead to the account being closed.',
+      ] },
+    ],
+  },
   notFound: {
     title: 'Page not found · Moonbrand',
     heading: 'This page doesn’t exist.',

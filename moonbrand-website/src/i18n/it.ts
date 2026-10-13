@@ -691,6 +691,38 @@ export const it = {
     ],
     seller: 'Moonbrand è un servizio di Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Taranto (Italia), P.IVA 03419820737.',
   },
+  // Le condizioni di vendita in fondo ai termini di iubenda, che le richiamano per rinvio: Paddle vuole la frase
+  // sul Merchant of Record e le regole sull'AI. {buyerTerms}, {refunds} e {email} diventano link; un elenco è un array.
+  saleTerms: {
+    title: 'Condizioni di vendita tramite Paddle, crediti e uso dell’intelligenza artificiale',
+    intro: 'Queste condizioni fanno parte dei Termini qui sopra, che le richiamano per rinvio.',
+    sections: [
+      { title: 'Venditore e pagamenti tramite Paddle', blocks: [
+        'Il contratto per l’uso del Servizio è concluso con Blusail Technologies S.r.l.s., titolare di Moonbrand. Il nostro processo d’ordine è gestito dal nostro rivenditore online Paddle.com. Paddle.com è il Merchant of Record per tutti i nostri ordini: incassa i pagamenti, applica le imposte dovute, emette le fatture e gestisce le richieste di assistenza sui pagamenti e i rimborsi. Agli acquisti si applicano anche i termini per l’acquirente di Paddle ({buyerTerms}).',
+        'I prezzi sul sito sono indicati IVA esclusa; l’importo finale, con le imposte del paese dell’Utente e nella sua valuta, è mostrato nel checkout prima del pagamento.',
+      ] },
+      { title: 'Piani, crediti e ricariche', blocks: [
+        'Ogni brand ha il proprio abbonamento mensile, che si rinnova automaticamente fino alla disdetta. Ogni piano dà un numero di crediti al mese, con cui si misura il lavoro dell’intelligenza artificiale. I crediti del piano valgono per il periodo in corso e non passano al periodo successivo.',
+        'I crediti acquistati con una ricarica non scadono alla fine del periodo e si possono usare finché il brand ha un piano attivo; se il piano viene riattivato, tornano disponibili. I crediti non hanno valore monetario, non si convertono in denaro e non si trasferiscono ad altri brand.',
+        'Passando a un piano superiore l’Utente paga subito la differenza per il resto del periodo; passando a un piano inferiore il nuovo prezzo si applica dal rinnovo successivo e fino ad allora restano i crediti del piano in corso.',
+      ] },
+      { title: 'Disdetta e rimborsi', blocks: [
+        'L’Utente può disdire in qualsiasi momento dalle impostazioni del brand o dal portale di Paddle: l’abbonamento resta attivo fino alla fine del periodo già pagato e non ci sono altri addebiti.',
+        'I rimborsi seguono la nostra {refunds}: l’Utente può chiedere il rimborso entro 14 giorni dal primo pagamento di un abbonamento o dall’acquisto di una ricarica, eventualmente ridotto in proporzione ai crediti già usati; i pagamenti dei rinnovi non si rimborsano, salvo quanto previsto dalla legge. Con il rimborso i crediti dell’acquisto vengono tolti e, per un abbonamento, il piano si chiude. Restano fermi il diritto di recesso dei Consumatori descritto sopra e i diritti previsti dalla legge.',
+      ] },
+      { title: 'Contenuti generati con l’intelligenza artificiale', blocks: [
+        'Il Servizio usa modelli di intelligenza artificiale per creare testi, immagini, video e musica a partire dalle richieste dell’Utente e dai materiali che carica (loghi, foto, video, documenti, link). L’Utente:',
+        [
+          'garantisce di avere i diritti sui materiali che carica e sulle persone, i marchi e le opere che vi compaiono;',
+          'è responsabile delle richieste che fa e dell’uso dei contenuti generati, compresa la loro pubblicazione sui social;',
+          'controlla i contenuti prima di pubblicarli: i risultati dell’AI possono contenere errori, imprecisioni o somiglianze con contenuti di terzi, e Moonbrand non ne garantisce l’esattezza né l’idoneità a un uso particolare.',
+        ],
+        'È vietato usare il Servizio per creare contenuti illeciti; contenuti sessuali che coinvolgono minori o persone senza il loro consenso, compresi i deepfake; contenuti d’odio, molesti o diffamatori; contenuti che violano diritti d’autore, marchi o la riservatezza di terzi, compresa la diffusione di dati personali altrui; contenuti ingannevoli, come false recensioni o finte dichiarazioni di persone reali; spam o malware; e tentativi di aggirare i limiti di sicurezza dei modelli.',
+        'Nei limiti della legge e dei termini dei fornitori dei modelli, i contenuti generati per l’Utente appartengono all’Utente, che può usarli anche a fini commerciali; Blusail Technologies S.r.l.s. li tratta solo per fornire il Servizio. Il Titolare può rimuovere contenuti o sospendere l’account in caso di violazione.',
+        'Chi ritiene che un contenuto violi i propri diritti può segnalarlo a {email} indicando il contenuto e il diritto violato: il contenuto viene esaminato e, se la segnalazione è fondata, rimosso; in caso di violazioni ripetute l’account viene chiuso.',
+      ] },
+    ] as { title: string; blocks: (string | string[])[] }[],
+  },
   notFound: {
     title: 'Pagina non trovata · Moonbrand',
     heading: 'Questa pagina non c’è.',

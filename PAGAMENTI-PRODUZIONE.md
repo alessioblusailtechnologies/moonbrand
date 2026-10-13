@@ -87,10 +87,12 @@ configurazione. Con `BILLING_ENFORCED=true` un lavoro a pagamento parte solo con
 
 ## 5. Legale e testi
 
-- [ ] **Termini su iubenda** (it, en, fr): impostazioni e clausole da incollare in `TERMINI-IUBENDA.md`. Paddle vuole
-  una finestra di rimborso tra 14 e 90 giorni e mai «nessun rimborso»: la politica è 14 giorni dal primo pagamento o
-  dalla ricarica, ridotta in proporzione ai crediti usati; i rinnovi non si rimborsano.
-- [ ] **Privacy su iubenda**: aggiungere Paddle tra i servizi (dati di pagamento e fatturazione), vedi `TERMINI-IUBENDA.md`.
+- [x] **Termini su iubenda**: aperti ai consumatori, recesso UE e cancellazione UK, rinvio alle condizioni di vendita
+  che stanno in fondo a `/termini/` sul sito (Paddle merchant of record, crediti, rimborsi, AI). Dettagli e cose da
+  controllare in `TERMINI-IUBENDA.md`. La politica di rimborso è 14 giorni dal primo pagamento o dalla ricarica,
+  ridotta in proporzione ai crediti usati; i rinnovi non si rimborsano.
+- [x] **Privacy su iubenda**: Paddle aggiunto tra i servizi.
+- [ ] **Deploy del sito** dopo i cambi su iubenda (i testi si scaricano alla build).
 - [ ] **Commercialista**: una fattura al mese a Paddle.com Market Ltd (Regno Unito), operazione non soggetta (art. 7-ter),
   per il versamento o per il lordo con le commissioni a parte; la scelta è sua.
 

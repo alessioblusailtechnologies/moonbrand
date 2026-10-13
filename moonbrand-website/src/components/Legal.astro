@@ -1,8 +1,9 @@
 ---
 // Privacy e termini: il testo arriva da iubenda alla build ed è impaginato come il resto del sito.
 // Se l'API non risponde, resta il link al documento su iubenda.
+// Sotto i termini, le condizioni di vendita nostre (Paddle, crediti, AI): iubenda le richiama per rinvio.
 import { iubendaId, iubendaText, iubendaUrl, type LegalKind } from '../data/iubenda';
-import { CONTACT_EMAIL, getCopy, type Lang } from '../i18n';
+import { CONTACT_EMAIL, getCopy, pagePath, type Lang } from '../i18n';
 import PageShell from './PageShell.astro';
 
 interface Props {
@@ -11,10 +12,16 @@ interface Props {
 }
 
 const { lang, kind } = Astro.props;
-const { legal } = getCopy(lang);
+const { legal, saleTerms, refunds } = getCopy(lang);
 const id = iubendaId(kind, lang);
 const privacy = kind === 'privacy';
 const text = id ? await iubendaText(kind, id) : null;
+// I testi sono nostri, senza HTML: qui diventano link solo i segnaposto.
+const linked = (block: string) =>
+  block
+    .replace('{buyerTerms}', '<a href="https://www.paddle.com/legal/checkout-buyer-terms" rel="noopener">paddle.com/legal/checkout-buyer-terms</a>')
+    .replace('{refunds}', `<a href="${pagePath(lang, 'refunds')}">${refunds.link}</a>`)
+    .replace('{email}', `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
 ---
 
 <PageShell
@@ -32,11 +39,26 @@ const text = id ? await iubendaText(kind, id) : null;
   ) : (
     <p class="soon">{legal.soon} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
   )}
+  {!privacy && (
+    <section id="vendita" class="legal-doc sale">
+      <h2>{saleTerms.title}</h2>
+      <p>{saleTerms.intro}</p>
+      {saleTerms.sections.map(({ title, blocks }) => (
+        <>
+          <h3>{title}</h3>
+          {blocks.map((block) =>
+            typeof block === 'string' ? <p set:html={linked(block)} /> : <ul>{block.map((item) => <li>{item}</li>)}</ul>,
+          )}
+        </>
+      ))}
+    </section>
+  )}
 </PageShell>
 
 <style>
   .soon { margin: 0; font-size: 17px; line-height: 1.55; color: var(--text); }
   .soon a { color: var(--accent-dark); text-decoration: underline; }
+  .sale { margin-top: 72px; padding-top: 8px; border-top: 1px solid var(--line); }
 
   /* Il testo di iubenda: HTML semplice (titoli, paragrafi, elenchi, sezioni a scomparsa), con la tipografia del sito. */
   .legal-doc { font-size: 16px; line-height: 1.65; color: var(--text); overflow-wrap: anywhere; }
