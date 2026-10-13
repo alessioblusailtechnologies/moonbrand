@@ -1,7 +1,7 @@
 ---
 // I prezzi: piani e crediti vengono da moonbrand-shared, gli stessi che usa lo studio per contare i crediti.
 import { CREDIT_TOPUP, SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '../../../moonbrand-shared/src/domain/subscription';
-import { getCopy, STUDIO_URL, type Lang } from '../i18n';
+import { getCopy, pagePath, STUDIO_URL, type Lang } from '../i18n';
 import PageShell from './PageShell.astro';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const { pricing, meta } = getCopy(lang);
+const { pricing, refunds, meta } = getCopy(lang);
 const locale = meta.ogLocale.replace('_', '-');
 const eur = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 // 'always': in italiano anche 2.500 col punto, come 15.000 (di suo Intl lo mette solo da 5 cifre).
@@ -24,6 +24,8 @@ const fill = (text: string) =>
     .replace('{topup}', num(CREDIT_TOPUP.credits))
     .replace('{topupPrice}', eur(CREDIT_TOPUP.priceEur))
     .replace('{topupUltra}', eur(CREDIT_TOPUP.ultraPriceEur));
+// Le risposte con un link alla politica di rimborso: i testi sono nostri, senza HTML.
+const answer = (text: string) => fill(text).replace('{refunds}', `<a href="${pagePath(lang, 'refunds')}">${refunds.link}</a>`);
 const signup = `${STUDIO_URL}/register`;
 
 // Per Google: il prodotto con le sue offerte, una per piano.
@@ -63,7 +65,7 @@ const schema = {
           </p>
           <p class="terms">{pricing.terms}</p>
           <p class="credits mono">{pricing.credits.replace('{n}', num(plan.monthlyCredits))}</p>
-          <p class="example">{pricing.plans[id].example}</p>
+          <p class="example">{pricing.example(plan.monthly)}</p>
           <a href={signup} class:list={['btn', highlight ? 'btn-dark' : 'btn-outline']}>{pricing.cta}</a>
         </article>
       );
@@ -82,7 +84,7 @@ const schema = {
     {pricing.faq.map(({ q, a }) => (
       <details>
         <summary>{q}</summary>
-        <p>{fill(a)}</p>
+        <p set:html={answer(a)} />
       </details>
     ))}
   </section>
@@ -118,6 +120,7 @@ const schema = {
   summary::after { content: '+'; color: var(--muted); font-weight: 400; font-size: 22px; line-height: 1; }
   details[open] summary::after { content: '–'; }
   details p { margin: 0 0 22px; max-width: 680px; font-size: 16px; line-height: 1.6; color: var(--text); }
+  details p :global(a) { color: var(--accent-dark); text-decoration: underline; text-underline-offset: 2px; }
 
   @media (max-width: 820px) {
     .plans { grid-template-columns: 1fr; }

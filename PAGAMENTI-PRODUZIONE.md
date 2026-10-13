@@ -77,8 +77,9 @@ configurazione. Con `BILLING_ENFORCED=true` un lavoro a pagamento parte solo con
   e Google), ma va controllato come mostra i lavori rifiutati con 402 `PLAN_REQUIRED` e `NO_CREDITS` e, nel caso,
   rimandare allo studio per attivare il piano o ricaricare. I due codici hanno già i testi in
   `moonbrand-shared/src/i18n/messages/errors.ts`; l'app non è ancora tradotta.
-- [ ] **Sito** (`moonbrand-website`, `Pricing.astro`): prezzi ed esempi vecchi. Aggiornare a 149 / 299 / 599 € al mese
-  IVA esclusa e alla ricarica, e dire che il pagamento passa da Paddle. Il deploy del sito lo lancia l'utente.
+- [x] **Sito** (`moonbrand-website`): esempi dei piani presi da `SUBSCRIPTION_PLANS.monthly`, domande su Paddle,
+  cambio di piano e rimborsi, pagina della politica di rimborso (`/rimborsi/`, `/en/refunds/`, `/fr/remboursements/`)
+  e Paddle nel piè di pagina. Manca il deploy, che lancia l'utente.
 - [ ] **Eliminazione di brand o utenze**, quando si farà: prima `PaddleApi.cancelNow` sull'abbonamento del brand, poi la
   cancellazione (il database la rifiuta finché l'abbonamento è vivo).
 - [ ] **Doppia disdetta dei doppioni**: quando un abbonamento doppio arriva con due eventi, la disdetta parte due volte e
@@ -86,12 +87,10 @@ configurazione. Con `BILLING_ENFORCED=true` un lavoro a pagamento parte solo con
 
 ## 5. Legale e testi
 
-- [ ] **Termini su iubenda** (it, en, fr): Paddle come rivenditore e i termini dell'acquirente di Paddle; vendita anche
-  ai privati (oggi dicono «solo B2B»); recesso di 14 giorni per i privati dell'Unione Europea, con la rinuncia
-  quando il servizio comincia; disdetta prima del rinnovo; nessun rimborso del periodo; scendendo di piano niente
-  rimborso, i crediti restano fino al rinnovo; crediti del piano che scadono a fine periodo, ricariche che restano
-  finché il piano è attivo.
-- [ ] **Privacy su iubenda**: aggiungere Paddle tra i servizi (dati di pagamento e fatturazione).
+- [ ] **Termini su iubenda** (it, en, fr): impostazioni e clausole da incollare in `TERMINI-IUBENDA.md`. Paddle vuole
+  una finestra di rimborso tra 14 e 90 giorni e mai «nessun rimborso»: la politica è 14 giorni dal primo pagamento o
+  dalla ricarica, ridotta in proporzione ai crediti usati; i rinnovi non si rimborsano.
+- [ ] **Privacy su iubenda**: aggiungere Paddle tra i servizi (dati di pagamento e fatturazione), vedi `TERMINI-IUBENDA.md`.
 - [ ] **Commercialista**: una fattura al mese a Paddle.com Market Ltd (Regno Unito), operazione non soggetta (art. 7-ter),
   per il versamento o per il lordo con le commissioni a parte; la scelta è sua.
 
