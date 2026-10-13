@@ -23,7 +23,7 @@ export interface PlanPreview {
 
 const planChange = (priceId: string, upgrade: boolean) => ({
   items: [{ price_id: priceId, quantity: 1 }],
-  proration_billing_mode: upgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+  proration_billing_mode: upgrade ? 'prorated_immediately' : 'do_not_bill',
   on_payment_failure: 'prevent_change',
 });
 
@@ -78,8 +78,10 @@ export class PaddleApi {
     return this.prices.value;
   }
 
-  // Il cambio di piano di un abbonamento: chi sale paga subito la differenza del periodo, chi scende la ritrova sul
-  // rinnovo. Se il pagamento non riesce il piano resta quello di prima.
+  // Il cambio di piano di un abbonamento: chi sale paga subito la differenza del periodo (e ha subito i crediti del piano
+  // nuovo); chi scende non paga e non riceve niente, tiene i crediti del periodo già pagato e dal rinnovo paga il piano
+  // nuovo. Un rimborso della parte non usata, con i crediti lasciati, si potrebbe sfruttare: salire, consumare, scendere.
+  // Se il pagamento non riesce il piano resta quello di prima.
   async changePlan(subscriptionId: string, priceId: string, upgrade: boolean): Promise<void> {
     await this.call('PATCH', `/subscriptions/${encodeURIComponent(subscriptionId)}`, planChange(priceId, upgrade));
   }

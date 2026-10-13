@@ -57,13 +57,13 @@ import { ToastService } from '../../ui/toast';
             </div>
             <div class="grow texts">
               <span class="heading">{{ 'credits.usedOf' | t: { used: card.used, total: card.total } }}</span>
-              <span class="strong-sm share">{{ 'credits.share' | t: { percent: card.percent, plan: card.plan } }}</span>
+              <span class="strong-sm share">{{ (card.current ? 'credits.sharePeriod' : 'credits.share') | t: { percent: card.percent, plan: card.plan } }}</span>
               <span class="meter"><span class="meter-fill" [style.width.%]="card.usedShare * 100"></span></span>
               <span class="caption">
                 @if (card.over) {
                   {{ 'credits.over' | t: { n: card.over } }}
                 } @else if (card.current) {
-                  {{ 'credits.renews' | t: { date: card.renews, total: card.total } }}
+                  {{ (card.paid ? 'credits.renewsPaid' : 'credits.renews') | t: { date: card.renews, total: card.renewal, plan: card.plan } }}
                 } @else {
                   {{ 'credits.closed' | t }}
                 }
@@ -416,6 +416,10 @@ export class CreditsPage {
       usedShare,
       percent: (used / total).toLocaleString(intl, { style: 'percent', maximumFractionDigits: 0 }),
       plan: SUBSCRIPTION_PLANS[credits.plan].name,
+      // Al rinnovo arrivano i crediti del piano di adesso, anche se in questo periodo ce ne sono di più (un piano più alto
+      // pagato prima di scendere, le ricariche).
+      renewal: SUBSCRIPTION_PLANS[credits.plan].monthlyCredits.toLocaleString(intl),
+      paid: subscriptionLive(credits.subscription),
       over: used > total ? round(used - total) : null,
       renews: new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`)),
     };

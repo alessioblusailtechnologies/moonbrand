@@ -16,7 +16,7 @@ export const plans = defineMessages({
       ultra: 'Per chi produce tanto, video compresi',
     },
     checkoutNote: 'Il pagamento si apre qui sopra con Paddle, il nostro rivenditore: incassa in modo sicuro, applica l’IVA del tuo paese ed emette la fattura.',
-    changeNote: 'Salendo di piano paghi subito la differenza fino al rinnovo; scendendo, la differenza si scala dal rinnovo.',
+    changeNote: 'Salendo di piano paghi subito la differenza fino al rinnovo e i crediti salgono subito; scendendo non paghi niente, tieni i crediti di adesso e dal rinnovo paghi il piano nuovo.',
     settingsRow: 'Piano',
     settingsSummary: '{plan} · {posts} post, {carousels, plural, one {# carosello} other {# caroselli}} e {videos} video al mese',
     status: {
@@ -88,7 +88,7 @@ export const plans = defineMessages({
       ultra: 'For producing a lot, videos included',
     },
     checkoutNote: 'Payment opens right here with Paddle, our reseller: it takes the payment securely, applies your country’s tax and issues the invoice.',
-    changeNote: 'Moving up, you pay the difference until renewal right away; moving down, the difference comes off your renewal.',
+    changeNote: 'Moving up, you pay the difference until renewal right away and credits go up at once; moving down, you pay nothing, keep your current credits and pay the new plan from renewal.',
     settingsRow: 'Plan',
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carousel} other {# carousels}} and {videos, plural, one {# video} other {# videos}} a month',
     status: {
@@ -160,7 +160,7 @@ export const plans = defineMessages({
       ultra: 'Pour produire beaucoup, vidéos comprises',
     },
     checkoutNote: 'Le paiement s’ouvre ici avec Paddle, notre revendeur : il encaisse en toute sécurité, applique la TVA de votre pays et émet la facture.',
-    changeNote: 'En montant de forfait, vous payez tout de suite la différence jusqu’au renouvellement ; en descendant, la différence est déduite du renouvellement.',
+    changeNote: 'En montant de forfait, vous payez tout de suite la différence jusqu’au renouvellement et les crédits augmentent aussitôt ; en descendant, vous ne payez rien, gardez vos crédits actuels et payez le nouveau forfait dès le renouvellement.',
     settingsRow: 'Forfait',
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carrousel} other {# carrousels}} et {videos, plural, one {# vidéo} other {# vidéos}} par mois',
     status: {
