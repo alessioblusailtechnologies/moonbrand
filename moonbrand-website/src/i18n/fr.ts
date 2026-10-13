@@ -268,7 +268,9 @@ export const fr: Copy = {
     copyright: '© 2026 Moonbrand · un produit de Blusail Technologies',
     privacy: 'Confidentialité',
     terms: 'Conditions',
+    refunds: 'Remboursements',
     contact: 'Contact',
+    paddle: 'Les paiements sont gérés par Paddle.com, notre revendeur agréé.',
   },
   pricing: {
     title: 'Tarifs · Moonbrand',
@@ -282,10 +284,12 @@ export const fr: Copy = {
     recommended: 'Recommandé',
     cta: 'Choisir cette formule',
     plans: {
-      start: { tagline: 'Pour une activité qui veut publier avec régularité.', example: 'Environ 12 posts, 2 carrousels et 2 vidéos par mois.' },
-      pro: { tagline: 'Pour une marque qui développe ses réseaux chaque semaine.', example: 'Environ 16 posts, 4 carrousels et 4 vidéos par mois, avec des crédits en réserve.' },
-      ultra: { tagline: 'Pour ceux qui publient chaque jour, sur plusieurs canaux.', example: 'Des contenus tous les jours sur plusieurs canaux, vidéos comprises.' },
+      start: { tagline: 'Pour une activité qui veut publier avec régularité.' },
+      pro: { tagline: 'Pour une marque qui développe ses réseaux chaque semaine.' },
+      ultra: { tagline: 'Pour ceux qui publient chaque jour, sur plusieurs canaux.' },
     },
+    example: ({ posts, carousels, videos }: { posts: number; carousels: number; videos: number }) =>
+      `Chaque mois environ ${posts} posts, ${carousels} ${carousels === 1 ? 'carrousel' : 'carrousels'} et ${videos} vidéos.`,
     includedTitle: 'Dans toutes les formules',
     included: [
       'Assistant en chat qui connaît votre marque',
@@ -301,8 +305,11 @@ export const fr: Copy = {
       { q: 'Combien de crédits pour un post ou une vidéo ?', a: 'Cela dépend du travail. En moyenne, un post demande environ 100 crédits, un carrousel 130, une vidéo entre 180 et 300 (plus avec des clips générés). Chaque retouche dans le chat en utilise environ 40.' },
       { q: 'La formule couvre-t-elle toutes mes marques ?', a: 'Non, chaque marque a sa formule et ses crédits. Ainsi, une agence choisit la bonne formule pour chaque client.' },
       { q: 'Et si je n’ai plus de crédits ?', a: 'Vous pouvez ajouter {topup} crédits pour {topupPrice} ({topupUltra} avec Ultra) ou passer à la formule supérieure.' },
-      { q: 'Les crédits non utilisés sont-ils conservés ?', a: 'Les crédits de la formule valent pour le mois en cours et repartent de zéro à chaque renouvellement. Ceux achetés avec une recharge restent tant que l’abonnement est actif. Les crédits ne sont pas remboursables.' },
-      { q: 'Puis-je résilier quand je veux ?', a: 'Oui. L’abonnement est mensuel et se renouvelle automatiquement ; si vous résiliez avant le renouvellement, il reste actif jusqu’à la fin du mois déjà payé.' },
+      { q: 'Les crédits non utilisés sont-ils conservés ?', a: 'Les crédits de la formule valent pour le mois en cours et repartent de zéro à chaque renouvellement. Ceux achetés avec une recharge n’expirent pas à la fin du mois : ils restent sur la marque et s’utilisent tant que la formule est active.' },
+      { q: 'Puis-je changer de formule ?', a: 'Oui, quand vous voulez, depuis les réglages de la marque. Si vous montez, vous payez tout de suite la différence pour les jours restants ; si vous descendez, le nouveau prix commence au renouvellement et d’ici là vous gardez vos crédits.' },
+      { q: 'Puis-je résilier quand je veux ?', a: 'Oui. L’abonnement est mensuel et se renouvelle automatiquement ; si vous résiliez avant le renouvellement, il reste actif jusqu’à la fin du mois déjà payé, sans autre prélèvement.' },
+      { q: 'Qui gère les paiements ?', a: 'Paddle.com, notre revendeur agréé (merchant of record) : il encaisse le paiement, applique la TVA ou les taxes de votre pays et vous envoie la facture. Vous payez par carte ou avec les autres moyens disponibles dans votre pays ; hors zone euro, le paiement affiche le prix dans votre devise.' },
+      { q: 'Puis-je être remboursé ?', a: 'Oui, si vous le demandez dans les 14 jours suivant le premier paiement de l’abonnement ou l’achat d’une recharge. Tout est expliqué dans notre {refunds}.' },
       { q: 'Qu’est-ce qui ne consomme pas de crédits ?', a: 'La configuration initiale de chaque marque et le message du matin avec les suggestions du jour sont offerts.' },
     ],
   },
@@ -655,6 +662,52 @@ export const fr: Copy = {
     termsHeading: 'Conditions générales',
     open: 'Lire le document',
     soon: 'Ce document est en cours de préparation. Pour toute question, écrivez-nous à',
+  },
+  refunds: {
+    title: 'Remboursements · Moonbrand',
+    description: 'Comment demander le remboursement d’un abonnement ou d’une recharge Moonbrand : dans les 14 jours, via Paddle.',
+    heading: 'Politique de remboursement',
+    link: 'politique de remboursement',
+    lead: 'Les achats sur Moonbrand passent par Paddle.com, notre revendeur agréé (merchant of record) : c’est Paddle qui encaisse, émet la facture et gère les remboursements, avec nous.',
+    sections: [
+      { title: 'Si vous changez d’avis, dans les 14 jours', text: 'Vous pouvez demander un remboursement dans les 14 jours suivant le premier paiement d’un abonnement ou l’achat d’une recharge, sans avoir à vous justifier. Si vous avez déjà utilisé des crédits entre-temps, le remboursement peut être réduit en proportion des crédits utilisés.' },
+      { title: 'Les renouvellements', text: 'L’abonnement est mensuel et se renouvelle automatiquement. Les paiements de renouvellement ne sont pas remboursés, sauf si la loi de votre pays le prévoit. Vous pouvez résilier à tout moment : l’abonnement reste actif jusqu’à la fin du mois déjà payé, sans autre prélèvement.' },
+      { title: 'Le changement de formule', text: 'Si vous montez de formule, vous payez tout de suite la différence pour les jours restants du mois. Si vous descendez, vous ne payez rien : le nouveau prix commence au renouvellement et d’ici là vous gardez les crédits de votre formule actuelle.' },
+      { title: 'Si quelque chose ne fonctionne pas', text: 'Écrivez-nous à {email} : nous essayons de résoudre le problème et, si nous n’y arrivons pas, nous étudions avec Paddle un remboursement même après les 14 jours.' },
+      { title: 'Comment le demander', text: 'Depuis le lien de l’e-mail de reçu de Paddle, sur {paddle} avec « Request refund », ou en nous écrivant à {email}. Le remboursement revient sur le moyen de paiement utilisé dans les 14 jours suivant l’approbation. Avec le remboursement, les crédits de cet achat sont retirés et, pour un abonnement, la formule prend fin.' },
+      { title: 'Quand il n’y a pas de remboursement', text: 'En cas de fraude, d’abus de remboursement ou de violation des conditions d’utilisation. Les droits que vous accorde la loi de votre pays restent acquis, y compris ceux prévus par la politique de remboursement de Paddle.' },
+    ],
+    seller: 'Moonbrand est un service de Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Tarente (Italie), n° TVA IT03419820737.',
+  },
+  saleTerms: {
+    title: 'Conditions de vente via Paddle, crédits et utilisation de l’intelligence artificielle',
+    intro: 'Ces conditions font partie des Conditions générales ci-dessus, qui les incorporent par référence.',
+    sections: [
+      { title: 'Vendeur et paiements via Paddle', blocks: [
+        'Le contrat d’utilisation du Service est conclu avec Blusail Technologies S.r.l.s., titulaire de Moonbrand. Notre processus de commande est géré par notre revendeur en ligne Paddle.com. Paddle.com est le Merchant of Record pour toutes nos commandes : il encaisse les paiements, applique les taxes dues, émet les factures et traite les demandes d’assistance sur les paiements et les remboursements. Les achats sont également soumis aux conditions acheteur de Paddle ({buyerTerms}).',
+        'Les prix du site sont indiqués hors TVA ; le montant final, avec les taxes du pays de l’Utilisateur et dans sa devise, est affiché lors du paiement, avant de payer.',
+      ] },
+      { title: 'Formules, crédits et recharges', blocks: [
+        'Chaque marque a son propre abonnement mensuel, renouvelé automatiquement jusqu’à la résiliation. Chaque formule donne un nombre de crédits par mois, qui mesurent le travail de l’intelligence artificielle. Les crédits de la formule valent pour la période en cours et ne passent pas à la suivante.',
+        'Les crédits achetés avec une recharge n’expirent pas à la fin de la période et s’utilisent tant que la marque a une formule active ; si la formule est réactivée, ils redeviennent disponibles. Les crédits n’ont pas de valeur monétaire, ne sont pas convertibles en argent et ne se transfèrent pas à d’autres marques.',
+        'En passant à une formule supérieure, l’Utilisateur paie tout de suite la différence pour le reste de la période ; en passant à une formule inférieure, le nouveau prix s’applique au renouvellement suivant et d’ici là les crédits de la formule en cours restent.',
+      ] },
+      { title: 'Résiliation et remboursements', blocks: [
+        'L’Utilisateur peut résilier à tout moment depuis les réglages de la marque ou depuis le portail de Paddle : l’abonnement reste actif jusqu’à la fin de la période déjà payée, sans autre prélèvement.',
+        'Les remboursements suivent notre {refunds} : l’Utilisateur peut demander un remboursement dans les 14 jours suivant le premier paiement d’un abonnement ou l’achat d’une recharge, le cas échéant réduit en proportion des crédits déjà utilisés ; les paiements de renouvellement ne sont pas remboursés, sauf si la loi le prévoit. Avec le remboursement, les crédits de l’achat sont retirés et, pour un abonnement, la formule prend fin. Le droit de rétractation des Consommateurs décrit ci-dessus et les droits prévus par la loi restent acquis.',
+      ] },
+      { title: 'Contenus générés par l’intelligence artificielle', blocks: [
+        'Le Service utilise des modèles d’intelligence artificielle pour créer des textes, des images, des vidéos et de la musique à partir des demandes de l’Utilisateur et des éléments qu’il importe (logos, photos, vidéos, documents, liens). L’Utilisateur :',
+        [
+          'garantit détenir les droits sur les éléments qu’il importe et sur les personnes, marques et œuvres qui y figurent ;',
+          'est responsable de ses demandes et de l’usage des contenus générés, y compris leur publication sur les réseaux sociaux ;',
+          'vérifie les contenus avant de les publier : les résultats de l’IA peuvent contenir des erreurs, des inexactitudes ou des ressemblances avec des contenus de tiers, et Moonbrand n’en garantit ni l’exactitude ni l’adéquation à un usage particulier.',
+        ],
+        'Il est interdit d’utiliser le Service pour créer des contenus illicites ; des contenus sexuels impliquant des mineurs ou des personnes sans leur consentement, y compris les deepfakes ; des contenus haineux, harcelants ou diffamatoires ; des contenus portant atteinte aux droits d’auteur, aux marques ou à la vie privée de tiers, y compris la divulgation de données personnelles d’autrui ; des contenus trompeurs, comme de faux avis ou de fausses déclarations attribuées à des personnes réelles ; du spam ou des logiciels malveillants ; ou des tentatives de contourner les limites de sécurité des modèles.',
+        'Dans les limites de la loi et des conditions des fournisseurs des modèles, les contenus générés pour l’Utilisateur lui appartiennent et il peut les utiliser aussi à des fins commerciales ; Blusail Technologies S.r.l.s. ne les traite que pour fournir le Service. Le Titulaire peut retirer des contenus ou suspendre le compte en cas de violation.',
+        'Toute personne estimant qu’un contenu porte atteinte à ses droits peut le signaler à {email} en indiquant le contenu et le droit concerné : le contenu est examiné et, si le signalement est fondé, retiré ; en cas de violations répétées, le compte est fermé.',
+      ] },
+    ],
   },
   notFound: {
     title: 'Page introuvable · Moonbrand',

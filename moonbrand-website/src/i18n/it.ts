@@ -3,6 +3,8 @@ import type { Channel, PostId } from '../data/home';
 
 const nf = new Intl.NumberFormat('it-IT');
 
+type PlanMonthly = { posts: number; carousels: number; videos: number };
+
 export const it = {
   lang: 'it',
   meta: {
@@ -273,7 +275,9 @@ export const it = {
     copyright: '© 2026 Moonbrand · un prodotto di Blusail Technologies',
     privacy: 'Privacy',
     terms: 'Termini',
+    refunds: 'Rimborsi',
     contact: 'Contatti',
+    paddle: 'I pagamenti sono gestiti da Paddle.com, nostro rivenditore autorizzato.',
   },
   pricing: {
     title: 'Prezzi · Moonbrand',
@@ -287,10 +291,13 @@ export const it = {
     recommended: 'Consigliato',
     cta: 'Scegli il piano',
     plans: {
-      start: { tagline: 'Per un’attività che vuole pubblicare con costanza.', example: 'Circa 12 post, 2 caroselli e 2 video al mese.' },
-      pro: { tagline: 'Per un brand che fa crescere i social ogni settimana.', example: 'Circa 16 post, 4 caroselli e 4 video al mese, e i crediti avanzano.' },
-      ultra: { tagline: 'Per chi pubblica ogni giorno, su più canali.', example: 'Contenuti tutti i giorni su più canali, video compresi.' },
+      start: { tagline: 'Per un’attività che vuole pubblicare con costanza.' },
+      pro: { tagline: 'Per un brand che fa crescere i social ogni settimana.' },
+      ultra: { tagline: 'Per chi pubblica ogni giorno, su più canali.' },
     },
+    // Cosa ci sta in un mese, dai numeri del piano (gli stessi che mostra lo studio).
+    example: ({ posts, carousels, videos }: PlanMonthly) =>
+      `Ogni mese circa ${posts} post, ${carousels} ${carousels === 1 ? 'carosello' : 'caroselli'} e ${videos} video.`,
     includedTitle: 'In tutti i piani',
     included: [
       'Assistente in chat che conosce il tuo brand',
@@ -306,8 +313,11 @@ export const it = {
       { q: 'Quanti crediti servono per un post o un video?', a: 'Dipende da quanto ci lavori. In media un post richiede circa 100 crediti, un carosello 130, un video tra 180 e 300 (di più se contiene clip generate). Ogni ritocco in chat ne usa circa 40.' },
       { q: 'Il piano vale per tutti i miei brand?', a: 'No, ogni brand ha il suo piano e i suoi crediti. Così un’agenzia sceglie il piano giusto per ciascun cliente.' },
       { q: 'E se finisco i crediti?', a: 'Puoi aggiungere {topup} crediti a {topupPrice} ({topupUltra} con Ultra) oppure passare al piano superiore.' },
-      { q: 'I crediti non usati restano?', a: 'I crediti del piano valgono per il mese in corso e ripartono da capo a ogni rinnovo. Quelli comprati con una ricarica restano finché l’abbonamento è attivo. I crediti non sono rimborsabili.' },
-      { q: 'Posso disdire quando voglio?', a: 'Sì. L’abbonamento è mensile e si rinnova da solo; se disdici prima del rinnovo resta attivo fino alla fine del mese già pagato.' },
+      { q: 'I crediti non usati restano?', a: 'I crediti del piano valgono per il mese in corso e ripartono da capo a ogni rinnovo. Quelli comprati con una ricarica non scadono a fine mese: restano sul brand e si usano finché il piano è attivo.' },
+      { q: 'Posso cambiare piano?', a: 'Sì, quando vuoi, dalle impostazioni del brand. Se sali di piano paghi subito la differenza per i giorni che restano; se scendi, il nuovo prezzo parte dal rinnovo e fino ad allora tieni i crediti che hai.' },
+      { q: 'Posso disdire quando voglio?', a: 'Sì. L’abbonamento è mensile e si rinnova da solo; se disdici prima del rinnovo resta attivo fino alla fine del mese già pagato e non ci sono altri addebiti.' },
+      { q: 'Chi gestisce i pagamenti?', a: 'Paddle.com, il nostro rivenditore autorizzato (merchant of record): incassa il pagamento, applica l’IVA o le tasse del tuo paese e ti manda la fattura. Paghi con carta o con gli altri metodi disponibili nel tuo paese; fuori dall’area euro il checkout ti mostra il prezzo nella tua valuta.' },
+      { q: 'Posso avere un rimborso?', a: 'Sì, se lo chiedi entro 14 giorni dal primo pagamento dell’abbonamento o dall’acquisto di una ricarica. Trovi tutto nella {refunds}.' },
       { q: 'Cosa non consuma crediti?', a: 'La configurazione iniziale di ogni brand e il saluto del mattino con i suggerimenti del giorno sono gratis.' },
     ],
   },
@@ -663,6 +673,55 @@ export const it = {
     termsHeading: 'Termini e condizioni',
     open: 'Leggi il documento',
     soon: 'Il documento è in preparazione. Per qualsiasi domanda scrivici a',
+  },
+  refunds: {
+    title: 'Rimborsi · Moonbrand',
+    description: 'Come chiedere un rimborso per un abbonamento o una ricarica di Moonbrand: entro 14 giorni, tramite Paddle.',
+    heading: 'Politica di rimborso',
+    link: 'politica di rimborso',
+    lead: 'Gli acquisti su Moonbrand passano da Paddle.com, il nostro rivenditore autorizzato (merchant of record): è Paddle che incassa, emette la fattura e gestisce i rimborsi, insieme a noi.',
+    // {paddle} e {email} diventano link.
+    sections: [
+      { title: 'Se cambi idea, entro 14 giorni', text: 'Puoi chiedere il rimborso entro 14 giorni dal primo pagamento di un abbonamento o dall’acquisto di una ricarica, senza dover dare un motivo. Se nel frattempo hai già usato i crediti, il rimborso può essere ridotto in proporzione a quelli usati.' },
+      { title: 'I rinnovi', text: 'L’abbonamento è mensile e si rinnova da solo. I pagamenti dei rinnovi non si rimborsano, salvo quanto previsto dalla legge del tuo paese. Puoi disdire quando vuoi: l’abbonamento resta attivo fino alla fine del mese già pagato e non ci sono altri addebiti.' },
+      { title: 'Il cambio di piano', text: 'Se sali di piano paghi subito la differenza per i giorni che restano del mese. Se scendi non paghi niente: il nuovo prezzo parte dal rinnovo e fino ad allora tieni i crediti del piano di oggi.' },
+      { title: 'Se qualcosa non funziona', text: 'Scrivici a {email}: proviamo a risolvere e, se non ci riusciamo, valutiamo con Paddle un rimborso anche dopo i 14 giorni.' },
+      { title: 'Come chiederlo', text: 'Dal link nell’email di ricevuta di Paddle, oppure su {paddle} con «Request refund», oppure scrivendoci a {email}. Il rimborso torna sul mezzo di pagamento usato entro 14 giorni dall’approvazione. Con il rimborso i crediti di quell’acquisto vengono tolti e, se è un abbonamento, il piano si chiude.' },
+      { title: 'Quando non si rimborsa', text: 'In caso di frode, di abuso dei rimborsi o di violazione dei termini d’uso. Restano fermi i diritti che la legge del tuo paese ti riconosce, compresi quelli previsti dalla politica di rimborso di Paddle.' },
+    ],
+    seller: 'Moonbrand è un servizio di Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Taranto (Italia), P.IVA 03419820737.',
+  },
+  // Le condizioni di vendita in fondo ai termini di iubenda, che le richiamano per rinvio: Paddle vuole la frase
+  // sul Merchant of Record e le regole sull'AI. {buyerTerms}, {refunds} e {email} diventano link; un elenco è un array.
+  saleTerms: {
+    title: 'Condizioni di vendita tramite Paddle, crediti e uso dell’intelligenza artificiale',
+    intro: 'Queste condizioni fanno parte dei Termini qui sopra, che le richiamano per rinvio.',
+    sections: [
+      { title: 'Venditore e pagamenti tramite Paddle', blocks: [
+        'Il contratto per l’uso del Servizio è concluso con Blusail Technologies S.r.l.s., titolare di Moonbrand. Il nostro processo d’ordine è gestito dal nostro rivenditore online Paddle.com. Paddle.com è il Merchant of Record per tutti i nostri ordini: incassa i pagamenti, applica le imposte dovute, emette le fatture e gestisce le richieste di assistenza sui pagamenti e i rimborsi. Agli acquisti si applicano anche i termini per l’acquirente di Paddle ({buyerTerms}).',
+        'I prezzi sul sito sono indicati IVA esclusa; l’importo finale, con le imposte del paese dell’Utente e nella sua valuta, è mostrato nel checkout prima del pagamento.',
+      ] },
+      { title: 'Piani, crediti e ricariche', blocks: [
+        'Ogni brand ha il proprio abbonamento mensile, che si rinnova automaticamente fino alla disdetta. Ogni piano dà un numero di crediti al mese, con cui si misura il lavoro dell’intelligenza artificiale. I crediti del piano valgono per il periodo in corso e non passano al periodo successivo.',
+        'I crediti acquistati con una ricarica non scadono alla fine del periodo e si possono usare finché il brand ha un piano attivo; se il piano viene riattivato, tornano disponibili. I crediti non hanno valore monetario, non si convertono in denaro e non si trasferiscono ad altri brand.',
+        'Passando a un piano superiore l’Utente paga subito la differenza per il resto del periodo; passando a un piano inferiore il nuovo prezzo si applica dal rinnovo successivo e fino ad allora restano i crediti del piano in corso.',
+      ] },
+      { title: 'Disdetta e rimborsi', blocks: [
+        'L’Utente può disdire in qualsiasi momento dalle impostazioni del brand o dal portale di Paddle: l’abbonamento resta attivo fino alla fine del periodo già pagato e non ci sono altri addebiti.',
+        'I rimborsi seguono la nostra {refunds}: l’Utente può chiedere il rimborso entro 14 giorni dal primo pagamento di un abbonamento o dall’acquisto di una ricarica, eventualmente ridotto in proporzione ai crediti già usati; i pagamenti dei rinnovi non si rimborsano, salvo quanto previsto dalla legge. Con il rimborso i crediti dell’acquisto vengono tolti e, per un abbonamento, il piano si chiude. Restano fermi il diritto di recesso dei Consumatori descritto sopra e i diritti previsti dalla legge.',
+      ] },
+      { title: 'Contenuti generati con l’intelligenza artificiale', blocks: [
+        'Il Servizio usa modelli di intelligenza artificiale per creare testi, immagini, video e musica a partire dalle richieste dell’Utente e dai materiali che carica (loghi, foto, video, documenti, link). L’Utente:',
+        [
+          'garantisce di avere i diritti sui materiali che carica e sulle persone, i marchi e le opere che vi compaiono;',
+          'è responsabile delle richieste che fa e dell’uso dei contenuti generati, compresa la loro pubblicazione sui social;',
+          'controlla i contenuti prima di pubblicarli: i risultati dell’AI possono contenere errori, imprecisioni o somiglianze con contenuti di terzi, e Moonbrand non ne garantisce l’esattezza né l’idoneità a un uso particolare.',
+        ],
+        'È vietato usare il Servizio per creare contenuti illeciti; contenuti sessuali che coinvolgono minori o persone senza il loro consenso, compresi i deepfake; contenuti d’odio, molesti o diffamatori; contenuti che violano diritti d’autore, marchi o la riservatezza di terzi, compresa la diffusione di dati personali altrui; contenuti ingannevoli, come false recensioni o finte dichiarazioni di persone reali; spam o malware; e tentativi di aggirare i limiti di sicurezza dei modelli.',
+        'Nei limiti della legge e dei termini dei fornitori dei modelli, i contenuti generati per l’Utente appartengono all’Utente, che può usarli anche a fini commerciali; Blusail Technologies S.r.l.s. li tratta solo per fornire il Servizio. Il Titolare può rimuovere contenuti o sospendere l’account in caso di violazione.',
+        'Chi ritiene che un contenuto violi i propri diritti può segnalarlo a {email} indicando il contenuto e il diritto violato: il contenuto viene esaminato e, se la segnalazione è fondata, rimosso; in caso di violazioni ripetute l’account viene chiuso.',
+      ] },
+    ] as { title: string; blocks: (string | string[])[] }[],
   },
   notFound: {
     title: 'Pagina non trovata · Moonbrand',

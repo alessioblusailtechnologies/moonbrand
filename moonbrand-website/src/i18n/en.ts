@@ -268,7 +268,9 @@ export const en: Copy = {
     copyright: '© 2026 Moonbrand · a Blusail Technologies product',
     privacy: 'Privacy',
     terms: 'Terms',
+    refunds: 'Refunds',
     contact: 'Contact',
+    paddle: 'Payments are handled by Paddle.com, our authorised reseller.',
   },
   pricing: {
     title: 'Pricing · Moonbrand',
@@ -282,10 +284,12 @@ export const en: Copy = {
     recommended: 'Recommended',
     cta: 'Choose this plan',
     plans: {
-      start: { tagline: 'For a business that wants to post consistently.', example: 'Around 12 posts, 2 carousels and 2 videos a month.' },
-      pro: { tagline: 'For a brand growing its socials every week.', example: 'Around 16 posts, 4 carousels and 4 videos a month, with credits to spare.' },
-      ultra: { tagline: 'For those who post every day, on several channels.', example: 'Content every day on several channels, videos included.' },
+      start: { tagline: 'For a business that wants to post consistently.' },
+      pro: { tagline: 'For a brand growing its socials every week.' },
+      ultra: { tagline: 'For those who post every day, on several channels.' },
     },
+    example: ({ posts, carousels, videos }: { posts: number; carousels: number; videos: number }) =>
+      `Every month around ${posts} posts, ${carousels} ${carousels === 1 ? 'carousel' : 'carousels'} and ${videos} videos.`,
     includedTitle: 'In every plan',
     included: [
       'Chat assistant that knows your brand',
@@ -301,8 +305,11 @@ export const en: Copy = {
       { q: 'How many credits does a post or a video take?', a: 'It depends on how much you work on it. On average a post takes about 100 credits, a carousel 130, a video between 180 and 300 (more with generated clips). Each tweak in the chat uses about 40.' },
       { q: 'Does the plan cover all my brands?', a: 'No, each brand has its own plan and credits. That way an agency picks the right plan for each client.' },
       { q: 'What if I run out of credits?', a: 'You can add {topup} credits for {topupPrice} ({topupUltra} on Ultra) or move to the next plan up.' },
-      { q: 'Do unused credits carry over?', a: 'Plan credits are valid for the current month and reset at each renewal. Credits bought with a top-up stay as long as the subscription is active. Credits are non-refundable.' },
-      { q: 'Can I cancel at any time?', a: 'Yes. The subscription is monthly and renews automatically; if you cancel before the renewal it stays active until the end of the month already paid.' },
+      { q: 'Do unused credits carry over?', a: 'Plan credits are valid for the current month and reset at each renewal. Credits bought with a top-up don’t expire at the end of the month: they stay on the brand and can be used as long as the plan is active.' },
+      { q: 'Can I change plan?', a: 'Yes, whenever you like, from the brand settings. If you move up you pay the difference for the remaining days straight away; if you move down, the new price starts at the renewal and until then you keep the credits you have.' },
+      { q: 'Can I cancel at any time?', a: 'Yes. The subscription is monthly and renews automatically; if you cancel before the renewal it stays active until the end of the month already paid, with no further charges.' },
+      { q: 'Who handles payments?', a: 'Paddle.com, our authorised reseller (merchant of record): it collects the payment, applies VAT or your country’s sales tax and sends you the invoice. You pay by card or with the other methods available in your country; outside the euro area the checkout shows the price in your currency.' },
+      { q: 'Can I get a refund?', a: 'Yes, if you ask within 14 days of the first subscription payment or of buying a top-up. All the details are in our {refunds}.' },
       { q: 'What doesn’t use credits?', a: 'The initial setup of each brand and the morning greeting with the day’s suggestions are free.' },
     ],
   },
@@ -655,6 +662,52 @@ export const en: Copy = {
     termsHeading: 'Terms and conditions',
     open: 'Read the document',
     soon: 'This document is being prepared. For any question, email us at',
+  },
+  refunds: {
+    title: 'Refunds · Moonbrand',
+    description: 'How to ask for a refund on a Moonbrand subscription or top-up: within 14 days, through Paddle.',
+    heading: 'Refund policy',
+    link: 'refund policy',
+    lead: 'Purchases on Moonbrand go through Paddle.com, our authorised reseller (merchant of record): Paddle collects the payment, issues the invoice and handles refunds, together with us.',
+    sections: [
+      { title: 'If you change your mind, within 14 days', text: 'You can ask for a refund within 14 days of the first payment of a subscription or of buying a top-up, without giving a reason. If you have already used credits in the meantime, the refund may be reduced in proportion to the credits used.' },
+      { title: 'Renewals', text: 'The subscription is monthly and renews automatically. Renewal payments are not refunded, except where the law of your country requires it. You can cancel at any time: the subscription stays active until the end of the month already paid, with no further charges.' },
+      { title: 'Changing plan', text: 'If you move up a plan you pay the difference for the remaining days of the month straight away. If you move down you pay nothing: the new price starts at the renewal and until then you keep the credits of your current plan.' },
+      { title: 'If something doesn’t work', text: 'Email us at {email}: we’ll try to fix it and, if we can’t, we’ll look at a refund with Paddle even after the 14 days.' },
+      { title: 'How to ask', text: 'Use the link in Paddle’s receipt email, go to {paddle} and choose “Request refund”, or email us at {email}. The refund goes back to the payment method you used within 14 days of approval. With the refund, the credits of that purchase are removed and, for a subscription, the plan ends.' },
+      { title: 'When no refund is given', text: 'In case of fraud, refund abuse or breach of the terms of use. This does not affect the rights the law of your country gives you, including those under Paddle’s refund policy.' },
+    ],
+    seller: 'Moonbrand is a service of Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Taranto (Italy), VAT no. IT03419820737.',
+  },
+  saleTerms: {
+    title: 'Terms of sale through Paddle, credits and use of artificial intelligence',
+    intro: 'These terms are part of the Terms above, which incorporate them by reference.',
+    sections: [
+      { title: 'Seller and payments through Paddle', blocks: [
+        'The contract for the use of the Service is made with Blusail Technologies S.r.l.s., owner of Moonbrand. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders: it collects payments, applies the applicable taxes, issues invoices and handles payment enquiries and refunds. Purchases are also subject to Paddle’s buyer terms ({buyerTerms}).',
+        'Prices on the website are shown excluding VAT; the final amount, with the taxes of the User’s country and in their currency, is shown in the checkout before payment.',
+      ] },
+      { title: 'Plans, credits and top-ups', blocks: [
+        'Each brand has its own monthly subscription, which renews automatically until cancelled. Each plan gives a number of credits per month, used to measure the work of the artificial intelligence. Plan credits are valid for the current period and do not carry over to the next one.',
+        'Credits bought with a top-up do not expire at the end of the period and can be used as long as the brand has an active plan; if the plan is reactivated, they become available again. Credits have no monetary value, cannot be exchanged for money and cannot be transferred to other brands.',
+        'When moving to a higher plan the User pays the difference for the rest of the period straight away; when moving to a lower plan the new price applies from the next renewal and until then the credits of the current plan remain.',
+      ] },
+      { title: 'Cancellation and refunds', blocks: [
+        'The User can cancel at any time from the brand settings or from Paddle’s portal: the subscription stays active until the end of the period already paid, with no further charges.',
+        'Refunds follow our {refunds}: the User can ask for a refund within 14 days of the first payment of a subscription or of buying a top-up, possibly reduced in proportion to the credits already used; renewal payments are not refunded, except where the law requires it. With the refund, the credits of the purchase are removed and, for a subscription, the plan ends. This does not affect the Consumers’ right of withdrawal described above or any rights under the law.',
+      ] },
+      { title: 'AI-generated content', blocks: [
+        'The Service uses artificial intelligence models to create text, images, video and music from the User’s requests and the materials they upload (logos, photos, videos, documents, links). The User:',
+        [
+          'warrants that they hold the rights to the materials they upload and to the people, trademarks and works shown in them;',
+          'is responsible for their requests and for the use of the generated content, including publishing it on social networks;',
+          'reviews the content before publishing it: AI output may contain errors, inaccuracies or similarities to third-party content, and Moonbrand does not guarantee its accuracy or fitness for a particular purpose.',
+        ],
+        'The Service must not be used to create unlawful content; sexual content involving minors or people without their consent, including deepfakes; hateful, harassing or defamatory content; content that infringes third parties’ copyright, trademarks or privacy, including disclosing other people’s personal data; deceptive content, such as fake reviews or false statements attributed to real people; spam or malware; or attempts to circumvent the models’ safety limits.',
+        'Within the limits of the law and of the model providers’ terms, content generated for the User belongs to the User, who may also use it commercially; Blusail Technologies S.r.l.s. processes it only to provide the Service. The Owner may remove content or suspend the account in case of a breach.',
+        'Anyone who believes content infringes their rights can report it to {email}, identifying the content and the right infringed: the content is reviewed and, if the report is well founded, removed; repeated infringements lead to the account being closed.',
+      ] },
+    ],
   },
   notFound: {
     title: 'Page not found · Moonbrand',

@@ -1,0 +1,38 @@
+---
+// La politica di rimborso: è nostra (non su iubenda), perché Paddle la vuole pubblica e con una finestra di 14-90 giorni.
+// Paddle è il venditore: i rimborsi passano da paddle.net, noi aiutiamo.
+import { CONTACT_EMAIL, getCopy, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { refunds } = getCopy(lang);
+// I testi sono nostri, senza HTML: qui diventano link solo l'email e paddle.net.
+const linked = (text: string) =>
+  text
+    .replaceAll('{email}', `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`)
+    .replaceAll('{paddle}', '<a href="https://paddle.net" rel="noopener">paddle.net</a>');
+---
+
+<PageShell lang={lang} page="refunds" title={refunds.title} description={refunds.description} heading={refunds.heading} lead={refunds.lead}>
+  <div class="sections">
+    {refunds.sections.map(({ title, text }) => (
+      <section>
+        <h2>{title}</h2>
+        <p set:html={linked(text)} />
+      </section>
+    ))}
+  </div>
+  <p class="seller">{refunds.seller}</p>
+</PageShell>
+
+<style>
+  .sections { display: flex; flex-direction: column; gap: 36px; }
+  h2 { margin: 0 0 10px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  p { margin: 0; font-size: 16.5px; line-height: 1.65; color: var(--text); }
+  p :global(a) { color: var(--accent-dark); text-decoration: underline; text-underline-offset: 2px; }
+  .seller { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+</style>
