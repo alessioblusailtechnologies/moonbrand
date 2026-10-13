@@ -691,7 +691,11 @@ export interface CreditsResponse {
   renewsOn: string;
   // L'abbonamento pagato del brand, su Paddle; null se il piano non è ancora attivato.
   subscription: BrandSubscription | null;
+  // Perché i lavori a pagamento del brand non partono: senza piano attivo o senza crediti; null se partono.
+  blocked: SpendBlock | null;
 }
+
+export type SpendBlock = 'PLAN_REQUIRED' | 'NO_CREDITS';
 
 // Gli stati di Paddle: past_due è un pagamento non riuscito che Paddle sta riprovando.
 export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'paused' | 'canceled';

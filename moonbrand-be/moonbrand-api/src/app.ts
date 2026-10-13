@@ -21,6 +21,7 @@ import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
 import { registerConversationRoutes } from './modules/conversations/routes';
+import { enforceBilling } from './modules/credits/balance';
 import { registerCreditRoutes } from './modules/credits/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
@@ -54,6 +55,7 @@ export interface AppOptions {
     | 'PADDLE_API_KEY'
     | 'PADDLE_ENV'
     | 'PADDLE_CLIENT_TOKEN'
+    | 'BILLING_ENFORCED'
     | 'STUDIO_ORIGINS'
     | 'SIMULATE_SOCIAL'
     | 'STUDIO_URL'
@@ -81,6 +83,7 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
+  enforceBilling(options.settings.BILLING_ENFORCED);
   const paddle = new PaddleApi(options.settings);
   registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, paddle);
   registerBrandFileRoutes(app, options.files);

@@ -25,6 +25,14 @@ export const shell = defineMessages({
     lostOne: '{channels} ha chiuso l’accesso a {brand}: i post lì sono in attesa finché non lo ricolleghi.',
     lostMany: '{channels} hanno chiuso l’accesso a {brand}: i post lì sono in attesa finché non li ricolleghi.',
     lostAction: 'Ricollega',
+    billing: {
+      plan: 'Il piano di {brand} non è attivo: chat e contenuti sono fermi finché non lo attivi.',
+      planAction: 'Attiva {plan}',
+      credits: '{brand} ha finito i crediti: chat e contenuti ripartono con una ricarica o al rinnovo.',
+      creditsAction: 'Ricarica',
+      pastDue: 'L’ultimo pagamento di {brand} non è riuscito: aggiorna la carta per non fermare il piano.',
+      pastDueAction: 'Aggiorna la carta',
+    },
   },
   en: {
     sections: 'Sections',
@@ -50,6 +58,14 @@ export const shell = defineMessages({
     lostOne: '{channels} closed access to {brand}: posts there wait until you reconnect it.',
     lostMany: '{channels} closed access to {brand}: posts there wait until you reconnect them.',
     lostAction: 'Reconnect',
+    billing: {
+      plan: '{brand}’s plan isn’t active: chat and posts are on hold until you activate it.',
+      planAction: 'Activate {plan}',
+      credits: '{brand} is out of credits: chat and posts resume with a top-up or at renewal.',
+      creditsAction: 'Top up',
+      pastDue: '{brand}’s last payment failed: update your card to keep the plan running.',
+      pastDueAction: 'Update card',
+    },
   },
   fr: {
     sections: 'Sections',
@@ -75,5 +91,13 @@ export const shell = defineMessages({
     lostOne: '{channels} a fermé l’accès à {brand} : les publications y attendent que vous le reconnectiez.',
     lostMany: '{channels} ont fermé l’accès à {brand} : les publications y attendent que vous les reconnectiez.',
     lostAction: 'Reconnecter',
+    billing: {
+      plan: 'Le forfait de {brand} n’est pas actif : discussion et contenus sont en pause tant que vous ne l’activez pas.',
+      planAction: 'Activer {plan}',
+      credits: '{brand} n’a plus de crédits : discussion et contenus reprennent avec une recharge ou au renouvellement.',
+      creditsAction: 'Recharger',
+      pastDue: 'Le dernier paiement de {brand} a échoué : mettez à jour votre carte pour ne pas suspendre le forfait.',
+      pastDueAction: 'Mettre à jour la carte',
+    },
   },
 });

@@ -34,6 +34,8 @@ export const errors = defineMessages({
       PAYMENTS_FAILED: 'Il servizio dei pagamenti non risponde: riprova tra poco.',
       ALREADY_SUBSCRIBED: 'Questo brand ha già un piano attivo: cambialo dalle Impostazioni brand.',
       NO_SUBSCRIPTION: 'Attiva prima un piano per questo brand.',
+      PLAN_REQUIRED: 'Attiva un piano per questo brand per continuare.',
+      NO_CREDITS: 'Hai finito i crediti di questo brand: ricarica per continuare.',
     },
   },
   en: {
@@ -67,6 +69,8 @@ export const errors = defineMessages({
       PAYMENTS_FAILED: 'The payment service isn’t responding: try again shortly.',
       ALREADY_SUBSCRIBED: 'This brand already has an active plan: change it from Brand settings.',
       NO_SUBSCRIPTION: 'Activate a plan for this brand first.',
+      PLAN_REQUIRED: 'Activate a plan for this brand to continue.',
+      NO_CREDITS: 'This brand is out of credits: top up to continue.',
     },
   },
   fr: {
@@ -100,6 +104,8 @@ export const errors = defineMessages({
       PAYMENTS_FAILED: 'Le service de paiement ne répond pas : réessayez dans un instant.',
       ALREADY_SUBSCRIBED: 'Cette marque a déjà un forfait actif : changez-le dans les Paramètres de la marque.',
       NO_SUBSCRIPTION: 'Activez d’abord un forfait pour cette marque.',
+      PLAN_REQUIRED: 'Activez un forfait pour cette marque pour continuer.',
+      NO_CREDITS: 'Cette marque n’a plus de crédits : rechargez pour continuer.',
     },
   },
 });

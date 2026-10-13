@@ -46,6 +46,8 @@ const schema = z.object({
   PADDLE_API_KEY: optional,
   PADDLE_CLIENT_TOKEN: optional,
   PADDLE_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
+  // Il blocco dei lavori a pagamento per i brand senza piano attivo o senza crediti. Spento: si conta soltanto.
+  BILLING_ENFORCED: flag.default(false),
   // Le origini di studio (es. https://moonbrand.app) dove si torna dopo aver collegato un social; vuoto: qualsiasi http(s).
   STUDIO_ORIGINS: optional,
   // Solo negli ambienti di prova, mai in produzione: i canali si possono «collegare» per finta e i loro post risultano

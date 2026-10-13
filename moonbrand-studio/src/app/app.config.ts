@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding, withNavigationErrorHandler, w
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { billingInterceptor } from './core/billing/billing.interceptor';
 import { AuthService } from './core/auth/auth.service';
 
 // Dopo un aggiornamento dello studio, una scheda aperta da prima cerca i pezzi della versione vecchia, che non ci sono
@@ -30,7 +31,7 @@ function reloadOnStaleChunk(error: NavigationError): void {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor, billingInterceptor])),
     // Una navigazione che non riesce non fa fallire chi l'ha chiesta (per esempio la registrazione appena riuscita).
     provideRouter(
       routes,
