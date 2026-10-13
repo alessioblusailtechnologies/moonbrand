@@ -96,7 +96,7 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
-  registerPaddleWebhook(app, options.pool, options.settings);
+  registerPaddleWebhook(app, options.pool, paddle, options.settings);
   registerBillingRoutes(app, options.pool, paddle, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);

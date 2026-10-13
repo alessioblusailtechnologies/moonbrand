@@ -6,14 +6,18 @@ import { ApiError } from '../../errors';
 
 // I crediti di un brand, dal registro dei movimenti (migration credits) che scalano i trigger. Piani e crediti sono per
 // brand (migration brand_credits); senza brandId vale il brand attivo.
-// - Con l'abbonamento Paddle (migration paddle) vale il periodo pagato in corso: i crediti del piano del periodo, che
-//   scadono a fine periodo, più le ricariche, che restano finché c'è l'abbonamento.
-// - Senza un periodo in corso (nessun abbonamento, o il primo pagamento non ancora arrivato) vale il conto di prima, a
-//   mese di calendario a Roma: i crediti del piano scelto più quelli aggiunti nel mese dall'admin.
+// - Un brand con l'abbonamento Paddle (migration paddle), in qualunque stato, conta solo i crediti pagati: quelli del
+//   piano del periodo in corso, che scadono a fine periodo, più le ricariche, che restano. Senza un periodo pagato in
+//   corso (un rinnovo non ancora pagato, l'abbonamento finito, i secondi prima del primo pagamento) restano solo le
+//   ricariche: niente crediti regalati.
+// - Un brand che non ha mai avuto l'abbonamento conta come prima, a mese di calendario a Roma: i crediti del piano scelto
+//   più quelli aggiunti nel mese dall'admin. Con BILLING_ENFORCED è comunque fermo finché non attiva un piano.
 export async function brandCredits(db: Queryable, accountId: string, brandId: string | null): Promise<CreditsResponse> {
   const subscription = await brandSubscription(db, accountId, brandId);
-  const paid = await paidCredits(db, accountId, brandId);
-  if (paid) return { ...paid, subscription, blocked: blockOf(subscription, paid.remaining) };
+  if (subscription) {
+    const paid = await paidCredits(db, accountId, brandId, subscription);
+    return { ...paid, subscription, blocked: blockOf(subscription, paid.remaining) };
+  }
   const { rows } = await db.query<{ plan: SubscriptionPlanId | null; used: string; added: string; renews_on: string }>(
     `with month as (select date_trunc('month', now() at time zone 'Europe/Rome') as start),
           brand as (
@@ -35,17 +39,19 @@ export async function brandCredits(db: Queryable, accountId: string, brandId: st
   return { plan, monthlyCredits, usedThisMonth, remaining, renewsOn: rows[0].renews_on, subscription, blocked: blockOf(subscription, remaining) };
 }
 
-// Il periodo pagato in corso. Ogni periodo ha i crediti del suo piano (l'ultimo movimento plan del periodo: un passaggio
-// di piano a metà ne scrive un altro). Si consuma prima il piano: quello che in un periodo chiuso è andato oltre il piano
-// è uscito dalle ricariche.
-async function paidCredits(db: Queryable, accountId: string, brandId: string | null): Promise<Omit<CreditsResponse, 'subscription' | 'blocked'> | null> {
-  const { rows } = await db.query<{ plan: SubscriptionPlanId; period_amount: string; used: string; topups: string; overflow: string; renews_on: string }>(
+// I crediti pagati. Ogni periodo ha i crediti del suo piano (l'ultimo movimento plan del periodo: un passaggio di piano a
+// metà ne scrive un altro). Si consuma prima il piano: quello che in un periodo chiuso è andato oltre il piano è uscito
+// dalle ricariche. Fuori da un periodo pagato si consumano solo le ricariche, dalla fine dell'ultimo periodo.
+async function paidCredits(
+  db: Queryable,
+  accountId: string,
+  brandId: string | null,
+  subscription: BrandSubscription,
+): Promise<Omit<CreditsResponse, 'subscription' | 'blocked'>> {
+  const { rows } = await db.query<{ period_amount: string | null; used: string; topups: string; overflow: string; renews_on: string }>(
     `with brand as (
        select b.id from presenza.brands b
        where b.id = coalesce($2::uuid, (select a.active_brand_id from presenza.accounts a where a.id = $1))
-     ), sub as (
-       select s.plan from presenza.brand_subscriptions s
-       where s.brand_id = (select id from brand) and s.status in ('active', 'trialing', 'past_due')
      ), periods as (
        select distinct on (m.period_start) m.period_start, m.period_end, m.amount
        from presenza.credit_movements m
@@ -57,23 +63,26 @@ async function paidCredits(db: Queryable, accountId: string, brandId: string | n
                    where m.brand_id = (select id from brand) and m.amount < 0
                      and m.created_at >= p.period_start and m.created_at < p.period_end), 0) as used
        from periods p
+     ), current as (
+       select * from spent where period_start <= now() and period_end > now() order by period_start desc limit 1
+     ), since as (
+       select coalesce((select max(period_end) from periods where period_end <= now()), now()) as at
      )
-     select (select plan from sub) as plan, c.amount as period_amount, c.used,
+     select (select amount from current) as period_amount,
+       coalesce((select used from current),
+                (select -sum(m.amount) from presenza.credit_movements m
+                 where m.brand_id = (select id from brand) and m.amount < 0 and m.created_at >= (select at from since)), 0) as used,
        coalesce((select sum(m.amount) from presenza.credit_movements m
                  where m.brand_id = (select id from brand) and m.kind = 'topup'), 0) as topups,
        coalesce((select sum(greatest(s.used - s.amount, 0)) from spent s where s.period_end <= now()), 0) as overflow,
-       to_char(c.period_end at time zone 'Europe/Rome', 'YYYY-MM-DD') as renews_on
-     from spent c
-     where exists (select 1 from sub) and c.period_start <= now() and c.period_end > now()
-     order by c.period_start desc
-     limit 1`,
-    [accountId, brandId],
+       to_char(coalesce((select period_end from current), $3::timestamptz, now()) at time zone 'Europe/Rome', 'YYYY-MM-DD') as renews_on`,
+    [accountId, brandId, subscription.periodEnd],
   );
   const row = rows[0];
-  if (!row) return null;
-  const monthlyCredits = Math.round(Number(row.period_amount) + Math.max(Number(row.topups) - Number(row.overflow), 0));
+  const leftover = Math.max(Number(row.topups) - Number(row.overflow), 0);
+  const monthlyCredits = Math.round(Number(row.period_amount ?? 0) + leftover);
   const usedThisMonth = Math.round(Number(row.used));
-  return { plan: row.plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: row.renews_on };
+  return { plan: subscription.plan, monthlyCredits, usedThisMonth, remaining: monthlyCredits - usedThisMonth, renewsOn: row.renews_on };
 }
 
 async function brandSubscription(db: Queryable, accountId: string, brandId: string | null): Promise<BrandSubscription | null> {

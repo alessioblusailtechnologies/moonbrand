@@ -101,6 +101,18 @@ export class PaddleApi {
     };
   }
 
+  // La disdetta immediata, senza aspettare la fine del periodo: per un abbonamento nato in più sullo stesso brand, e per
+  // un brand o un'utenza che spariscono.
+  async cancelNow(subscriptionId: string): Promise<void> {
+    await this.call('POST', `/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`, { effective_from: 'immediately' });
+  }
+
+  // Il rimborso completo di una transazione, sul metodo di pagamento del cliente. In sandbox Paddle lo approva da solo
+  // entro dieci minuti, nell'account vero lo rivede Paddle; i crediti si tolgono quando arriva approvato (webhook).
+  async refund(transactionId: string, reason: string): Promise<void> {
+    await this.call('POST', '/adjustments', { action: 'refund', type: 'full', transaction_id: transactionId, reason });
+  }
+
   // Il portale del cliente su Paddle: carta, disdetta, pagamenti e fatture da scaricare.
   async portal(customerId: string, subscriptionIds: string[]): Promise<string> {
     const session = await this.call<{ urls: { general: { overview: string } } }>(

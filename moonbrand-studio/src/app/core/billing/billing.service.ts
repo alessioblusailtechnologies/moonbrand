@@ -165,7 +165,8 @@ export class BillingService {
   private arrived(purchase: Purchase, credits: CreditsResponse): boolean {
     if (purchase.kind === 'topup') return credits.monthlyCredits > purchase.before;
     if (purchase.kind === 'change') return credits.subscription?.plan === purchase.plan;
-    return credits.subscription?.status === 'active';
+    // Lo stato arriva un attimo prima dei crediti del primo periodo (due eventi diversi): si aspettano entrambi.
+    return credits.subscription?.status === 'active' && credits.monthlyCredits > 0;
   }
 
   // Rilegge i crediti finché il webhook non ha fatto il suo. sure: il pagamento c'è stato di sicuro, la modale aspetta

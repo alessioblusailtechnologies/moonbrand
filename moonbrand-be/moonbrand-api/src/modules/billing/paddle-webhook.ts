@@ -8,6 +8,7 @@ import { SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/d
 
 import type { Config } from '../../config';
 import { ApiError } from '../../errors';
+import type { PaddleApi } from './paddle-api';
 
 export const PADDLE_WEBHOOK = '/v1/webhooks/paddle';
 
@@ -16,6 +17,8 @@ export const PADDLE_WEBHOOK = '/v1/webhooks/paddle';
 // custom_data cosa vale: il piano (plan, monthly_credits) o la ricarica (kind topup, credits).
 // - subscription.*: lo stato dell'abbonamento del brand (piano, periodo, disdetta), in brand_subscriptions.
 // - transaction.completed: i crediti pagati, il piano del periodo o la ricarica, una volta per transazione.
+// - adjustment.*: un rimborso o un chargeback approvato toglie i crediti di quella transazione.
+// Un secondo abbonamento sullo stesso brand (due checkout pagati insieme) si disdice e si rimborsa da solo.
 // Paddle ripete un evento finché non riceve un 2xx e può mandarli fuori ordine: ogni evento si registra una volta sola
 // (paddle_events) e un evento più vecchio dell'ultimo applicato non tocca l'abbonamento.
 const priceData = z
@@ -58,6 +61,16 @@ const transactionSchema = z
     items: z.array(item),
     billing_period: period,
     custom_data: owner,
+  })
+  .loose();
+
+const adjustmentSchema = z
+  .object({
+    id: z.string(),
+    action: z.string(),
+    status: z.string(),
+    transaction_id: z.string(),
+    totals: z.object({ total: z.string() }).loose().nullish(),
   })
   .loose();
 
@@ -115,12 +128,38 @@ async function linkCustomer(db: pg.PoolClient, accountId: string, customerId: st
   await db.query('update presenza.accounts set paddle_customer_id = $2 where id = $1 and paddle_customer_id is null', [accountId, customerId]);
 }
 
-async function applySubscription(db: pg.PoolClient, raw: unknown, occurredAt: string, log: FastifyBaseLogger): Promise<void> {
+// Le chiamate a Paddle che un evento richiede (disdire o rimborsare un doppione): partono dopo il commit, senza far
+// aspettare la risposta a Paddle, che la vuole entro 5 secondi.
+type After = (paddle: PaddleApi) => Promise<void>;
+
+const LIVE = ['active', 'trialing', 'past_due', 'paused'];
+
+// L'abbonamento vivo che il brand ha già, se è un altro: un secondo checkout pagato prima che arrivasse il webhook del
+// primo (due schede) farebbe pagare due volte lo stesso brand.
+async function otherLive(db: pg.PoolClient, brandId: string, subscriptionId: string | null | undefined): Promise<string | null> {
+  if (!subscriptionId) return null;
+  const { rows } = await db.query<{ id: string }>(
+    `select paddle_subscription_id as id from presenza.brand_subscriptions
+     where brand_id = $1 and paddle_subscription_id <> $2 and status = any($3)`,
+    [brandId, subscriptionId, LIVE],
+  );
+  return rows[0]?.id ?? null;
+}
+
+async function applySubscription(db: pg.PoolClient, raw: unknown, occurredAt: string, log: FastifyBaseLogger, after: After[]): Promise<void> {
   const data = subscriptionSchema.parse(raw);
   const brand = await brandFor(db, data, data.id);
   const plan = planOf(data.items);
   if (!brand || !plan) {
     log.warn({ subscription: data.id, brand: brand?.id, plan }, 'abbonamento Paddle senza brand o senza piano: ignorato');
+    return;
+  }
+  // Un doppione non prende il posto dell'abbonamento del brand: si disdice subito (il suo pagamento si rimborsa quando
+  // arriva la transazione) e i suoi eventi successivi si ignorano.
+  const kept = await otherLive(db, brand.id, data.id);
+  if (kept) {
+    log.warn({ brand: brand.id, kept, duplicate: data.id, status: data.status }, 'abbonamento doppio sullo stesso brand');
+    if (LIVE.includes(data.status)) after.push((paddle) => paddle.cancelNow(data.id));
     return;
   }
   const cancelsAt = data.scheduled_change?.action === 'cancel' ? data.scheduled_change.effective_at : null;
@@ -150,11 +189,21 @@ async function applySubscription(db: pg.PoolClient, raw: unknown, occurredAt: st
   await linkCustomer(db, brand.account_id, data.customer_id);
 }
 
-async function applyTransaction(db: pg.PoolClient, raw: unknown, log: FastifyBaseLogger): Promise<void> {
+async function applyTransaction(db: pg.PoolClient, raw: unknown, log: FastifyBaseLogger, after: After[]): Promise<void> {
   const data = transactionSchema.parse(raw);
   const brand = await brandFor(db, data, data.subscription_id);
   if (!brand) {
     log.warn({ transaction: data.id }, 'transazione Paddle senza brand: crediti non caricati');
+    return;
+  }
+  // Il pagamento di un abbonamento doppio: niente crediti, si rimborsa tutto e l'abbonamento si disdice (se l'evento
+  // della transazione arriva prima di quello dell'abbonamento).
+  const kept = await otherLive(db, brand.id, data.subscription_id);
+  if (kept && data.subscription_id) {
+    const duplicate = data.subscription_id;
+    log.warn({ brand: brand.id, kept, duplicate, transaction: data.id }, 'pagamento di un abbonamento doppio: rimborso');
+    after.push((paddle) => paddle.refund(data.id, 'Abbonamento doppio sullo stesso brand: rimborso automatico'));
+    after.push((paddle) => paddle.cancelNow(duplicate));
     return;
   }
   let plan = 0;
@@ -177,7 +226,42 @@ async function applyTransaction(db: pg.PoolClient, raw: unknown, log: FastifyBas
   await linkCustomer(db, brand.account_id, data.customer_id);
 }
 
-export function registerPaddleWebhook(app: FastifyInstance, pool: pg.Pool, settings: Pick<Config, 'PADDLE_WEBHOOK_SECRET'>): void {
+// Un rimborso o un chargeback approvato toglie i crediti che quella transazione aveva dato, in proporzione a quanto si è
+// restituito (un rimborso parziale ne toglie una parte). Una volta sola per adjustment.
+async function applyAdjustment(db: pg.PoolClient, raw: unknown, log: FastifyBaseLogger): Promise<void> {
+  const data = adjustmentSchema.parse(raw);
+  if (!['refund', 'chargeback'].includes(data.action) || data.status !== 'approved') return;
+  const { rows } = await db.query<{ account_id: string; brand_id: string | null; granted: string }>(
+    `select account_id, brand_id, sum(amount) as granted from presenza.credit_movements
+     where paddle_transaction_id = $1 and amount > 0 group by account_id, brand_id`,
+    [data.transaction_id],
+  );
+  const grant = rows[0];
+  if (!grant) return;
+  const { rows: paid } = await db.query<{ total: string | null }>(
+    `select payload #>> '{details,totals,total}' as total from presenza.paddle_events
+     where type = 'transaction.completed' and payload ->> 'id' = $1 limit 1`,
+    [data.transaction_id],
+  );
+  const total = Number(paid[0]?.total ?? 0);
+  const share = total > 0 && data.totals?.total ? Math.min(Number(data.totals.total) / total, 1) : 1;
+  const amount = Math.round(Number(grant.granted) * share);
+  if (amount <= 0) return;
+  await db.query(
+    `insert into presenza.credit_movements (account_id, brand_id, amount, kind, paddle_transaction_id)
+     values ($1, $2, $3, 'adjustment', $4)
+     on conflict (paddle_transaction_id, kind) where paddle_transaction_id is not null do nothing`,
+    [grant.account_id, grant.brand_id, -amount, data.id],
+  );
+  log.warn({ adjustment: data.id, transaction: data.transaction_id, action: data.action, credits: -amount }, 'crediti tolti per un rimborso');
+}
+
+export function registerPaddleWebhook(
+  app: FastifyInstance,
+  pool: pg.Pool,
+  paddle: PaddleApi,
+  settings: Pick<Config, 'PADDLE_WEBHOOK_SECRET'>,
+): void {
   // Il corpo serve intero per la firma: in questo scope il JSON si legge a mano.
   void app.register(async (scope) => {
     scope.addContentTypeParser('application/json', { parseAs: 'buffer' }, (_request, body, done) => done(null, body));
@@ -198,6 +282,7 @@ export function registerPaddleWebhook(app: FastifyInstance, pool: pg.Pool, setti
 
       // Tutto in una transazione: se qualcosa va storto non resta niente, nemmeno l'evento, e Paddle lo ripete.
       const db = await pool.connect();
+      const after: After[] = [];
       try {
         await db.query('begin');
         const { rowCount } = await db.query(
@@ -206,8 +291,9 @@ export function registerPaddleWebhook(app: FastifyInstance, pool: pg.Pool, setti
           [event.event_id, event.event_type, event.occurred_at, JSON.stringify(event.data)],
         );
         if (rowCount) {
-          if (event.event_type.startsWith('subscription.')) await applySubscription(db, event.data, event.occurred_at, request.log);
-          else if (event.event_type === 'transaction.completed') await applyTransaction(db, event.data, request.log);
+          if (event.event_type.startsWith('subscription.')) await applySubscription(db, event.data, event.occurred_at, request.log, after);
+          else if (event.event_type === 'transaction.completed') await applyTransaction(db, event.data, request.log, after);
+          else if (event.event_type.startsWith('adjustment.')) await applyAdjustment(db, event.data, request.log);
         }
         await db.query('commit');
       } catch (error) {
@@ -216,6 +302,9 @@ export function registerPaddleWebhook(app: FastifyInstance, pool: pg.Pool, setti
         throw error;
       } finally {
         db.release();
+      }
+      for (const call of after) {
+        call(paddle).catch((error: unknown) => request.log.error({ err: error, event: event.event_id }, 'chiamata a Paddle dopo un evento non riuscita'));
       }
       return reply.code(204).send();
     });
