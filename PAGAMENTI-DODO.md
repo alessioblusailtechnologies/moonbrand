@@ -47,6 +47,9 @@ esplicito l'AI generativa e il marketing, non il prezzo.
 
 Da chiarire con Dodo: in che valuta pagano Blusail (EUR diretto o conversione da USD), se il pagamento in uscita sotto
 1.000 $ costa 5 $ (la pagina dei prezzi si contraddice) e ogni quanto pagano.
+Anche: il contratto per i venditori (§ 9.6) dice «Dodo Payments will enable refunds 7 days from the date of purchase»
+e i termini per l'acquirente lasciano i rimborsi alla discrezione di Dodo; la nostra politica è di 14 giorni: chiedere
+se la rispettano.
 
 ## 1. Da fare tu
 
@@ -132,20 +135,21 @@ collaudo, `live_mode` in prod):
 Oggi in produzione il sito nomina Paddle. Va cambiato **prima della revisione di Dodo**, che guarda il sito come ha
 fatto Paddle.
 
-- [ ] `moonbrand-website/src/i18n/*.ts`: domanda «Chi gestisce i pagamenti?», riga nel piè di pagina (`footer.paddle`),
+- [x] `moonbrand-website/src/i18n/*.ts` (13/10, venditore «Dodo Payments», termini acquirente
+  dodopayments.com/legal/buyer-terms, portale customer.dodopayments.com): domanda «Chi gestisce i pagamenti?», riga nel piè di pagina (`footer.paddle`),
   politica di rimborso (`refunds`, con il link `{paddle}` in `Refunds.astro`) e condizioni di vendita in fondo ai
   termini (`saleTerms`, link `{buyerTerms}` in `Legal.astro`): Dodo Payments al posto di Paddle, con il nome legale che
   Dodo indica per i clienti europei e i suoi termini per l'acquirente. La politica di rimborso resta la nostra (14
   giorni, ridotta in proporzione ai crediti usati, rinnovi non rimborsati).
-- [ ] Una riga sull'AI nelle condizioni (c'è già la sezione sui contenuti generati): uso solo per il brand del cliente,
+- [x] Una riga sull'AI nelle condizioni (c'è già la sezione sui contenuti generati): uso solo per il brand del cliente,
   niente impersonificazioni o deepfake. È la condizione di Dodo, conviene che la trovino scritta.
 - [ ] Valute: prezzi in euro, dollari e sterline sui prodotti di Dodo (stessi importi: 149/299/599 €, 169/339/679 $,
   129/259/519 £; ricariche 50/40 €, 59/45 $, 45/35 £), oppure solo euro con Adaptive Currency, che però fa pagare al
   cliente il 2-4% di cambio. Consiglio i prezzi fissi per valuta, se Dodo li permette.
-- [ ] iubenda, termini: i tre rinvii nel campo «documento di riferimento» dicono «tramite Paddle» → «tramite Dodo
+- [x] iubenda, termini: i tre rinvii nel campo «documento di riferimento» dicono «tramite Paddle» → «tramite Dodo
   Payments» (il campo è unico per tutte le lingue: salvare una lingua e poi risalvare le altre).
-- [ ] iubenda, privacy: togliere Paddle, aggiungere Dodo Payments (Gestione dei pagamenti).
-- [ ] `TERMINI-IUBENDA.md`: aggiornare.
+- [x] iubenda, privacy: togliere Paddle, aggiungere Dodo Payments (Gestione dei pagamenti).
+- [x] `TERMINI-IUBENDA.md`: aggiornare.
 - [ ] Deploy del sito (`npm run deploy` in `moonbrand-website`).
 
 ## 4. Produzione (dopo l'ok di Dodo e le prove)
