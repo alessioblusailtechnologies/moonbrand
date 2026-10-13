@@ -1,6 +1,6 @@
 ---
-// La politica di rimborso: è nostra (non su iubenda), perché Paddle la vuole pubblica e con una finestra di 14-90 giorni.
-// Paddle è il venditore: i rimborsi passano da paddle.net, noi aiutiamo.
+// La politica di rimborso: è nostra (non su iubenda), perché il venditore (Dodo Payments) la vuole pubblica.
+// Dodo Payments è il venditore: i rimborsi li emette Dodo, le richieste arrivano a noi.
 import { CONTACT_EMAIL, getCopy, type Lang } from '../i18n';
 import PageShell from './PageShell.astro';
 
@@ -10,11 +10,11 @@ interface Props {
 
 const { lang } = Astro.props;
 const { refunds } = getCopy(lang);
-// I testi sono nostri, senza HTML: qui diventano link solo l'email e paddle.net.
+// I testi sono nostri, senza HTML: qui diventano link solo l'email e il portale clienti di Dodo.
 const linked = (text: string) =>
   text
     .replaceAll('{email}', `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`)
-    .replaceAll('{paddle}', '<a href="https://paddle.net" rel="noopener">paddle.net</a>');
+    .replaceAll('{portal}', '<a href="https://customer.dodopayments.com" rel="noopener">customer.dodopayments.com</a>');
 ---
 
 <PageShell lang={lang} page="refunds" title={refunds.title} description={refunds.description} heading={refunds.heading} lead={refunds.lead}>

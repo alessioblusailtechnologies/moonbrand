@@ -270,7 +270,7 @@ export const fr: Copy = {
     terms: 'Conditions',
     refunds: 'Remboursements',
     contact: 'Contact',
-    paddle: 'Les paiements sont gérés par Paddle.com, notre revendeur agréé.',
+    payments: 'Les paiements sont gérés par Dodo Payments, notre revendeur agréé.',
   },
   pricing: {
     title: 'Tarifs · Moonbrand',
@@ -308,7 +308,7 @@ export const fr: Copy = {
       { q: 'Les crédits non utilisés sont-ils conservés ?', a: 'Les crédits de la formule valent pour le mois en cours et repartent de zéro à chaque renouvellement. Ceux achetés avec une recharge n’expirent pas à la fin du mois : ils restent sur la marque et s’utilisent tant que la formule est active.' },
       { q: 'Puis-je changer de formule ?', a: 'Oui, quand vous voulez, depuis les réglages de la marque. Si vous montez, vous payez tout de suite la différence pour les jours restants ; si vous descendez, le nouveau prix commence au renouvellement et d’ici là vous gardez vos crédits.' },
       { q: 'Puis-je résilier quand je veux ?', a: 'Oui. L’abonnement est mensuel et se renouvelle automatiquement ; si vous résiliez avant le renouvellement, il reste actif jusqu’à la fin du mois déjà payé, sans autre prélèvement.' },
-      { q: 'Qui gère les paiements ?', a: 'Paddle.com, notre revendeur agréé (merchant of record) : il encaisse le paiement, applique la TVA ou les taxes de votre pays et vous envoie la facture. Vous payez par carte ou avec les autres moyens disponibles dans votre pays ; hors zone euro, le paiement affiche le prix dans votre devise.' },
+      { q: 'Qui gère les paiements ?', a: 'Dodo Payments, notre revendeur agréé (merchant of record) : il encaisse le paiement, applique la TVA ou les taxes de votre pays et vous envoie la facture. Vous payez par carte ou avec les autres moyens disponibles dans votre pays ; hors zone euro, le paiement affiche le prix dans votre devise.' },
       { q: 'Puis-je être remboursé ?', a: 'Oui, si vous le demandez dans les 14 jours suivant le premier paiement de l’abonnement ou l’achat d’une recharge. Tout est expliqué dans notre {refunds}.' },
       { q: 'Qu’est-ce qui ne consomme pas de crédits ?', a: 'La configuration initiale de chaque marque et le message du matin avec les suggestions du jour sont offerts.' },
     ],
@@ -665,26 +665,26 @@ export const fr: Copy = {
   },
   refunds: {
     title: 'Remboursements · Moonbrand',
-    description: 'Comment demander le remboursement d’un abonnement ou d’une recharge Moonbrand : dans les 14 jours, via Paddle.',
+    description: 'Comment demander le remboursement d’un abonnement ou d’une recharge Moonbrand : dans les 14 jours, via Dodo Payments.',
     heading: 'Politique de remboursement',
     link: 'politique de remboursement',
-    lead: 'Les achats sur Moonbrand passent par Paddle.com, notre revendeur agréé (merchant of record) : c’est Paddle qui encaisse, émet la facture et gère les remboursements, avec nous.',
+    lead: 'Les achats sur Moonbrand passent par Dodo Payments, notre revendeur agréé (merchant of record) : c’est Dodo Payments qui encaisse, émet la facture et gère les remboursements, avec nous.',
     sections: [
       { title: 'Si vous changez d’avis, dans les 14 jours', text: 'Vous pouvez demander un remboursement dans les 14 jours suivant le premier paiement d’un abonnement ou l’achat d’une recharge, sans avoir à vous justifier. Si vous avez déjà utilisé des crédits entre-temps, le remboursement peut être réduit en proportion des crédits utilisés.' },
       { title: 'Les renouvellements', text: 'L’abonnement est mensuel et se renouvelle automatiquement. Les paiements de renouvellement ne sont pas remboursés, sauf si la loi de votre pays le prévoit. Vous pouvez résilier à tout moment : l’abonnement reste actif jusqu’à la fin du mois déjà payé, sans autre prélèvement.' },
       { title: 'Le changement de formule', text: 'Si vous montez de formule, vous payez tout de suite la différence pour les jours restants du mois. Si vous descendez, vous ne payez rien : le nouveau prix commence au renouvellement et d’ici là vous gardez les crédits de votre formule actuelle.' },
-      { title: 'Si quelque chose ne fonctionne pas', text: 'Écrivez-nous à {email} : nous essayons de résoudre le problème et, si nous n’y arrivons pas, nous étudions avec Paddle un remboursement même après les 14 jours.' },
-      { title: 'Comment le demander', text: 'Depuis le lien de l’e-mail de reçu de Paddle, sur {paddle} avec « Request refund », ou en nous écrivant à {email}. Le remboursement revient sur le moyen de paiement utilisé dans les 14 jours suivant l’approbation. Avec le remboursement, les crédits de cet achat sont retirés et, pour un abonnement, la formule prend fin.' },
-      { title: 'Quand il n’y a pas de remboursement', text: 'En cas de fraude, d’abus de remboursement ou de violation des conditions d’utilisation. Les droits que vous accorde la loi de votre pays restent acquis, y compris ceux prévus par la politique de remboursement de Paddle.' },
+      { title: 'Si quelque chose ne fonctionne pas', text: 'Écrivez-nous à {email} : nous essayons de résoudre le problème et, si nous n’y arrivons pas, nous étudions avec Dodo Payments un remboursement même après les 14 jours.' },
+      { title: 'Comment le demander', text: 'Écrivez-nous à {email} en indiquant l’adresse e-mail utilisée pour l’achat : notre adresse figure aussi dans l’e-mail de reçu de Dodo Payments. Les reçus et l’abonnement se trouvent aussi dans le portail client de Dodo Payments ({portal}). Le remboursement est émis par Dodo Payments et revient sur le moyen de paiement utilisé dans les 14 jours suivant l’approbation. Avec le remboursement, les crédits de cet achat sont retirés et, pour un abonnement, la formule prend fin.' },
+      { title: 'Quand il n’y a pas de remboursement', text: 'En cas de fraude, d’abus de remboursement ou de violation des conditions d’utilisation. Les droits que vous accorde la loi de votre pays restent acquis, y compris ceux prévus par les conditions acheteur de Dodo Payments.' },
     ],
     seller: 'Moonbrand est un service de Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Tarente (Italie), n° TVA IT03419820737.',
   },
   saleTerms: {
-    title: 'Conditions de vente via Paddle, crédits et utilisation de l’intelligence artificielle',
+    title: 'Conditions de vente via Dodo Payments, crédits et utilisation de l’intelligence artificielle',
     intro: 'Ces conditions font partie des Conditions générales ci-dessus, qui les incorporent par référence.',
     sections: [
-      { title: 'Vendeur et paiements via Paddle', blocks: [
-        'Le contrat d’utilisation du Service est conclu avec Blusail Technologies S.r.l.s., titulaire de Moonbrand. Notre processus de commande est géré par notre revendeur en ligne Paddle.com. Paddle.com est le Merchant of Record pour toutes nos commandes : il encaisse les paiements, applique les taxes dues, émet les factures et traite les demandes d’assistance sur les paiements et les remboursements. Les achats sont également soumis aux conditions acheteur de Paddle ({buyerTerms}).',
+      { title: 'Vendeur et paiements via Dodo Payments', blocks: [
+        'Le contrat d’utilisation du Service est conclu avec Blusail Technologies S.r.l.s., titulaire de Moonbrand. Notre processus de commande est géré par notre revendeur en ligne Dodo Payments. Dodo Payments est le Merchant of Record pour toutes nos commandes : il encaisse les paiements, applique les taxes dues, émet les factures et traite les demandes d’assistance sur les paiements et les remboursements. Les achats sont également soumis aux conditions acheteur de Dodo Payments ({buyerTerms}).',
         'Les prix du site sont indiqués hors TVA ; le montant final, avec les taxes du pays de l’Utilisateur et dans sa devise, est affiché lors du paiement, avant de payer.',
       ] },
       { title: 'Formules, crédits et recharges', blocks: [
@@ -693,7 +693,7 @@ export const fr: Copy = {
         'En passant à une formule supérieure, l’Utilisateur paie tout de suite la différence pour le reste de la période ; en passant à une formule inférieure, le nouveau prix s’applique au renouvellement suivant et d’ici là les crédits de la formule en cours restent.',
       ] },
       { title: 'Résiliation et remboursements', blocks: [
-        'L’Utilisateur peut résilier à tout moment depuis les réglages de la marque ou depuis le portail de Paddle : l’abonnement reste actif jusqu’à la fin de la période déjà payée, sans autre prélèvement.',
+        'L’Utilisateur peut résilier à tout moment depuis les réglages de la marque ou depuis le portail client de Dodo Payments ({portal}) : l’abonnement reste actif jusqu’à la fin de la période déjà payée, sans autre prélèvement.',
         'Les remboursements suivent notre {refunds} : l’Utilisateur peut demander un remboursement dans les 14 jours suivant le premier paiement d’un abonnement ou l’achat d’une recharge, le cas échéant réduit en proportion des crédits déjà utilisés ; les paiements de renouvellement ne sont pas remboursés, sauf si la loi le prévoit. Avec le remboursement, les crédits de l’achat sont retirés et, pour un abonnement, la formule prend fin. Le droit de rétractation des Consommateurs décrit ci-dessus et les droits prévus par la loi restent acquis.',
       ] },
       { title: 'Contenus générés par l’intelligence artificielle', blocks: [
@@ -704,6 +704,7 @@ export const fr: Copy = {
           'vérifie les contenus avant de les publier : les résultats de l’IA peuvent contenir des erreurs, des inexactitudes ou des ressemblances avec des contenus de tiers, et Moonbrand n’en garantit ni l’exactitude ni l’adéquation à un usage particulier.',
         ],
         'Il est interdit d’utiliser le Service pour créer des contenus illicites ; des contenus sexuels impliquant des mineurs ou des personnes sans leur consentement, y compris les deepfakes ; des contenus haineux, harcelants ou diffamatoires ; des contenus portant atteinte aux droits d’auteur, aux marques ou à la vie privée de tiers, y compris la divulgation de données personnelles d’autrui ; des contenus trompeurs, comme de faux avis ou de fausses déclarations attribuées à des personnes réelles ; du spam ou des logiciels malveillants ; ou des tentatives de contourner les limites de sécurité des modèles.',
+        'Le Service crée des contenus uniquement pour la marque de l’Utilisateur ou pour les marques des clients qui l’ont mandaté. Il est interdit de l’utiliser pour usurper l’identité d’autres personnes, entreprises ou marques, pour créer des deepfakes de personnes réelles, ou pour du spam ou de faux engagements (abonnés, j’aime, commentaires ou avis). Les contenus sont publiés uniquement sur les comptes sociaux que l’Utilisateur a connectés et dont il a le droit de disposer.',
         'Dans les limites de la loi et des conditions des fournisseurs des modèles, les contenus générés pour l’Utilisateur lui appartiennent et il peut les utiliser aussi à des fins commerciales ; Blusail Technologies S.r.l.s. ne les traite que pour fournir le Service. Le Titulaire peut retirer des contenus ou suspendre le compte en cas de violation.',
         'Toute personne estimant qu’un contenu porte atteinte à ses droits peut le signaler à {email} en indiquant le contenu et le droit concerné : le contenu est examiné et, si le signalement est fondé, retiré ; en cas de violations répétées, le compte est fermé.',
       ] },

@@ -1,7 +1,7 @@
 ---
 // Privacy e termini: il testo arriva da iubenda alla build ed è impaginato come il resto del sito.
 // Se l'API non risponde, resta il link al documento su iubenda.
-// Sotto i termini, le condizioni di vendita nostre (Paddle, crediti, AI): iubenda le richiama per rinvio.
+// Sotto i termini, le condizioni di vendita nostre (Dodo Payments, crediti, AI): iubenda le richiama per rinvio.
 import { iubendaId, iubendaText, iubendaUrl, type LegalKind } from '../data/iubenda';
 import { CONTACT_EMAIL, getCopy, pagePath, type Lang } from '../i18n';
 import PageShell from './PageShell.astro';
@@ -19,7 +19,8 @@ const text = id ? await iubendaText(kind, id) : null;
 // I testi sono nostri, senza HTML: qui diventano link solo i segnaposto.
 const linked = (block: string) =>
   block
-    .replace('{buyerTerms}', '<a href="https://www.paddle.com/legal/checkout-buyer-terms" rel="noopener">paddle.com/legal/checkout-buyer-terms</a>')
+    .replace('{buyerTerms}', '<a href="https://dodopayments.com/legal/buyer-terms" rel="noopener">dodopayments.com/legal/buyer-terms</a>')
+    .replace('{portal}', '<a href="https://customer.dodopayments.com" rel="noopener">customer.dodopayments.com</a>')
     .replace('{refunds}', `<a href="${pagePath(lang, 'refunds')}">${refunds.link}</a>`)
     .replace('{email}', `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
 ---
