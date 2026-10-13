@@ -16,7 +16,7 @@ import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
 import { findExamplesJob, findJob, insertJob, isDraftBrand } from './repository';
-import { EXAMPLES_DIR } from '../brand-files/files';
+import { EXAMPLES_DIR, FOLLOW_DIR } from '../brand-files/files';
 
 // Quello che si fa su un brand ancora in bozza è l'onboarding, e non scala crediti. La bozza dev'essere dell'account:
 // lo controlla claim prima, così un brand di altri non passa per una bozza.
@@ -50,11 +50,14 @@ async function saveDraftLogo(files: BrandFiles, brandId: string, uri: string): P
 
 export async function queueVisualJob(pool: pg.Pool, files: BrandFiles, identity: Identity, request: VisualJobRequest): Promise<AiJobCreated> {
   // Gli esempi sono solo per i primi canali scelti: il job ricorda quelli, e una modifica lavora sugli stessi.
+  // Si rigenera da zero: gli esempi scelti la volta prima (riferimenti-da-seguire) si tolgono, altrimenti il job li
+  // ricopia invece di partire dalle immagini caricate (13/10/2026, Sunraise). Quelli nuovi li rimette la scelta.
   const { logo, ...rest } = request;
   const input: VisualJobRequest = { ...rest, brand: { ...rest.brand, channels: exampleChannels(rest.brand.channels) } };
   return withIdentity(pool, identity, async (db) => {
     const free = await onboarding(files, identity, db, request.brandId);
     if (logo) await saveDraftLogo(files, request.brandId, logo);
+    await files.removeDir(request.brandId, FOLLOW_DIR);
     return { id: await insertJob(db, identity.accountId, 'visual', input, { free }) };
   });
 }

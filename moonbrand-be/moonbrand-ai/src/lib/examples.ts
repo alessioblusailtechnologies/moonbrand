@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, rename } from 'node:fs/promises';
 import path from 'node:path';
 
 import { query } from '@anthropic-ai/claude-agent-sdk';
@@ -99,18 +99,34 @@ export async function runExamples(options: { brandDir: string; dir: string; chan
   const temp = path.join(brandDir, workDir(dir), 'tmp');
   await mkdir(temp, { recursive: true });
 
-  for await (const message of query({
-    prompt,
-    options: {
-      cwd: brandDir,
-      env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
-      mcpServers: { immagini: imageTools(brandDir, GEMINI_API_KEY) },
-      permissionMode: 'bypassPermissions',
-      allowDangerouslySkipPermissions: true,
-      outputFormat: { type: 'json_schema', schema: examplesSchema(dir, channels) },
-      ...(resume && { resume }),
-    },
-  })) {
-    console.log(JSON.stringify(message));
+  // Gli esempi nascono solo da quello che dice il prompt (immagini caricate o template, palette, logo), senza il
+  // CLAUDE.md del brand: il suo stile e le ultime impaginazioni vengono anche dagli esempi scelti la volta prima, e
+  // l'agente lo apre da solo anche se non si carica (13/10/2026, Sunraise). Si sposta fuori dalla cartella per il job
+  // e si rimette dopo; se si perde, lo riscrive il prossimo job che lo usa.
+  const guide = path.join(brandDir, 'CLAUDE.md');
+  // Accanto alla cartella del brand, non in /tmp: stesso disco, così rename non fallisce.
+  const aside = path.join(path.dirname(path.resolve(brandDir)), `.${path.basename(brandDir)}.CLAUDE.md`);
+  const moved = await rename(guide, aside).then(
+    () => true,
+    () => false,
+  );
+  try {
+    for await (const message of query({
+      prompt,
+      options: {
+        cwd: brandDir,
+        env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
+        mcpServers: { immagini: imageTools(brandDir, GEMINI_API_KEY) },
+        settingSources: [],
+        permissionMode: 'bypassPermissions',
+        allowDangerouslySkipPermissions: true,
+        outputFormat: { type: 'json_schema', schema: examplesSchema(dir, channels) },
+        ...(resume && { resume }),
+      },
+    })) {
+      console.log(JSON.stringify(message));
+    }
+  } finally {
+    if (moved) await rename(aside, guide).catch(() => undefined);
   }
 }
