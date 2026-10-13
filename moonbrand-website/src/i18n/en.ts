@@ -270,7 +270,7 @@ export const en: Copy = {
     terms: 'Terms',
     refunds: 'Refunds',
     contact: 'Contact',
-    paddle: 'Payments are handled by Paddle.com, our authorised reseller.',
+    payments: 'Payments are handled by Dodo Payments, our authorised reseller.',
   },
   pricing: {
     title: 'Pricing · Moonbrand',
@@ -308,7 +308,7 @@ export const en: Copy = {
       { q: 'Do unused credits carry over?', a: 'Plan credits are valid for the current month and reset at each renewal. Credits bought with a top-up don’t expire at the end of the month: they stay on the brand and can be used as long as the plan is active.' },
       { q: 'Can I change plan?', a: 'Yes, whenever you like, from the brand settings. If you move up you pay the difference for the remaining days straight away; if you move down, the new price starts at the renewal and until then you keep the credits you have.' },
       { q: 'Can I cancel at any time?', a: 'Yes. The subscription is monthly and renews automatically; if you cancel before the renewal it stays active until the end of the month already paid, with no further charges.' },
-      { q: 'Who handles payments?', a: 'Paddle.com, our authorised reseller (merchant of record): it collects the payment, applies VAT or your country’s sales tax and sends you the invoice. You pay by card or with the other methods available in your country; outside the euro area the checkout shows the price in your currency.' },
+      { q: 'Who handles payments?', a: 'Dodo Payments, our authorised reseller (merchant of record): it collects the payment, applies VAT or your country’s sales tax and sends you the invoice. You pay by card or with the other methods available in your country; outside the euro area the checkout shows the price in your currency.' },
       { q: 'Can I get a refund?', a: 'Yes, if you ask within 14 days of the first subscription payment or of buying a top-up. All the details are in our {refunds}.' },
       { q: 'What doesn’t use credits?', a: 'The initial setup of each brand and the morning greeting with the day’s suggestions are free.' },
     ],
@@ -665,26 +665,26 @@ export const en: Copy = {
   },
   refunds: {
     title: 'Refunds · Moonbrand',
-    description: 'How to ask for a refund on a Moonbrand subscription or top-up: within 14 days, through Paddle.',
+    description: 'How to ask for a refund on a Moonbrand subscription or top-up: within 14 days, through Dodo Payments.',
     heading: 'Refund policy',
     link: 'refund policy',
-    lead: 'Purchases on Moonbrand go through Paddle.com, our authorised reseller (merchant of record): Paddle collects the payment, issues the invoice and handles refunds, together with us.',
+    lead: 'Purchases on Moonbrand go through Dodo Payments, our authorised reseller (merchant of record): Dodo Payments collects the payment, issues the invoice and handles refunds, together with us.',
     sections: [
       { title: 'If you change your mind, within 14 days', text: 'You can ask for a refund within 14 days of the first payment of a subscription or of buying a top-up, without giving a reason. If you have already used credits in the meantime, the refund may be reduced in proportion to the credits used.' },
       { title: 'Renewals', text: 'The subscription is monthly and renews automatically. Renewal payments are not refunded, except where the law of your country requires it. You can cancel at any time: the subscription stays active until the end of the month already paid, with no further charges.' },
       { title: 'Changing plan', text: 'If you move up a plan you pay the difference for the remaining days of the month straight away. If you move down you pay nothing: the new price starts at the renewal and until then you keep the credits of your current plan.' },
-      { title: 'If something doesn’t work', text: 'Email us at {email}: we’ll try to fix it and, if we can’t, we’ll look at a refund with Paddle even after the 14 days.' },
-      { title: 'How to ask', text: 'Use the link in Paddle’s receipt email, go to {paddle} and choose “Request refund”, or email us at {email}. The refund goes back to the payment method you used within 14 days of approval. With the refund, the credits of that purchase are removed and, for a subscription, the plan ends.' },
-      { title: 'When no refund is given', text: 'In case of fraud, refund abuse or breach of the terms of use. This does not affect the rights the law of your country gives you, including those under Paddle’s refund policy.' },
+      { title: 'If something doesn’t work', text: 'Email us at {email}: we’ll try to fix it and, if we can’t, we’ll look at a refund with Dodo Payments even after the 14 days.' },
+      { title: 'How to ask', text: 'Email us at {email} with the email address you used to buy: our address is also in the receipt email from Dodo Payments. Receipts and your subscription are also in the Dodo Payments customer portal ({portal}). The refund is issued by Dodo Payments and goes back to the payment method you used within 14 days of approval. With the refund, the credits of that purchase are removed and, for a subscription, the plan ends.' },
+      { title: 'When no refund is given', text: 'In case of fraud, refund abuse or breach of the terms of use. This does not affect the rights the law of your country gives you, including those under the Dodo Payments buyer terms.' },
     ],
     seller: 'Moonbrand is a service of Blusail Technologies S.r.l.s., Via Atlantico 43 B, 74122 Taranto (Italy), VAT no. IT03419820737.',
   },
   saleTerms: {
-    title: 'Terms of sale through Paddle, credits and use of artificial intelligence',
+    title: 'Terms of sale through Dodo Payments, credits and use of artificial intelligence',
     intro: 'These terms are part of the Terms above, which incorporate them by reference.',
     sections: [
-      { title: 'Seller and payments through Paddle', blocks: [
-        'The contract for the use of the Service is made with Blusail Technologies S.r.l.s., owner of Moonbrand. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders: it collects payments, applies the applicable taxes, issues invoices and handles payment enquiries and refunds. Purchases are also subject to Paddle’s buyer terms ({buyerTerms}).',
+      { title: 'Seller and payments through Dodo Payments', blocks: [
+        'The contract for the use of the Service is made with Blusail Technologies S.r.l.s., owner of Moonbrand. Our order process is conducted by our online reseller Dodo Payments. Dodo Payments is the Merchant of Record for all our orders: it collects payments, applies the applicable taxes, issues invoices and handles payment enquiries and refunds. Purchases are also subject to the Dodo Payments buyer terms ({buyerTerms}).',
         'Prices on the website are shown excluding VAT; the final amount, with the taxes of the User’s country and in their currency, is shown in the checkout before payment.',
       ] },
       { title: 'Plans, credits and top-ups', blocks: [
@@ -693,7 +693,7 @@ export const en: Copy = {
         'When moving to a higher plan the User pays the difference for the rest of the period straight away; when moving to a lower plan the new price applies from the next renewal and until then the credits of the current plan remain.',
       ] },
       { title: 'Cancellation and refunds', blocks: [
-        'The User can cancel at any time from the brand settings or from Paddle’s portal: the subscription stays active until the end of the period already paid, with no further charges.',
+        'The User can cancel at any time from the brand settings or from the Dodo Payments customer portal ({portal}): the subscription stays active until the end of the period already paid, with no further charges.',
         'Refunds follow our {refunds}: the User can ask for a refund within 14 days of the first payment of a subscription or of buying a top-up, possibly reduced in proportion to the credits already used; renewal payments are not refunded, except where the law requires it. With the refund, the credits of the purchase are removed and, for a subscription, the plan ends. This does not affect the Consumers’ right of withdrawal described above or any rights under the law.',
       ] },
       { title: 'AI-generated content', blocks: [
@@ -704,6 +704,7 @@ export const en: Copy = {
           'reviews the content before publishing it: AI output may contain errors, inaccuracies or similarities to third-party content, and Moonbrand does not guarantee its accuracy or fitness for a particular purpose.',
         ],
         'The Service must not be used to create unlawful content; sexual content involving minors or people without their consent, including deepfakes; hateful, harassing or defamatory content; content that infringes third parties’ copyright, trademarks or privacy, including disclosing other people’s personal data; deceptive content, such as fake reviews or false statements attributed to real people; spam or malware; or attempts to circumvent the models’ safety limits.',
+        'The Service creates content only for the User’s own brand or for the brands of clients who have engaged the User. It must not be used to impersonate other people, companies or brands, to create deepfakes of real people, or for spam or fake engagement (followers, likes, comments or reviews). Content is published only to the social accounts the User has connected and is entitled to use.',
         'Within the limits of the law and of the model providers’ terms, content generated for the User belongs to the User, who may also use it commercially; Blusail Technologies S.r.l.s. processes it only to provide the Service. The Owner may remove content or suspend the account in case of a breach.',
         'Anyone who believes content infringes their rights can report it to {email}, identifying the content and the right infringed: the content is reviewed and, if the report is well founded, removed; repeated infringements lead to the account being closed.',
       ] },
