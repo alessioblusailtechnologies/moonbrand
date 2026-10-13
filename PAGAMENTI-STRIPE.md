@@ -3,6 +3,8 @@
 Stato al 13 ottobre 2026. Sostituisce la strada di `PAGAMENTI-PRODUZIONE.md`, che resta come storia della prova con
 Paddle.
 
+> **Riserva.** Il 13/10 si è scelto Dodo Payments (`PAGAMENTI-DODO.md`); questo piano vale se Dodo rifiuta.
+
 ## Perché si cambia
 
 Il 13/10 Paddle ha rifiutato l'account dopo la revisione di moonbrand.app. Ha classificato il prodotto come
