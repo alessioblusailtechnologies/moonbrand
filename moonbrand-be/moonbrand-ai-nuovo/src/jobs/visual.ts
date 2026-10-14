@@ -6,10 +6,12 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName, exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/catalog';
 import { FORMAT_ASPECT } from '@moonbrand/shared/domain/content';
 
+import { brandLanguage } from '@moonbrand/shared/i18n/locales';
+
 import { logoFile } from '../lib/brand-logo';
 import { CONTENT_RULES } from '../lib/content';
 import { runExamples } from '../lib/examples';
-import { languageRules } from '../lib/language';
+import { EXAMPLES_NOTE, languageName } from '../lib/language';
 
 // Gli esempi dell'onboarding: un post vero per canale, disegnato dal motore grafico, che fa vedere al brand come saranno
 // i suoi post. Senza template: lo stile viene dalle immagini caricate (file-riferimento), o dalla palette e dal settore.
@@ -71,8 +73,10 @@ ${style}
 
 ${CONTENT_RULES}
 
-Salva ogni esempio come PNG in ${dir} (es. ${dir}/instagram-1.png) e scrivi la didascalia del post come caption, nella lingua dei post del brand.
+Salva ogni esempio come PNG in ${dir} (es. ${dir}/instagram-1.png) e scrivi la didascalia del post come caption.
 
-${languageRules()}`;
+## Lingue
+- Tutto quello che si pubblica è in ${languageName(brandLanguage(brand.identity))}: i testi nelle immagini, le didascalie, gli hashtag. È la lingua dei post del brand, qualunque sia la lingua di chi usa moonbrand.
+- ${EXAMPLES_NOTE}`;
 
 await runExamples({ brandDir, dir, channels: chosen, prompt });

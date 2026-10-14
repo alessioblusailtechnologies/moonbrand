@@ -215,7 +215,8 @@ async function claim(): Promise<Job | null> {
          where id = $1
          returning id, kind, input, account_id, agent_token,
            (select locale from presenza.accounts where id = ai_jobs.account_id) as locale,
-           (select identity->>'language' from presenza.brands where id::text = ai_jobs.input->>'brandId') as content_language`,
+           coalesce((select identity->>'language' from presenza.brands where id::text = ai_jobs.input->>'brandId'),
+                    ai_jobs.input->'brand'->'identity'->>'language') as content_language`,
         [candidate.id, LEASE],
       );
       await client.query('commit');
