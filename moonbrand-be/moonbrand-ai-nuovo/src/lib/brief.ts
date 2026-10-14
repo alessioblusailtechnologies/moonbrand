@@ -18,26 +18,22 @@ export function brandBrief(brand: BrandContext, logo: string | null, folders: Re
     ? `Il logo del brand è ${logo}, nella cartella del brand: in ogni grafica va com'è, passato al motore grafico come primo riferimento. Non ridisegnarlo e non descriverlo al posto di passarlo.`
     : `Il brand non ha un logo: dove serve la firma, il nome del brand scritto con il font dei titoli.`;
   const palette = brand.palette.length > 0 ? `I colori del brand (principale, secondario, accento, sfondo): ${brand.palette.join(', ')}.` : 'Il brand non ha scelto una palette.';
-  const fonts = brand.fonts
-    ? `I font del brand sono ${brand.fonts.titles} per i titoli e ${brand.fonts.text} per i testi${brand.fonts.found ? ` (il sito usa ${brand.fonts.found})` : ''}.`
-    : 'Il brand non ha scelto dei font: nelle grafiche un carattere coerente con il suo settore e i suoi riferimenti.';
+  // I font letti dal sito e la guida di stile scritta a parole non entrano: lo stile lo vede il motore grafico dai
+  // riferimenti, passati come immagini. Una descrizione a parole lo tradiva (14/10: cornici e font del sito nei post).
   const references = [
     folders.has('riferimenti-da-seguire') && 'riferimenti-da-seguire/ (i post scelti come esempio dello stile)',
     folders.has('file-riferimento') && 'file-riferimento/ (logo, foto e materiali caricati)',
   ].filter(Boolean);
-  const style = brand.style?.trim()
-    ? `
-## Lo stile
-Letto dalle immagini di riferimento del brand${references.length > 0 ? `, in ${references.join(' e ')}` : ''}: vale come se le avessi guardate. Al motore grafico passane una o due come riferimento, dopo il logo.
-
-${brand.style.trim()}
-`
-    : references.length > 0
+  const style =
+    references.length > 0
       ? `
 ## Lo stile
-Le immagini di riferimento del brand sono in ${references.join(' e ')}: guardale con guarda prima della prima grafica, e passane una o due al motore grafico come riferimento, dopo il logo.
+Le immagini di riferimento del brand sono in ${references.join(' e ')}. Lo stile è quello, e lo vede il motore grafico direttamente: passagliene una o due come riferimento dopo il logo, con guarda controlla solo cosa c'è in ogni file. Non descriverlo a parole nel brief.
 `
-      : '';
+      : `
+## Lo stile
+Il brand non ha immagini di riferimento: lo stile lo scegli tu dal settore e dalla palette, e lo descrivi nel brief.
+`;
   const layouts = brand.layouts ?? [];
   const recent =
     layouts.length > 0
@@ -71,10 +67,9 @@ La cartella del brand ${name} su moonbrand. Questo file lo scrive moonbrand dal 
 
 ${describeBrand(brand)}
 
-## Logo, colori e font
+## Logo e colori
 ${logoSection}
 ${palette}
-${fonts}
 ${style}${recent}${plan}
 ## La cartella
 ${logo ? `- ${logo}: il logo del brand.\n` : ''}${folders.has('riferimenti-da-seguire') ? '- riferimenti-da-seguire/: i post scelti come esempio dello stile del brand.\n' : ''}${

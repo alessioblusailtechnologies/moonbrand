@@ -47,20 +47,20 @@ const LOOK: Record<ChannelId, string> = {
 };
 const channels = chosen.map((channel) => `- ${channelName(channel)} (${channel}), in ${FORMAT_ASPECT.post[channel]}: ${LOOK[channel]}.`).join('\n');
 
+// I font letti dal sito non si passano: la tipografia la detta il riferimento, o il motore grafico se non c'è.
 const identity = `## Il brand
-${JSON.stringify({ ...brand, channels: chosen, template: undefined }, null, 2)}
+${JSON.stringify({ ...brand, channels: chosen, template: undefined, fonts: undefined }, null, 2)}
 
-## Logo, colori e font
-${logo ? `Il logo del brand è ${logo}: in ogni esempio che porta il logo va com'è, passato al motore grafico come primo riferimento.` : 'Il brand non ha un logo: dove serve la firma, il nome del brand con il font dei titoli.'}
-I colori del brand (principale, secondario, accento, sfondo) sono ${brand.palette.join(', ')}: la grafica usa questi, non altri colori d'accento.
-${brand.fonts ? `I font del brand sono ${brand.fonts.titles} per i titoli e ${brand.fonts.text} per i testi.` : 'Il brand non ha scelto dei font: un carattere coerente con il suo settore.'}`;
+## Logo e colori
+${logo ? `Il logo del brand è ${logo}: in ogni esempio che porta il logo va com'è, passato al motore grafico come primo riferimento.` : 'Il brand non ha un logo: dove serve la firma, il nome del brand in testo.'}
+I colori del brand (principale, secondario, accento, sfondo) sono ${brand.palette.join(', ')}: la grafica usa questi colori.`;
 
 const style =
   references.length > 0
     ? `## Lo stile
-Le immagini in file-riferimento sono post del brand, o che il brand vuole seguire: ${references.join(', ')}. Guardale tutte con guarda prima di cominciare (palette, tipografia, trattamento delle foto, segni grafici) e passane una o due al motore grafico dopo il logo. Gli esempi devono sembrare fatti dalla stessa mano, con un'idea e una composizione nuove: non copiare un riferimento.`
+Le immagini in file-riferimento sono post che il brand vuole seguire: ${references.join(', ')}. Lo stile è quello, e lo vede il motore grafico direttamente: passagliene una o due come riferimento dopo il logo, e nel brief chiedi una composizione nuova in quello stile, con i colori del brand. Non descrivere e non riscrivere il riferimento a parole (tipografia, impaginazione, segni): lo tradiresti. Con guarda controlla solo cosa c'è in ogni file (un post, una foto, un logo), non come è fatto.`
     : `## Lo stile
-Il brand non ha caricato riferimenti: lo stile lo scegli tu dal settore, dai pubblici e dalla palette, pulito e professionale, come lo farebbe un grafico per questo brand.`;
+Il brand non ha caricato riferimenti: lo stile lo scegli tu dal settore, dai pubblici e dalla palette, pulito e professionale, come lo farebbe un grafico per questo brand, e lo descrivi nel brief.`;
 
 const prompt = `Crea ${perChannel === 1 ? 'un esempio' : `${perChannel} esempi`} di post per ${chosen.length === 1 ? 'questo canale' : 'ciascuno di questi canali'}, per un brand che sta entrando su moonbrand: devono far vedere come saranno i suoi post, su un'idea vera e specifica del brand (un prodotto, un servizio, un momento del suo lavoro), non un post di presentazione.
 ${channels}
