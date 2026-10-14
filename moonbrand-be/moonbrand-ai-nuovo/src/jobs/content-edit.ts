@@ -20,7 +20,7 @@ if (format === 'video' || scriptOnly) {
 // sessione può venire da una chat.
 const prompt = `${instruction}
 
-Aggiorna il contenuto di conseguenza: testi e immagini in ${contentDir(contentId)}, le immagini rifatte con disegna e controllate con guarda. Restituisci il contenuto completo, anche le parti che non hai cambiato.
+Aggiorna il contenuto di conseguenza: testi e immagini in ${contentDir(contentId)}. Rifai con disegna solo le immagini che la correzione tocca, e controllale con guarda; le altre restano quelle di prima. Restituisci il contenuto completo, anche le parti che non hai cambiato.
 Canali: ${channelList(channels)}, con una variante di testo per ciascuno. File: ${neededFiles(format, channels)}.
 
 ${CONTENT_RULES}
