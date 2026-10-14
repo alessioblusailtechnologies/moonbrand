@@ -58,7 +58,7 @@ I colori del brand (principale, secondario, accento, sfondo) sono ${brand.palett
 const style =
   references.length > 0
     ? `## Lo stile
-Le immagini in file-riferimento sono post che il brand vuole seguire: ${references.join(', ')}. Lo stile è quello, e lo vede il motore grafico direttamente: passagliene una come riferimento dopo il logo (una diversa per ogni esempio, se ce n'è più di una) e nel brief di' che è il modello da seguire fedelmente: stessa impostazione, impaginazione, tipografia e trattamento; cambiano solo il soggetto, i testi e i colori, che sono quelli del brand. Non chiedere una composizione «nuova» o «diversa», e non scrivere nel brief righe su tipografia, composizione o segni: lo tradiresti. Se il riferimento usa testo decorativo (una parola ripetuta, una parola gigante), l'esempio fa lo stesso con una parola del post. Con guarda controlla solo cosa c'è in ogni file (un post, una foto, un logo), non come è fatto.`
+Le immagini in file-riferimento sono post che il brand vuole seguire: ${references.join(', ')}. Lo stile è quello, e lo vede il motore grafico direttamente: passagliene una come immagine 2 dopo il logo (una diversa per ogni esempio, se ce n'è più di una), con il brief corto delle regole qui sotto. Con guarda controlla solo cosa c'è in ogni file (un post, una foto, un logo), non come è fatto.`
     : `## Lo stile
 Il brand non ha caricato riferimenti: lo stile lo scegli tu dal settore, dai pubblici e dalla palette, pulito e professionale, come lo farebbe un grafico per questo brand, e lo descrivi nel brief.`;
 

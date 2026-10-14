@@ -2,6 +2,15 @@
 const BRANDS = '../../../../moonbrand-brands';
 
 export const brands = {
+  messina: {
+    dir: `${BRANDS}/7e8e922d-943a-44e9-ab6b-d5d6c9936571`,
+    logo: 'esempi/logo.png',
+    refs: ['file-riferimento/dc5e04d6-4af7-473d-8e62-57b8ab291f81.jpg'],
+    // Prova del 14/10: prompt corto e aperto, come in Gemini Playground, con l'immagine allegata.
+    brief: `Instagram post, 4:5, for Giovanni Messina Hair & Beauty, a hair salon in Earl's Court, London, about hand-painted balayage.
+Image 1 is the brand logo: use it as it is. Image 2 is the style reference: follow it.
+Brand colours: #323232, #85753D, #B09C53, #E6DDC5. Text in English.`,
+  },
   oconnors: {
     dir: `${BRANDS}/b557e88b-1a5a-407b-b1a4-92bb7f4f0f1c`,
     logo: 'logo.png',
