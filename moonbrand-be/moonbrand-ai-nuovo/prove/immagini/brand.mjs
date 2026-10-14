@@ -1,0 +1,49 @@
+// I due brand della prova: brief scritto a mano da CLAUDE.md, come lo scriverebbe il job «post» del motore nuovo.
+const BRANDS = '../../../../moonbrand-brands';
+
+export const brands = {
+  oconnors: {
+    dir: `${BRANDS}/b557e88b-1a5a-407b-b1a4-92bb7f4f0f1c`,
+    logo: 'logo.png',
+    refs: ['riferimenti-da-seguire/instagram-1.png', 'template/anteprima/copertina.jpg'],
+    brief: `You are the graphic designer of O'Connors Bakery, an Irish craft family bakery baking fresh breads and cream cakes since 1961, with bakery cafés in Clare, Limerick and Galway.
+Design one Instagram post, portrait 4:5, 1080x1350, ready to publish.
+
+Subject: celebration cakes for First Communions, now taking orders.
+Text on the image, exactly this and nothing else:
+- Headline: "Communion cakes, made by hand"
+- Small line: "Order in store or at oconnorsbakery.com"
+- Bottom strip, small caps: "@OCONNORSBAKERY · CLARE · LIMERICK · GALWAY"
+
+Brand palette: dark navy blue #0F2D69, optical white #FFFFFF, cream #F8F7F4, antique gold #B39257, kraft #A89474.
+Typography: an elegant calligraphic italic script (like Playfair Display Italic) for one accent word, paired with a geometric extra-bold all-caps sans (like Montserrat ExtraBold); body in Montserrat.
+Photography: real artisanal bakery, warm natural light, subject in focus with a softly blurred background. Here: a cream communion cake decorated with real white flowers and a small Celtic cross on a wooden counter.
+Recurring graphic signs of the brand: a light tilted paper note with a kraft tape strip, a hand-drawn empty gold five-point star, photos framed with a thin gold outline.
+
+Image 1 is the brand logo: place it as it is, small, on a light area, without redrawing it.
+Images 2 and 3 show the brand's current design language: match that language (colours, typography, signs, mood) but make a new composition, not a copy.
+All text in English, spelled exactly as given. No other text, no watermark.`,
+  },
+  sunraise: {
+    dir: `${BRANDS}/e659e3ba-416c-40f5-af9b-4549110c99c7`,
+    logo: 'logo.png',
+    refs: ['riferimenti-da-seguire/instagram-1.png', 'template/anteprima/copertina.jpg'],
+    brief: `Sei il grafico di SunrAIse, agenzia italiana di comunicazione e marketing con intelligenza artificiale che aiuta le piccole imprese ad automatizzare i processi.
+Disegna un post Instagram, verticale 4:5, 1080x1350, pronto da pubblicare.
+
+Tema: i preventivi che oggi si scrivono a mano in mezz'ora, con un'automazione partono in due minuti.
+Testo sull'immagine, esattamente questo e nient'altro:
+- Titolo: "Un preventivo in 2 minuti, non in 30"
+- Riga piccola: "Automazioni su misura per le PMI. Analisi gratuita su sunraise.it"
+- Etichetta a pillola: "Automazioni"
+
+Palette del brand: bianco ghiaccio #F4F6F8, blu notte #0A1128, blu elettrico #0062FF (solo per il box che evidenzia una parola chiave), arancione #FF6A00 (etichette a pillola e accenti), bianco #FFFFFF.
+Carattere: sans-serif geometrico moderno tipo Plus Jakarta Sans o Inter; titolo grande in grassetto scuro con la parola chiave in bianco dentro un box blu; etichette e URL in minuscolo.
+Fotografia: situazioni di lavoro reale e noioso (preventivi, fogli di calcolo su laptop, pile di documenti, scrivanie disordinate), in bianco e nero nitido con luce naturale.
+Segni grafici ricorrenti del brand: pillole in filetto, cerchio con la freccia in basso a destra, riquadri inclinati dietro due parole del titolo, asterisco a otto bracci, numero 01 enorme in alto a destra, foto con angoli arrotondati.
+
+L'immagine 1 è il logo del brand: mettilo com'è, piccolo, senza ridisegnarlo.
+Le immagini 2 e 3 mostrano il linguaggio grafico attuale del brand: rispettalo (colori, tipografia, segni, tono) ma fai una composizione nuova, non una copia.
+Tutto il testo in italiano, scritto esattamente come indicato. Nessun altro testo, nessuna filigrana.`,
+  },
+};

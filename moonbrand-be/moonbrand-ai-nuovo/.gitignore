@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+prove/immagini/uscite/
+prove/*.json
+prove/risultati/*.log
+prove/risultati/*.jpg
+prove/risultati/*.png
