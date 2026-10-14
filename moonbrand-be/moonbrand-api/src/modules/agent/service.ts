@@ -170,7 +170,7 @@ async function publishFiles(files: BrandFiles, brandId: string, contentId: strin
 
 // Le regole che valgono anche per i job dei contenuti: solo i canali del brand, una variante per canale,
 // hashtag puliti e contati, i formati che ogni canale regge, le immagini giuste per il formato;
-// un file fatto per un canale è nella proporzione di quel canale; un video ha la sua copertina, nella stessa proporzione e per lo stesso canale.
+// un file fatto per un canale è nella proporzione di quel canale; un video ha un MP4 nella proporzione di ogni canale e la sua copertina, nella stessa proporzione e per lo stesso canale.
 function check(request: AgentContentRequest, brandChannels: readonly string[]): ChannelVariant[] {
   const channels = [...new Set(request.channels)];
   const outside = channels.filter((channel) => !brandChannels.includes(channel));
@@ -202,6 +202,11 @@ function check(request: AgentContentRequest, brandChannels: readonly string[]): 
   const videos = request.files.filter((file) => file.role === 'video');
   if (request.format === 'video') {
     if (videos.length === 0) throw ApiError.invalid('Un video ha almeno un file MP4 con role «video».');
+    const unrendered = channels.filter((channel) => !channelFiles(request.files, 'video', channel).some((file) => file.role === 'video'));
+    if (unrendered.length > 0) {
+      const names = unrendered.map((channel) => `${channelName(channel)} (${FORMAT_ASPECT.video[channel]})`);
+      throw ApiError.invalid(`Un video ha un MP4 nella proporzione di ogni canale: manca per ${names.join(', ')}.`);
+    }
     const missing = videos.filter(
       (video) => !request.files.some((file) => file.role === 'cover' && file.aspect === video.aspect && file.channel === video.channel),
     );
