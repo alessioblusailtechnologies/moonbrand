@@ -7,6 +7,7 @@ import type { IdeasJobInput } from '@moonbrand/shared/api/contract';
 import { writeBrandBrief } from '../lib/brief';
 import { HORIZON_DAYS, MAX_PER_THEME, MAX_TRENDS } from '../lib/ideas-rules';
 import { replyRule } from '../lib/language';
+import { MODEL } from '../lib/model';
 
 const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
@@ -129,6 +130,7 @@ ${describeHistory()}`;
 for await (const message of query({
   prompt,
   options: {
+    model: MODEL,
     cwd: brandDir,
     env,
     permissionMode: 'bypassPermissions',

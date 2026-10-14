@@ -8,6 +8,7 @@ import { exampleChannels, examplesPerChannel } from '@moonbrand/shared/domain/ca
 
 import { designTools } from '../tools/disegna';
 import { visionTools } from '../tools/vista';
+import { MODEL } from './model';
 
 // Ogni generazione di esempi dell'onboarding ha la sua cartella, così due generazioni dello stesso brand non si
 // sovrascrivono; una modifica riprende la sessione e lavora nella cartella della generazione da cui parte.
@@ -70,6 +71,7 @@ export async function runExamples(options: { brandDir: string; dir: string; chan
     for await (const message of query({
       prompt,
       options: {
+        model: MODEL,
         cwd: brandDir,
         env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
         mcpServers: { grafica: designTools(brandDir, GEMINI_API_KEY), vista: visionTools(brandDir, GEMINI_API_KEY) },

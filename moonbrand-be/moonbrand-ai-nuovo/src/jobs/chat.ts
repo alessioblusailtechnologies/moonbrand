@@ -9,6 +9,7 @@ import { writeBrandBrief } from '../lib/brief';
 import { CLIENT_VOICE } from '../lib/client-voice';
 import { CONTENT_RULES } from '../lib/content';
 import { languageRules } from '../lib/language';
+import { MODEL } from '../lib/model';
 import { designTools } from '../tools/disegna';
 import { moonbrandTools } from '../tools/moonbrand';
 import { visionTools } from '../tools/vista';
@@ -104,6 +105,7 @@ try {
   for await (const item of query({
     prompt,
     options: {
+      model: MODEL,
       cwd: brandDir,
       env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers,

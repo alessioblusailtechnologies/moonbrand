@@ -9,6 +9,7 @@ import { FORMAT_ASPECT, formatAspects, hasDocument, type ContentFormat } from '@
 
 import { designTools } from '../tools/disegna';
 import { visionTools } from '../tools/vista';
+import { MODEL } from './model';
 
 // Le regole per scrivere e disegnare un contenuto stanno qui, nel prompt: niente skill. Un contenuto ha un testo per
 // canale e le sue immagini, disegnate dal motore grafico (tool disegna) e controllate dal motore di visione (guarda).
@@ -151,6 +152,7 @@ export async function runContentAgent(options: { brandDir: string; contentId: st
   for await (const message of query({
     prompt: options.prompt,
     options: {
+      model: MODEL,
       cwd: options.brandDir,
       env: { ...env, TEMP: temp, TMP: temp, TMPDIR: temp },
       mcpServers: { grafica: designTools(options.brandDir, GEMINI_API_KEY), vista: visionTools(options.brandDir, GEMINI_API_KEY) },

@@ -8,6 +8,7 @@ import { BRAND_CATEGORIES } from '@moonbrand/shared/domain/brand';
 import { categoryLabel } from '@moonbrand/shared/domain/catalog';
 
 import { languageName, replyRule, uiLocale } from '../lib/language';
+import { MODEL } from '../lib/model';
 
 const site = process.argv[2];
 if (!site) {
@@ -83,6 +84,7 @@ try {
   for await (const message of query({
     prompt,
     options: {
+      model: MODEL,
       cwd: workDir,
       allowedTools: ['WebFetch', 'WebSearch', 'Bash', 'Read'],
       permissionMode: 'bypassPermissions',
