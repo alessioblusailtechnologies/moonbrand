@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { access } from 'node:fs/promises';
 import { hostname } from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
@@ -76,6 +77,21 @@ interface JobKind {
   folder?: false;
 }
 
+// Gli esempi dell'onboarding valgono solo se i file ci sono davvero: con il motore grafico fermo (crediti finiti,
+// 14/10/2026) Claude chiudeva il lavoro dichiarando file mai fatti, e lo studio mostrava immagini rotte.
+async function checkExamples(job: Job, result: unknown): Promise<void> {
+  const { brandId } = job.input as { brandId: string };
+  const examples = ((result as { examples?: { file: string }[] } | null)?.examples ?? []).filter((example) => typeof example.file === 'string');
+  if (examples.length === 0) throw new Error('nessun esempio prodotto');
+  for (const example of examples) {
+    const ok = await access(path.join(BRANDS_DIR, brandId, example.file)).then(
+      () => true,
+      () => false,
+    );
+    if (!ok) throw new Error(`il motore grafico non ha prodotto le immagini (manca ${example.file}): vedi i passaggi del lavoro`);
+  }
+}
+
 const JOBS: Record<string, JobKind> = {
   website: { launch: (input) => ({ script: 'src/jobs/website.ts', args: [(input as WebsiteJobRequest).site] }), finish: withLogo },
   visual: {
@@ -83,12 +99,14 @@ const JOBS: Record<string, JobKind> = {
       const { brandId, brand } = input as VisualJobRequest;
       return { script: 'src/jobs/visual.ts', args: [path.join(BRANDS_DIR, brandId), examplesDir(job.id), JSON.stringify(brand)] };
     },
+    save: checkExamples,
   },
   'visual-edit': {
     launch: (input) => {
       const { brandId, dir, sessionId, channels, instruction } = input as VisualEditJobInput;
       return { script: 'src/jobs/visual-edit.ts', args: [path.join(BRANDS_DIR, brandId), dir, sessionId, JSON.stringify(channels), instruction] };
     },
+    save: checkExamples,
   },
   ideas: {
     launch: (input) => {
