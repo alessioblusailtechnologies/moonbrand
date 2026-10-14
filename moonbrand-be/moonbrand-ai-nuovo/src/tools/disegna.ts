@@ -13,6 +13,9 @@ import { PARALLEL } from './parallel';
 // foto, segni del brand) e passa il logo e i riferimenti; il modello impagina tutto, testi compresi. Prova del 14/10/2026
 // in prove/immagini: testi e logo giusti in 24 immagini su 24, composizioni diverse a ogni chiamata.
 export const DESIGN_MODEL = process.env.GEMINI_DESIGN_MODEL || 'gemini-3-pro-image';
+// Le slide che seguono una slide già fatta le disegna il modello «workhorse» di Google, a un quarto del prezzo: nella
+// prova del 14/10 (prove/immagini/uscite/messina-slide2) le sue slide 2 reggono il confronto con il Pro.
+export const FOLLOW_MODEL = process.env.GEMINI_FOLLOW_MODEL || 'gemini-nano-banana-2.1';
 
 const MIME_TYPES: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
 const EXTENSIONS: Record<string, string> = { 'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp' };
@@ -46,12 +49,19 @@ export function designTools(folder: string, apiKey: string) {
         .max(6)
         .describe('Immagini della cartella del brand, nell’ordine: il logo (logo.png), poi i riferimenti di stile, poi una slide già fatta'),
       formato: z.enum(ASPECTS).describe('Le proporzioni dell’immagine, quelle del canale'),
+      qualita: z
+        .enum(['pro', 'veloce'])
+        .optional()
+        .describe(
+          'pro (default) per i post, le copertine e la prima slide di un carosello; veloce per le slide dopo la prima, che ricevono la slide già fatta come riferimento: costa un quarto',
+        ),
       file: z
         .string()
         .regex(/^[A-Za-z0-9._\/-]+\.png$/)
         .describe('Dove salvarla, relativo alla cartella del brand, es. contenuti/<id>/cover-4x5.png'),
     },
-    async ({ brief, riferimenti, formato, file }) => {
+    async ({ brief, riferimenti, formato, qualita = 'pro', file }) => {
+      const model = qualita === 'veloce' ? FOLLOW_MODEL : DESIGN_MODEL;
       try {
         const parts: Part[] = [{ text: brief }];
         for (const [index, reference] of riferimenti.entries()) {
@@ -62,18 +72,22 @@ export function designTools(folder: string, apiKey: string) {
         const response = await measure(
           {
             task: 'design',
-            model: DESIGN_MODEL,
+            model,
             extra: ({ usageMetadata }) => ({
               units: 1,
               unit: 'immagini',
               inputTokens: usageMetadata?.promptTokenCount,
               outputTokens: usageMetadata?.candidatesTokenCount,
-              costUsd: (geminiCost(DESIGN_MODEL, usageMetadata?.promptTokenCount) ?? 0) + GEMINI_DESIGN_2K,
+              // Il Pro ha un prezzo fisso per immagine; il modello veloce si paga a token in uscita.
+              costUsd:
+                qualita === 'veloce'
+                  ? (geminiCost(model, usageMetadata?.promptTokenCount, usageMetadata?.candidatesTokenCount) ?? 0)
+                  : (geminiCost(model, usageMetadata?.promptTokenCount) ?? 0) + GEMINI_DESIGN_2K,
             }),
           },
           () =>
             ai.models.generateContent({
-              model: DESIGN_MODEL,
+              model,
               contents: [{ role: 'user', parts }],
               config: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: formato, imageSize: '2K' }, httpOptions: { timeout: TIMEOUT_MS } },
             }),

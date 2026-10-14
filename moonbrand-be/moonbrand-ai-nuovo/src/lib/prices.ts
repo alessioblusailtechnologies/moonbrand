@@ -8,6 +8,8 @@ const GEMINI_PER_MILLION: Record<string, { input: number; output: number }> = {
   'gemini-3.5-flash': { input: 1.5, output: 9 },
   'gemini-3.1-flash-image': { input: 0.5, output: 60 },
   'gemini-3-pro-image': { input: 2, output: 120 },
+  // Nano Banana 2.1: circa 3,4 centesimi a immagine 1K (the-decoder, 10/2026) → 30 $/M in uscita; listino da verificare.
+  'gemini-nano-banana-2.1': { input: 0.5, output: 30 },
 };
 
 // Un'immagine di Gemini a 2K, a prezzo fisso: i token in uscita che riporta comprendono anche il ragionamento.

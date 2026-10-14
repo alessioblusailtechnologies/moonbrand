@@ -2,6 +2,17 @@
 const BRANDS = '../../../../moonbrand-brands';
 
 export const brands = {
+  'messina-slide2': {
+    dir: `${BRANDS}/8beed05d-d53b-4b99-b865-5815e45268e3`,
+    logo: 'esempi/logo.png',
+    refs: ['file-riferimento/afe6d0b4-d949-4613-b681-3e34a2f5a0ef.jpg', 'esempi/4c8ba7b5-9a1e-4f40-9322-e66539824eb9/instagram-1.jpg'],
+    // Prova 14/10: la seconda slide di un carosello, Pro contro Nano Banana 2.1, con la prima slide come immagine 3.
+    brief: `Instagram carousel, slide 2 of 5, 4:5.
+For Giovanni Messina Hair&Beauty, hair salon in Earl's Court, London: why hand-painted balayage grows out softly, no hard regrowth line.
+Image 1 is the brand logo: use it as it is. Image 2 is the style to follow. Image 3 is slide 1 of this carousel: same system, same typography and palette, a new composition for this slide.
+Texts, exact: title "NO HARD LINE", small line "We paint the blonde where the light would fall, so it blends as it grows", signature "02". No other text.
+Brand colours: #323232, #E6DDC5, #85753D, #FFFFFF.`,
+  },
   messina: {
     dir: `${BRANDS}/7e8e922d-943a-44e9-ab6b-d5d6c9936571`,
     logo: 'esempi/logo.png',
