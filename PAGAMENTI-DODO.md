@@ -220,7 +220,7 @@ fatto Paddle.
   Payments» (il campo è unico per tutte le lingue: salvare una lingua e poi risalvare le altre).
 - [x] iubenda, privacy: togliere Paddle, aggiungere Dodo Payments (Gestione dei pagamenti).
 - [x] `TERMINI-IUBENDA.md`: aggiornare.
-- [ ] Deploy del sito (`npm run deploy` in `moonbrand-website`).
+- [x] Deploy del sito (`npm run deploy` in `moonbrand-website`): fatto il 15/10 sera, online senza Paddle.
 
 ## 4. Produzione (dopo l'ok di Dodo e le prove)
 
