@@ -7,7 +7,6 @@ import type { OnboardingDraft, OnboardingDraftSave } from '@moonbrand/shared/api
 import type { BrandDraft, BrandKind, ChannelId, ChannelState, MediaFile, SectionKey } from '@moonbrand/shared/domain/brand';
 import { changeDraftKind, createEmptyDraft } from '@moonbrand/shared/domain/catalog';
 import { ONBOARDING_SECTION_KEYS } from '@moonbrand/shared/domain/sections';
-import { DEFAULT_SUBSCRIPTION_PLAN, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { takeSignupBrand } from '../../core/auth/signup-prefill';
@@ -16,21 +15,20 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { ConfirmService } from '../../ui/confirm';
 import { DraftStore, EMPTY_DRAFT_STATE, type DraftState } from './draft-store';
 
-export type OnboardingStep = 'intro' | SectionKey | 'plan' | 'summary';
+export type OnboardingStep = 'intro' | SectionKey | 'summary';
 
-// Prima il piano, poi il tipo di brand (intro): questi due non si contano nei passi, gli altri sì.
-export const ONBOARDING_STEPS: OnboardingStep[] = ['plan', 'intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
+// Prima il tipo di brand (intro), che non si conta nei passi, poi le sezioni e il riepilogo. Il piano si sceglie dopo la
+// creazione, in una finestra che non si chiude (plans/plan-choice-modal).
+export const ONBOARDING_STEPS: OnboardingStep[] = ['intro', ...ONBOARDING_SECTION_KEYS, 'summary'];
 export const INTRO_INDEX = ONBOARDING_STEPS.indexOf('intro');
 export const COUNTED_STEPS = ONBOARDING_STEPS.length - INTRO_INDEX - 1;
 
-// plan: il piano del brand che sta nascendo, che va con lui alla creazione.
 interface State extends DraftState {
   stepIndex: number;
   direction: 1 | -1;
-  plan: SubscriptionPlanId;
 }
 
-const INITIAL: State = { ...EMPTY_DRAFT_STATE, stepIndex: 0, direction: 1, plan: DEFAULT_SUBSCRIPTION_PLAN };
+const INITIAL: State = { ...EMPTY_DRAFT_STATE, stepIndex: 0, direction: 1 };
 
 const clamp = (index: number) => Math.max(0, Math.min(ONBOARDING_STEPS.length - 1, index));
 
@@ -74,7 +72,6 @@ export class OnboardingStore extends DraftStore<State> {
   readonly stepIndex = computed(() => (this.state().draft ? this.state().stepIndex : Math.min(this.state().stepIndex, INTRO_INDEX)));
   readonly step = computed(() => ONBOARDING_STEPS[this.stepIndex()]);
   readonly direction = computed(() => this.state().direction);
-  readonly plan = computed(() => this.state().plan);
   override readonly connectReturn = '/onboarding';
 
   constructor() {
@@ -140,10 +137,6 @@ export class OnboardingStore extends DraftStore<State> {
       brandId: state.brandId ?? newBrandId(),
       draft: state.draft ? changeDraftKind(state.draft, kind) : withSignupBrand(createEmptyDraft(kind, this.i18n.locale())),
     }));
-  }
-
-  choosePlan(plan: SubscriptionPlanId): void {
-    this.state.update((state) => ({ ...state, plan }));
   }
 
   async removeReference(file: MediaFile): Promise<void> {
@@ -244,8 +237,9 @@ function normalize(raw: unknown): State {
   if (!raw || typeof raw !== 'object') return INITIAL;
   const saved = raw as Partial<State>;
   const state: State = { ...INITIAL, ...saved };
-  // Una bozza di prima della scelta del piano: i passi dopo il piano sono avanti di uno.
-  if (saved.plan === undefined && saved.draft) state.stepIndex = (saved.stepIndex ?? 0) + 1;
+  // Una bozza salvata quando il piano era il primo passo (fino al 15/10 lo stato aveva `plan`): gli indici dei passi
+  // sono avanti di uno.
+  if ((raw as { plan?: unknown }).plan !== undefined && (saved.stepIndex ?? 0) > 0) state.stepIndex = (saved.stepIndex ?? 0) - 1;
   if (!state.draft) return state;
   const channels = { ...createEmptyDraft(state.draft.identity.kind).channels, ...state.draft.channels };
   const { voice: _voice, ...draft } = state.draft as BrandDraft & { voice?: unknown };

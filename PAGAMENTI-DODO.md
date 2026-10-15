@@ -106,8 +106,11 @@ che resta e non sposta il rinnovo; scendendo `do_not_bill`), stato `on_hold`, po
 DB di sviluppo, dove è applicata la nuova), studio senza Paddle.js: il checkout è un redirect alla pagina di Dodo e si torna
 su `/abbonamento` (componente `billing-return`, dentro lo shell), dove la modale dei pagamenti aspetta il webhook e poi
 si torna alla pagina di partenza (acquisto in sospeso in `localStorage`, chiave `mb-pagamento`, valido un'ora).
-Nell'onboarding il pagamento parte appena il brand è creato (stile e prime idee si preparano sul server) e torna su
-`/assistente`; dalla pagina di Dodo si può rinunciare (`cancel_url`: si torna dove si era, senza aspettare niente). La pagina `/abbonamento`
+Nell'onboarding il piano non è più un passo: appena il brand è creato si apre una finestra che non si chiude
+(`plans/plan-choice-modal.ts`, scelta Start/Pro/Ultra e «Attiva»), mentre dietro si vede la preparazione di stile e
+prime idee; da lì il browser va da Dodo e torna su `/assistente`. Dalla pagina di Dodo si può rinunciare (`cancel_url`:
+si torna dove si era, senza aspettare niente) e il banner ripropone il piano scelto. Chi ha il piano in omaggio non
+vede la finestra (cambiato il 15/10 notte). La pagina `/abbonamento`
 non è più raggiungibile da fuori (i link di Dodo per la carta portano al suo portale, non a noi).
 
 **API** (`moonbrand-be/moonbrand-api/src/modules/billing/`), con l'SDK `dodopayments` (`environment: 'test_mode'` in
@@ -235,8 +238,9 @@ fatto Paddle.
   `prod_dodo.sh` lanciato dall'utente), merge di `collaudo` su `master` (`0a68ed6`) e `bash deploy.sh`: in produzione
   dal 15/10 sera. Il worker in prod resta `moonbrand-ai`; le cartelle del motore nuovo sono su master ma non girano.
 - [ ] Prova con una carta vera e rimborso.
-- [ ] Blocco acceso: `BILLING_ENFORCED=true` nel `.env` di prod e riavvio dell'API. Deciso il 15/10 sera: nessun avviso con
-  una data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. Le utenze
+- [x] Blocco acceso il 15/10 notte: `BILLING_ENFORCED=true` nel `.env` di prod, deploy `72b32f5`. Nessun avviso con una
+  data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. In omaggio le
+  cinque utenze di Alessio, Emanuele Pizzoleo e SunrAIse (lista nel `.env` di prod e in `dodo-prod-blocco.sh`). Le utenze
   particolari hanno il **piano Ultra in omaggio**: `FREE_ULTRA_EMAILS` (email separate da virgola, come `ADMIN_EMAILS`),
   codice in `billing/free-plan.ts`. Per loro ogni brand conta come un abbonamento Ultra attivo senza pagamento (15.000
   crediti al mese di calendario, più quelli dell'admin), `GET /v1/me` dice `freePlan: true`, lo studio salta il passo
