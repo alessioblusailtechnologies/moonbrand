@@ -235,8 +235,9 @@ fatto Paddle.
   `prod_dodo.sh` lanciato dall'utente), merge di `collaudo` su `master` (`0a68ed6`) e `bash deploy.sh`: in produzione
   dal 15/10 sera. Il worker in prod resta `moonbrand-ai`; le cartelle del motore nuovo sono su master ma non girano.
 - [ ] Prova con una carta vera e rimborso.
-- [ ] Blocco acceso: `BILLING_ENFORCED=true` nel `.env` di prod e riavvio dell'API. Deciso il 15/10 sera: nessun avviso con
-  una data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. Le utenze
+- [x] Blocco acceso il 15/10 notte: `BILLING_ENFORCED=true` nel `.env` di prod, deploy `72b32f5`. Nessun avviso con una
+  data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. In omaggio le
+  cinque utenze di Alessio, Emanuele Pizzoleo e SunrAIse (lista nel `.env` di prod e in `dodo-prod-blocco.sh`). Le utenze
   particolari hanno il **piano Ultra in omaggio**: `FREE_ULTRA_EMAILS` (email separate da virgola, come `ADMIN_EMAILS`),
   codice in `billing/free-plan.ts`. Per loro ogni brand conta come un abbonamento Ultra attivo senza pagamento (15.000
   crediti al mese di calendario, più quelli dell'admin), `GET /v1/me` dice `freePlan: true`, lo studio salta il passo
