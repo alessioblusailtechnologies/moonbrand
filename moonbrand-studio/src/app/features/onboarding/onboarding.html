@@ -61,9 +61,7 @@
             <p class="body">{{ copy().subtitle }}</p>
           </div>
 
-          @if (key === 'plan') {
-            <mb-plan-step />
-          } @else if (key === 'intro') {
+          @if (key === 'intro') {
             <mb-intro-step />
           } @else if (draft) {
             @switch (key) {
@@ -95,6 +93,9 @@
     </footer>
   }
 </div>
+@if (choosingPlan(); as brandId) {
+  <mb-plan-choice [brandId]="brandId" />
+}
 @if (connection.choosing(); as pending) {
   <mb-channel-choice [channel]="pending.channel" [choices]="pending.choices" [busy]="connection.selecting()"
     (chosen)="connection.select($event, connected)" (cancelled)="connection.cancel()" />

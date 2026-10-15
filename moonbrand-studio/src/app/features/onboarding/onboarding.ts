@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandKind, ChannelId, ChannelState, SectionKey } from '@moonbrand/shared/domain/brand';
 import { isSkippable, sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
+import { DEFAULT_SUBSCRIPTION_PLAN } from '@moonbrand/shared/domain/subscription';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { BillingService } from '../../core/billing/billing.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
@@ -21,6 +21,7 @@ import { Logo } from '../../ui/logo';
 import { lockPageScroll } from '../../ui/scroll-lock';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
+import { PlanChoiceModal } from '../plans/plan-choice-modal';
 import { ChannelChoiceDialog } from '../profile/channel-choice';
 import { DraftStore } from './draft-store';
 import { COUNTED_STEPS, INTRO_INDEX, ONBOARDING_STEPS, OnboardingStore, type OnboardingStep } from './onboarding.store';
@@ -28,7 +29,6 @@ import { ChannelsStep } from './steps/channels-step';
 import { IdentityStep } from './steps/identity-step';
 import { InstructionsStep } from './steps/instructions-step';
 import { IntroStep } from './steps/intro-step';
-import { PlanStep } from './steps/plan-step';
 import { PositioningStep } from './steps/positioning-step';
 import { SummaryStep } from './steps/summary-step';
 import { ThemesStep } from './steps/themes-step';
@@ -37,9 +37,6 @@ import { VisualStep } from './steps/visual-step';
 function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: Locale) {
   if (step === 'intro') {
     return { title: translate(locale, 'onboarding.intro.title'), subtitle: translate(locale, 'onboarding.intro.subtitle') };
-  }
-  if (step === 'plan') {
-    return { title: translate(locale, 'plans.stepTitle'), subtitle: translate(locale, 'plans.stepSubtitle') };
   }
   if (step === 'summary') {
     const firstName = name.trim().split(/\s+/)[0];
@@ -70,8 +67,8 @@ function stepCopy(step: OnboardingStep, kind: BrandKind, name: string, locale: L
     ThemesStep,
     InstructionsStep,
     VisualStep,
-    PlanStep,
     SummaryStep,
+    PlanChoiceModal,
     ChannelChoiceDialog,
   ],
   // I passi scrivono nella bozza del brand nuovo.
@@ -85,7 +82,6 @@ export class Onboarding {
   private readonly ai = inject(AiJobsService);
   private readonly auth = inject(AuthService);
   private readonly i18n = inject(I18nService);
-  private readonly billing = inject(BillingService);
   protected readonly store = inject(OnboardingStore);
   protected readonly brands = inject(BrandsService);
   protected readonly connection = inject(ChannelConnectionService);
@@ -93,6 +89,8 @@ export class Onboarding {
   protected readonly creating = signal(false);
   // Dopo la creazione: i passaggi di stile e prime idee, finché non sono finiti.
   protected readonly preparing = signal(false);
+  // Il brand appena creato che aspetta la scelta del piano, nella finestra che non si chiude.
+  protected readonly choosingPlan = signal<string | null>(null);
   protected readonly steps = signal<AiStep[]>([]);
   protected readonly total = COUNTED_STEPS;
   protected readonly segments = ONBOARDING_STEPS.slice(INTRO_INDEX + 1).map((_, i) => i + 1);
@@ -106,13 +104,13 @@ export class Onboarding {
 
   protected readonly barLabel = computed(() => {
     if (this.preparing()) return this.i18n.t('onboarding.almostReady');
-    if (this.store.step() === 'intro' || this.store.step() === 'plan') return this.i18n.t('onboarding.setup');
+    if (this.store.step() === 'intro') return this.i18n.t('onboarding.setup');
     return this.i18n.t('onboarding.stepOf', { n: this.stepNumber(), total: this.total });
   });
 
   protected readonly sectionStep = computed<SectionKey | null>(() => {
     const step = this.store.step();
-    return step === 'intro' || step === 'plan' || step === 'summary' ? null : step;
+    return step === 'intro' || step === 'summary' ? null : step;
   });
 
   protected readonly error = computed(() => {
@@ -144,8 +142,6 @@ export class Onboarding {
       untracked(() => this.page()?.nativeElement.scrollTo({ top: 0 }));
     });
     void this.brands.ensureLoaded();
-    // Con il piano Ultra in omaggio il passo del piano non serve: si parte dal tipo di brand.
-    if (this.auth.account()?.freePlan && this.store.step() === 'plan') this.store.next();
     // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali: l'indirizzo (con i token) si
     // ripulisce subito, il canale entra nella bozza quando la bozza è arrivata dal server.
     const params = inject(ActivatedRoute).snapshot.queryParamMap;
@@ -166,10 +162,6 @@ export class Onboarding {
 
   protected primary(): void {
     const step = this.store.step();
-    if (step === 'plan') {
-      this.store.next();
-      return;
-    }
     if (step === 'intro') {
       if (!this.store.draft()) {
         this.toast.show(this.i18n.t('onboarding.chooseKind'));
@@ -210,20 +202,24 @@ export class Onboarding {
     if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
     const free = Boolean(this.auth.account()?.freePlan);
-    const plan = free ? 'ultra' : this.store.plan();
     let jobs: string[];
     try {
-      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), plan)).setupJobs;
+      jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), free ? 'ultra' : DEFAULT_SUBSCRIPTION_PLAN)).setupJobs;
       this.store.reset();
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('onboarding.createFailed')));
       this.creating.set(false);
       return;
     }
-    // Creato il brand, il browser va subito alla pagina di pagamento di Dodo Payments e torna nella chat: stile e prime
-    // idee intanto si preparano sul server. Chi torna senza pagare attiva il piano dopo, dalle Impostazioni brand o dal
-    // banner. Se la pagina di pagamento non si apre, o il piano è in omaggio, si resta qui a seguire la preparazione.
-    if (!free && (await this.billing.activatePlan(brandId, plan, '/assistente'))) return;
+    // Creato il brand, il piano si sceglie in una finestra che non si chiude (mb-plan-choice): da lì il browser va alla
+    // pagina di pagamento di Dodo Payments e torna nella chat. Intanto stile e prime idee si preparano sul server, e qui
+    // dietro si vede l'avanzamento. Chi ha il piano in omaggio salta la scelta e aspetta la preparazione.
+    this.creating.set(false);
+    if (!free) {
+      this.choosingPlan.set(brandId);
+      void this.prepare(jobs);
+      return;
+    }
     await this.prepare(jobs);
     await this.router.navigateByUrl('/assistente');
   }

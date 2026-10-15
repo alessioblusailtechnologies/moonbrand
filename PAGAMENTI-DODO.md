@@ -106,8 +106,11 @@ che resta e non sposta il rinnovo; scendendo `do_not_bill`), stato `on_hold`, po
 DB di sviluppo, dove è applicata la nuova), studio senza Paddle.js: il checkout è un redirect alla pagina di Dodo e si torna
 su `/abbonamento` (componente `billing-return`, dentro lo shell), dove la modale dei pagamenti aspetta il webhook e poi
 si torna alla pagina di partenza (acquisto in sospeso in `localStorage`, chiave `mb-pagamento`, valido un'ora).
-Nell'onboarding il pagamento parte appena il brand è creato (stile e prime idee si preparano sul server) e torna su
-`/assistente`; dalla pagina di Dodo si può rinunciare (`cancel_url`: si torna dove si era, senza aspettare niente). La pagina `/abbonamento`
+Nell'onboarding il piano non è più un passo: appena il brand è creato si apre una finestra che non si chiude
+(`plans/plan-choice-modal.ts`, scelta Start/Pro/Ultra e «Attiva»), mentre dietro si vede la preparazione di stile e
+prime idee; da lì il browser va da Dodo e torna su `/assistente`. Dalla pagina di Dodo si può rinunciare (`cancel_url`:
+si torna dove si era, senza aspettare niente) e il banner ripropone il piano scelto. Chi ha il piano in omaggio non
+vede la finestra (cambiato il 15/10 notte). La pagina `/abbonamento`
 non è più raggiungibile da fuori (i link di Dodo per la carta portano al suo portale, non a noi).
 
 **API** (`moonbrand-be/moonbrand-api/src/modules/billing/`), con l'SDK `dodopayments` (`environment: 'test_mode'` in
