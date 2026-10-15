@@ -302,7 +302,7 @@ export const fr: Copy = {
     faqTitle: 'Questions fréquentes',
     faq: [
       { q: 'Qu’est-ce qu’un crédit ?', a: 'C’est l’unité qui mesure le travail de l’IA : écrire, générer des images, monter une vidéo. Chaque action consomme les crédits qu’elle coûte vraiment, et dans le studio vous voyez toujours combien il vous en reste.' },
-      { q: 'Combien de crédits pour un post ou une vidéo ?', a: 'Cela dépend du travail. En moyenne, un post demande environ 100 crédits, un carrousel 130, une vidéo entre 180 et 300 (plus avec des clips générés). Chaque retouche dans le chat en utilise environ 40.' },
+      { q: 'Combien de crédits pour un post ou une vidéo ?', a: 'Cela dépend du travail. Un premier brouillon coûte peu, environ 100 crédits pour un post ; un contenu fini, avec les retouches dans le chat (environ 40 chacune) et les images ou les clips générés, revient en moyenne à 200 crédits pour un post, 250 pour un carrousel et 400 pour une vidéo. Les quantités indiquées dans les formules sont calculées avec ces chiffres.' },
       { q: 'La formule couvre-t-elle toutes mes marques ?', a: 'Non, chaque marque a sa formule et ses crédits. Ainsi, une agence choisit la bonne formule pour chaque client.' },
       { q: 'Et si je n’ai plus de crédits ?', a: 'Vous pouvez ajouter {topup} crédits pour {topupPrice} ({topupUltra} avec Ultra) ou passer à la formule supérieure.' },
       { q: 'Les crédits non utilisés sont-ils conservés ?', a: 'Les crédits de la formule valent pour le mois en cours et repartent de zéro à chaque renouvellement. Ceux achetés avec une recharge n’expirent pas à la fin du mois : ils restent sur la marque et s’utilisent tant que la formule est active.' },

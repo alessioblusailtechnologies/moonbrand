@@ -689,6 +689,51 @@ export interface CreditsResponse {
   remaining: number;
   // Il giorno in cui i crediti si rinnovano, YYYY-MM-DD.
   renewsOn: string;
+  // L'abbonamento pagato del brand, su Dodo Payments; null se il piano non è ancora attivato.
+  subscription: BrandSubscription | null;
+  // Perché i lavori a pagamento del brand non partono: senza piano attivo o senza crediti; null se partono.
+  blocked: SpendBlock | null;
+}
+
+export type SpendBlock = 'PLAN_REQUIRED' | 'NO_CREDITS';
+
+// Gli stati di Dodo Payments: pending è appena nato (pagamento in corso); past_due e on_hold sono un rinnovo non pagato
+// (con o senza periodo di grazia), che riparte quando il cliente cambia la carta; cancelled, expired e failed sono finiti.
+export type SubscriptionStatus = 'pending' | 'active' | 'past_due' | 'on_hold' | 'paused' | 'cancelled' | 'failed' | 'expired';
+
+export interface BrandSubscription {
+  plan: SubscriptionPlanId;
+  status: SubscriptionStatus;
+  // Fine del periodo pagato, ISO.
+  periodEnd: string | null;
+  // La disdetta programmata: l'abbonamento resta attivo fino a questa data, ISO.
+  cancelsAt: string | null;
+}
+
+// plan: il piano da attivare su un brand che non ha ancora l'abbonamento; topup: una ricarica da 1.000 crediti.
+export interface CheckoutRequest {
+  brandId: string;
+  kind: 'plan' | 'topup';
+  plan?: SubscriptionPlanId;
+}
+
+// La pagina di pagamento di Dodo Payments, dove lo studio manda il browser; si torna su /abbonamento.
+export interface CheckoutResponse {
+  url: string;
+}
+
+// Il cambio di piano prima di confermarlo. Importi in centesimi nella valuta dell'abbonamento: oggi tasse comprese (0
+// scendendo di piano) e il prezzo del piano nuovo a ogni rinnovo, tasse escluse, con la data del prossimo rinnovo (ISO).
+export interface PlanPreviewResponse {
+  upgrade: boolean;
+  currency: string;
+  today: number;
+  next: number;
+  nextAt: string;
+}
+
+export interface BillingPortalResponse {
+  url: string;
 }
 
 // Come si sono consumati i crediti di un brand in un mese, attività per attività: chi usa moonbrand deve poterlo

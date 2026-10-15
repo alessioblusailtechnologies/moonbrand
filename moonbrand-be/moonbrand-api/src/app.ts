@@ -14,10 +14,14 @@ import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
+import { DodoApi } from './modules/billing/dodo-api';
+import { registerDodoWebhook } from './modules/billing/dodo-webhook';
+import { registerBillingRoutes } from './modules/billing/routes';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
 import { registerContentRoutes } from './modules/contents/routes';
 import { registerConversationRoutes } from './modules/conversations/routes';
+import { enforceBilling } from './modules/credits/balance';
 import { registerCreditRoutes } from './modules/credits/routes';
 import { registerIdeaRoutes } from './modules/ideas/routes';
 import { registerMediaRoutes } from './modules/media/routes';
@@ -47,6 +51,10 @@ export interface AppOptions {
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
+    | 'DODO_PAYMENTS_API_KEY'
+    | 'DODO_PAYMENTS_WEBHOOK_KEY'
+    | 'DODO_PAYMENTS_ENV'
+    | 'BILLING_ENFORCED'
     | 'STUDIO_ORIGINS'
     | 'SIMULATE_SOCIAL'
     | 'STUDIO_URL'
@@ -74,7 +82,9 @@ export function buildApp(options: AppOptions) {
 
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
-  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings);
+  enforceBilling(options.settings.BILLING_ENFORCED);
+  const dodo = new DodoApi(options.settings);
+  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, dodo);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
@@ -85,6 +95,8 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
+  registerDodoWebhook(app, options.pool, dodo, options.settings);
+  registerBillingRoutes(app, options.pool, dodo, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);

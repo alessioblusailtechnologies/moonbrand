@@ -3,8 +3,10 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, linkedSig
 import { firstValueFrom } from 'rxjs';
 
 import type { CreditActivity, CreditUsageResponse } from '@moonbrand/shared/api/contract';
-import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
+import { CREDIT_TOPUP, SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 
+import { BillingService } from '../../core/billing/billing.service';
+import { subscriptionLive } from '../../core/billing/subscription-status';
 import { BrandsService } from '../../core/brands/brands.service';
 import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
@@ -55,18 +57,32 @@ import { ToastService } from '../../ui/toast';
             </div>
             <div class="grow texts">
               <span class="heading">{{ 'credits.usedOf' | t: { used: card.used, total: card.total } }}</span>
-              <span class="strong-sm share">{{ 'credits.share' | t: { percent: card.percent, plan: card.plan } }}</span>
+              <span class="strong-sm share">{{ (card.current ? 'credits.sharePeriod' : 'credits.share') | t: { percent: card.percent, plan: card.plan } }}</span>
               <span class="meter"><span class="meter-fill" [style.width.%]="card.usedShare * 100"></span></span>
               <span class="caption">
                 @if (card.over) {
                   {{ 'credits.over' | t: { n: card.over } }}
                 } @else if (card.current) {
-                  {{ 'credits.renews' | t: { date: card.renews, total: card.total } }}
+                  {{ (card.paid ? 'credits.renewsPaid' : 'credits.renews') | t: { date: card.renews, total: card.renewal, plan: card.plan } }}
                 } @else {
                   {{ 'credits.closed' | t }}
                 }
               </span>
             </div>
+            @if (card.current) {
+              @if (topup(); as offer) {
+                <div class="topup">
+                  @if (offer.subscribed) {
+                    <button class="btn btn-secondary btn-sm" type="button" [disabled]="billing.confirming()" (click)="buyTopup()">
+                      {{ 'plans.topup' | t }}
+                    </button>
+                    <span class="caption">{{ 'plans.topupHint' | t: { price: offer.price } }}</span>
+                  } @else {
+                    <span class="caption">{{ 'plans.topupNeedsPlan' | t }}</span>
+                  }
+                </div>
+              }
+            }
           </div>
         }
 
@@ -160,6 +176,15 @@ import { ToastService } from '../../ui/toast';
       align-items: center;
       gap: 28px;
       padding: 24px 28px;
+    }
+    .topup {
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      max-width: 220px;
+      text-align: right;
     }
     .gauge {
       position: relative;
@@ -310,6 +335,11 @@ import { ToastService } from '../../ui/toast';
         align-items: stretch;
         text-align: center;
       }
+      .topup {
+        align-items: center;
+        max-width: none;
+        text-align: center;
+      }
       .gauge {
         align-self: center;
       }
@@ -337,7 +367,24 @@ export class CreditsPage {
   private readonly toast = inject(ToastService);
   private readonly brands = inject(BrandsService);
   private readonly credits = inject(CreditsService);
+  protected readonly billing = inject(BillingService);
   protected readonly i18n = inject(I18nService);
+
+  // La ricarica da 1.000 crediti del brand attivo: si vende solo con un piano attivo, e con Ultra costa meno.
+  protected readonly topup = computed(() => {
+    const credits = this.credits.credits();
+    if (!credits) return null;
+    const euro = credits.plan === 'ultra' ? CREDIT_TOPUP.ultraPriceEur : CREDIT_TOPUP.priceEur;
+    return {
+      subscribed: subscriptionLive(credits.subscription),
+      price: new Intl.NumberFormat(this.i18n.intl(), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(euro),
+    };
+  });
+
+  protected buyTopup(): void {
+    const brandId = this.brands.activeBrand()?.id;
+    if (brandId) void this.billing.buyTopup(brandId);
+  }
 
   protected readonly usage = signal<CreditUsageResponse | null>(null);
   protected readonly loading = signal(true);
@@ -345,18 +392,19 @@ export class CreditsPage {
   // Il mese scelto; null è il mese in corso, e cambiando brand si riparte da lì.
   protected readonly month = linkedSignal<string | null, string | null>({ source: this.brandId, computation: () => null });
 
-  // La card in alto: nel mese in corso il cerchio è quello della barra laterale (i crediti che restano, rosso sotto il
-  // 10%); nei mesi chiusi mostra quanto del piano si è consumato. Il piano è quello di oggi del brand.
+  // La card in alto: nel mese in corso è la barra laterale (i crediti che restano del periodo, che con l'abbonamento
+  // segue il periodo pagato e non il mese; rosso sotto il 10%); nei mesi chiusi mostra quanto del piano si è consumato.
+  // Il piano è quello di oggi del brand.
   protected readonly summary = computed(() => {
     const credits = this.credits.credits();
     const usage = this.usage();
     if (!credits || !usage) return null;
     const intl = this.i18n.intl();
     const total = credits.monthlyCredits;
-    const used = usage.used;
     const current = usage.month === usage.months[0];
+    const used = current ? credits.usedThisMonth : usage.used;
     const usedShare = Math.min(used / total, 1);
-    const left = Math.max(total - used, 0);
+    const left = Math.max(current ? credits.remaining : total - used, 0);
     const round = (value: number) => Math.round(value).toLocaleString(intl);
     return {
       current,
@@ -368,6 +416,10 @@ export class CreditsPage {
       usedShare,
       percent: (used / total).toLocaleString(intl, { style: 'percent', maximumFractionDigits: 0 }),
       plan: SUBSCRIPTION_PLANS[credits.plan].name,
+      // Al rinnovo arrivano i crediti del piano di adesso, anche se in questo periodo ce ne sono di più (un piano più alto
+      // pagato prima di scendere, le ricariche).
+      renewal: SUBSCRIPTION_PLANS[credits.plan].monthlyCredits.toLocaleString(intl),
+      paid: subscriptionLive(credits.subscription),
       over: used > total ? round(used - total) : null,
       renews: new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`)),
     };

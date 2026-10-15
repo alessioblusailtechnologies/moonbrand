@@ -2,9 +2,11 @@ import type { AiJob } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
+import { assertCanSpend } from '../credits/balance';
 
 // agentToken: il token con cui i tool del job chiamano l'API (solo per i job della chat).
 // free: il job non scala crediti (onboarding, creazione del brand, saluti del mattino); i trigger dei crediti lo saltano.
+// Gli altri si fermano qui se il brand non ha un piano attivo o ha finito i crediti (assertCanSpend).
 export async function insertJob(
   db: Queryable,
   accountId: string,
@@ -12,6 +14,9 @@ export async function insertJob(
   input: unknown,
   { agentToken, free = false }: { agentToken?: string; free?: boolean } = {},
 ): Promise<string> {
+  // Un lavoro a pagamento su un brand vero (non una bozza dell'onboarding) parte solo se il brand può spendere.
+  const brandId = (input as { brandId?: unknown } | null)?.brandId;
+  if (!free && typeof brandId === 'string' && !(await isDraftBrand(db, brandId))) await assertCanSpend(db, accountId, brandId);
   const { rows } = await db.query<{ id: string }>(
     'insert into presenza.ai_jobs (account_id, kind, input, agent_token, free) values ($1, $2, $3::jsonb, $4, $5) returning id',
     [accountId, kind, JSON.stringify(input), agentToken ?? null, free],

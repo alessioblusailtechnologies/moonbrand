@@ -8,6 +8,8 @@ import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
+import { BillingService } from '../../core/billing/billing.service';
+import { subscriptionLive, subscriptionStatusLine } from '../../core/billing/subscription-status';
 import { BrandsService } from '../../core/brands/brands.service';
 import { CreditsService } from '../../core/credits/credits.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
@@ -76,10 +78,21 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
                 <span class="grow texts">
                   <span class="strong-sm">{{ 'plans.settingsRow' | t }}</span>
                   <span class="caption summary">{{ current.summary }}</span>
+                  <span class="caption summary" [class.warn]="current.warn">{{ current.status }}</span>
                 </span>
                 <span class="edit caption">{{ 'common.edit' | t }}</span>
                 <mb-icon name="chevron-right" [size]="16" class="chevron" />
               </button>
+              @if (current.subscribed) {
+                <button class="row-btn" type="button" (click)="openPortal()">
+                  <mb-icon name="file-text" [size]="18" class="row-icon" />
+                  <span class="grow texts">
+                    <span class="strong-sm">{{ 'plans.billingRow' | t }}</span>
+                    <span class="caption summary">{{ 'plans.billingRowHint' | t }}</span>
+                  </span>
+                  <mb-icon name="chevron-right" [size]="16" class="chevron" />
+                </button>
+              }
             }
             <a class="row-btn" routerLink="/impostazioni/crediti">
               <mb-icon name="bar-chart" [size]="18" class="row-icon" />
@@ -108,7 +121,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
     @if (changingPlan()) {
       @if (brands.activeBrand(); as brand) {
         @if (plan(); as current) {
-          <mb-plan-dialog [brandId]="brand.id" [current]="current.id" (closed)="changingPlan.set(false)" />
+          <mb-plan-dialog [brandId]="brand.id" [current]="current.id" [subscribed]="current.subscribed" (closed)="changingPlan.set(false)" />
         }
       }
     }
@@ -191,6 +204,9 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
     }
+    .summary.warn {
+      color: var(--danger);
+    }
     .edit {
       flex: none;
       font-weight: 500;
@@ -221,17 +237,27 @@ export class ProfilePage {
   protected readonly editing = signal<SectionKey | null>(null);
   protected readonly changingPlan = signal(false);
   private readonly credits = inject(CreditsService);
+  private readonly billing = inject(BillingService);
 
-  // Il piano del brand attivo, come lo dicono i suoi crediti.
+  // Il piano del brand attivo, come lo dicono i suoi crediti, e lo stato del suo abbonamento su Dodo Payments.
   protected readonly plan = computed(() => {
     const credits = this.credits.credits();
     if (!credits) return null;
     const plan = SUBSCRIPTION_PLANS[credits.plan];
+    const status = credits.subscription?.status;
     return {
       id: credits.plan,
       summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly }),
+      status: subscriptionStatusLine(this.i18n, credits.subscription),
+      warn: !subscriptionLive(credits.subscription) || status === 'past_due' || status === 'on_hold',
+      subscribed: subscriptionLive(credits.subscription),
     };
   });
+
+  protected openPortal(): void {
+    const brandId = this.brands.activeBrand()?.id;
+    if (brandId) void this.billing.openPortal(brandId);
+  }
   protected readonly connection = inject(ChannelConnectionService);
   // Solo l'id: dopo un salvataggio nome e logo cambiano, ma il profilo non va riletto.
   private readonly activeId = computed(() => this.brands.activeBrand()?.id ?? null);

@@ -13,6 +13,8 @@ import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChatService } from '../../core/chat/chat.service';
+import { BillingService } from '../../core/billing/billing.service';
+import { PaymentModal } from '../billing/payment-modal';
 import { CreditsService } from '../../core/credits/credits.service';
 import { errorMessage } from '../../core/errors';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -39,7 +41,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, PaymentModal, TranslatePipe],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
   host: {
     '[style.--topbar-height.px]': 'topbarHeight()',
@@ -211,10 +213,20 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
             <a class="btn btn-primary btn-sm" routerLink="/impostazioni">{{ 'shell.lostAction' | t }}</a>
           </div>
         }
+        @if (billingBanner(); as banner) {
+          <div class="lost" role="alert">
+            <mb-icon name="layers" [size]="18" />
+            <span class="grow">{{ banner.text }}</span>
+            <button class="btn btn-primary btn-sm" type="button" [disabled]="billing.confirming()" (click)="billingAction(banner.kind)">
+              {{ banner.action }}
+            </button>
+          </div>
+        }
         <router-outlet />
       </main>
     </div>
     <mb-brand-picker />
+    <mb-payment-modal />
   `,
   styles: `
     // La sidebar fa da cornice blu notte: la pagina è un pannello chiaro staccato di --frame dai bordi,
@@ -714,6 +726,7 @@ export class Shell {
   protected readonly auth = inject(AuthService);
   protected readonly chat = inject(ChatService);
   private readonly credits = inject(CreditsService);
+  protected readonly billing = inject(BillingService);
   protected readonly header = inject(PageHeader);
   private readonly picker = inject(BrandPickerService);
   private readonly toast = inject(ToastService);
@@ -769,6 +782,33 @@ export class Shell {
   }
 
   // I canali del brand dove il social ha chiuso l'accesso (avviso di Zernio): finché non si ricollegano i post lì aspettano.
+  // Il brand fermo per il piano o per i crediti, o con un pagamento da sistemare: il banner porta dritto al pagamento.
+  protected readonly billingBanner = computed(() => {
+    const brand = this.brands.activeBrand();
+    const credits = this.credits.credits();
+    if (!brand || !credits || this.auth.viewingAs()) return null;
+    const plan = SUBSCRIPTION_PLANS[credits.plan].name;
+    if (credits.blocked === 'PLAN_REQUIRED') {
+      return { kind: 'plan' as const, text: this.i18n.t('shell.billing.plan', { brand: brand.name }), action: this.i18n.t('shell.billing.planAction', { plan }) };
+    }
+    if (credits.blocked === 'NO_CREDITS') {
+      return { kind: 'credits' as const, text: this.i18n.t('shell.billing.credits', { brand: brand.name }), action: this.i18n.t('shell.billing.creditsAction') };
+    }
+    if (credits.subscription?.status === 'past_due' || credits.subscription?.status === 'on_hold') {
+      return { kind: 'card' as const, text: this.i18n.t('shell.billing.pastDue', { brand: brand.name }), action: this.i18n.t('shell.billing.pastDueAction') };
+    }
+    return null;
+  });
+
+  protected billingAction(kind: 'plan' | 'credits' | 'card'): void {
+    const brandId = this.brands.activeBrand()?.id;
+    const plan = this.credits.credits()?.plan;
+    if (!brandId || !plan) return;
+    if (kind === 'plan') void this.billing.activatePlan(brandId, plan);
+    else if (kind === 'credits') void this.billing.buyTopup(brandId);
+    else void this.billing.openPortal(brandId);
+  }
+
   protected readonly lostBanner = computed(() => {
     const brand = this.brands.activeBrand();
     const lost = brand?.lostChannels ?? [];

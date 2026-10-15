@@ -310,7 +310,7 @@ export const it = {
     faqTitle: 'Domande frequenti',
     faq: [
       { q: 'Cos’è un credito?', a: 'È l’unità con cui misuriamo il lavoro dell’AI: scrivere, generare immagini, montare un video. Ogni azione consuma i crediti che costa davvero e nello studio vedi sempre quanti te ne restano.' },
-      { q: 'Quanti crediti servono per un post o un video?', a: 'Dipende da quanto ci lavori. In media un post richiede circa 100 crediti, un carosello 130, un video tra 180 e 300 (di più se contiene clip generate). Ogni ritocco in chat ne usa circa 40.' },
+      { q: 'Quanti crediti servono per un post o un video?', a: 'Dipende da quanto ci lavori. Una prima bozza costa poco, circa 100 crediti per un post; un contenuto finito, con i ritocchi in chat (circa 40 l’uno) e le immagini o le clip generate, arriva in media a 200 crediti per un post, 250 per un carosello e 400 per un video. Le quantità indicate nei piani sono calcolate con questi numeri.' },
       { q: 'Il piano vale per tutti i miei brand?', a: 'No, ogni brand ha il suo piano e i suoi crediti. Così un’agenzia sceglie il piano giusto per ciascun cliente.' },
       { q: 'E se finisco i crediti?', a: 'Puoi aggiungere {topup} crediti a {topupPrice} ({topupUltra} con Ultra) oppure passare al piano superiore.' },
       { q: 'I crediti non usati restano?', a: 'I crediti del piano valgono per il mese in corso e ripartono da capo a ogni rinnovo. Quelli comprati con una ricarica non scadono a fine mese: restano sul brand e si usano finché il piano è attivo.' },
