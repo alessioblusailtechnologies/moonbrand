@@ -61,6 +61,9 @@ const schema = z.object({
   EMAIL_SECRET: optional,
   // Le email che aprono /admin nello studio (utenze, consumi, lavori), separate da virgola; vuoto: nessuno.
   ADMIN_EMAILS: optional,
+  // Le utenze con il piano Ultra in omaggio (niente pagamento, i crediti del piano ogni mese su ogni brand), separate da
+  // virgola; vuoto: nessuna.
+  FREE_ULTRA_EMAILS: optional,
   // Il codice del worker (moonbrand-ai), da cui la sezione Prompt dell'admin legge i prompt; vuoto: quello accanto all'API.
   AI_DIR: optional,
 });

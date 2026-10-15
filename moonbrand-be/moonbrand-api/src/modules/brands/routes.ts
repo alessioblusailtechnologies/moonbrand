@@ -5,6 +5,7 @@ import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
 
 import type { Config } from '../../config';
 import type { DodoApi } from '../billing/dodo-api';
+import { freePlanError, isFreeUltra } from '../billing/free-plan';
 import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
@@ -94,6 +95,7 @@ export function registerBrandRoutes(
     const { brandId } = brandParams.parse(request.params);
     const { plan } = updateBrandPlanSchema.parse(request.body);
     const owned = await ownedBrand(pool, request.identity, brandId);
+    if (isFreeUltra(owned.email)) throw freePlanError();
     if (liveSubscription(owned) && owned.subscription_id && owned.plan) {
       if (owned.plan !== plan) {
         const catalog = await dodo.catalog();

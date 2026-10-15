@@ -3,6 +3,7 @@ import { DEFAULT_SUBSCRIPTION_PLAN, SUBSCRIPTION_PLANS, type SubscriptionPlanId 
 
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
+import { isFreeUltra } from '../billing/free-plan';
 
 // I crediti di un brand, dal registro dei movimenti (migration credits) che scalano i trigger. Piani e crediti sono per
 // brand (migration brand_credits); senza brandId vale il brand attivo.
@@ -11,20 +12,22 @@ import { ApiError } from '../../errors';
 //   corso (un rinnovo non ancora pagato, l'abbonamento finito, i secondi prima del primo pagamento) restano solo le
 //   ricariche: niente crediti regalati.
 // - Un brand che non ha mai avuto l'abbonamento conta come prima, a mese di calendario a Roma: i crediti del piano scelto
-//   più quelli aggiunti nel mese dall'admin. Con BILLING_ENFORCED è comunque fermo finché non attiva un piano.
+//   più quelli aggiunti nel mese dall'admin. Con BILLING_ENFORCED è comunque fermo finché non attiva un piano, a meno
+//   che l'utenza abbia il piano Ultra in omaggio (free-plan.ts): allora il piano è Ultra e conta come un abbonamento
+//   attivo senza pagamento.
 export async function brandCredits(db: Queryable, accountId: string, brandId: string | null): Promise<CreditsResponse> {
   const subscription = await brandSubscription(db, accountId, brandId);
   if (subscription) {
     const paid = await paidCredits(db, accountId, brandId, subscription);
     return { ...paid, subscription, blocked: blockOf(subscription, paid.remaining) };
   }
-  const { rows } = await db.query<{ plan: SubscriptionPlanId | null; used: string; added: string; renews_on: string }>(
+  const { rows } = await db.query<{ plan: SubscriptionPlanId | null; email: string; used: string; added: string; renews_on: string }>(
     `with month as (select date_trunc('month', now() at time zone 'Europe/Rome') as start),
           brand as (
             select b.id, b.plan from presenza.brands b
             where b.id = coalesce($2::uuid, (select a.active_brand_id from presenza.accounts a where a.id = $1))
           )
-     select (select plan from brand) as plan,
+     select (select plan from brand) as plan, (select email from presenza.accounts where id = $1) as email,
        coalesce(-sum(m.amount) filter (where m.amount < 0 and m.created_at >= month.start at time zone 'Europe/Rome'), 0) as used,
        coalesce(sum(m.amount) filter (where m.amount > 0 and m.kind = 'topup' and m.created_at >= month.start at time zone 'Europe/Rome'), 0) as added,
        to_char(month.start + interval '1 month', 'YYYY-MM-DD') as renews_on
@@ -32,11 +35,13 @@ export async function brandCredits(db: Queryable, accountId: string, brandId: st
      group by month.start`,
     [accountId, brandId],
   );
-  const plan = rows[0].plan ?? DEFAULT_SUBSCRIPTION_PLAN;
+  const free = isFreeUltra(rows[0].email);
+  const plan = free ? 'ultra' : (rows[0].plan ?? DEFAULT_SUBSCRIPTION_PLAN);
   const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits + Math.round(Number(rows[0].added));
   const usedThisMonth = Math.round(Number(rows[0].used));
   const remaining = monthlyCredits - usedThisMonth;
-  return { plan, monthlyCredits, usedThisMonth, remaining, renewsOn: rows[0].renews_on, subscription, blocked: blockOf(subscription, remaining) };
+  const granted: BrandSubscription | null = free ? { plan: 'ultra', status: 'active', periodEnd: null, cancelsAt: null, free: true } : null;
+  return { plan, monthlyCredits, usedThisMonth, remaining, renewsOn: rows[0].renews_on, subscription: granted, blocked: blockOf(granted, remaining) };
 }
 
 // I crediti pagati. Ogni periodo ha i crediti del suo piano (l'ultimo movimento plan del periodo: un passaggio di piano a

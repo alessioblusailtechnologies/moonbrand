@@ -6,6 +6,7 @@ import { DEFAULT_LOCALE, type Locale } from '@moonbrand/shared/i18n/locales';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
+import { isFreeUltra } from '../billing/free-plan';
 import type { Mailer } from '../email/mailer';
 import { confirmEmail as confirmTemplate, resetEmail, welcomeEmail } from '../email/templates';
 import { accountEmail, claimEmail, confirmEmail, createAccount, findAccount, findAccountIdByEmail, recordSignIn, setLocale } from './accounts';
@@ -23,7 +24,8 @@ export interface AuthMail {
   log: FastifyBaseLogger;
 }
 
-const publicAccount = ({ id, email, name, locale, emailConfirmed }: Account): Account => ({ id, email, name, locale, emailConfirmed });
+// freePlan: l'utenza con il piano Ultra in omaggio (free-plan.ts), per cui lo studio non propone pagamenti.
+const publicAccount = ({ id, email, name, locale, emailConfirmed }: Account): Account => ({ id, email, name, locale, emailConfirmed, freePlan: isFreeUltra(email) });
 
 // Le email partono senza farsi aspettare: chi si registra entra subito, e chi chiede la password non capisce dal
 // tempo di risposta se l'indirizzo ha un account.

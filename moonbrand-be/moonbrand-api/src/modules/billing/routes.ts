@@ -9,6 +9,7 @@ import type { Config } from '../../config';
 import { type Identity, withIdentity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import { type DodoApi, LIVE_STATUSES } from './dodo-api';
+import { freePlanError, isFreeUltra } from './free-plan';
 
 // I pagamenti dallo studio, con Dodo Payments. Il checkout è una pagina di Dodo: qui si decide cosa comprare (il prodotto
 // del catalogo) e per chi (brand e utenza nei metadata, il cliente Dodo se c'è già), e lo studio ci manda il browser. Lo
@@ -63,6 +64,7 @@ export function registerBillingRoutes(app: FastifyInstance, pool: pg.Pool, dodo:
   app.post('/v1/billing/checkout', async (request): Promise<CheckoutResponse> => {
     const { brandId, kind, plan } = checkoutSchema.parse(request.body);
     const owned = await ownedBrand(pool, request.identity, brandId);
+    if (isFreeUltra(owned.email)) throw freePlanError();
     const catalog = await dodo.catalog();
     let productId: string;
     if (kind === 'plan') {
@@ -99,6 +101,7 @@ export function registerBillingRoutes(app: FastifyInstance, pool: pg.Pool, dodo:
   app.post('/v1/billing/plan-preview', async (request): Promise<PlanPreviewResponse> => {
     const { brandId, plan } = previewSchema.parse(request.body);
     const owned = await ownedBrand(pool, request.identity, brandId);
+    if (isFreeUltra(owned.email)) throw freePlanError();
     if (!liveSubscription(owned) || !owned.subscription_id || !owned.plan) {
       throw ApiError.conflict('NO_SUBSCRIPTION', 'Questo brand non ha ancora un piano attivo.');
     }
@@ -111,6 +114,7 @@ export function registerBillingRoutes(app: FastifyInstance, pool: pg.Pool, dodo:
   app.post('/v1/billing/portal', async (request): Promise<BillingPortalResponse> => {
     const { brandId } = brandSchema.parse(request.body);
     const owned = await ownedBrand(pool, request.identity, brandId);
+    if (isFreeUltra(owned.email)) throw freePlanError();
     if (!owned.customer_id || !owned.subscription_id) throw ApiError.conflict('NO_SUBSCRIPTION', 'Questo brand non ha ancora un piano attivo.');
     return { url: await dodo.portal(owned.customer_id, new URL('/impostazioni', settings.STUDIO_URL).toString()) };
   });

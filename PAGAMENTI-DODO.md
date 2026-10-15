@@ -220,7 +220,7 @@ fatto Paddle.
   Payments» (il campo è unico per tutte le lingue: salvare una lingua e poi risalvare le altre).
 - [x] iubenda, privacy: togliere Paddle, aggiungere Dodo Payments (Gestione dei pagamenti).
 - [x] `TERMINI-IUBENDA.md`: aggiornare.
-- [ ] Deploy del sito (`npm run deploy` in `moonbrand-website`).
+- [x] Deploy del sito (`npm run deploy` in `moonbrand-website`): fatto il 15/10 sera, online senza Paddle.
 
 ## 4. Produzione (dopo l'ok di Dodo e le prove)
 
@@ -231,12 +231,18 @@ fatto Paddle.
 - [x] Endpoint dei webhook live (15/10 sera, via SDK): `ep_3KkK87KW1f4vW8QR4GiCwGJrNDJ` →
   `https://studio.moonbrand.app/v1/webhooks/dodo`, stessi 13 eventi di quello di test; la chiave di firma va nel `.env`
   di prod come `DODO_PAYMENTS_WEBHOOK_KEY`.
-- [ ] Migration in prod (procedura in `OPERAZIONI.md`), `.env` dell'API con le chiavi live e `BILLING_ENFORCED=false`
-  (le due cose insieme le fa lo script `prod_dodo.sh` preparato il 15/10 sera, da lanciare dal PC di sviluppo), poi
-  merge di `collaudo` su `master` e `bash deploy.sh`.
+- [x] Migration in prod, `.env` dell'API con le chiavi live e `BILLING_ENFORCED=false` (15/10 sera, script
+  `prod_dodo.sh` lanciato dall'utente), merge di `collaudo` su `master` (`0a68ed6`) e `bash deploy.sh`: in produzione
+  dal 15/10 sera. Il worker in prod resta `moonbrand-ai`; le cartelle del motore nuovo sono su master ma non girano.
 - [ ] Prova con una carta vera e rimborso.
-- [ ] Regola per i clienti di oggi senza piano (avviso con una data, piano regalato dall'admin), poi
-  `BILLING_ENFORCED=true`.
+- [ ] Blocco acceso: `BILLING_ENFORCED=true` nel `.env` di prod e riavvio dell'API. Deciso il 15/10 sera: nessun avviso con
+  una data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. Le utenze
+  particolari hanno il **piano Ultra in omaggio**: `FREE_ULTRA_EMAILS` (email separate da virgola, come `ADMIN_EMAILS`),
+  codice in `billing/free-plan.ts`. Per loro ogni brand conta come un abbonamento Ultra attivo senza pagamento (15.000
+  crediti al mese di calendario, più quelli dell'admin), `GET /v1/me` dice `freePlan: true`, lo studio salta il passo
+  del piano nell'onboarding, mostra «In omaggio · Ultra senza pagamento» nelle Impostazioni brand senza cambio piano né
+  portale, e checkout, cambio piano, ricariche e portale rispondono 409 `FREE_PLAN`. Un brand di quelle utenze con un
+  abbonamento vero su Dodo resta pagato. Cambiare la lista vuol dire cambiare il `.env` e riavviare l'API.
 
 ## Se Dodo dice di no
 
