@@ -302,7 +302,7 @@ export const en: Copy = {
     faqTitle: 'Frequently asked questions',
     faq: [
       { q: 'What is a credit?', a: 'It’s the unit we use to measure the AI’s work: writing, generating images, editing a video. Each action uses the credits it really costs, and in the studio you always see how many you have left.' },
-      { q: 'How many credits does a post or a video take?', a: 'It depends on how much you work on it. On average a post takes about 100 credits, a carousel 130, a video between 180 and 300 (more with generated clips). Each tweak in the chat uses about 40.' },
+      { q: 'How many credits does a post or a video take?', a: 'It depends on how much you work on it. A first draft costs little, about 100 credits for a post; a finished piece, with the tweaks in the chat (about 40 each) and the generated images or clips, comes to an average of 200 credits for a post, 250 for a carousel and 400 for a video. The amounts shown in the plans are calculated with these figures.' },
       { q: 'Does the plan cover all my brands?', a: 'No, each brand has its own plan and credits. That way an agency picks the right plan for each client.' },
       { q: 'What if I run out of credits?', a: 'You can add {topup} credits for {topupPrice} ({topupUltra} on Ultra) or move to the next plan up.' },
       { q: 'Do unused credits carry over?', a: 'Plan credits are valid for the current month and reset at each renewal. Credits bought with a top-up don’t expire at the end of the month: they stay on the brand and can be used as long as the plan is active.' },
