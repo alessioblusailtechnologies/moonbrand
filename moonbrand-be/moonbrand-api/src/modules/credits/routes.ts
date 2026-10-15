@@ -78,7 +78,7 @@ const usageSchema = z.object({
 interface MovementRow {
   id: string;
   amount: string;
-  kind: 'claude' | 'generation' | 'plan' | 'topup' | 'adjustment';
+  kind: 'claude' | 'generation' | 'plan' | 'topup' | 'refund' | 'dispute';
   job_id: string | null;
   created_at: Date;
   task: string | null;

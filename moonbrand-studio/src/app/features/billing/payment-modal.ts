@@ -5,7 +5,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Icon } from '../../ui/icon';
 import { Loader } from '../../ui/loader';
 
-// L'esito di un pagamento, al centro dello studio: il loader mentre Paddle conferma (il webhook porta piano e crediti),
+// L'esito di un pagamento, al centro dello studio: il loader mentre Dodo Payments conferma (il webhook porta piano e crediti),
 // poi il piano attivo o i crediti aggiunti, con quanti crediti ci sono e fino a quando. Mentre aspetta non si chiude.
 @Component({
   selector: 'mb-payment-modal',

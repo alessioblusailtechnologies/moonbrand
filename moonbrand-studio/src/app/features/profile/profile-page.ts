@@ -239,7 +239,7 @@ export class ProfilePage {
   private readonly credits = inject(CreditsService);
   private readonly billing = inject(BillingService);
 
-  // Il piano del brand attivo, come lo dicono i suoi crediti, e lo stato del suo abbonamento su Paddle.
+  // Il piano del brand attivo, come lo dicono i suoi crediti, e lo stato del suo abbonamento su Dodo Payments.
   protected readonly plan = computed(() => {
     const credits = this.credits.credits();
     if (!credits) return null;
@@ -249,7 +249,7 @@ export class ProfilePage {
       id: credits.plan,
       summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly }),
       status: subscriptionStatusLine(this.i18n, credits.subscription),
-      warn: !subscriptionLive(credits.subscription) || status === 'past_due',
+      warn: !subscriptionLive(credits.subscription) || status === 'past_due' || status === 'on_hold',
       subscribed: subscriptionLive(credits.subscription),
     };
   });

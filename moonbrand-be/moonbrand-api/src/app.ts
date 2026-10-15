@@ -14,8 +14,8 @@ import type { AuthGateway } from './modules/auth/gateway';
 import { registerAuthRoutes } from './modules/auth/routes';
 import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
-import { PaddleApi } from './modules/billing/paddle-api';
-import { registerPaddleWebhook } from './modules/billing/paddle-webhook';
+import { DodoApi } from './modules/billing/dodo-api';
+import { registerDodoWebhook } from './modules/billing/dodo-webhook';
 import { registerBillingRoutes } from './modules/billing/routes';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
 import { registerBrandRoutes } from './modules/brands/routes';
@@ -51,10 +51,9 @@ export interface AppOptions {
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
-    | 'PADDLE_WEBHOOK_SECRET'
-    | 'PADDLE_API_KEY'
-    | 'PADDLE_ENV'
-    | 'PADDLE_CLIENT_TOKEN'
+    | 'DODO_PAYMENTS_API_KEY'
+    | 'DODO_PAYMENTS_WEBHOOK_KEY'
+    | 'DODO_PAYMENTS_ENV'
     | 'BILLING_ENFORCED'
     | 'STUDIO_ORIGINS'
     | 'SIMULATE_SOCIAL'
@@ -84,8 +83,8 @@ export function buildApp(options: AppOptions) {
   app.get('/v1/health', () => ({ ok: true }));
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
   enforceBilling(options.settings.BILLING_ENFORCED);
-  const paddle = new PaddleApi(options.settings);
-  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, paddle);
+  const dodo = new DodoApi(options.settings);
+  registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, dodo);
   registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
@@ -96,8 +95,8 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
-  registerPaddleWebhook(app, options.pool, paddle, options.settings);
-  registerBillingRoutes(app, options.pool, paddle, options.settings);
+  registerDodoWebhook(app, options.pool, dodo, options.settings);
+  registerBillingRoutes(app, options.pool, dodo, options.settings);
   registerWelcomeRoutes(app, options.pool);
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);

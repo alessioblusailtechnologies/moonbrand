@@ -4,8 +4,8 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { PlanPicker } from '../../plans/plan-picker';
 import { OnboardingStore } from '../onboarding.store';
 
-// Il piano del brand nuovo: parte da Pro, e si può cambiare dopo dalle Impostazioni brand. Il checkout di Paddle si apre
-// appena il brand è creato.
+// Il piano del brand nuovo: parte da Pro, e si può cambiare dopo dalle Impostazioni brand. La pagina di pagamento di Dodo
+// Payments si apre appena il brand è pronto.
 @Component({
   selector: 'mb-plan-step',
   changeDetection: ChangeDetectionStrategy.OnPush,

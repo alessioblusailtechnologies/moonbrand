@@ -217,9 +217,10 @@ export class Onboarding {
       this.creating.set(false);
       return;
     }
-    // Il checkout del piano si apre sopra la preparazione: si paga mentre nascono stile e prime idee. Chiuderlo non
-    // ferma niente: il piano si attiva dopo dalle Impostazioni brand.
-    void this.billing.activatePlan(brandId, plan);
+    // Creato il brand, il browser va subito alla pagina di pagamento di Dodo Payments e torna nella chat: stile e prime
+    // idee intanto si preparano sul server. Chi torna senza pagare attiva il piano dopo, dalle Impostazioni brand o dal
+    // banner. Se la pagina di pagamento non si apre, si resta qui a seguire la preparazione.
+    if (await this.billing.activatePlan(brandId, plan, '/assistente')) return;
     await this.prepare(jobs);
     await this.router.navigateByUrl('/assistente');
   }

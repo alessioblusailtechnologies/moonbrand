@@ -794,7 +794,7 @@ export class Shell {
     if (credits.blocked === 'NO_CREDITS') {
       return { kind: 'credits' as const, text: this.i18n.t('shell.billing.credits', { brand: brand.name }), action: this.i18n.t('shell.billing.creditsAction') };
     }
-    if (credits.subscription?.status === 'past_due') {
+    if (credits.subscription?.status === 'past_due' || credits.subscription?.status === 'on_hold') {
       return { kind: 'card' as const, text: this.i18n.t('shell.billing.pastDue', { brand: brand.name }), action: this.i18n.t('shell.billing.pastDueAction') };
     }
     return null;

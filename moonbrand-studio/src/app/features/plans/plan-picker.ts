@@ -6,7 +6,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 // I tre piani da scegliere, nell'onboarding e nelle Impostazioni brand: il prezzo IVA esclusa (in euro: chi paga in
-// un'altra valuta la vede nel checkout di Paddle), cosa ci sta in un mese, poi i crediti.
+// un'altra valuta la vede sulla pagina di pagamento di Dodo Payments), cosa ci sta in un mese, poi i crediti.
 // current: il piano che il brand ha già, se ne ha uno.
 @Component({
   selector: 'mb-plan-picker',

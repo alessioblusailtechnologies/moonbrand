@@ -13,9 +13,9 @@ import { lockPageScroll } from '../../ui/scroll-lock';
 import { ToastService } from '../../ui/toast';
 import { PlanPicker } from './plan-picker';
 
-// Il piano dalle Impostazioni brand. Senza abbonamento si attiva con il checkout di Paddle, che mostra lui gli importi.
-// Con l'abbonamento il cambio passa da una conferma con quanto si paga oggi e al rinnovo (l'anteprima di Paddle); poi
-// Paddle addebita o accredita la differenza e la modale dei pagamenti aspetta il piano nuovo.
+// Il piano dalle Impostazioni brand. Senza abbonamento si attiva sulla pagina di pagamento di Dodo Payments, che mostra
+// lei gli importi. Con l'abbonamento il cambio passa da una conferma con quanto si paga oggi e al rinnovo (l'anteprima di
+// Dodo); poi Dodo addebita la differenza e la modale dei pagamenti aspetta il piano nuovo.
 @Component({
   selector: 'mb-plan-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,14 +36,10 @@ import { PlanPicker } from './plan-picker';
               <span class="heading">{{ summary.today }}</span>
             }
           </div>
-          @if (summary.nextCredit) {
-            <p class="caption">{{ summary.nextCredit }}</p>
-          } @else if (summary.next) {
-            <div class="bill-row">
-              <span class="caption">{{ summary.nextLabel }}</span>
-              <span class="strong-sm">{{ summary.next }}</span>
-            </div>
-          }
+          <div class="bill-row">
+            <span class="caption">{{ summary.nextLabel }}</span>
+            <span class="strong-sm">{{ summary.next }}</span>
+          </div>
           <p class="caption">{{ summary.credits }}</p>
         </div>
         <p class="caption">{{ 'plans.confirm.taxes' | t }}</p>
@@ -144,7 +140,7 @@ export class PlanDialog {
   private readonly i18n = inject(I18nService);
   readonly brandId = input.required<string>();
   readonly current = input.required<SubscriptionPlanId>();
-  // Il brand ha un abbonamento vivo su Paddle.
+  // Il brand ha un abbonamento vivo su Dodo Payments.
   readonly subscribed = input(false);
   readonly closed = output<void>();
 
@@ -153,23 +149,21 @@ export class PlanDialog {
   protected readonly busy = signal(false);
   protected readonly preview = signal<PlanPreviewResponse | null>(null);
 
-  // La conferma del cambio: gli importi di Paddle, già con le tasse, nella valuta del cliente.
+  // La conferma del cambio: gli importi di Dodo nella valuta dell'abbonamento, oggi con le tasse e al rinnovo senza.
   protected readonly review = computed(() => {
     const preview = this.preview();
     if (!preview) return null;
     const intl = this.i18n.intl();
-    const money = (cents: string) => new Intl.NumberFormat(intl, { style: 'currency', currency: preview.currency }).format(Math.abs(Number(cents)) / 100);
-    const date = preview.nextAt ? new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(preview.nextAt)) : '';
-    const today = preview.today && Number(preview.today) > 0 ? money(preview.today) : null;
-    const credit = preview.next !== null && Number(preview.next) < 0;
+    const money = (cents: number) => new Intl.NumberFormat(intl, { style: 'currency', currency: preview.currency }).format(cents / 100);
+    const date = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(preview.nextAt));
+    const today = preview.today > 0 ? money(preview.today) : null;
     const to = SUBSCRIPTION_PLANS[this.picked()];
     return {
       from: this.i18n.t('plans.confirm.from', { from: SUBSCRIPTION_PLANS[this.current()].name, to: to.name }),
       todayLabel: this.i18n.t(today ? 'plans.confirm.today' : 'plans.confirm.todayNone'),
       today,
       nextLabel: this.i18n.t('plans.confirm.next', { date }),
-      next: preview.next !== null && !credit ? money(preview.next) : null,
-      nextCredit: credit && preview.next ? this.i18n.t('plans.confirm.nextCredit', { date, amount: money(preview.next) }) : null,
+      next: this.i18n.t('plans.confirm.nextAmount', { amount: money(preview.next) }),
       credits: preview.upgrade
         ? this.i18n.t('plans.confirm.creditsUp', { credits: to.monthlyCredits.toLocaleString(intl) })
         : this.i18n.t('plans.confirm.creditsDown'),
@@ -197,15 +191,11 @@ export class PlanDialog {
         this.busy.set(false);
         return;
       }
-      // Il piano scelto resta sul brand anche se il checkout si chiude senza pagare.
+      // Il piano scelto resta sul brand anche se dalla pagina di pagamento si torna senza pagare.
       if (plan !== this.current()) await this.brands.changePlan(brandId, plan);
       await this.credits.refresh();
-      if (!(await this.billing.activatePlan(brandId, plan))) {
-        this.busy.set(false);
-        return;
-      }
-      this.busy.set(false);
-      this.closed.emit();
+      // Il browser va alla pagina di pagamento: la modale resta occupata finché la pagina non cambia.
+      if (!(await this.billing.activatePlan(brandId, plan))) this.busy.set(false);
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t(this.subscribed() ? 'plans.confirm.previewFailed' : 'plans.activateFailed')));
       this.busy.set(false);

@@ -6,7 +6,7 @@ import { ApiError } from '../../errors';
 
 // I crediti di un brand, dal registro dei movimenti (migration credits) che scalano i trigger. Piani e crediti sono per
 // brand (migration brand_credits); senza brandId vale il brand attivo.
-// - Un brand con l'abbonamento Paddle (migration paddle), in qualunque stato, conta solo i crediti pagati: quelli del
+// - Un brand con l'abbonamento su Dodo Payments (migration dodo), in qualunque stato, conta solo i crediti pagati: quelli del
 //   piano del periodo in corso, che scadono a fine periodo, più le ricariche, che restano. Senza un periodo pagato in
 //   corso (un rinnovo non ancora pagato, l'abbonamento finito, i secondi prima del primo pagamento) restano solo le
 //   ricariche: niente crediti regalati.
@@ -96,8 +96,8 @@ async function brandSubscription(db: Queryable, accountId: string, brandId: stri
   return { plan: row.plan, status: row.status, periodEnd: row.period_end?.toISOString() ?? null, cancelsAt: row.cancels_at?.toISOString() ?? null };
 }
 
-// Il blocco dei lavori a pagamento: un brand lavora solo con un abbonamento vivo (anche mentre Paddle riprova un
-// pagamento non riuscito) e con crediti rimasti. Un lavoro già partito finisce anche se va un po' sotto zero. Si accende
+// Il blocco dei lavori a pagamento: un brand lavora solo con un abbonamento vivo (anche mentre un rinnovo non pagato
+// aspetta la carta nuova) e con crediti rimasti. Un lavoro già partito finisce anche se va un po' sotto zero. Si accende
 // con BILLING_ENFORCED: finché è spento (la produzione prima del lancio dei pagamenti) si conta soltanto.
 let enforced = false;
 
@@ -105,7 +105,7 @@ export function enforceBilling(on: boolean): void {
   enforced = on;
 }
 
-const SPENDING = new Set<SubscriptionStatus>(['active', 'trialing', 'past_due']);
+const SPENDING = new Set<SubscriptionStatus>(['active', 'past_due', 'on_hold']);
 
 function blockOf(subscription: BrandSubscription | null, remaining: number): SpendBlock | null {
   if (!enforced) return null;

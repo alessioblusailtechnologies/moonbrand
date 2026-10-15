@@ -4,7 +4,7 @@ import type pg from 'pg';
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
 
 import type { Config } from '../../config';
-import type { PaddleApi } from '../billing/paddle-api';
+import type { DodoApi } from '../billing/dodo-api';
 import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
@@ -39,7 +39,7 @@ export function registerBrandRoutes(
   files: BrandFiles,
   storage: MediaStorage,
   settings: Pick<Config, 'ZERNIO_API_KEY' | 'SIMULATE_SOCIAL'>,
-  paddle: PaddleApi,
+  dodo: DodoApi,
 ): void {
   app.get('/v1/brands', (request) => listBrands(pool, request.identity));
 
@@ -88,7 +88,7 @@ export function registerBrandRoutes(
     return brand;
   });
 
-  // Dalle Impostazioni brand. Con l'abbonamento il piano si cambia su Paddle e diventa del brand quando arriva il webhook;
+  // Dalle Impostazioni brand. Con l'abbonamento il piano si cambia su Dodo Payments e diventa del brand quando arriva il webhook;
   // senza, è solo la scelta del piano da attivare con il checkout.
   app.put('/v1/brands/:brandId/plan', async (request, reply) => {
     const { brandId } = brandParams.parse(request.params);
@@ -96,8 +96,8 @@ export function registerBrandRoutes(
     const owned = await ownedBrand(pool, request.identity, brandId);
     if (liveSubscription(owned) && owned.subscription_id && owned.plan) {
       if (owned.plan !== plan) {
-        const prices = await paddle.catalog();
-        await paddle.changePlan(owned.subscription_id, prices.plans[plan], isUpgrade(owned.plan, plan));
+        const catalog = await dodo.catalog();
+        await dodo.changePlan(owned.subscription_id, catalog.plans[plan], isUpgrade(owned.plan, plan));
       }
     } else {
       await changeBrandPlan(pool, request.identity, brandId, plan);
