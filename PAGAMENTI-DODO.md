@@ -237,7 +237,13 @@ fatto Paddle.
 - [x] Migration in prod, `.env` dell'API con le chiavi live e `BILLING_ENFORCED=false` (15/10 sera, script
   `prod_dodo.sh` lanciato dall'utente), merge di `collaudo` su `master` (`0a68ed6`) e `bash deploy.sh`: in produzione
   dal 15/10 sera. Il worker in prod resta `moonbrand-ai`; le cartelle del motore nuovo sono su master ma non girano.
-- [ ] Prova con una carta vera e rimborso.
+- [x] Prova con una carta vera (15/10 notte): abbonamento Start dall'onboarding con l'utenza genko7662@gmail.com e il
+  codice sconto live `PROVA99` (99%, un uso, poi archiviato): 1,82 € pagati, webhook in produzione, piano e crediti
+  arrivati, ricevuta con «Moonbrand.app». Niente rimborso: col saldo di 1,35 € Dodo lo avrebbe rifiutato (1 $ di
+  commissione per rimborso, scalato dal saldo disponibile); disdetta immediata fatta dal portale clienti. Dalla ricevuta
+  è emerso che l'email di supporto del brand era vuota (Dodo ripiegava su quella dell'account): messa `info@moonbrand.app`
+  dalla dashboard, il brand primario non si modifica via API. Le fatture hanno gli ID di Dodo (`inv_…`, `pay_…`), non una
+  numerazione progressiva: non è configurabile.
 - [x] Blocco acceso il 15/10 notte: `BILLING_ENFORCED=true` nel `.env` di prod, deploy `72b32f5`. Nessun avviso con una
   data; chi non ha un piano vede il banner «Attiva» e i lavori a pagamento si fermano finché non paga. In omaggio le
   cinque utenze di Alessio, Emanuele Pizzoleo e SunrAIse (lista nel `.env` di prod e in `dodo-prod-blocco.sh`). Le utenze
