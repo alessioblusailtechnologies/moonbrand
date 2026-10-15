@@ -73,15 +73,17 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
           <p class="caption">{{ 'profile.page.note' | t }}</p>
           <div class="panel rows">
             @if (plan(); as current) {
-              <button class="row-btn" type="button" (click)="changingPlan.set(true)">
+              <button class="row-btn" type="button" (click)="current.free || changingPlan.set(true)">
                 <mb-icon name="layers" [size]="18" class="row-icon" />
                 <span class="grow texts">
                   <span class="strong-sm">{{ 'plans.settingsRow' | t }}</span>
                   <span class="caption summary">{{ current.summary }}</span>
                   <span class="caption summary" [class.warn]="current.warn">{{ current.status }}</span>
                 </span>
-                <span class="edit caption">{{ 'common.edit' | t }}</span>
-                <mb-icon name="chevron-right" [size]="16" class="chevron" />
+                @if (!current.free) {
+                  <span class="edit caption">{{ 'common.edit' | t }}</span>
+                  <mb-icon name="chevron-right" [size]="16" class="chevron" />
+                }
               </button>
               @if (current.subscribed) {
                 <button class="row-btn" type="button" (click)="openPortal()">
@@ -250,7 +252,9 @@ export class ProfilePage {
       summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly }),
       status: subscriptionStatusLine(this.i18n, credits.subscription),
       warn: !subscriptionLive(credits.subscription) || status === 'past_due' || status === 'on_hold',
-      subscribed: subscriptionLive(credits.subscription),
+      // In omaggio: niente cambio di piano né portale dei pagamenti.
+      free: Boolean(credits.subscription?.free),
+      subscribed: subscriptionLive(credits.subscription) && !credits.subscription?.free,
     };
   });
 

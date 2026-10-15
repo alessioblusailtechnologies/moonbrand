@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import type { BillingPortalResponse, CheckoutRequest, CheckoutResponse, CreditsResponse, PlanPreviewResponse } from '@moonbrand/shared/api/contract';
+import type { ApiErrorBody, BillingPortalResponse, CheckoutRequest, CheckoutResponse, CreditsResponse, PlanPreviewResponse } from '@moonbrand/shared/api/contract';
 import { SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import { CreditsService } from '../credits/credits.service';
@@ -103,6 +103,8 @@ export class BillingService {
       window.location.assign(url);
       return true;
     } catch (error) {
+      // L'utenza con il piano Ultra in omaggio: niente da pagare, nessun avviso.
+      if (error instanceof HttpErrorResponse && (error.error as Partial<ApiErrorBody> | null)?.code === 'FREE_PLAN') return false;
       this.toast.show(errorMessage(error, this.i18n.t('plans.checkoutFailed')));
       return false;
     }

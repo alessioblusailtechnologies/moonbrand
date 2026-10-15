@@ -9,11 +9,12 @@ const ENDED = new Set(['cancelled', 'expired', 'failed']);
 export const subscriptionLive = (subscription: BrandSubscription | null): subscription is BrandSubscription =>
   Boolean(subscription && !ENDED.has(subscription.status));
 
-// Lo stato del piano di un brand, in una riga: da attivare, in attivazione, attivo fino al rinnovo, disdetto, pagamento
-// non riuscito.
+// Lo stato del piano di un brand, in una riga: da attivare, in omaggio, in attivazione, attivo fino al rinnovo, disdetto,
+// pagamento non riuscito.
 export function subscriptionStatusLine(i18n: I18nService, subscription: BrandSubscription | null): string {
   const date = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString(i18n.intl(), { day: 'numeric', month: 'long' }) : '');
   if (!subscription) return i18n.t('plans.status.none');
+  if (subscription.free) return i18n.t('plans.status.free');
   switch (subscription.status) {
     case 'pending':
       return i18n.t('plans.status.pending');

@@ -21,6 +21,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts} post, {carousels, plural, one {# carosello} other {# caroselli}} e {videos} video al mese',
     status: {
       none: 'Da attivare',
+      free: 'In omaggio · Ultra senza pagamento',
       pending: 'In attivazione',
       active: 'Attivo · si rinnova il {date}',
       past_due: 'Pagamento non riuscito: aggiorna la carta',
@@ -94,6 +95,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carousel} other {# carousels}} and {videos, plural, one {# video} other {# videos}} a month',
     status: {
       none: 'Not active yet',
+      free: 'Complimentary · Ultra, nothing to pay',
       pending: 'Activating',
       active: 'Active · renews on {date}',
       past_due: 'Payment failed: update your card',
@@ -167,6 +169,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carrousel} other {# carrousels}} et {videos, plural, one {# vidéo} other {# vidéos}} par mois',
     status: {
       none: 'À activer',
+      free: 'Offert · Ultra, rien à payer',
       pending: 'Activation en cours',
       active: 'Actif · renouvelé le {date}',
       past_due: 'Paiement refusé : mettez à jour votre carte',

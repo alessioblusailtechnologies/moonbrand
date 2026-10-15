@@ -15,6 +15,8 @@ export interface Account {
   name: string;
   locale: Locale;
   emailConfirmed: boolean;
+  // Il piano Ultra in omaggio (FREE_ULTRA_EMAILS dell'API): niente da pagare, lo studio non propone il checkout.
+  freePlan?: boolean;
 }
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.
@@ -708,6 +710,8 @@ export interface BrandSubscription {
   periodEnd: string | null;
   // La disdetta programmata: l'abbonamento resta attivo fino a questa data, ISO.
   cancelsAt: string | null;
+  // In omaggio: non è un abbonamento su Dodo Payments ma il piano Ultra regalato all'utenza; niente portale né cambi.
+  free?: boolean;
 }
 
 // plan: il piano da attivare su un brand che non ha ancora l'abbonamento; topup: una ricarica da 1.000 crediti.

@@ -144,6 +144,8 @@ export class Onboarding {
       untracked(() => this.page()?.nativeElement.scrollTo({ top: 0 }));
     });
     void this.brands.ensureLoaded();
+    // Con il piano Ultra in omaggio il passo del piano non serve: si parte dal tipo di brand.
+    if (this.auth.account()?.freePlan && this.store.step() === 'plan') this.store.next();
     // Il ritorno dalla pagina di accesso di un social, collegato dal passo dei canali: l'indirizzo (con i token) si
     // ripulisce subito, il canale entra nella bozza quando la bozza è arrivata dal server.
     const params = inject(ActivatedRoute).snapshot.queryParamMap;
@@ -207,7 +209,8 @@ export class Onboarding {
     const brandId = this.store.brandId();
     if (!draft || !brandId || this.creating()) return;
     this.creating.set(true);
-    const plan = this.store.plan();
+    const free = Boolean(this.auth.account()?.freePlan);
+    const plan = free ? 'ultra' : this.store.plan();
     let jobs: string[];
     try {
       jobs = (await this.brands.create(brandId, draft, this.store.selectedExamples(), plan)).setupJobs;
@@ -219,8 +222,8 @@ export class Onboarding {
     }
     // Creato il brand, il browser va subito alla pagina di pagamento di Dodo Payments e torna nella chat: stile e prime
     // idee intanto si preparano sul server. Chi torna senza pagare attiva il piano dopo, dalle Impostazioni brand o dal
-    // banner. Se la pagina di pagamento non si apre, si resta qui a seguire la preparazione.
-    if (await this.billing.activatePlan(brandId, plan, '/assistente')) return;
+    // banner. Se la pagina di pagamento non si apre, o il piano è in omaggio, si resta qui a seguire la preparazione.
+    if (!free && (await this.billing.activatePlan(brandId, plan, '/assistente'))) return;
     await this.prepare(jobs);
     await this.router.navigateByUrl('/assistente');
   }

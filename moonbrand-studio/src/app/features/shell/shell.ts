@@ -217,9 +217,11 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
           <div class="lost" role="alert">
             <mb-icon name="layers" [size]="18" />
             <span class="grow">{{ banner.text }}</span>
-            <button class="btn btn-primary btn-sm" type="button" [disabled]="billing.confirming()" (click)="billingAction(banner.kind)">
-              {{ banner.action }}
-            </button>
+            @if (banner.action) {
+              <button class="btn btn-primary btn-sm" type="button" [disabled]="billing.confirming()" (click)="billingAction(banner.kind)">
+                {{ banner.action }}
+              </button>
+            }
           </div>
         }
         <router-outlet />
@@ -792,6 +794,8 @@ export class Shell {
       return { kind: 'plan' as const, text: this.i18n.t('shell.billing.plan', { brand: brand.name }), action: this.i18n.t('shell.billing.planAction', { plan }) };
     }
     if (credits.blocked === 'NO_CREDITS') {
+      // Con il piano in omaggio non c'è una ricarica da comprare: i crediti tornano il primo del mese.
+      if (credits.subscription?.free) return { kind: 'credits' as const, text: this.i18n.t('shell.billing.creditsFree', { brand: brand.name }), action: null };
       return { kind: 'credits' as const, text: this.i18n.t('shell.billing.credits', { brand: brand.name }), action: this.i18n.t('shell.billing.creditsAction') };
     }
     if (credits.subscription?.status === 'past_due' || credits.subscription?.status === 'on_hold') {

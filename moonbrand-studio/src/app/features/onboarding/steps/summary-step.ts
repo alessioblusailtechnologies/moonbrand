@@ -4,6 +4,7 @@ import type { BrandDraft, SectionKey } from '@moonbrand/shared/domain/brand';
 import { ONBOARDING_SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary } from '@moonbrand/shared/domain/sections';
 import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
@@ -27,14 +28,16 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)
           <mb-icon name="chevron-right" [size]="16" class="chevron" />
         </button>
       }
-      <button class="row-btn" type="button" (click)="editPlan()">
-        <span class="dot" style="background: var(--mint-400)"></span>
-        <span class="grow texts">
-          <span class="strong-sm">{{ 'plans.summaryRow' | t }}</span>
-          <span class="caption">{{ plan() }}</span>
-        </span>
-        <mb-icon name="chevron-right" [size]="16" class="chevron" />
-      </button>
+      @if (!free()) {
+        <button class="row-btn" type="button" (click)="editPlan()">
+          <span class="dot" style="background: var(--mint-400)"></span>
+          <span class="grow texts">
+            <span class="strong-sm">{{ 'plans.summaryRow' | t }}</span>
+            <span class="caption">{{ plan() }}</span>
+          </span>
+          <mb-icon name="chevron-right" [size]="16" class="chevron" />
+        </button>
+      }
     </div>
     <p class="caption">{{ 'onboarding.summary.hint' | t }}</p>
   `,
@@ -83,6 +86,10 @@ const STATUS_COLOR = { complete: 'var(--mint-400)', partial: 'var(--accent-soft)
 export class SummaryStep {
   private readonly store = inject(OnboardingStore);
   private readonly i18n = inject(I18nService);
+  private readonly auth = inject(AuthService);
+
+  // Con il piano Ultra in omaggio il piano non si sceglie: la riga non compare.
+  protected readonly free = computed(() => Boolean(this.auth.account()?.freePlan));
   readonly draft = input.required<BrandDraft>();
 
   protected readonly rows = computed(() => {
