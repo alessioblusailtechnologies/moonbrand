@@ -81,6 +81,17 @@ e GBP, IVA esclusa, `saas`; piani mensili con durata 10 anni):
 | Ricarica 1.000 crediti | `pdt_0NpfEfu9zBdtErVafssZn` | 50 / 59 / 45 | `kind: topup`, `credits: 1000`, `tier: standard` |
 | Ricarica 1.000 crediti (Ultra) | `pdt_0NpfEg4W8jwBWhK3BVWiB` | 40 / 45 / 35 | `kind: topup`, `credits: 1000`, `tier: ultra` |
 
+**Catalogo live creato il 15/10 sera** (stesso script, chiave live `DODO_PAYMENTS_LIVE_API_KEY` nel `.env` di sviluppo,
+brand «Moonbrand.app» verificato; gli ID non servono in configurazione, l'API li riconosce dai `metadata`):
+
+| Prodotto | ID live | EUR / USD / GBP |
+|---|---|---|
+| Moonbrand Start | `pdt_0NpobyF1kpgrXOdR23uEh` | 149 / 169 / 129 |
+| Moonbrand Pro | `pdt_0NpobyNrS27a46fwPWQp0` | 299 / 339 / 259 |
+| Moonbrand Ultra | `pdt_0NpobydrOtnDx3tEjLwol` | 599 / 679 / 519 |
+| Ricarica 1.000 crediti | `pdt_0NpobynShmctQp9JtedQi` | 50 / 59 / 45 |
+| Ricarica 1.000 crediti (Ultra) | `pdt_0NpobywbI4q86mODSYtsI` | 40 / 45 / 35 |
+
 Webhook di test `ep_3KeJyXX9BLIMF1zrQqKMIONT2lg` → `https://collaudo-api.moonbrand.app/v1/webhooks/dodo` (tunnel verso
 l'API locale), eventi del punto sotto. Chiave API, ambiente e chiave di firma sono nel `.env` dell'API
 (`DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_ENV=test_mode`, `DODO_PAYMENTS_WEBHOOK_KEY`).
@@ -213,15 +224,16 @@ fatto Paddle.
 
 ## 4. Produzione (dopo l'ok di Dodo e le prove)
 
-- [ ] Catalogo live: tre prodotti in abbonamento mensile (Start, Pro, Ultra) e le due ricariche, `tax_category: saas`,
-  IVA esclusa, stessi `metadata`; durata dell'abbonamento lunga (per esempio 10 anni), altrimenti scade dopo un
-  addebito.
+- [x] Catalogo live (15/10 sera, tabella al punto 1): tre prodotti in abbonamento mensile (Start, Pro, Ultra) e le due
+  ricariche, `tax_category: saas`, IVA esclusa, stessi `metadata`, durata 10 anni, prezzi fissi in USD e GBP.
 - [ ] Portale clienti: disdetta a fine periodo e cambio carta; il cambio piano passa dallo studio (Allow Subscription
   Updates spento).
-- [ ] Endpoint dei webhook live: `https://studio.moonbrand.app/v1/webhooks/dodo` con gli eventi del punto 2; copiare
-  la chiave di firma.
-- [ ] Migration in prod (procedura in `OPERAZIONI.md`), `.env` dell'API con le chiavi live e `BILLING_ENFORCED=false`,
-  merge di `collaudo` su `master`, `bash deploy.sh`.
+- [x] Endpoint dei webhook live (15/10 sera, via SDK): `ep_3KkK87KW1f4vW8QR4GiCwGJrNDJ` →
+  `https://studio.moonbrand.app/v1/webhooks/dodo`, stessi 13 eventi di quello di test; la chiave di firma va nel `.env`
+  di prod come `DODO_PAYMENTS_WEBHOOK_KEY`.
+- [ ] Migration in prod (procedura in `OPERAZIONI.md`), `.env` dell'API con le chiavi live e `BILLING_ENFORCED=false`
+  (le due cose insieme le fa lo script `prod_dodo.sh` preparato il 15/10 sera, da lanciare dal PC di sviluppo), poi
+  merge di `collaudo` su `master` e `bash deploy.sh`.
 - [ ] Prova con una carta vera e rimborso.
 - [ ] Regola per i clienti di oggi senza piano (avviso con una data, piano regalato dall'admin), poi
   `BILLING_ENFORCED=true`.
