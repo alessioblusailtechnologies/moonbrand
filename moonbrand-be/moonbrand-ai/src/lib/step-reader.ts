@@ -3,15 +3,13 @@ import { query, type SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
-import { languageName } from './language';
-
 // Gli step che la tabella di moonbrand-shared non sa tradurre (Bash, Read, i tool nuovi, il testo che Claude si scrive
 // tra un passaggio e l'altro) li legge Haiku, sullo stesso login di Claude Code. Una sessione per job: il contesto ha
 // solo i passaggi di quel job, e il processo parte con il job, così alla prima richiesta è già pronto. Le richieste
 // che arrivano mentre Haiku risponde partono tutte insieme alla volta dopo.
 
 // null: lo step non dice niente a chi aspetta e non si mostra.
-export type StepReading = { label: string; detail?: string } | null;
+export type StepReading = { label: string } | null;
 
 export interface StepRequest {
   tool: string;
@@ -29,38 +27,50 @@ export interface StepReader {
 const MAX_STRING = 200;
 const MAX_INPUT = 600;
 const MAX_LABEL = 60;
-const MAX_DETAIL = 60;
 const CACHE_SIZE = 500;
 // Se nella risposta resta qualcosa di tecnico (percorsi, file e cartelle, nomi di tool, di servizi e di modelli, misure,
-// id) la lettura si butta: senza label lo step prende quella di riserva, senza detail resta la sola label.
+// id) la lettura si butta e lo step prende l'etichetta di riserva.
 const TECHNICAL =
-  /[\\/]|\.(md|json|ts|js|mjs|tsx|html|css|png|jpe?g|webp|mp4|mp3|wav|txt|sh)\b|mcp__|_[a-z]|\d+x\d+|\w-\d|\b[a-f0-9]{8,}\b|\b(bash|grep|glob|npm|npx|node|curl|ffmpeg|remotion|json|tool|lambda|aws|gemini|elevenlabs|atlas|kling|omni|zernio|mureka|claude|anthropic|haiku|sonnet|opus|chrome|cartell[ae]|file|folder)\b/i;
+  /[\\/]|\.(md|json|ts|js|mjs|tsx|html|css|png|jpe?g|webp|mp4|mp3|wav|txt|sh)\b|mcp__|_[a-z]|\d+x\d+|\w-\d|\b[a-f0-9]{8,}\b|\b(bash|grep|glob|npm|npx|node|curl|ffmpeg|remotion|json|tool|lambda|aws|gemini|elevenlabs|atlas|kling|omni|zernio|mureka|claude|anthropic|haiku|sonnet|opus|chrome|cartell[ae]|file|folder|fichiers?|dossiers?)\b/i;
 
-const PROMPT = `Traduci i passaggi di un agente che prepara i social di un brand in righe per il cliente, che le vede scorrere mentre aspetta.
+// Un prompt per lingua, scritto per intero nella lingua di chi aspetta, esempi compresi. Con il prompt in italiano e una
+// riga «scrivi in inglese» in coda Haiku rispondeva comunque in italiano (misurato il 16/10 su un job vero: 20 letture su
+// 20); con il prompt nella lingua, 20 su 20 giuste. Niente detail: era quasi sempre una ripetizione della label.
+const PROMPTS: Record<Locale, string> = {
+  it: `Traduci i passaggi di un agente che prepara i social di un brand in righe per il cliente, che le vede scorrere mentre aspetta.
 
 Ti arriva un array JSON di passaggi: id, tool (lo strumento usato; "testo" è quello che l'agente si scrive tra un passaggio e l'altro) e input.
-Rispondi solo con un array JSON, un oggetto per ogni id, senza altro testo: {"id": "...", "label": "...", "detail": "..."} oppure {"id": "...", "hide": true}.
+Rispondi solo con un array JSON, un oggetto per ogni id, senza altro testo: {"id": "...", "label": "..."} oppure {"id": "...", "hide": true}.
 
 - label: cosa sta facendo, in prima persona singolare, al presente, al massimo 7 parole, senza punto finale. Per esempio: «Rileggo la voce del brand», «Guardo le foto che mi hai mandato», «Cerco i colori nel codice del sito», «Ripasso come si scrive un carosello», «Monto il video», «Controllo le immagini finali».
-- detail: quasi sempre assente. Solo se aggiunge qualcosa che il cliente capisce (il nome di una pagina, cosa sta cercando, quante slide), al massimo 60 caratteri; mai sigle, codici, formati, misure o nomi di file.
 - Mai percorsi, cartelle, file, estensioni, comandi, codice, nomi di strumenti, di modelli o di servizi (anche quelli che leggi nei comandi, come Lambda, Gemini o Remotion), termini tecnici inglesi. Il lavoro si dice con parole da cliente: «Esporto i video finali», non dove o con cosa.
 - hide: true per i passaggi che al cliente non dicono niente: creare cartelle, installare, controllare che un file ci sia, organizzarsi il lavoro, riprovare la stessa cosa, e il testo che non dice cosa sta per fare (saluti, resoconti, conferme).
 - Per il testo dell'agente la label è quello che sta per fare, detto in breve («Scrivo il post»).
 - I passaggi arrivano in ordine: usa quelli già visti per capire il filo. Se un passaggio continua lo stesso lavoro del precedente con la stessa label, hide.
-- Non inventare: se non si capisce cosa fa, «Preparo il materiale».`;
+- Non inventare: se non si capisce cosa fa, «${translate('it', 'steps.fallback')}».`,
+  en: `Turn the steps of an agent preparing a brand's social media into lines for the customer, who watches them scroll by while waiting.
 
-// Le righe sono per chi aspetta, nella lingua del suo account: gli esempi qui sopra restano in italiano.
-const STYLE: Record<Exclude<Locale, 'it'>, string> = {
-  en: 'con il gerundio e senza soggetto, come «Rereading the brand voice», «Looking at the photos you sent», «Editing the video»',
-  fr: 'in prima persona, al presente e dando del vous, come «Je relis la voix de la marque», «Je regarde les photos que vous avez envoyées», «Je monte la vidéo»',
+You receive a JSON array of steps: id, tool (the tool used; "testo" is what the agent writes to itself between one step and the next) and input. The agent works in Italian: its text, commands and file names are Italian.
+Reply only with a JSON array, one object per id, no other text: {"id": "...", "label": "..."} or {"id": "...", "hide": true}.
+
+- label: what it is doing, in English, with the gerund and no subject, at most 7 words, no full stop. For example: "Rereading the brand voice", "Looking at the photos you sent", "Looking for the colours in the site code", "Reviewing how to write a carousel", "Editing the video", "Checking the final images".
+- Never paths, folders, files, extensions, commands, code, names of tools, models or services (even those you read in commands, such as Lambda, Gemini or Remotion), technical terms. Say the work in the customer's words: "Exporting the final videos", not where or with what.
+- hide: true for steps that mean nothing to the customer: creating folders, installing, checking that a file exists, organising the work, retrying the same thing, and text that does not say what it is about to do (greetings, reports, confirmations).
+- For the agent's text the label is what it is about to do, in short ("Writing the post").
+- The steps arrive in order: use the ones already seen to follow the thread. If a step continues the same work as the previous one with the same label, hide.
+- Do not make things up: if it is not clear what it does, "${translate('en', 'steps.fallback')}".`,
+  fr: `Transformez les étapes d'un agent qui prépare les réseaux sociaux d'une marque en lignes pour le client, qui les voit défiler pendant qu'il attend.
+
+Vous recevez un tableau JSON d'étapes : id, tool (l'outil utilisé ; « testo » est ce que l'agent s'écrit entre une étape et la suivante) et input. L'agent travaille en italien : son texte, ses commandes et les noms de fichiers sont en italien.
+Répondez uniquement avec un tableau JSON, un objet par id, sans autre texte : {"id": "...", "label": "..."} ou {"id": "...", "hide": true}.
+
+- label : ce qu'il est en train de faire, en français, à la première personne, au présent, en vouvoyant le client, 7 mots au maximum, sans point final. Par exemple : « Je relis la voix de la marque », « Je regarde les photos que vous avez envoyées », « Je cherche les couleurs dans le code du site », « Je revois comment écrire un carrousel », « Je monte la vidéo », « Je vérifie les images finales ».
+- Jamais de chemins, dossiers, fichiers, extensions, commandes, code, noms d'outils, de modèles ou de services (même ceux lus dans les commandes, comme Lambda, Gemini ou Remotion), ni de termes techniques. Le travail se dit avec les mots du client : « J'exporte les vidéos finales », pas où ni avec quoi.
+- hide : true pour les étapes qui ne disent rien au client : créer des dossiers, installer, vérifier qu'un fichier existe, s'organiser, réessayer la même chose, et le texte qui ne dit pas ce qu'il va faire (salutations, comptes rendus, confirmations).
+- Pour le texte de l'agent, le label est ce qu'il va faire, en bref (« J'écris la publication »).
+- Les étapes arrivent dans l'ordre : servez-vous de celles déjà vues pour suivre le fil. Si une étape continue le même travail que la précédente avec le même label, hide.
+- N'inventez rien : si l'on ne comprend pas ce qu'il fait, « ${translate('fr', 'steps.fallback')} ».`,
 };
-
-function promptFor(locale: Locale): string {
-  if (locale === 'it') return PROMPT;
-  return `${PROMPT}
-
-Scrivi label e detail in ${languageName(locale)}, ${STYLE[locale]}. Gli esempi sopra valgono per cosa dire, non per la lingua. Se non si capisce cosa fa, «${translate(locale, 'steps.fallback')}».`;
-}
 
 // Le letture valgono per tutti i job della stessa lingua: la chiave è la lingua e il passaggio, con i percorsi già senza la
 // cartella del brand.
@@ -77,12 +87,10 @@ function clean(text: unknown, max: number): string | undefined {
   return value && value.length <= max && !TECHNICAL.test(value) ? value : undefined;
 }
 
-function readingOf(item: { hide?: unknown; label?: unknown; detail?: unknown }): StepReading | undefined {
+function readingOf(item: { hide?: unknown; label?: unknown }): StepReading | undefined {
   if (item.hide === true) return null;
   const label = clean(item.label, MAX_LABEL);
-  if (!label) return undefined;
-  const detail = clean(item.detail, MAX_DETAIL);
-  return { label, ...(detail && { detail }) };
+  return label ? { label } : undefined;
 }
 
 // brandsDir: la cartella dei brand, che con l'id del brand si toglie dai percorsi prima di mandarli a Haiku.
@@ -156,7 +164,7 @@ export function createStepReader(brandsDir: string, locale: Locale): StepReader 
           model: 'claude-haiku-5-5',
           effort: 'low',
           tools: [],
-          systemPrompt: promptFor(locale),
+          systemPrompt: PROMPTS[locale],
           settingSources: [],
           persistSession: false,
           thinking: { type: 'disabled' },
