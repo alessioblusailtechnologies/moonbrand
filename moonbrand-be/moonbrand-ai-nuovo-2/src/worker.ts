@@ -279,7 +279,28 @@ async function run(job: Job): Promise<void> {
   // Restano nella mappa per tenere il loro posto nell'ordine.
   const steps = new Map<string, AiStep>();
   const hidden = new Set<string>();
-  const visible = () => [...steps.values()].filter((step) => !hidden.has(step.id));
+  // Due passaggi di fila con la stessa riga sono lo stesso lavoro che continua (la stessa immagine ricontrollata, la stessa
+  // grafica rifatta): si mostrano come uno, che resta in corso finché l'ultimo non finisce. Nella chat il testo è la
+  // risposta, non una riga di lavoro, e non si accorpa.
+  const sameWork = (previous: AiStep, step: AiStep) =>
+    previous.label === step.label && previous.detail === step.detail && !(kind.reply && (previous.kind === 'text' || step.kind === 'text'));
+  const continued = (first: AiStep, last: AiStep): AiStep => {
+    const media = [...(first.media ?? []), ...(last.media ?? [])];
+    const step: AiStep = { ...first, status: last.status, ...(media.length > 0 && { media }) };
+    delete step.endedAt;
+    if (last.endedAt !== undefined) step.endedAt = last.endedAt;
+    return step;
+  };
+  const visible = () => {
+    const shown: AiStep[] = [];
+    for (const step of steps.values()) {
+      if (hidden.has(step.id)) continue;
+      const previous = shown.at(-1);
+      if (previous && sameWork(previous, step)) shown[shown.length - 1] = continued(previous, step);
+      else shown.push(step);
+    }
+    return shown;
+  };
   const reader = createStepReader(BRANDS_DIR, job.locale);
   const fallbackStep = translate(job.locale, 'steps.fallback');
   let outcome: { result?: unknown; error?: string; cost?: number } = {};
@@ -307,7 +328,7 @@ async function run(job: Job): Promise<void> {
       const step = steps.get(id);
       const shown = reading === undefined ? fallback && { label: fallback } : reading;
       if (!step || !shown) return;
-      steps.set(id, { ...step, label: shown.label, ...(shown.detail && { detail: shown.detail }) });
+      steps.set(id, { ...step, label: shown.label });
       hidden.delete(id);
       changed();
     });

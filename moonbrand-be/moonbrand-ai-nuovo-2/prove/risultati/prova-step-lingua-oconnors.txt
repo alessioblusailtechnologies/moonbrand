@@ -1,0 +1,47 @@
+20 passaggi per Haiku in prove/risultati/oconnors-post-nuovo2.log
+
+=== en (prompt nella lingua)
+ 1. nascosto                                            4033ms [Bash] cd "* | head -50
+ 2. Looking at the photos you sent                      1438ms [Bash] cd "prova-nuovo2-post | head -40; ls chat; find chat -iname "*.jpg" -o
+ 3. Reviewing the post layout                           1840ms [Bash] cd "*; grep -o 'src="[^"]*"' chat/*/*.html 2>/dev/null | head; cat tem
+ 4. Reviewing the second post's design                  2374ms [Bash] cd "7caffff7-cdda-4722-994c-0aad7f2cf8ab/genera.py; cat chat/c784f8b9-
+ 5. Searching for a communion cake photo                1653ms [testo] Sto cercando una foto di torta della comunione da usare: il riferiment
+ 6. Looking through the brand website for photos        1929ms [Bash] cd /tmp; curl -sL -A "Mozilla/5.0" https://www.oconnorsbakery.com/ -o 
+ 7. Looking at communion cake photos online             1727ms [Bash] mkdir -p /tmp/oc && cd /tmp/oc; curl -sL -A "Mozilla/5.0" "https://www
+ 8. Downloading communion cake photos                   2681ms [Bash] D="chat/comunione"; mkdir -p "$D"; cd "$D"; for f in $(cat /tmp/oc/lis
+ 9. Cropping the cake from the reference photo          2012ms [Bash] cd "instagram-1.png'); print(im.size) w,h=im.size im.crop((int(w*0.35)
+10. nascosto                                            1805ms [testo] Le foto del sito non hanno fiori veri né croce celtica; l'unica torta 
+11. Checking the cropped cake photo                     1474ms [Read] ref-crop.png
+12. Saving the cake photo for the post                  1274ms [Bash] cd "instagram-1.png').convert('RGB') r.crop((538,573,1080,1350)).save(
+13. Designing the cover graphic                         3018ms [Write] cover.html
+14. Checking the cover graphic                          2099ms [Read] cover-4x5.png
+15. nascosto                                            1295ms [Read] cover-4x5.png
+16. Adjusting the cover layout                          1405ms [Bash] cd "contenuti/prova-nuovo2-post"; python - <<'E' p='cover.html'; s=ope
+17. nascosto                                            1347ms [Read] cover-4x5.png
+18. Fixing the cover graphic                            1707ms [testo] Sto sistemando la copertina (angolo blu nella foto e nastro che copre 
+19. nascosto                                            1601ms [Bash] cd "contenuti/prova-nuovo2-post"; grep -n "scale/|104px/|left:150px" c
+20. Checking the cover graphic                          2186ms [Read] cover-4x5.png
+nascosti 5, scartate 0, 39 s
+
+=== fr (prompt nella lingua)
+ 1. Je regarde les fichiers de la marque                3003ms [Bash] cd "* | head -50
+ 2. Je cherche les photos que vous avez envoyées        1256ms [Bash] cd "prova-nuovo2-post | head -40; ls chat; find chat -iname "*.jpg" -o
+ 3. Je regarde comment la marque est présentée          1198ms [Bash] cd "*; grep -o 'src="[^"]*"' chat/*/*.html 2>/dev/null | head; cat tem
+ 4. Je relis le générateur de posts                     1462ms [Bash] cd "7caffff7-cdda-4722-994c-0aad7f2cf8ab/genera.py; cat chat/c784f8b9-
+ 5. Je cherche une photo de gâteau pour la communion    1205ms [testo] Sto cercando una foto di torta della comunione da usare: il riferiment
+ 6. Je cherche des photos sur le site de la marque      1357ms [Bash] cd /tmp; curl -sL -A "Mozilla/5.0" https://www.oconnorsbakery.com/ -o 
+ 7. Je cherche des photos de gâteaux de communion       1157ms [Bash] mkdir -p /tmp/oc && cd /tmp/oc; curl -sL -A "Mozilla/5.0" "https://www
+ 8. Je télécharge les photos de gâteaux                 1167ms [Bash] D="chat/comunione"; mkdir -p "$D"; cd "$D"; for f in $(cat /tmp/oc/lis
+ 9. Je recadre la photo du gâteau                       1090ms [Bash] cd "instagram-1.png'); print(im.size) w,h=im.size im.crop((int(w*0.35)
+10. nascosto                                            1222ms [testo] Le foto del sito non hanno fiori veri né croce celtica; l'unica torta 
+11. Je regarde la photo du gâteau recadrée              1347ms [Read] ref-crop.png
+12. Je prépare la photo du gâteau                       1164ms [Bash] cd "instagram-1.png').convert('RGB') r.crop((538,573,1080,1350)).save(
+13. Je dessine la couverture du post                    1138ms [Write] cover.html
+14. Je vérifie l'image de couverture                    1234ms [Read] cover-4x5.png
+15. Je vérifie l'image de couverture (= precedente)     1181ms [Read] cover-4x5.png
+16. J'ajuste la mise en page                            1160ms [Bash] cd "contenuti/prova-nuovo2-post"; python - <<'E' p='cover.html'; s=ope
+17. Je revérifie l'image de couverture                  1202ms [Read] cover-4x5.png
+18. Je corrige la couverture                            1238ms [testo] Sto sistemando la copertina (angolo blu nella foto e nastro che copre 
+19. nascosto                                            1067ms [Bash] cd "contenuti/prova-nuovo2-post"; grep -n "scale/|104px/|left:150px" c
+20. Je vérifie l'image de couverture                    1129ms [Read] cover-4x5.png
+nascosti 2, scartate 0, 26 s
