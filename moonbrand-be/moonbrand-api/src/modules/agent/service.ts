@@ -3,12 +3,13 @@ import path from 'node:path';
 
 import type pg from 'pg';
 
-import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest, AgentPublishRequested } from '@moonbrand/shared/api/contract';
+import type { AgentContentRequest, AgentContentSaved, AgentIdeaRequest, AgentPublishRequested, ContentVideoJobInput } from '@moonbrand/shared/api/contract';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import {
   channelFiles,
   cleanHashtags,
   FORMAT_ASPECT,
+  hasScript,
   sortFiles,
   supportsFormat,
   type ChannelVariant,
@@ -23,6 +24,7 @@ import { publicationProblem, type Publication } from '@moonbrand/shared/domain/p
 import { withIdentity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
+import { insertJob } from '../ai/repository';
 import type { BrandFiles } from '../brand-files/files';
 import { activeContentJobs, findContent, insertChatContent, listContents, rewriteContent, setContentStatus } from '../contents/repository';
 import { requireNotOut } from '../contents/service';
@@ -179,11 +181,20 @@ function check(request: AgentContentRequest, brandChannels: readonly string[]): 
   if (unsupported.length > 0) {
     throw ApiError.invalid(`${unsupported.map(channelName).join(', ')}: il formato «${request.format}» qui non c’è (vedi la skill moonbrand:contenuti). Togli il canale o cambia formato.`);
   }
-  const variants = channels.map((channel) => {
+  // Un video senza file è un copione: bastano le inquadrature, testi e file li scrive il montaggio (video_avvia).
+  const scriptOnly = request.format === 'video' && request.files.length === 0;
+  if (scriptOnly && !request.scenes?.length) {
+    throw ApiError.invalid('Un copione di video ha le inquadrature (scenes); un video montato ha l’MP4 con role «video».');
+  }
+  const variants = channels.flatMap((channel) => {
     const variant = request.variants.find((item) => item.channel === channel);
-    if (!variant) throw ApiError.invalid(`Manca il testo per ${channelName(channel)}.`);
-    return { channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, channel) };
+    if (!variant) {
+      if (scriptOnly) return [];
+      throw ApiError.invalid(`Manca il testo per ${channelName(channel)}.`);
+    }
+    return [{ channel, text: variant.text.trim(), hashtags: cleanHashtags(variant.hashtags, channel) }];
   });
+  if (scriptOnly) return variants;
   for (const file of request.files) {
     if (!file.channel) continue;
     if (!channels.includes(file.channel)) throw ApiError.invalid(`${file.file}: è per ${channelName(file.channel)}, che non è tra i canali del contenuto.`);
@@ -241,7 +252,7 @@ export function createAgentContent(pool: pg.Pool, files: BrandFiles, agent: Agen
     const id = randomUUID();
     const published = await publishFiles(files, agent.brandId, id, request.files);
     const title = request.title.trim();
-    const channels = variants.map((variant) => variant.channel);
+    const channels = variants.length > 0 ? variants.map((variant) => variant.channel) : [...new Set(request.channels)];
     await insertChatContent(db, {
       id,
       brandId: agent.brandId,
@@ -283,7 +294,7 @@ export function updateAgentContent(
     const variants = check(request, brand.context.channels);
     const published = await publishFiles(files, agent.brandId, contentId, request.files);
     const title = request.title.trim();
-    const channels = variants.map((variant) => variant.channel);
+    const channels = variants.length > 0 ? variants.map((variant) => variant.channel) : [...new Set(request.channels)];
     await rewriteContent(db, {
       id: contentId,
       title,
@@ -344,5 +355,27 @@ export function createAgentIdea(pool: pg.Pool, agent: AgentJob, request: AgentId
       channels: [],
     });
     return { id: idea.id, title: idea.title };
+  });
+}
+
+// Il montaggio di un video salvato come copione dalla chat: un lavoro content-video a parte, fuori dalla conversazione.
+export function startAgentVideo(pool: pg.Pool, agent: AgentJob, contentId: string): Promise<{ jobId: string }> {
+  return withIdentity(pool, { accountId: agent.accountId }, async (db) => {
+    const content = await findContent(db, contentId);
+    if (!content || content.brandId !== agent.brandId) throw ApiError.notFound('Contenuto non trovato in questo brand.');
+    if (!hasScript(content)) {
+      throw ApiError.conflict('NO_SCRIPT', 'Prima serve il copione del video: salvalo con contenuto_salva (format «video», script e scenes).');
+    }
+    if ((await activeContentJobs(db, agent.brandId)).has(contentId)) throw ApiError.conflict('BUSY', 'Il video è già in lavorazione.');
+    await requireNotOut(db, content);
+    const input: ContentVideoJobInput = {
+      brandId: agent.brandId,
+      contentId,
+      format: 'video',
+      channels: content.channels,
+      script: content.visual.script,
+      scenes: content.visual.scenes,
+    };
+    return { jobId: await insertJob(db, agent.accountId, 'content-video', input) };
   });
 }

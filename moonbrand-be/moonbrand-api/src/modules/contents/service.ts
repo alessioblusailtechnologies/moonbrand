@@ -22,6 +22,7 @@ import {
   hasDocument,
   hasScript,
   hasVideo,
+  isProposal,
   supportsFormat,
   type Content,
   type ContentFormat,
@@ -218,7 +219,8 @@ export function editContent(pool: pg.Pool, identity: Identity, contentId: string
       format: content.format,
       channels: content.channels,
       instruction,
-      scriptOnly: content.format === 'video' && !hasVideo(content),
+      // Una proposta non ancora confermata (per un video il copione) si ritocca come proposta.
+      scriptOnly: isProposal(content),
     };
     return { jobId: await insertJob(db, identity.accountId, 'content-edit', input) };
   });
@@ -259,21 +261,21 @@ export function saveContentScript(
   });
 }
 
-// Il video dal copione com'è adesso sul DB, nella sessione che l'ha scritto: Claude sa perché ha scelto ogni inquadratura.
+// Il contenuto dalla proposta confermata, com'è adesso sul DB (l'utente può averla corretta): per un video il montaggio
+// dal copione, per gli altri formati testi e immagini. Nella sessione che ha scritto la proposta, quando c'è: Claude sa
+// perché ha proposto così. Anche un copione nato in chat: il lavoro è a parte, non la conversazione.
 export function generateContentVideo(pool: pg.Pool, identity: Identity, contentId: string): Promise<{ jobId: string }> {
   return withIdentity(pool, identity, async (db) => {
     const content = await findContent(db, contentId);
     if (!content) throw ApiError.notFound('Contenuto non trovato.');
-    if (!hasScript(content)) throw ApiError.conflict('NO_SCRIPT', 'Prima serve il copione del video.');
-    requireOutsideChat(content);
+    if (!hasScript(content) && !isProposal(content)) throw ApiError.conflict('NO_SCRIPT', 'Prima serve la proposta del contenuto.');
     await requireChangeable(db, content);
     const sessionId = await lastContentSession(db, contentId);
-    if (!sessionId) throw ApiError.conflict('NOT_EDITABLE', 'Il copione non è ancora pronto.');
     const input: ContentVideoJobInput = {
       brandId: content.brandId,
       contentId,
-      sessionId,
-      format: 'video',
+      ...(sessionId && { sessionId }),
+      format: content.format,
       channels: content.channels,
       script: content.visual.script,
       scenes: content.visual.scenes,

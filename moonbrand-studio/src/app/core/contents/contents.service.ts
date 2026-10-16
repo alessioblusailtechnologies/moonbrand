@@ -46,8 +46,8 @@ export class ContentsService {
     return firstValueFrom(this.http.put<Content>(`/v1/contents/${contentId}/script`, request));
   }
 
-  // Il video dal copione: il lavoro si segue con AiJobsService.follow.
-  generateVideo(contentId: string): Promise<{ jobId: string }> {
+  // Il contenuto dalla proposta confermata (per un video, il montaggio dal copione): il lavoro si segue con AiJobsService.follow.
+  generate(contentId: string): Promise<{ jobId: string }> {
     return firstValueFrom(this.http.post<{ jobId: string }>(`/v1/contents/${contentId}/video`, {}));
   }
 

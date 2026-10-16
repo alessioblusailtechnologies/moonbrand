@@ -93,6 +93,17 @@
                     </a>
                   </header>
                   <mb-content-preview [content]="content" [compact]="true" />
+                  @if (videoWork().get(content.id); as work) {
+                    <div class="video-work">
+                      @if (work.error) {
+                        <p class="caption video-failed">{{ work.error }}</p>
+                      } @else {
+                        <p class="strong-sm">{{ 'chat.page.videoWork' | t }}</p>
+                        <mb-step-list [steps]="work.steps" [live]="true" [waiting]="'chat.page.videoWaiting' | t" />
+                        <mb-pending-media [tiles]="work.pending" />
+                      }
+                    </div>
+                  }
                 </article>
               }
               @for (proposal of turn.proposals; track proposal.content.id) {

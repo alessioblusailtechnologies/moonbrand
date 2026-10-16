@@ -18,7 +18,7 @@ import { Router, RouterLink } from '@angular/router';
 import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import type { Content } from '@moonbrand/shared/domain/content';
+import { formatAspects, hasVideo, type Content } from '@moonbrand/shared/domain/content';
 import { contentState, publicationProblem, type ContentState, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
@@ -36,7 +36,8 @@ import { ConfirmService } from '../../ui/confirm';
 import { Icon, type IconName } from '../../ui/icon';
 import { Loader } from '../../ui/loader';
 import { LightboxService } from '../../ui/lightbox';
-import { PendingMedia, pendingFromSteps } from '../../ui/pending-media';
+import { PendingMedia, pendingFromSteps, type PendingTile } from '../../ui/pending-media';
+import { ContentsService } from '../../core/contents/contents.service';
 import { Markdown } from '../../ui/markdown';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
@@ -68,6 +69,11 @@ const STICK_PX = 80;
 // qualche decina; poi si smette, e il resto si vede riaprendo la conversazione.
 const PUBLISH_POLL_MS = 3000;
 const PUBLISH_POLL_MAX = 100;
+// Il montaggio di un video dura qualche minuto: i suoi passaggi si leggono con calma.
+const VIDEO_POLL_MS = 1500;
+
+// Il montaggio di un video salvato in chat, seguito nella sua card: i passaggi del lavoro, le card in arrivo, l'errore.
+type VideoWork = { steps: AiStep[]; pending: PendingTile[]; error?: string };
 
 @Component({
   selector: 'mb-chat-page',
@@ -78,6 +84,7 @@ const PUBLISH_POLL_MAX = 100;
 })
 export class ChatPage {
   private readonly chat = inject(ChatService);
+  private readonly contentsApi = inject(ContentsService);
   private readonly ai = inject(AiJobsService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -97,6 +104,9 @@ export class ChatPage {
   // I contenuti per cui si è appena premuto «Pubblica ora» e la risposta non è ancora arrivata.
   protected readonly starting = signal<ReadonlySet<string>>(new Set());
   private readonly watching = new Set<string>();
+  // I video in montaggio (lavoro content-video avviato dalla chat), per id del contenuto.
+  protected readonly videoWork = signal<ReadonlyMap<string, VideoWork>>(new Map());
+  private readonly videoWatching = new Set<string>();
   protected readonly loading = signal(false);
   protected readonly sending = signal(false);
   protected readonly stopping = signal(false);
@@ -208,6 +218,7 @@ export class ChatPage {
     this.turns.set([]);
     this.contents.set([]);
     this.proposals.set([]);
+    this.videoWork.set(new Map());
     queueMicrotask(() => this.composer()?.focus());
   }
 
@@ -243,6 +254,7 @@ export class ChatPage {
       this.turns.set([]);
       this.contents.set([]);
       this.proposals.set([]);
+      this.videoWork.set(new Map());
     }
     try {
       await this.refresh(conversationId);
@@ -269,6 +281,7 @@ export class ChatPage {
     this.turns.set(turns);
     this.contents.set(contents);
     this.proposals.set(proposals);
+    this.watchVideos(conversationId);
   }
 
   // I contenuti e le proposte di pubblicazione, con com'è andata; dei turni, che si stanno seguendo, solo le proposte.
@@ -277,6 +290,7 @@ export class ChatPage {
     if (!response || this.conversationId() !== conversationId) return;
     this.contents.set(response.contents);
     this.proposals.set(response.proposals);
+    this.watchVideos(conversationId);
     const requests = new Map(response.turns.map((turn) => [turn.id, turn.publishRequests]));
     this.turns.update((turns) => turns.map((turn) => ({ ...turn, publishRequests: requests.get(turn.id) ?? turn.publishRequests })));
   }
@@ -481,6 +495,49 @@ export class ChatPage {
     }
   }
 
+  // Un video salvato come copione si monta a parte (lavoro content-video): la sua card segue i passaggi finché l'MP4
+  // non c'è. Si guarda a ogni rilettura dei contenuti, perché il lavoro parte dopo il salvataggio.
+  private watchVideos(conversationId: string): void {
+    for (const content of this.contents()) {
+      if (content.format === 'video' && !hasVideo(content) && !this.videoWatching.has(content.id)) void this.watchVideo(conversationId, content);
+    }
+  }
+
+  private async watchVideo(conversationId: string, content: Content): Promise<void> {
+    this.videoWatching.add(content.id);
+    const show = (work: VideoWork | null) =>
+      this.videoWork.update((map) => {
+        const next = new Map(map);
+        if (work) next.set(content.id, work);
+        else next.delete(content.id);
+        return next;
+      });
+    try {
+      const { jobId } = await this.contentsApi.get(content.id);
+      if (!jobId || this.conversationId() !== conversationId) return;
+      // Una card in arrivo per proporzione dei canali, come nella pagina del contenuto.
+      const pending: PendingTile[] = formatAspects('video', content.channels).map((aspect) => ({ kind: 'video', aspect, count: 1 }));
+      show({ steps: [], pending });
+      try {
+        await this.ai.follow(
+          jobId,
+          (steps) => {
+            if (this.conversationId() === conversationId) show({ steps, pending });
+          },
+          VIDEO_POLL_MS,
+        );
+        show(null);
+      } catch (error) {
+        show({ steps: this.videoWork().get(content.id)?.steps ?? [], pending: [], error: errorMessage(error, this.i18n.t('chat.page.videoFailed')) });
+      }
+      if (this.conversationId() === conversationId) await this.refreshContents(conversationId);
+    } catch {
+      // Il contenuto non si legge: la card resta com'è.
+    } finally {
+      this.videoWatching.delete(content.id);
+    }
+  }
+
   protected formatLabel(content: Content): string {
     return this.i18n.t(`chat.format.${content.format}`);
   }
@@ -490,10 +547,11 @@ export class ChatPage {
   }
 }
 
-// I tool che salvano o aggiornano un contenuto o ne propongono la pubblicazione, già conclusi. Negli step più vecchi il nome del tool era la label.
+// I tool che salvano o aggiornano un contenuto, ne propongono la pubblicazione o avviano il montaggio di un video, già
+// conclusi. Negli step più vecchi il nome del tool era la label.
 function savesOf(steps: AiStep[]): number {
   return steps.filter(
-    (step) => step.kind === 'tool' && /(contenuto_(salva|aggiorna)|pubblicazione_proponi)$/.test(step.tool ?? step.label) && step.status === 'done',
+    (step) => step.kind === 'tool' && /(contenuto_(salva|aggiorna)|pubblicazione_proponi|video_avvia)$/.test(step.tool ?? step.label) && step.status === 'done',
   ).length;
 }
 

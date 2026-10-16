@@ -25,6 +25,9 @@ const EMPTY_SCENE: VideoScene = { seconds: 3, shot: '', source: 'graphics', onSc
         <div class="grow">
           <p class="strong">{{ 'contents.script.title' | t }}</p>
           <p class="caption">{{ summary() }}</p>
+          @if (estimate(); as credits) {
+            <p class="caption">{{ 'contents.proposal.estimate' | t: { n: credits } }}</p>
+          }
         </div>
         @if (dirty()) {
           <button class="btn btn-secondary btn-sm" type="button" [disabled]="busy()" (click)="save()">{{ 'contents.script.save' | t }}</button>
@@ -163,6 +166,8 @@ export class ScriptEditor {
 
   readonly content = input.required<Content>();
   readonly busy = input(false);
+  // Il consumo stimato del video, in crediti, scritto con il copione.
+  readonly estimate = input<number | null>(null);
   readonly saved = output<ContentScriptRequest>();
   readonly generated = output<ContentScriptRequest | null>();
 

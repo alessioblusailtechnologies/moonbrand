@@ -165,6 +165,7 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
   mcp__moonbrand__idee_elenca: 'steps.tools.listIdeas',
   mcp__moonbrand__idea_salva: 'steps.tools.saveIdea',
   mcp__moonbrand__pubblicazione_proponi: 'steps.tools.proposePublish',
+  mcp__moonbrand__video_avvia: 'steps.tools.startVideo',
   mcp__moonbrand__piano_leggi: 'steps.tools.readPlan',
   mcp__moonbrand__piano_proponi: 'steps.tools.proposePlan',
   mcp__moonbrand__uscite_crea: 'steps.tools.createSlots',
@@ -182,6 +183,8 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
   mcp__musica__attendi_musica: 'steps.tools.waitMusic',
   mcp__lambda__esporta_video: 'steps.tools.exportVideos',
   mcp__vista__controlla_video: 'steps.tools.checkVideo',
+  mcp__video__controlla_video: 'steps.tools.checkVideo',
+  mcp__video__esporta_video: 'steps.tools.exportVideos',
   mcp__clip__gira_clip: 'steps.tools.clip',
   mcp__clip__attendi_clip: 'steps.tools.waitClips',
   mcp__social__scarica_social: 'steps.tools.downloadSocial',
@@ -277,6 +280,14 @@ export function toolMedia(name: string, input: Record<string, unknown>): StepMed
   if (name === 'mcp__clip__gira_clip') {
     const file = brandFile(input['file']);
     return [{ kind: 'video', aspect: aspectOf(input['formato'], '9:16'), ...(file && { file }) }];
+  }
+  // Gli MP4 di esporta_video (motore nuovo 2): la proporzione è nel nome del file, es. video-9x16.mp4.
+  if (name === 'mcp__video__esporta_video' && Array.isArray(input['uscite'])) {
+    const outputs = (input['uscite'] as Record<string, unknown>[]).filter((output) => output && typeof output === 'object');
+    return outputs.slice(0, MAX_MEDIA).map((output) => {
+      const file = brandFile(output['file']);
+      return { kind: 'video' as const, aspect: (file && aspectInName(file)) ?? '9:16', ...(file && { file }) };
+    });
   }
   if (name === 'Bash' && typeof input['command'] === 'string') {
     const video = remotionRender(input['command']);

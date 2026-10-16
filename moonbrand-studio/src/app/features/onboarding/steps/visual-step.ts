@@ -1,173 +1,58 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, type OnInit, type WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 
-import type { AiStep } from '@moonbrand/shared/ai/steps';
-import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/api/contract';
-import { type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
-import { CHANNELS, categoryLabel, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
-import { QUALITY_FONTS } from '@moonbrand/shared/domain/fonts';
-import { findTemplate, POST_TEMPLATES, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
+import { type BrandDraft, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
+import { paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
 
-import { AiJobsService } from '../../../core/ai/ai-jobs.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
-import { ChannelMark } from '../../../ui/channel-mark';
 import { Icon } from '../../../ui/icon';
-import { PendingMedia, pendingFromSteps } from '../../../ui/pending-media';
-import { Select, type SelectOption } from '../../../ui/select';
 import { LogoBackdrop } from '../../../ui/logo-backdrop';
 import { LightboxService } from '../../../ui/lightbox';
-import { StepList } from '../../../ui/step-list';
 import { ToastService } from '../../../ui/toast';
 import { DraftStore } from '../draft-store';
 import { LOGO_SIDE, resizedDataUri } from '../../../core/images';
-import { ExamplePost, type ExampleAuthor } from './example-post';
 
 const MAX_REFERENCES = 6;
-
-// Le anteprime dei layout di un template, in public/templates/<id>/ (le rende moonbrand-ai con npm run template-anteprime).
-function layoutUrl(template: PostTemplate, layout: string): string {
-  return `templates/${template.id}/${layout}.jpg`;
-}
-
-function loadFontPreview(family: string): void {
-  const id = `font-${family.replace(/W+/g, '-').toLowerCase()}`;
-  if (document.getElementById(id)) return;
-  const link = Object.assign(document.createElement('link'), { id, rel: 'stylesheet', href: `https://fonts.googleapis.com/css2?family=${family.replace(/ +/g, '+')}&display=swap` });
-  document.head.appendChild(link);
-}
-
-// I lavori sugli esempi che si stanno seguendo, per id: tornando al passo il lavoro si riprende senza seguirlo due volte,
-// e il risultato va nella bozza una volta sola.
-const running = new Map<string, { steps: WritableSignal<AiStep[]>; result: Promise<VisualExampleFile[]> }>();
 
 function normalizeHex(input: string): string | null {
   const match = /^#?([0-9a-f]{6})$/i.exec(input.trim());
   return match ? `#${match[1].toUpperCase()}` : null;
 }
 
+// Il passo visivo: il logo, i colori e le immagini di riferimento che il brand carica. Lo stile dei contenuti nasce da
+// queste immagini: l'assistente le guarda prima di fare una grafica o un video.
 @Component({
   selector: 'mb-visual-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, ChannelMark, LogoBackdrop, StepList, PendingMedia, ExamplePost, Select, TranslatePipe],
+  imports: [Icon, LogoBackdrop, TranslatePipe],
   templateUrl: './visual-step.html',
   styleUrl: './visual-step.scss',
 })
-export class VisualStep implements OnInit {
-  // Gli esempi in arrivo, dai passaggi del job.
-  protected readonly pending = pendingFromSteps;
-
-  private readonly ai = inject(AiJobsService);
+export class VisualStep {
   private readonly brands = inject(BrandsService);
   private readonly toast = inject(ToastService);
   private readonly lightbox = inject(LightboxService);
   private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
   readonly draft = input.required<BrandDraft>();
-  // Dalle Impostazioni: gli esempi che il brand segue già come riferimento, finché non se ne fanno di nuovi.
-  readonly followed = input<MediaFile[]>([]);
 
   protected readonly slotLabels = computed(() => paletteSlotLabels(this.i18n.locale()));
   protected readonly maxReferences = MAX_REFERENCES;
-  protected readonly notes = signal('');
   protected readonly uploading = signal(0);
-  protected readonly preparing = signal(false);
-  // Gli step del lavoro che si sta seguendo.
-  private readonly stepsSource = signal<WritableSignal<AiStep[]>>(signal([]));
-  protected readonly steps = computed(() => this.stepsSource()());
   protected readonly hexDrafts = signal<string[]>([]);
 
   protected readonly visual = computed(() => this.draft().visual);
   protected readonly references = computed(() => this.visual().references ?? []);
-  // I template della categoria del brand; quello già scelto resta in elenco anche se la categoria è cambiata.
-  // Se la categoria non ne ha, l'avviso che arriveranno e, a richiesta, tutti gli altri: lo stile vale anche fuori
-  // dalla sua categoria. Con uno di quelli già scelto l'elenco resta aperto.
-  protected readonly template = computed(() => findTemplate(this.visual().template));
-  protected readonly ownTemplates = computed(() => templatesFor(this.draft().identity.category));
-  protected readonly showOthers = signal(false);
-  protected readonly templates = computed(() => {
-    const chosen = this.template();
-    const own = this.ownTemplates();
-    const list = own.length === 0 ? (this.showOthers() || chosen ? POST_TEMPLATES : []) : chosen && !own.includes(chosen) ? [chosen, ...own] : own;
-    return list.map((template) => ({
-      ...template,
-      description: templateDescription(template.id, this.i18n.locale()),
-      // Fuori dalla categoria del brand si dice per che attività è nato.
-      origin: own.length === 0 ? categoryLabel(template.category, this.i18n.locale()) : null,
-      slides: template.layouts.map((layout) => layoutUrl(template, layout)),
-    }));
-  });
-  // I font del brand: quelli letti dal sito in cima, poi quelli curati; vuoto = quelli del template.
-  protected readonly fonts = computed(() => this.visual().fonts ?? null);
-  protected readonly fontOptions = computed<SelectOption[]>(() => {
-    const own = this.fonts();
-    const families = [...new Set([own?.titles, own?.text, ...QUALITY_FONTS].filter((family): family is string => Boolean(family)))];
-    return [{ value: '', label: this.i18n.t('onboarding.visual.fonts.template') }, ...families.map((family) => ({ value: family, label: family }))];
-  });
-  // Senza template per la categoria: l'avviso che arriveranno, con il nome della categoria se il brand ne ha una.
-  protected readonly templatesSoon = computed(() => {
-    const category = this.draft().identity.category;
-    if (!category) return this.i18n.t('onboarding.visual.template.soonGeneric');
-    const label = categoryLabel(category, this.i18n.locale());
-    return this.i18n.t('onboarding.visual.template.soon', { category: label.charAt(0).toLowerCase() + label.slice(1) });
-  });
-  // La slide visibile nello slider di ogni template, per i pallini e le frecce.
-  protected readonly slide = signal<Record<string, number>>({});
   protected readonly sitePalette = computed(() => this.store.insights()?.palette ?? (this.visual().palette.origin === 'site' ? this.visual().palette : null));
   protected readonly custom = computed(() => this.visual().palette.origin !== 'site');
   protected readonly placeholders = computed(() => Array.from({ length: this.uploading() }, (_, i) => i));
-  // Un canale dopo l'altro, nell'ordine del catalogo.
-  protected readonly examples = computed(() => {
-    const examples = this.store.examples() ?? [];
-    const unselected = this.store.unselectedExamples();
-    return CHANNELS.flatMap(({ id }) =>
-      examples
-        .filter((example) => example.channel === id)
-        .map((example) => ({ ...example, name: channelName(id), selected: !unselected.includes(example.file) })),
-    );
-  });
-  // Chi pubblica negli esempi: il nome, il logo o l'iniziale nel primo colore della palette, un nome utente ricavato dal nome.
-  protected readonly author = computed<ExampleAuthor>(() => {
-    const { identity, visual } = this.draft();
-    const name = identity.name.trim() || this.i18n.t('onboarding.visual.yourBrand');
-    const handle = name
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '');
-    return {
-      name,
-      handle: handle || 'brand',
-      logo: visual.logoUri,
-      initial: name.charAt(0).toUpperCase(),
-      color: visual.palette.colors[0] ?? 'var(--primary)',
-      person: identity.kind === 'person',
-    };
-  });
-  protected readonly selectedCount = computed(() => this.examples().filter((example) => example.selected).length);
 
   constructor() {
-    // Le anteprime dei font scelti si vedono nel loro font: il foglio di Google Fonts si carica una volta per famiglia.
-    effect(() => {
-      const fonts = this.fonts();
-      for (const family of [fonts?.titles, fonts?.text]) if (family) loadFontPreview(family);
-    });
     effect(() => {
       this.hexDrafts.set(this.visual().palette.colors.map((color) => color.toUpperCase()));
     });
-  }
-
-  ngOnInit(): void {
-    this.notes.set(this.visual().notes ?? '');
-    // Un lavoro partito prima (anche prima di un ricaricamento della pagina) si riprende da dove è.
-    const pending = this.store.examplesPending();
-    if (pending) void this.track(pending.jobId, pending.edit);
-  }
-
-  private selectedChannels(): ChannelId[] {
-    const selected = CHANNELS.filter(({ id }) => this.draft().channels[id].selected).map(({ id }) => id);
-    return selected.length > 0 ? selected : ['instagram'];
   }
 
   private current(): Visual {
@@ -230,62 +115,6 @@ export class VisualStep implements OnInit {
     );
   }
 
-  // Uno solo dei due vuoto vuol dire i font del template per tutti e due; scelto il primo, l'altro parte uguale.
-  protected setFont(kind: 'titles' | 'text', family: string): void {
-    const current = this.current().fonts;
-    if (!family) {
-      this.set({ fonts: null });
-      return;
-    }
-    const base = current ?? { titles: family, text: family, found: null };
-    this.set({ fonts: { ...base, [kind]: family } });
-  }
-
-  // Template e immagini di riferimento sono in alternativa: scegliendo un template quelle caricate si tolgono.
-  protected async chooseTemplate(id: string | null): Promise<void> {
-    if ((this.current().template ?? null) === id) return;
-    this.set({ template: id });
-    const uploaded = id ? (this.current().references ?? []) : [];
-    if (uploaded.length === 0) return;
-    try {
-      for (const file of uploaded) await this.store.removeReference(file);
-      this.toast.show(this.i18n.t('onboarding.visual.template.referencesRemoved'));
-    } catch (error) {
-      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.removeFailed')));
-    }
-  }
-
-  protected openTemplate(template: PostTemplate, index: number): void {
-    this.lightbox.open(
-      template.layouts.map((layout, i) => ({ url: layoutUrl(template, layout), alt: this.i18n.t('onboarding.visual.template.layoutAlt', { name: template.name, n: i + 1 }) })),
-      index,
-    );
-  }
-
-  // Lo slider scorre da solo (scroll-snap, anche col dito): qui si legge a che slide è e si sposta con frecce e pallini.
-  protected onSlide(id: string, track: HTMLElement): void {
-    const index = Math.round(track.scrollLeft / track.clientWidth);
-    if (this.slide()[id] !== index) this.slide.update((slides) => ({ ...slides, [id]: index }));
-  }
-
-  protected goToSlide(track: HTMLElement, index: number): void {
-    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
-  }
-
-  protected openFollowed(index: number): void {
-    this.lightbox.open(
-      this.followed().map((file, i) => ({ url: file.url, alt: this.i18n.t('onboarding.visual.examples.followedAlt', { n: i + 1 }) })),
-      index,
-    );
-  }
-
-  protected openExample(index: number): void {
-    this.lightbox.open(
-      this.examples().map((example) => ({ url: example.url, alt: this.i18n.t('onboarding.visual.examples.alt', { channel: example.name }), caption: example.caption })),
-      index,
-    );
-  }
-
   protected chooseSitePalette(): void {
     const palette = this.sitePalette();
     if (palette) this.set({ palette });
@@ -303,90 +132,5 @@ export class VisualStep implements OnInit {
     const colors: Palette['colors'] = [...this.current().palette.colors];
     colors[index] = hex;
     this.set({ palette: { id: 'custom', name: 'I miei colori', colors, origin: 'custom' } });
-  }
-
-  // Con gli esempi già pronti le indicazioni li modificano (stessa sessione di Claude), altrimenti ne guidano la generazione.
-  protected sendNotes(): void {
-    const instruction = this.notes().trim();
-    const jobId = this.store.examplesJobId();
-    if (!instruction || this.preparing()) return;
-    if (jobId && this.examples().length > 0) void this.editExamples(jobId, instruction);
-    else void this.createExamples();
-  }
-
-  private async editExamples(jobId: string, instruction: string): Promise<void> {
-    this.preparing.set(true);
-    try {
-      const editJobId = await this.ai.queueExamplesEdit({ jobId, instruction });
-      this.store.setExamplesPending({ jobId: editJobId, edit: true });
-      if (await this.track(editJobId, true)) this.notes.set('');
-    } catch (error) {
-      this.preparing.set(false);
-      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.examples.editFailed')));
-    }
-  }
-
-  // Segue il lavoro fino agli esempi e li mette nella bozza; true se sono arrivati.
-  private async track(jobId: string, edit: boolean): Promise<boolean> {
-    let run = running.get(jobId);
-    if (!run) {
-      const steps = signal<AiStep[]>([]);
-      const result = this.ai
-        .followExamples(jobId, (value) => steps.set(value))
-        .then((examples) => {
-          // Una modifica tiene la selezione (i file hanno gli stessi nomi), una generazione nuova la azzera.
-          this.store.setExamples(examples, jobId, edit);
-          return examples;
-        })
-        .finally(() => {
-          running.delete(jobId);
-          if (this.store.examplesPending()?.jobId === jobId) this.store.setExamplesPending(null);
-        });
-      run = { steps, result };
-      running.set(jobId, run);
-    }
-    this.stepsSource.set(run.steps);
-    this.preparing.set(true);
-    try {
-      await run.result;
-      return true;
-    } catch (error) {
-      this.toast.show(
-        errorMessage(error, this.i18n.t(edit ? 'onboarding.visual.examples.editFailed' : 'onboarding.visual.examples.prepareFailed')),
-      );
-      return false;
-    } finally {
-      this.preparing.set(false);
-    }
-  }
-
-  protected async createExamples(): Promise<void> {
-    const brandId = this.store.brandId();
-    if (this.preparing() || !brandId) return;
-    const notes = this.notes().trim();
-    this.set({ notes });
-    const draft = this.draft();
-    const brand: VisualBrandContext = {
-      identity: draft.identity,
-      positioning: draft.positioning,
-      channels: exampleChannels(this.selectedChannels()),
-      themes: draft.themes.map((theme) => theme.name).filter(Boolean),
-      instructions: draft.instructions,
-      palette: [...this.current().palette.colors],
-      notes,
-      template: this.current().template ?? null,
-      fonts: this.current().fonts ?? null,
-    };
-    this.preparing.set(true);
-    try {
-      // Il logo della bozza va con la richiesta: l'API lo mette nella cartella del brand per gli esempi.
-      const logo = this.current().logoUri;
-      const jobId = await this.ai.queueExamples({ brandId, brand, logo: logo?.startsWith('data:image/') ? logo : null });
-      this.store.setExamplesPending({ jobId, edit: false });
-      await this.track(jobId, false);
-    } catch (error) {
-      this.preparing.set(false);
-      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.examples.prepareFailed')));
-    }
   }
 }

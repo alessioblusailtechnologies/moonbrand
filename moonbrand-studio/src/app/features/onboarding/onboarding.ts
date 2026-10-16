@@ -117,11 +117,6 @@ export class Onboarding {
     const key = this.sectionStep();
     const draft = this.store.draft();
     if (!key || !draft) return null;
-    // Senza almeno un esempio scelto il brand non avrebbe riferimenti da seguire: lo stile verrebbe solo dalle immagini caricate.
-    if (key === 'visual') {
-      if (this.store.examplesPending()) return this.i18n.t('onboarding.visual.examples.stillPreparing');
-      if (this.store.selectedExamples().length === 0) return this.i18n.t('onboarding.visual.examples.required');
-    }
     return sectionError(key, draft, this.i18n.locale());
   });
 

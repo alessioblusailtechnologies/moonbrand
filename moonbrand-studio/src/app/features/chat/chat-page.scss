@@ -394,3 +394,16 @@
   font-weight: 600;
   line-height: 1.4;
 }
+
+// Il montaggio di un video salvato in chat: i passaggi e le card in arrivo, dentro la sua card.
+.video-work {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-card);
+}
+
+.video-failed {
+  color: var(--danger);
+}
