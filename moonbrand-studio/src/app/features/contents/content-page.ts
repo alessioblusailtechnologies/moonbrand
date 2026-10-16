@@ -5,7 +5,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { ContentScriptRequest, SlotView } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
-import { formatAspects, hasScript, hasVideo, isProposal, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
+import { formatAspects, hasScript, hasVideo, supportsFormat, type Content } from '@moonbrand/shared/domain/content';
 import { contentState, isOut, publicationProblem, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey, MessageParams } from '@moonbrand/shared/i18n/translate';
 
@@ -95,20 +95,6 @@ export class ContentPage {
     const content = this.content();
     return content ? hasScript(content) : false;
   });
-  // La proposta di un post, carosello o articolo non ancora confermata: l'utente la legge, la ritocca e fa partire il contenuto.
-  protected readonly proposed = computed(() => {
-    const content = this.content();
-    return content ? isProposal(content) && !hasScript(content) : false;
-  });
-  // Il consumo stimato scritto con la proposta, in crediti.
-  protected readonly estimate = computed(() => this.content()?.visual.estimate ?? null);
-  protected readonly generateLabel = computed(() => {
-    const format = this.content()?.format ?? 'post';
-    return this.i18n.t(format === 'carousel' ? 'contents.proposal.generateCarousel' : format === 'article' ? 'contents.proposal.generateArticle' : 'contents.proposal.generatePost');
-  });
-  protected readonly refinePlaceholder = computed(() =>
-    this.i18n.t(this.ready() ? 'contents.page.refinePlaceholder' : this.scripted() ? 'contents.page.refineScriptPlaceholder' : 'contents.page.refineProposalPlaceholder'),
-  );
   // I canali del brand che il contenuto non ha e che reggono il suo formato. Un contenuto nato in chat li aggiunge
   // nella sua conversazione, tranne il copione di un video, che non ha ancora testi né file.
   protected readonly addable = computed(() => {
@@ -158,7 +144,7 @@ export class ContentPage {
     // Il titolo del contenuto nel percorso; i pulsanti quando il contenuto è pronto e nessuno ci sta lavorando.
     pageHeader(
       () => [{ label: this.i18n.t('contents.title'), link: '/contenuti' }, { label: this.content()?.title ?? '' }],
-      () => ((this.ready() || this.scripted() || this.proposed()) && !this.preparing() ? this.headerActions() : undefined),
+      () => ((this.ready() || this.scripted()) && !this.preparing() ? this.headerActions() : undefined),
     );
     effect(() => {
       const id = this.contentId();
@@ -344,13 +330,13 @@ export class ContentPage {
     }
   }
 
-  // Il contenuto dalla proposta confermata: le correzioni non salvate del copione vanno prima sul DB.
-  protected async generate(request: ContentScriptRequest | null): Promise<void> {
+  // Le correzioni non salvate vanno prima sul DB: il video si fa dal copione salvato.
+  protected async generateVideo(request: ContentScriptRequest | null): Promise<void> {
     if (this.preparing()) return;
     try {
       if (request) this.show(await this.api.saveScript(this.contentId(), request));
-      const { jobId } = await this.api.generate(this.contentId());
-      void this.follow(jobId, this.content()?.format === 'video' ? 'video' : 'prepare');
+      const { jobId } = await this.api.generateVideo(this.contentId());
+      void this.follow(jobId, 'video');
     } catch (error) {
       this.toast.show(errorMessage(error, this.i18n.t('contents.page.errors.startVideo')));
     }

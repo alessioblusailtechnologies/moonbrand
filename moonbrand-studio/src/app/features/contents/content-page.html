@@ -10,7 +10,7 @@
       </div>
       <h1 class="heading">{{ current.title }}</h1>
 
-      @if ((ready() || scripted() || proposed()) && !preparing()) {
+      @if ((ready() || scripted()) && !preparing()) {
         <dl class="facts">
           <div class="fact">
             <dt class="label">{{ 'contents.page.sideChannels' | t }}</dt>
@@ -88,26 +88,10 @@
     }
 
     @if (scripted() && !current.conversationId && !locked()) {
-      <mb-script-editor [content]="current" [busy]="preparing()" [estimate]="estimate()" (saved)="saveScript($event)" (generated)="generate($event)" />
+      <mb-script-editor [content]="current" [busy]="preparing()" (saved)="saveScript($event)" (generated)="generateVideo($event)" />
     }
 
-    <!-- La proposta di un post, carosello o articolo: cosa farà l'assistente e quanto consuma; il contenuto parte da qui. -->
-    @if (proposed() && !current.conversationId && !locked() && !preparing()) {
-      <div class="panel proposal">
-        <div class="proposal-head">
-          <div class="grow">
-            <p class="strong">{{ 'contents.proposal.title' | t }}</p>
-            @if (estimate(); as credits) {
-              <p class="caption">{{ 'contents.proposal.estimate' | t: { n: credits } }}</p>
-            }
-          </div>
-          <button class="btn btn-primary btn-sm" type="button" (click)="generate(null)">{{ generateLabel() }}</button>
-        </div>
-        <p class="proposal-text">{{ current.visual.script }}</p>
-      </div>
-    }
-
-    @if ((ready() || scripted() || proposed()) && !locked()) {
+    @if ((ready() || scripted()) && !locked()) {
       @if (current.conversationId) {
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
           <mb-icon name="message-circle" [size]="16" /> {{ 'contents.page.refineInChat' | t }}
@@ -115,7 +99,7 @@
       } @else {
         <div class="row edit">
           <input class="sunken grow" [attr.aria-label]="'contents.page.refineLabel' | t"
-            [placeholder]="refinePlaceholder()"
+            [placeholder]="(ready() ? 'contents.page.refinePlaceholder' : 'contents.page.refineScriptPlaceholder') | t"
             [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
           <button class="icon-btn solid" type="button" [attr.aria-label]="'contents.page.sendRefine' | t" [disabled]="preparing() || !instruction().trim()" (click)="send()">
             <mb-icon name="arrow-up" />

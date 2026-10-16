@@ -76,31 +76,189 @@
   }
 </section>
 
-<!-- Le immagini di riferimento: post e materiali del brand. L'assistente le guarda prima di ogni grafica o video e ne
-     segue lo stile. -->
 <section class="panel">
-  <p class="label">{{ 'onboarding.visual.references.label' | t }}</p>
-  <p class="caption">{{ 'onboarding.visual.references.hint' | t }}</p>
-  <div class="references">
-    @for (file of references(); track file.path ?? file.url; let i = $index) {
-      <div class="reference">
-        <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.zoom' | t: { n: i + 1 }" (click)="openReference(i)">
-          <img [src]="file.url" [alt]="'onboarding.visual.references.alt' | t: { n: i + 1 }" />
-        </button>
-        <button class="icon-btn solid remove" type="button" [attr.aria-label]="'onboarding.visual.references.remove' | t: { n: i + 1 }"
-          (click)="removeReference(file)">
-          <mb-icon name="x" [size]="12" [stroke]="3" />
-        </button>
-      </div>
-    }
-    @for (slot of placeholders(); track slot) {
-      <div class="reference empty"><span class="spinner"></span></div>
-    }
-    @if (references().length + uploading() < maxReferences) {
-      <label class="reference empty add" [attr.aria-label]="'onboarding.visual.references.add' | t">
-        <mb-icon name="plus" />
-        <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
-      </label>
-    }
+  <p class="label">{{ 'onboarding.visual.fonts.label' | t }}</p>
+  <p class="caption">
+    {{ (fonts()?.found ? 'onboarding.visual.fonts.fromSite' : 'onboarding.visual.fonts.hint') | t: { found: fonts()?.found ?? '' } }}
+  </p>
+  <div class="fonts">
+    <label class="font-row">
+      <span class="caption font-kind">{{ 'onboarding.visual.fonts.titles' | t }}</span>
+      <mb-select class="grow" [label]="'onboarding.visual.fonts.titles' | t" [options]="fontOptions()" [value]="fonts()?.titles ?? ''"
+        (changed)="setFont('titles', $event)" />
+    </label>
+    <label class="font-row">
+      <span class="caption font-kind">{{ 'onboarding.visual.fonts.text' | t }}</span>
+      <mb-select class="grow" [label]="'onboarding.visual.fonts.text' | t" [options]="fontOptions()" [value]="fonts()?.text ?? ''"
+        (changed)="setFont('text', $event)" />
+    </label>
   </div>
+  @if (fonts(); as chosen) {
+    <div class="font-sample">
+      <p [style.font-family]="'\'' + chosen.titles + '\', sans-serif'">{{ 'onboarding.visual.fonts.sample' | t }}</p>
+      <span [style.font-family]="'\'' + chosen.text + '\', sans-serif'">{{ draft().identity.pitch || ('onboarding.visual.fonts.hint' | t) }}</span>
+    </div>
+  }
+</section>
+
+@if (ownTemplates().length === 0) {
+  <section class="panel soon">
+    <mb-icon name="layers" [size]="18" />
+    <div class="grow">
+      <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
+      <p class="caption">{{ templatesSoon() }}</p>
+      @if (templates().length === 0) {
+        <button class="btn btn-secondary btn-sm" type="button" (click)="showOthers.set(true)">{{ 'onboarding.visual.template.others' | t }}</button>
+      }
+    </div>
+  </section>
+}
+
+@if (templates().length > 0) {
+  <section class="panel">
+    <p class="label">{{ 'onboarding.visual.template.label' | t }}</p>
+    <p class="caption">{{ (ownTemplates().length > 0 ? 'onboarding.visual.template.hint' : 'onboarding.visual.template.othersHint') | t }}</p>
+    <div class="templates-box">
+      <div class="templates" role="radiogroup" [attr.aria-label]="'onboarding.visual.template.label' | t">
+        @for (item of templates(); track item.id) {
+          <div class="template" [class.selected]="value.template === item.id">
+            @let current = slide()[item.id] ?? 0;
+            <div class="template-slider" [attr.aria-label]="'onboarding.visual.template.layouts' | t: { name: item.name }" role="group">
+              <div class="slides" #track (scroll)="onSlide(item.id, track)">
+                @for (url of item.slides; track url; let i = $index) {
+                  <button class="slide" type="button" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
+                    (click)="openTemplate(item, i)">
+                    <img [src]="url" [alt]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }" [attr.loading]="i === 0 ? null : 'lazy'" />
+                  </button>
+                }
+              </div>
+              @if (item.slides.length > 1) {
+                @if (current > 0) {
+                  <button class="slide-nav prev" type="button" [attr.aria-label]="'onboarding.visual.template.previous' | t" (click)="goToSlide(track, current - 1)">
+                    <mb-icon name="chevron-left" [size]="16" [stroke]="2.5" />
+                  </button>
+                }
+                @if (current < item.slides.length - 1) {
+                  <button class="slide-nav next" type="button" [attr.aria-label]="'onboarding.visual.template.next' | t" (click)="goToSlide(track, current + 1)">
+                    <mb-icon name="chevron-right" [size]="16" [stroke]="2.5" />
+                  </button>
+                }
+                <div class="dots">
+                  @for (url of item.slides; track url; let i = $index) {
+                    <button type="button" [class.on]="i === current" [attr.aria-label]="'onboarding.visual.template.layoutAlt' | t: { name: item.name, n: i + 1 }"
+                      (click)="goToSlide(track, i)"></button>
+                  }
+                </div>
+              }
+            </div>
+            <button class="template-pick" type="button" role="radio" [attr.aria-checked]="value.template === item.id" (click)="chooseTemplate(item.id)">
+              <span class="grow">
+                <span class="strong-sm block">{{ item.name }}@if (item.origin) {<span class="caption"> · {{ item.origin }}</span>}</span>
+                <span class="caption block">{{ item.description }}</span>
+              </span>
+              <span class="radio-mark" [class.on]="value.template === item.id"></span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="!value.template" [class.selected]="!value.template"
+      (click)="chooseTemplate(null)">
+      <span class="grow">
+        <span class="strong-sm block">{{ 'onboarding.visual.template.none' | t }}</span>
+        <span class="caption block">{{ 'onboarding.visual.template.noneHint' | t }}</span>
+      </span>
+      <span class="radio-mark" [class.on]="!value.template"></span>
+    </button>
+    @if (template()) {
+      <p class="caption">{{ 'onboarding.visual.template.chosen' | t }}</p>
+    }
+  </section>
+}
+
+@if (!template()) {
+  <section class="panel">
+    <p class="label">{{ 'onboarding.visual.references.label' | t }}</p>
+    <p class="caption">{{ 'onboarding.visual.references.hint' | t }}</p>
+    <div class="references">
+      @for (file of references(); track file.path ?? file.url; let i = $index) {
+        <div class="reference">
+          <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.zoom' | t: { n: i + 1 }" (click)="openReference(i)">
+            <img [src]="file.url" [alt]="'onboarding.visual.references.alt' | t: { n: i + 1 }" />
+          </button>
+          <button class="icon-btn solid remove" type="button" [attr.aria-label]="'onboarding.visual.references.remove' | t: { n: i + 1 }"
+            (click)="removeReference(file)">
+            <mb-icon name="x" [size]="12" [stroke]="3" />
+          </button>
+        </div>
+      }
+      @for (slot of placeholders(); track slot) {
+        <div class="reference empty"><span class="spinner"></span></div>
+      }
+      @if (references().length + uploading() < maxReferences) {
+        <label class="reference empty add" [attr.aria-label]="'onboarding.visual.references.add' | t">
+          <mb-icon name="plus" />
+          <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
+        </label>
+      }
+    </div>
+  </section>
+}
+
+<section class="panel">
+  <p class="label">{{ 'onboarding.visual.examples.label' | t }}</p>
+  @if (preparing()) {
+    <mb-step-list [steps]="steps()" [waiting]="'onboarding.visual.examples.waiting' | t" />
+    <mb-pending-media [tiles]="pending(steps())" />
+  } @else if (examples().length > 0) {
+    <p class="caption">{{ 'onboarding.visual.examples.selected' | t: { selected: selectedCount(), total: examples().length } }}</p>
+    <div class="examples">
+      @for (example of examples(); track example.file; let i = $index) {
+        <figure class="example" [class.off]="!example.selected">
+          <div class="example-head">
+            <mb-channel-mark [channel]="example.channel" [active]="true" [size]="16" />
+            <span class="strong-sm grow">{{ example.name }}</span>
+            <button class="pick" type="button" role="checkbox" [attr.aria-checked]="example.selected"
+              [attr.aria-label]="'onboarding.visual.examples.pick' | t: { n: i + 1, channel: example.name }" (click)="store.toggleExample(example.file)">
+              @if (example.selected) {
+                <mb-icon name="check" [size]="14" [stroke]="3" />
+              }
+            </button>
+          </div>
+          <mb-example-post [channel]="example.channel" [url]="example.url" [text]="example.caption" [author]="author()"
+            [label]="'onboarding.visual.examples.example' | t: { n: i + 1, channel: example.name }" (zoom)="openExample(i)" />
+        </figure>
+      }
+    </div>
+  } @else if (followed().length > 0) {
+    <p class="caption">{{ 'onboarding.visual.examples.followed' | t }}</p>
+    <div class="references">
+      @for (file of followed(); track file.path; let i = $index) {
+        <div class="reference">
+          <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.examples.followedAlt' | t: { n: i + 1 }" (click)="openFollowed(i)">
+            <img [src]="file.url" [alt]="'onboarding.visual.examples.followedAlt' | t: { n: i + 1 }" />
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="caption">{{ (template() ? 'onboarding.visual.examples.emptyTemplate' : 'onboarding.visual.examples.empty') | t }}</p>
+  }
+
+  <div class="row">
+    <input class="sunken grow" [attr.aria-label]="'onboarding.visual.examples.notes' | t" [value]="notes()"
+      (input)="notes.set($any($event.target).value)" (keydown.enter)="sendNotes()"
+      [placeholder]="(examples().length > 0 ? 'onboarding.visual.examples.notesEdit' : 'onboarding.visual.examples.notesNew') | t" />
+    <button class="icon-btn solid" type="button" [attr.aria-label]="'onboarding.visual.examples.send' | t" [disabled]="preparing() || !notes().trim()"
+      (click)="sendNotes()">
+      <mb-icon name="arrow-up" />
+    </button>
+  </div>
+  @if (!preparing()) {
+    <!-- Finché non ci sono esempi è il passo da fare per andare avanti: pulsante pieno; dopo serve solo a rifarli. -->
+    @let made = examples().length > 0 || followed().length > 0;
+    <button class="btn align-center" type="button" [class.btn-primary]="!made" [class.btn-secondary]="made" [class.btn-sm]="made" (click)="createExamples()">
+      {{ (made ? 'onboarding.visual.examples.regenerate' : 'onboarding.visual.examples.prepare') | t }}
+    </button>
+  }
 </section>

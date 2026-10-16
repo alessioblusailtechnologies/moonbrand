@@ -57,8 +57,6 @@ export interface ContentVisual {
   design: unknown;
   // L'impaginazione in una frase, scritta da chi l'ha fatta: i contenuti dopo la leggono per variare, senza riguardare le immagini.
   layout?: string;
-  // Il consumo stimato per fare il contenuto, in crediti, scritto con la proposta (vedi isProposal).
-  estimate?: number;
   files?: ContentFile[];
 }
 
@@ -128,12 +126,7 @@ export const sortFiles = <T extends Pick<ContentFile, 'role' | 'index'>>(files: 
 
 export const postText = (variant: Pick<ChannelVariant, 'text' | 'hashtags'>): string => [variant.text, variant.hashtags.join(' ')].filter(Boolean).join('\n\n');
 
-// Un contenuto nasce in due tempi: prima la proposta (cosa si farà, in breve; per un video il copione con le inquadrature),
-// che l'utente legge e conferma, poi il contenuto. Finché non è confermata non ha testi né file.
-export const isProposal = (content: Pick<Content, 'variants' | 'visual'>): boolean =>
-  content.variants.length === 0 && (content.visual.files ?? []).length === 0 && (content.visual.script.trim() !== '' || content.visual.scenes.length > 0);
-
-// Un video ha il copione, prima e dopo il video.
+// Un video nasce in due tempi: prima il copione, da approvare, poi il video.
 export const hasScript = (content: Pick<Content, 'format' | 'visual'>): boolean => content.format === 'video' && content.visual.scenes.length > 0;
 export const hasVideo = (content: Pick<Content, 'visual'>): boolean => (content.visual.files ?? []).some((file) => file.role === 'video');
 

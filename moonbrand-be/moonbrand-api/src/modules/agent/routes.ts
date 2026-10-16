@@ -19,7 +19,6 @@ import {
   listAgentContents,
   listAgentIdeas,
   requestAgentPublish,
-  startAgentVideo,
   updateAgentContent,
 } from './service';
 
@@ -50,7 +49,7 @@ const contentSchema = z.object({
   channels: z.array(channelId).min(1).max(MAX_CHANNELS),
   variants: z
     .array(z.object({ channel: channelId, text: z.string().trim().min(1).max(5000), hashtags: z.array(z.string().max(100)).max(30) }))
-    .max(MAX_CHANNELS),
+    .min(1),
   headline: z.string().max(200),
   slides: z.array(z.object({ title: z.string().max(200), body: z.string().max(1000) })).max(10),
   script: z.string().max(4000).optional(),
@@ -67,6 +66,7 @@ const contentSchema = z.object({
         channel: channelId.optional(),
       }),
     )
+    .min(1)
     .max(48),
 }) satisfies z.ZodType<AgentContentRequest>;
 
@@ -119,12 +119,6 @@ export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, f
   app.post('/v1/agent/contents/:contentId/reopen', (request) =>
     changeAgentContentStatus(pool, request.agent, contentParams.parse(request.params).contentId, 'draft'),
   );
-
-  // Il montaggio di un video salvato come copione: un lavoro a parte, il video compare in Contenuti quando è pronto.
-  app.post('/v1/agent/contents/:contentId/video', async (request, reply) => {
-    const job = await startAgentVideo(pool, request.agent, contentParams.parse(request.params).contentId);
-    return reply.code(202).send(job);
-  });
 
   app.post('/v1/agent/contents/:contentId/publish-request', (request) =>
     requestAgentPublish(pool, request.agent, contentParams.parse(request.params).contentId),

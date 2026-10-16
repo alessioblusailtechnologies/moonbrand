@@ -49,7 +49,7 @@ import { ReferencesEditor } from './references-editor';
               @case ('channels') { <mb-channels-step [draft]="draft" /> }
               @case ('themes') { <mb-themes-step [draft]="draft" /> }
               @case ('instructions') { <mb-instructions-step [draft]="draft" /> }
-              @case ('visual') { <mb-visual-step [draft]="draft" /> }
+              @case ('visual') { <mb-visual-step [draft]="draft" [followed]="followed()" /> }
               @case ('references') { <mb-references-editor [draft]="draft" /> }
             }
           }

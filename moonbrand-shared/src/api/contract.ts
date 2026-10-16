@@ -368,14 +368,12 @@ export interface ContentEditJobInput {
   scriptOnly: boolean;
 }
 
-// Il contenuto dalla proposta confermata, com'è sul DB dopo le correzioni dell'utente: per un video il montaggio dal
-// copione (script e scenes), per gli altri formati testi e immagini dalla proposta (script).
-// sessionId: la sessione che ha scritto la proposta, quando c'è: il motore la riprende.
+// Il video dal copione approvato, com'è sul DB dopo le correzioni dell'utente.
 export interface ContentVideoJobInput {
   brandId: string;
   contentId: string;
-  sessionId?: string;
-  format: ContentFormat;
+  sessionId: string;
+  format: 'video';
   channels: ChannelId[];
   script: string;
   scenes: VideoScene[];
