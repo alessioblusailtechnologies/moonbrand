@@ -153,15 +153,25 @@ const SKILL_STEPS: Record<string, MessageKey> = {
 const TOOL_STEPS: Record<string, MessageKey | null> = {
   TodoWrite: null,
   ToolSearch: null,
+  Glob: null,
+  Grep: null,
   StructuredOutput: 'steps.tools.tidy',
   mcp__moonbrand__contenuti_elenca: 'steps.tools.listContents',
   mcp__moonbrand__contenuto_leggi: 'steps.tools.readContent',
   mcp__moonbrand__contenuto_salva: 'steps.tools.saveContent',
   mcp__moonbrand__contenuto_aggiorna: 'steps.tools.updateContent',
+  mcp__moonbrand__contenuto_approva: 'steps.tools.approveContent',
+  mcp__moonbrand__contenuto_riapri: 'steps.tools.reopenContent',
   mcp__moonbrand__idee_elenca: 'steps.tools.listIdeas',
   mcp__moonbrand__idea_salva: 'steps.tools.saveIdea',
   mcp__moonbrand__pubblicazione_proponi: 'steps.tools.proposePublish',
+  mcp__moonbrand__piano_leggi: 'steps.tools.readPlan',
+  mcp__moonbrand__piano_proponi: 'steps.tools.proposePlan',
+  mcp__moonbrand__uscite_crea: 'steps.tools.createSlots',
+  mcp__moonbrand__uscita_cambia: 'steps.tools.changeSlot',
+  mcp__moonbrand__uscita_togli: 'steps.tools.removeSlot',
   mcp__immagini__genera_immagine: 'steps.tools.image',
+  mcp__immagini__foto: 'steps.tools.photo',
   mcp__grafica__renderizza: 'steps.tools.render',
   mcp__audio__cerca_voci: 'steps.tools.chooseVoice',
   mcp__audio__genera_voce: 'steps.tools.recordVoice',
@@ -177,11 +187,14 @@ const TOOL_STEPS: Record<string, MessageKey | null> = {
   mcp__social__scarica_social: 'steps.tools.downloadSocial',
 };
 
+// Le immagini e i video che Claude apre con Read.
+const MEDIA_FILE = /\.(png|jpe?g|webp|gif|mp4|mov|webm)$/i;
+
 // Come si mostra la chiamata a un tool: null se non si mostra, undefined se la tabella non la conosce
 // (allora la legge Haiku nel worker). locale: la lingua dell'account che aspetta.
 export function toolStep(
   name: string,
-  input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown },
+  input: { url?: unknown; query?: unknown; skill?: unknown; title?: unknown; file?: unknown; file_path?: unknown },
   locale: Locale = DEFAULT_LOCALE,
 ): { label: string; detail?: string } | null | undefined {
   const text = (value: unknown) => (typeof value === 'string' && value.trim() ? shorten(value.replace(/\s+/g, ' ').trim(), 90) : undefined);
@@ -192,6 +205,17 @@ export function toolStep(
   }
   if (name === 'mcp__vista__guarda') {
     return { label: translate(locale, lookLabel(Array.isArray(input.file) ? input.file.filter((file) => typeof file === 'string') : [])) };
+  }
+  // I file che Claude apre e scrive da solo: un'immagine o un video che guarda (di solito la grafica appena fatta, da
+  // controllare), una pagina HTML che impagina. Il resto (note, testi, comandi) lo legge Haiku.
+  if (name === 'Read' && typeof input.file_path === 'string') {
+    const file = input.file_path.replace(/\\/g, '/');
+    if (!MEDIA_FILE.test(file)) return undefined;
+    const key = lookLabel([file]);
+    return { label: translate(locale, key === 'steps.look.image' ? 'steps.tools.checkImage' : key) };
+  }
+  if ((name === 'Write' || name === 'Edit') && typeof input.file_path === 'string' && /\.html?$/i.test(input.file_path)) {
+    return { label: translate(locale, 'steps.tools.layout') };
   }
   if (name === 'Skill' && typeof input.skill === 'string') {
     const key = SKILL_STEPS[input.skill.replace(/^moonbrand:/, '')];
