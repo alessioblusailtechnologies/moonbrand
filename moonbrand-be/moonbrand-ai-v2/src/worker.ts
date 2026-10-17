@@ -45,13 +45,15 @@ interface Job {
   input: unknown;
   account_id: string;
   locale: Locale;
+  agent_token: string | null;
 }
 
 // Ogni tipo di job è uno script in src/jobs: qui come lanciarlo e, quando serve, come completare e salvare il risultato.
 // folder: il job lavora nella cartella del brand, che arriva dallo storage prima e ci torna dopo (con le sessioni).
 // reply: il job non ha uno schema, il risultato è la risposta finale di Claude, che si mostra mentre arriva.
+// env: variabili in più per lo script, come il token del job per i tool che chiamano l'API.
 interface JobKind {
-  launch: (input: unknown) => Promise<{ script: string; args: string[] }>;
+  launch: (input: unknown, job: Job) => Promise<{ script: string; args: string[]; env?: Record<string, string> }>;
   finish?: (result: unknown, input: unknown) => Promise<unknown>;
   save?: (job: Job, result: unknown) => Promise<void>;
   folder?: true;
@@ -86,11 +88,16 @@ const JOBS: Record<string, JobKind> = {
     },
     folder: true,
   },
-  // La chat: Claude Code nella cartella del brand, con la sessione della conversazione.
+  // La chat: Claude Code nella cartella del brand, con la sessione della conversazione. Il token del job serve al tool che
+  // salva i contenuti con l'API.
   chat: {
-    launch: async (input) => {
+    launch: async (input, job) => {
       const { brandId, ...rest } = input as ChatJobInput;
-      return { script: 'src/jobs/chat/chat.ts', args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)] };
+      return {
+        script: 'src/jobs/chat/chat.ts',
+        args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)],
+        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '' },
+      };
     },
     folder: true,
     reply: true,
@@ -171,7 +178,7 @@ async function claim(): Promise<Job | null> {
       const { rows } = await client.query<Job>(
         `update presenza.ai_jobs set status = 'running', attempts = attempts + 1, started_at = now(), locked_until = now() + $2::interval
          where id = $1
-         returning id, kind, input, account_id, (select locale from presenza.accounts where id = ai_jobs.account_id) as locale`,
+         returning id, kind, input, account_id, agent_token, (select locale from presenza.accounts where id = ai_jobs.account_id) as locale`,
         [candidate.id, LEASE],
       );
       await client.query('commit');
@@ -264,15 +271,15 @@ async function run(job: Job): Promise<void> {
     await writeBrandLogo(pool, path.join(BRANDS_DIR, brandId), brandId).catch((error: unknown) => console.error(`[${job.id}] logo non scritto`, error));
   }
 
-  let launch: { script: string; args: string[] };
+  let launch: Awaited<ReturnType<JobKind['launch']>>;
   try {
-    launch = await kind.launch(job.input);
+    launch = await kind.launch(job.input, job);
   } catch (error) {
     return fail(error instanceof Error ? error.message : String(error));
   }
   const child = spawn(process.execPath, ['--import', 'tsx', launch.script, ...launch.args], {
     cwd: ROOT,
-    env: { ...jobEnv, MOONBRAND_LOCALE: job.locale },
+    env: { ...jobEnv, ...launch.env, MOONBRAND_LOCALE: job.locale },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   child.stdin.on('error', () => undefined);

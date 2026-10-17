@@ -6,11 +6,13 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
-// La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Niente tool di moonbrand: poche
-// righe dicono quali chiavi ha nell'ambiente, e Claude le usa da sé con node o curl.
+import { salvaServer } from './salva';
+
+// La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Poche righe dicono quali chiavi
+// ha nell'ambiente, che Claude usa da sé con node o curl; l'unico tool di moonbrand salva i contenuti finiti.
 
 const STRUMENTI = `Nell'ambiente hai GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_API_KEY (clip video) ed ELEVENLABS_API_KEY (voce e musica): chiamale tu con node o curl.
-Lavora in lavoro/; i file finiti vanno in contenuti/.`;
+Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un contenuto è pronto salvalo con salva_contenuto; per cambiarlo passa il suo id.`;
 
 // Il repo, con il codice e i .env di tutti i servizi: la chat non lo legge, tranne la cartella del brand.
 const REPO = fileURLToPath(new URL('../../../../..', import.meta.url));
@@ -21,9 +23,10 @@ if (!brandDir || !inputJson) {
   process.exit(1);
 }
 
-// Il token del job e le credenziali dello storage servono al worker, non a Claude.
+// Il token del job e le credenziali dello storage servono a salva_contenuto e al worker, non a Claude.
 const {
-  MOONBRAND_AGENT_TOKEN: _token,
+  MOONBRAND_AGENT_TOKEN = '',
+  API_URL = 'http://localhost:3012',
   S3_ACCESS_KEY_ID: _s3Key,
   S3_SECRET_ACCESS_KEY: _s3Secret,
   S3_SESSION_TOKEN: _s3Session,
@@ -48,6 +51,7 @@ try {
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
+      mcpServers: { moonbrand: salvaServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir) },
       // Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home, tranne il brand.
       // Su Windows (il collaudo) il sandbox non c'è: lì Bash resta libero, su Linux senza sandbox la chat non parte.
       sandbox: {

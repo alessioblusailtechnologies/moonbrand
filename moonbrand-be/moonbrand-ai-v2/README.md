@@ -108,7 +108,30 @@ Claude Code parte con la cartella del brand come cwd:
 - risposta in streaming nello studio;
 - lo stop dallo studio interrompe e lascia la sessione riprendibile.
 
-Per ora non ci sono prompt in più né tool di moonbrand. L'idea e lo slot passati dallo studio sono ignorati.
+In più, al prompt di Claude Code si aggiungono poche righe (`STRUMENTI` in `chat.ts`):
+- le chiavi che ha nell'ambiente: `GEMINI_API_KEY` (immagini e per guardare i video), `ATLASCLOUD_API_KEY` (clip video), `ELEVENLABS_API_KEY` (voce e musica). Le chiama lui con node o curl, niente tool;
+- lavora in `lavoro/`, i file finiti vanno in `contenuti/`;
+- quando un contenuto è pronto lo salva con `salva_contenuto`.
+
+Le righe stanno in `chat.ts` e non nel `CLAUDE.md`, così si cambiano senza riscrivere le cartelle dei brand.
+
+#### Il tool `salva_contenuto` (`salva.ts`)
+
+L'unico tool di moonbrand. Salva in Contenuti, come bozza, con la stessa rotta dell'API della v1 (`POST /v1/agent/contents`, con l'`id` `PUT`).
+- Input corto: titolo, formato (post, carosello, video), canali, testo e hashtag per canale, file con la proporzione, `slotId` facoltativo.
+- Ruolo e ordine dei file li deduce il codice: l'MP4 è il video, le immagini sono copertina o, nei caroselli, slide.
+- Prima carica i file sullo storage, perché l'API li copia da lì.
+- Il token del job (`agent_token`, passato dal worker) resta nel processo: Claude non lo vede.
+
+#### Sicurezza
+
+- Dall'ambiente di Claude si tolgono il token del job e le credenziali S3; `DATABASE_URL` lo toglie già il worker.
+- Read, Grep e Glob non leggono `.env` e `~/.claude` (regole `deny` nelle impostazioni del job).
+- Bash gira nel sandbox dell'SDK solo su Linux: scrive nella cartella del brand e non legge il repo né la home. Se il sandbox non parte, la chat non parte (`failIfUnavailable`).
+- Su Windows (il collaudo, questa macchina) il sandbox non c'è («feature gate off»): lì Bash resta libero e può leggere i file della macchina. Scelta consapevole per poter provare.
+- Le chiavi di generazione sono visibili a Claude: si accetta, con chiavi dedicate e un tetto di spesa dal fornitore. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
+
+L'idea e lo slot passati dallo studio sono ancora ignorati.
 
 ### Worker
 
@@ -141,7 +164,7 @@ Tutte dietro l'interruttore `AI_ENGINE=v2` nel `.env` dell'API. Il default è `v
 
 ## Come si prova
 
-1. Nel `.env` dell'API: `AI_ENGINE=v2`.
+1. Nel `.env` dell'API: `AI_ENGINE=v2`. Nel `.env` di questa cartella: `DATABASE_URL` e le chiavi `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`, `ELEVENLABS_API_KEY`.
 2. Spegni il worker di `moonbrand-ai` e avvia questo: `npm run worker`.
 3. Fai l'onboarding dallo studio di collaudo (https://45.14.185.228:4200), poi apri la chat.
 
@@ -152,9 +175,18 @@ Prove fatte il 17/10:
 - chat con risposta coerente con il brand e ripresa della sessione al secondo turno;
 - un turno dallo studio in 6 secondi per $0,20.
 
+Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis dallo studio):
+- post della t-shirt di Natale, carosello Instagram e TikTok, reel con 5 clip, musica e montaggio: tutto salvato in Contenuti;
+- costo totale circa 9,5–10 $: Claude 5,85 $ (5 turni, il reel 2,46 $), Atlas circa 2,4 $, Gemini circa 1,3 $, ElevenLabs circa 0,15 $;
+- una clip (la cena aziendale) bloccata due volte dal filtro di Gemini Omni Flash su Atlas: Claude l'ha rifatta da solo con Kling v3.
+
 ## Cosa manca
 
+- **Un contenuto per più canali.** Claude ha salvato il carosello Instagram e quello TikTok come due contenuti separati, quindi nello studio non compare la barra dei canali (che c'è solo con più di un canale). Per sistemarlo: dire nella descrizione del tool che un contenuto è uno per idea, e aggiungere `canale` facoltativo ai file (serve per il reel, dove Instagram e TikTok sono tutti e due 9:16). Per ora lasciato così.
+- **Usa il repo come cassetta degli attrezzi.** Ha letto `moonbrand-ai-fresh/src/tools/atlas.ts` per capire Atlas e ha preso `ffmpeg.exe` da `node_modules/@remotion/compositor-win32-x64-msvc`. In produzione col sandbox non ci arriva: servono ffmpeg nel PATH del server e Read/Grep limitati alla cartella del brand.
+- **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s.
+- **I costi dei fornitori** (Gemini, Atlas, ElevenLabs) non sono contati: si vede solo il costo di Claude.
+- **Versioni dei contenuti.** Una modifica riscrive il contenuto e l'API cancella i file vecchi: si perde la versione precedente. Idea discussa: tabella delle versioni, file per versione, «torna a questa» nello studio. Rimandato.
 - Il job `welcome` (saluto e spunti del giorno): lo studio usa i saluti di riserva.
-- Gli strumenti della chat: salvare un contenuto, generare immagini e video, toccare il piano.
 - Passare l'idea e lo slot al prompt della chat.
-- Nulla è ancora committato.
+- Il sandbox va provato su Linux (bubblewrap e socat installati) prima di andare in produzione.
