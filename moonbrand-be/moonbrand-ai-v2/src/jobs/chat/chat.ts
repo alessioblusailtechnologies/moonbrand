@@ -6,12 +6,19 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 
 import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
+import { estimatesFromEnv } from '../../lib/estimate';
+import { LISTINO } from '../../lib/prices';
 import { salvaServer } from './salva';
 
-// La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Poche righe dicono quali chiavi
-// ha nell'ambiente, che Claude usa da sé con node o curl; l'unico tool di moonbrand salva i contenuti finiti.
+// La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Poche righe dicono quali servizi
+// ha nell'ambiente, che Claude chiama da sé con node o curl attraverso il proxy del worker, e quanto consumano caroselli e
+// video, da dire prima di farli; l'unico tool di moonbrand salva i contenuti finiti.
 
-const STRUMENTI = `Nell'ambiente hai GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_API_KEY (clip video) ed ELEVENLABS_API_KEY (voce e musica): chiamale tu con node o curl.
+const { carousel, video } = estimatesFromEnv(process.env);
+const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
+
+const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl.
+Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).
 Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un contenuto è pronto salvalo con salva_contenuto; per cambiarlo passa il suo id.`;
 
 // Il repo, con il codice e i .env di tutti i servizi: la chat non lo legge, tranne la cartella del brand.

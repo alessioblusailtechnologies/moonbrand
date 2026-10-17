@@ -109,7 +109,8 @@ Claude Code parte con la cartella del brand come cwd:
 - lo stop dallo studio interrompe e lascia la sessione riprendibile.
 
 In più, al prompt di Claude Code si aggiungono poche righe (`STRUMENTI` in `chat.ts`):
-- le chiavi che ha nell'ambiente: `GEMINI_API_KEY` (immagini e per guardare i video), `ATLASCLOUD_API_KEY` (clip video), `ELEVENLABS_API_KEY` (voce e musica). Le chiama lui con node o curl, niente tool;
+- gli indirizzi e le chiavi dei servizi: `GEMINI_BASE_URL`/`GEMINI_API_KEY` (immagini e per guardare i video), `ATLASCLOUD_BASE_URL`/`ATLASCLOUD_API_KEY` (clip video), `ELEVENLABS_BASE_URL`/`ELEVENLABS_API_KEY` (voce e musica). Le chiama lui con node o curl, niente tool. Indirizzi e chiavi sono quelli del proxy (sotto);
+- prima di un carosello o di un video dice cosa farà e quanti crediti consumerà, e aspetta l'ok. Le cifre tipiche arrivano dal worker (`lib/estimate.ts`), il listino per le modifiche da `lib/prices.ts`;
 - lavora in `lavoro/`, i file finiti vanno in `contenuti/`;
 - quando un contenuto è pronto lo salva con `salva_contenuto`.
 
@@ -123,13 +124,24 @@ L'unico tool di moonbrand. Salva in Contenuti, come bozza, con la stessa rotta d
 - Prima carica i file sullo storage, perché l'API li copia da lì.
 - Il token del job (`agent_token`, passato dal worker) resta nel processo: Claude non lo vede.
 
+#### Il proxy dei servizi (`lib/proxy.ts`)
+
+Per ogni chat il worker apre un server su 127.0.0.1 che inoltra a Gemini, Atlas ed ElevenLabs. Claude ha l'indirizzo del proxy, con un token del job nel percorso, e come chiave lo stesso token: le chiavi vere restano nel worker e ai servizi veri il token non vale niente.
+- Ogni generazione va in `ai_usage` con job, brand e costo, e da lì partono i crediti, come nella v1.
+- Gemini: dai token della risposta (anche quelli delle immagini), con il listino di `prices.ts`.
+- Atlas: prezzo base del catalogo (`/api/v1/models`, letto all'ora) per secondi o immagini; si registra quando la predizione risulta finita, o a fine job. Per alcuni modelli il prezzo base è un «a partire da»: ogni tanto confrontare il totale con `public/v1/model-costs`.
+- ElevenLabs: caratteri per la voce, durata chiesta per musica ed effetti, durata dell'audio per la trascrizione.
+- Un modello senza prezzo si registra lo stesso, senza costo, con un avviso `[proxy]` nel log del worker.
+- Gli indirizzi dei servizi nelle risposte (i link di Atlas per controllare una clip, l'indirizzo di caricamento dei file di Gemini) diventano quelli del proxy, e viceversa nelle richieste.
+
 #### Sicurezza
 
 - Dall'ambiente di Claude si tolgono il token del job e le credenziali S3; `DATABASE_URL` lo toglie già il worker.
 - Read, Grep e Glob non leggono `.env` e `~/.claude` (regole `deny` nelle impostazioni del job).
 - Bash gira nel sandbox dell'SDK solo su Linux: scrive nella cartella del brand e non legge il repo né la home. Se il sandbox non parte, la chat non parte (`failIfUnavailable`).
 - Su Windows (il collaudo, questa macchina) il sandbox non c'è («feature gate off»): lì Bash resta libero e può leggere i file della macchina. Scelta consapevole per poter provare.
-- Le chiavi di generazione sono visibili a Claude: si accetta, con chiavi dedicate e un tetto di spesa dal fornitore. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
+- Le chiavi di generazione non sono più nell'ambiente di Claude: le ha solo il proxy. Su Windows, senza sandbox, Claude potrebbe ancora leggerle dal `.env` con Bash. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
+- Da verificare su Linux: che dal sandbox la chat raggiunga il proxy su 127.0.0.1 (potrebbe servire `sandbox.network`).
 
 L'idea e lo slot passati dallo studio sono ancora ignorati.
 
@@ -185,7 +197,6 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 - **Un contenuto per più canali.** Claude ha salvato il carosello Instagram e quello TikTok come due contenuti separati, quindi nello studio non compare la barra dei canali (che c'è solo con più di un canale). Per sistemarlo: dire nella descrizione del tool che un contenuto è uno per idea, e aggiungere `canale` facoltativo ai file (serve per il reel, dove Instagram e TikTok sono tutti e due 9:16). Per ora lasciato così.
 - **Usa il repo come cassetta degli attrezzi.** Ha letto `moonbrand-ai-fresh/src/tools/atlas.ts` per capire Atlas e ha preso `ffmpeg.exe` da `node_modules/@remotion/compositor-win32-x64-msvc`. In produzione col sandbox non ci arriva: servono ffmpeg nel PATH del server e Read/Grep limitati alla cartella del brand.
 - **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s.
-- **I costi dei fornitori** (Gemini, Atlas, ElevenLabs) non sono contati: si vede solo il costo di Claude.
 - **Versioni dei contenuti.** Una modifica riscrive il contenuto e l'API cancella i file vecchi: si perde la versione precedente. Idea discussa: tabella delle versioni, file per versione, «torna a questa» nello studio. Rimandato.
 - Il job `welcome` (saluto e spunti del giorno): lo studio usa i saluti di riserva.
 - Passare l'idea e lo slot al prompt della chat.

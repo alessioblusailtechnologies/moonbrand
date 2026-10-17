@@ -17,6 +17,8 @@ import type { FolderBrand } from './jobs/cartella/cartella';
 import { saveIdeas } from './jobs/ideas/save';
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
+import { estimatesEnv, measureEstimates } from './lib/estimate';
+import { startProxy, type Usage } from './lib/proxy';
 import { createStepReader } from './lib/step-reader';
 
 // Il motore v2: l'onboarding e la chat. La coda è la stessa di moonbrand-ai (presenza.ai_jobs), con gli stessi tipi
@@ -52,12 +54,14 @@ interface Job {
 // folder: il job lavora nella cartella del brand, che arriva dallo storage prima e ci torna dopo (con le sessioni).
 // reply: il job non ha uno schema, il risultato è la risposta finale di Claude, che si mostra mentre arriva.
 // env: variabili in più per lo script, come il token del job per i tool che chiamano l'API.
+// proxy: il job chiama Gemini, Atlas ed ElevenLabs attraverso il proxy del worker, che ne conta i costi.
 interface JobKind {
   launch: (input: unknown, job: Job) => Promise<{ script: string; args: string[]; env?: Record<string, string> }>;
   finish?: (result: unknown, input: unknown) => Promise<unknown>;
   save?: (job: Job, result: unknown) => Promise<void>;
   folder?: true;
   reply?: true;
+  proxy?: true;
 }
 
 const JOBS: Record<string, JobKind> = {
@@ -89,18 +93,19 @@ const JOBS: Record<string, JobKind> = {
     folder: true,
   },
   // La chat: Claude Code nella cartella del brand, con la sessione della conversazione. Il token del job serve al tool che
-  // salva i contenuti con l'API.
+  // salva i contenuti con l'API; le stime dicono quanto consumano di solito caroselli e video.
   chat: {
     launch: async (input, job) => {
       const { brandId, ...rest } = input as ChatJobInput;
       return {
         script: 'src/jobs/chat/chat.ts',
         args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)],
-        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '' },
+        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '', ...estimatesEnv(await measureEstimates(pool)) },
       };
     },
     folder: true,
     reply: true,
+    proxy: true,
   },
 };
 
@@ -123,10 +128,12 @@ async function folderBrand(brandId: string): Promise<FolderBrand> {
 
 const url = process.env.DATABASE_URL ?? '';
 
-// Il DB è del worker: gli script dei job (e quindi Claude) non ne ricevono l'indirizzo.
+// Il DB e le chiavi dei servizi sono del worker: gli script dei job (e quindi Claude) non le ricevono, la chat passa dal
+// proxy.
 // I connettori dell'account claude.ai di questa macchina non servono ai job: accesi, finirebbero nel contesto.
 process.env.ENABLE_CLAUDEAI_MCP_SERVERS = 'false';
-const { DATABASE_URL: _database, ...jobEnv } = process.env;
+const { DATABASE_URL: _database, GEMINI_API_KEY, ATLASCLOUD_API_KEY, ELEVENLABS_API_KEY, ...jobEnv } = process.env;
+const SERVICE_KEYS = { gemini: GEMINI_API_KEY, atlas: ATLASCLOUD_API_KEY, elevenlabs: ELEVENLABS_API_KEY };
 const local = url.includes('localhost') || url.includes('127.0.0.1');
 const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { rejectUnauthorized: false } }), max: CONCURRENCY + 2 });
 
@@ -277,9 +284,11 @@ async function run(job: Job): Promise<void> {
   } catch (error) {
     return fail(error instanceof Error ? error.message : String(error));
   }
+  // Ogni generazione che passa dal proxy va in ai_usage con il job.
+  const proxy = kind.proxy ? await startProxy(SERVICE_KEYS, (usage) => void saveUsage(job, usage)) : undefined;
   const child = spawn(process.execPath, ['--import', 'tsx', launch.script, ...launch.args], {
     cwd: ROOT,
-    env: { ...jobEnv, ...launch.env, MOONBRAND_LOCALE: job.locale },
+    env: { ...jobEnv, ...launch.env, ...proxy?.env, MOONBRAND_LOCALE: job.locale },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   child.stdin.on('error', () => undefined);
@@ -372,6 +381,7 @@ async function run(job: Job): Promise<void> {
 
   const code = await new Promise<number | null>((resolve) => child.on('close', resolve));
   running.delete(job.id);
+  await proxy?.close().catch((error: unknown) => console.error(`[${job.id}] proxy non chiuso`, error));
   // Le ultime letture di Haiku finiscono negli step del job; se il job è stato fermato non si aspettano.
   await reader.close(stopping || cancelled.has(job.id) ? 0 : READ_GRACE_MS);
   clearTimeout(flushTimer);
@@ -432,6 +442,32 @@ async function finish(
       fields.sessionId ?? null,
     ],
   );
+}
+
+async function saveUsage(job: Job, usage: Usage): Promise<void> {
+  const brandId = (job.input as { brandId?: string } | null)?.brandId ?? null;
+  await pool
+    .query(
+      `insert into presenza.ai_usage
+         (account_id, brand_id, job_id, task, model, outcome, error, duration_ms, cost_usd, input_tokens, output_tokens, units, unit)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      [
+        job.account_id,
+        brandId,
+        job.id,
+        usage.task,
+        usage.model,
+        usage.outcome,
+        usage.error ?? null,
+        Math.round(usage.durationMs),
+        usage.costUsd ?? null,
+        usage.inputTokens ?? 0,
+        usage.outputTokens ?? 0,
+        usage.units ?? null,
+        usage.unit ?? null,
+      ],
+    )
+    .catch((error: unknown) => console.error(`[${job.id}] generazione non registrata`, error));
 }
 
 // La parte del job: il totale della sessione meno quello del job prima nella stessa sessione.
