@@ -112,13 +112,16 @@ In più, al prompt di Claude Code si aggiungono poche righe (`STRUMENTI` in `cha
 - gli indirizzi e le chiavi dei servizi: `GEMINI_BASE_URL`/`GEMINI_API_KEY` (immagini e per guardare i video), `ATLASCLOUD_BASE_URL`/`ATLASCLOUD_API_KEY` (clip video), `ELEVENLABS_BASE_URL`/`ELEVENLABS_API_KEY` (voce e musica). Le chiama lui con node o curl, niente tool. Indirizzi e chiavi sono quelli del proxy (sotto);
 - prima di un carosello o di un video dice cosa farà e quanti crediti consumerà, e aspetta l'ok. Le cifre tipiche arrivano dal worker (`lib/estimate.ts`), il listino per le modifiche da `lib/prices.ts`;
 - lavora in `lavoro/`, i file finiti vanno in `contenuti/`;
-- quando un contenuto è pronto lo salva con `salva_contenuto`.
+- quando un contenuto è pronto lo salva con `salva_contenuto`; contenuti, piano e idee li legge e li cambia con gli altri tool di moonbrand;
+- l'uscita del piano e l'idea da cui si apre la chat vanno in fondo al messaggio, come nella v1: con lo `slotId` il contenuto si aggancia all'uscita.
 
 Le righe stanno in `chat.ts` e non nel `CLAUDE.md`, così si cambiano senza riscrivere le cartelle dei brand.
 
-#### Il tool `salva_contenuto` (`salva.ts`)
+#### I tool di moonbrand (`moonbrand.ts`)
 
-L'unico tool di moonbrand. Salva in Contenuti, come bozza, con la stessa rotta dell'API della v1 (`POST /v1/agent/contents`, con l'`id` `PUT`).
+Le stesse rotte `/v1/agent/*` della v1, con il token del job e descrizioni di una frase: `contenuti_elenca`, `contenuto_leggi`, `contenuto_approva` (solo se lo chiede l'utente), `contenuto_riapri`, `pubblicazione_proponi` (il pulsante «Pubblica ora», non pubblica), `piano_leggi`, `piano_proponi`, `uscite_crea`, `uscita_cambia`, `uscita_togli`, `idee_elenca`, `idea_salva`. Le regole del piano (ritmo, orari, temi) le applica l'API in `piano_proponi`.
+
+`salva_contenuto` salva in Contenuti, come bozza, con la stessa rotta dell'API della v1 (`POST /v1/agent/contents`, con l'`id` `PUT`).
 - Input corto: titolo, formato (post, carosello, video), canali, testo e hashtag per canale, file con la proporzione, `slotId` facoltativo.
 - Ruolo e ordine dei file li deduce il codice: l'MP4 è il video, le immagini sono copertina o, nei caroselli, slide.
 - Prima carica i file sullo storage, perché l'API li copia da lì.
@@ -143,7 +146,6 @@ Per ogni chat il worker apre un server su 127.0.0.1 che inoltra a Gemini, Atlas 
 - Le chiavi di generazione non sono più nell'ambiente di Claude: le ha solo il proxy. Su Windows, senza sandbox, Claude potrebbe ancora leggerle dal `.env` con Bash. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
 - Da verificare su Linux: che dal sandbox la chat raggiunga il proxy su 127.0.0.1 (potrebbe servire `sandbox.network`).
 
-L'idea e lo slot passati dallo studio sono ancora ignorati.
 
 ### Worker
 
@@ -199,5 +201,4 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 - **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s.
 - **Versioni dei contenuti.** Una modifica riscrive il contenuto e l'API cancella i file vecchi: si perde la versione precedente. Idea discussa: tabella delle versioni, file per versione, «torna a questa» nello studio. Rimandato.
 - Il job `welcome` (saluto e spunti del giorno): lo studio usa i saluti di riserva.
-- Passare l'idea e lo slot al prompt della chat.
 - Il sandbox va provato su Linux (bubblewrap e socat installati) prima di andare in produzione.
