@@ -17,6 +17,8 @@ export interface Account {
   emailConfirmed: boolean;
   // Il piano Ultra in omaggio (FREE_ULTRA_EMAILS dell'API): niente da pagare, lo studio non propone il checkout.
   freePlan?: boolean;
+  // Il motore dei job (AI_ENGINE dell'API), solo se non è quello di sempre: con v2 l'onboarding è più corto.
+  aiEngine?: 'v2';
 }
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.

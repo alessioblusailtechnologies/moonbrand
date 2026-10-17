@@ -16,6 +16,7 @@ import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
 import { DodoApi } from './modules/billing/dodo-api';
 import { registerDodoWebhook } from './modules/billing/dodo-webhook';
+import { setAiEngine } from './modules/ai/engine';
 import { setFreeUltraEmails } from './modules/billing/free-plan';
 import { registerBillingRoutes } from './modules/billing/routes';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
@@ -64,6 +65,7 @@ export interface AppOptions {
     | 'ADMIN_EMAILS'
     | 'FREE_ULTRA_EMAILS'
     | 'AI_DIR'
+    | 'AI_ENGINE'
   >;
 }
 
@@ -86,6 +88,7 @@ export function buildApp(options: AppOptions) {
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
   enforceBilling(options.settings.BILLING_ENFORCED);
   setFreeUltraEmails(options.settings);
+  setAiEngine(options.settings);
   const dodo = new DodoApi(options.settings);
   registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, dodo);
   registerBrandFileRoutes(app, options.files);

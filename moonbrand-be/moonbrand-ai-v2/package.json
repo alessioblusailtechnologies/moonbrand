@@ -1,0 +1,29 @@
+{
+  "name": "moonbrand-ai-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "worker": "tsx src/worker.ts",
+    "brand": "tsx src/jobs/brand/brand.ts",
+    "ideas": "tsx src/jobs/ideas/ideas.ts",
+    "cartella": "tsx src/jobs/cartella/cartella.ts",
+    "typecheck": "tsc --noEmit",
+    "chat": "tsx src/jobs/chat/chat.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.302",
+    "@aws-sdk/client-s3": "^3.1152.0",
+    "@aws-sdk/lib-storage": "^3.1152.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3"
+  }
+}
