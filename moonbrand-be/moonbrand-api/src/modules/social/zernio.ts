@@ -10,6 +10,17 @@ import { ApiError } from '../../errors';
 // già collegati.
 
 const API = 'https://zernio.com/api/v1';
+
+// Su iPhone e iPad /oauth/authorize senza barra finale apre l'app Instagram, che dà un errore generico: le regole
+// dei link di Instagram (instagram.com/.well-known/apple-app-site-association) lasciano nel browser solo
+// /oauth/authorize/* e gli indirizzi con #weblink.
+const webOnly = (authUrl: string) => {
+  const url = new URL(authUrl);
+  if (url.hostname !== 'www.instagram.com' && url.hostname !== 'instagram.com') return authUrl;
+  if (url.pathname === '/oauth/authorize') url.pathname = '/oauth/authorize/';
+  url.hash = 'weblink';
+  return url.toString();
+};
 const TIMEOUT_MS = 20_000;
 // Un video si carica e si pubblica in qualche decina di secondi: con publishNow Zernio risponde a pubblicazione fatta.
 const UPLOAD_TIMEOUT_MS = 5 * 60_000;
@@ -201,7 +212,7 @@ export function zernio(apiKey: string): Zernio {
       const profile = await profileId(brandId, true);
       const query = new URLSearchParams({ profileId: profile!, redirect_url: redirectUrl, headless: 'true' });
       const { authUrl } = await call<{ authUrl: string }>(`/connect/${PLATFORMS[channel]}?${query}`);
-      return authUrl;
+      return webOnly(authUrl);
     },
 
     async choices(brandId, channel, request) {
