@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
 import type { FastifyInstance } from 'fastify';
+import type pg from 'pg';
 import { z } from 'zod';
 
 import type { ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
 
 import { ApiError } from '../../errors';
+import { accountEngine } from '../ai/engine';
 import { EXTENSIONS, parseImage, uploadSchema } from '../media/routes';
 import { REFERENCES_DIR, referencesDir, type BrandFiles } from './files';
 import { LINK_CACHE_SECONDS } from './s3';
@@ -25,12 +27,12 @@ function parseRange(header: string | undefined, size: number): { start: number; 
   return start > end || start >= size ? 'invalid' : { start, end };
 }
 
-export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles): void {
+export function registerBrandFileRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): void {
   app.post('/v1/brands/:brandId/references', async (request): Promise<ReferenceUploadResponse> => {
     const { brandId } = brandParams.parse(request.params);
     const { bytes, mimeType } = parseImage(uploadSchema.parse(request.body).dataUri);
     await files.claim(brandId, request.identity.accountId);
-    const path = `${referencesDir()}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
+    const path = `${referencesDir(await accountEngine(pool, request.identity.accountId))}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
     await files.save(brandId, path, bytes);
     return { path, url: files.url(brandId, path) };
   });
@@ -40,7 +42,7 @@ export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles)
     await files.claim(brandId, request.identity.accountId);
     // Con il motore v2 un brand nato prima ha ancora i riferimenti in file-riferimento/: si toglie da tutte e due.
     await files.remove(brandId, `${REFERENCES_DIR}/${name}`);
-    await files.remove(brandId, `${referencesDir()}/${name}`);
+    await files.remove(brandId, `${referencesDir(await accountEngine(pool, request.identity.accountId))}/${name}`);
     return reply.code(204).send();
   });
 

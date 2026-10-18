@@ -19,6 +19,10 @@ cd ~/moonbrand/moonbrand-be/moonbrand-ai
 npm ci --no-audit --no-fund >/tmp/ai-ci.log 2>&1
 echo "worker ok"
 
+cd ~/moonbrand/moonbrand-be/moonbrand-ai-v2
+npm ci --no-audit --no-fund >/tmp/ai-v2-ci.log 2>&1
+echo "worker v2 ok"
+
 cd ~/moonbrand/moonbrand-studio
 npm ci --no-audit --no-fund >/tmp/st-ci.log 2>&1
 npm run build >/tmp/st-build.log 2>&1
@@ -28,5 +32,7 @@ echo "studio ok"
 REMOTE
 
 ssh moonbrand 'systemctl restart moonbrand-api moonbrand-worker && sleep 3 && systemctl is-active moonbrand-api moonbrand-worker'
+# Il worker v2 (PRODUZIONE.md, «Motore v2»), se sul server c'è già il suo servizio.
+ssh moonbrand 'if systemctl cat moonbrand-worker-v2 >/dev/null 2>&1; then systemctl restart moonbrand-worker-v2 && sleep 3 && systemctl is-active moonbrand-worker-v2; fi'
 curl -fsS https://studio.moonbrand.app/v1/health && echo
 echo "deploy fatto. Se un passo fallisce, il log è in /tmp/*.log sul server."

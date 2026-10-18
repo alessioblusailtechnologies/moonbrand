@@ -354,3 +354,43 @@ API_URL=https://studio.moonbrand.app
 I brand nuovi vanno al primo worker libero; quelli esistenti restano al loro. Per spostare un brand da un worker
 spento: `update presenza.brand_workers set worker_id = 'worker-2' where brand_id = '<brand>'` (i file arrivano da
 soli dallo storage al primo job).
+
+## 14. Motore v2
+
+Il worker v2 (`moonbrand-be/moonbrand-ai-v2`) gira accanto a quello della v1, sulla stessa coda: ognuno prende solo i
+job del motore dell'account (`presenza.accounts.ai_engine`, default `v1`). Finché nessun account è passato al v2 dalla
+scheda dell'utenza nell'admin, per gli utenti non cambia niente. Una volta sola:
+
+1. Migration `20261019100000_ai_engine.sql` (OPERAZIONI.md, «Migration del DB»), **prima** del deploy: il worker v1
+   nuovo legge `ai_jobs.engine`.
+2. Pacchetti: `apt install ffmpeg bubblewrap socat` (ffmpeg per la chat, bubblewrap e socat per il sandbox di Bash).
+3. `.env` del v2 in `~/moonbrand/moonbrand-be/moonbrand-ai-v2/.env`: gli stessi valori del worker v1 per
+   `DATABASE_URL`, `API_URL`, `BRANDS_DIR`, `CLAUDE_CONFIG_DIR`, `S3_*`, `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`,
+   `ELEVENLABS_API_KEY`; niente `WORKER_ID` (vale `<hostname>-v2`). Accanto, `.env.lambda` con le chiavi di Remotion
+   Lambda (si copia da quello di sviluppo).
+4. Servizio `/etc/systemd/system/moonbrand-worker-v2.service`, come quello della v1 con la cartella del v2:
+
+   ```
+   [Unit]
+   Description=moonbrand worker v2
+   After=network-online.target
+
+   [Service]
+   User=moonbrand
+   WorkingDirectory=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v2
+   ExecStart=/usr/bin/npx tsx src/worker.ts
+   KillSignal=SIGTERM
+   TimeoutStopSec=30
+   Restart=always
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+   poi `systemctl daemon-reload && systemctl enable --now moonbrand-worker-v2`. Da lì `deploy.sh` lo aggiorna e lo
+   riavvia insieme agli altri.
+
+Il passaggio di un account (admin → utenza → «Passa al v2») si fa solo senza lavori in coda: per ogni brand parte un
+job che mette in `v1/` la roba della v1 (`CLAUDE.md`, `esempi/`, `riferimenti-da-seguire/`, `template/`, `video/`) e
+prepara la cartella del v2. Le conversazioni ripartono con una sessione nuova. «Torna alla v1» rimette tutto com'era.
+`AI_ENGINE=v2` nel `.env` dell'API fa nascere sul v2 gli account nuovi.

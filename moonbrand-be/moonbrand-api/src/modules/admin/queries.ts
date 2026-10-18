@@ -1,6 +1,6 @@
 import type pg from 'pg';
 
-import type { AdminAccount, AdminCost, AdminCostPart, AdminJob, CreditCategory } from '@moonbrand/shared/api/contract';
+import type { AdminAccount, AdminCost, AdminCostPart, AdminJob, AiEngine, CreditCategory } from '@moonbrand/shared/api/contract';
 
 import { adminEmails, type Config } from '../../config';
 import { accountEmail } from '../auth/accounts';
@@ -97,10 +97,11 @@ export interface AccountRow {
   claude: string;
   generations: string;
   credits_month: string;
+  ai_engine: AiEngine;
 }
 
 export const ACCOUNT_SELECT = `
-  select a.id, a.email, a.name, a.created_at, a.last_sign_in_at, a.email_confirmed_at is not null as confirmed,
+  select a.id, a.email, a.name, a.created_at, a.last_sign_in_at, a.email_confirmed_at is not null as confirmed, a.ai_engine,
     (select count(*) from presenza.brands where account_id = a.id) as brands,
     (select count(*) from presenza.contents where account_id = a.id) as contents,
     (select count(*) from presenza.ai_jobs where account_id = a.id) as jobs,
@@ -125,6 +126,7 @@ export function toAccount(row: AccountRow): AdminAccount {
     lastActivityAt: iso(row.last_activity),
     cost: cost(row.claude, row.generations),
     creditsMonth: Math.round(Number(row.credits_month)),
+    aiEngine: row.ai_engine,
   };
 }
 

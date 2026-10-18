@@ -10,6 +10,7 @@ import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { estimatesFromEnv } from '../../lib/estimate';
 import { LISTINO } from '../../lib/prices';
+import { ARCHIVE } from '../cartella/migrate';
 import { lambdaKeys, lambdaServer } from './lambda';
 import { moonbrandServer } from './moonbrand';
 
@@ -55,7 +56,9 @@ const readRule = (target: string) => `Read(/${target.replace(/^([A-Za-z]):/, (_,
 const brandRoot = path.resolve(brandDir);
 const home = homedir();
 const outer = path.relative(home, REPO).startsWith('..') ? [REPO, home] : [home];
-const readDeny = outer.flatMap((root) => aroundBrand(root, brandRoot)).map(readRule);
+// Anche v1/, la roba della v1 archiviata quando l'account è passato al v2.
+const archive = path.join(brandRoot, ARCHIVE);
+const readDeny = [...outer.flatMap((root) => aroundBrand(root, brandRoot)), `${archive}${path.sep}**`].map(readRule);
 
 // ffmpeg: su Linux quello del sistema; su Windows (il collaudo) quello dei pacchetti Remotion, messo nel PATH perché
 // la chat non lo vada a cercare nel repo.
@@ -113,13 +116,13 @@ try {
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
       // L'export dei video nel cloud c'è solo con le chiavi di Lambda; senza, Claude esporta in locale.
       mcpServers: { moonbrand: moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir), ...(lambda && { lambda: lambdaServer(brandDir, lambda) }) },
-      // Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home, tranne il brand.
+      // Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home, tranne il brand (senza v1/).
       // Su Windows (il collaudo) il sandbox non c'è: lì Bash resta libero, su Linux senza sandbox la chat non parte.
       sandbox: {
         enabled: process.platform === 'linux',
         failIfUnavailable: true,
         allowUnsandboxedCommands: false,
-        filesystem: { denyRead: [REPO, homedir()], allowRead: [path.resolve(brandDir)] },
+        filesystem: { denyRead: [REPO, homedir(), archive], allowRead: [brandRoot] },
       },
       // Read, Grep e Glob non passano dal sandbox: niente .env né credenziali di Claude, ovunque siano, e niente fuori
       // dalla cartella del brand nel repo e nella home.

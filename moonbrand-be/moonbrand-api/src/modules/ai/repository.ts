@@ -1,10 +1,11 @@
-import type { AiJob } from '@moonbrand/shared/api/contract';
+import type { AiEngine, AiJob } from '@moonbrand/shared/api/contract';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
 import { assertCanSpend } from '../credits/balance';
 
 // agentToken: il token con cui i tool del job chiamano l'API (solo per i job della chat).
+// engine: il motore che deve prenderlo, se non è quello dell'account (il cambio di motore).
 // free: il job non scala crediti (onboarding, creazione del brand, saluti del mattino); i trigger dei crediti lo saltano.
 // Gli altri si fermano qui se il brand non ha un piano attivo o ha finito i crediti (assertCanSpend).
 export async function insertJob(
@@ -12,14 +13,16 @@ export async function insertJob(
   accountId: string,
   kind: string,
   input: unknown,
-  { agentToken, free = false }: { agentToken?: string; free?: boolean } = {},
+  { agentToken, free = false, engine }: { agentToken?: string; free?: boolean; engine?: AiEngine } = {},
 ): Promise<string> {
   // Un lavoro a pagamento su un brand vero (non una bozza dell'onboarding) parte solo se il brand può spendere.
   const brandId = (input as { brandId?: unknown } | null)?.brandId;
   if (!free && typeof brandId === 'string' && !(await isDraftBrand(db, brandId))) await assertCanSpend(db, accountId, brandId);
   const { rows } = await db.query<{ id: string }>(
-    'insert into presenza.ai_jobs (account_id, kind, input, agent_token, free) values ($1, $2, $3::jsonb, $4, $5) returning id',
-    [accountId, kind, JSON.stringify(input), agentToken ?? null, free],
+    // Il motore è quello dell'account, se non è detto: il worker di quel motore prende il job.
+    `insert into presenza.ai_jobs (account_id, kind, input, agent_token, free, engine)
+     values ($1, $2, $3::jsonb, $4, $5, coalesce($6, (select ai_engine from presenza.accounts where id = $1))) returning id`,
+    [accountId, kind, JSON.stringify(input), agentToken ?? null, free, engine ?? null],
   );
   return rows[0].id;
 }

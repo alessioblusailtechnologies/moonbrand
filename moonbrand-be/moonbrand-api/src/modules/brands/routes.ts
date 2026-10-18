@@ -4,7 +4,7 @@ import type pg from 'pg';
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
 
 import type { Config } from '../../config';
-import { isEngineV2 } from '../ai/engine';
+import { accountEngine } from '../ai/engine';
 import type { DodoApi } from '../billing/dodo-api';
 import { freePlanError, isFreeUltra } from '../billing/free-plan';
 import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
@@ -67,7 +67,7 @@ export function registerBrandRoutes(
         },
       ),
       // Il motore v2 non ha il progetto video: il job resterebbe in coda e l'onboarding lo aspetterebbe.
-      isEngineV2()
+      (await accountEngine(pool, request.identity.accountId)) === 'v2'
         ? null
         : queueVideoSetup(pool, request.identity, body.id).catch((error: unknown) => {
             request.log.warn({ err: error }, 'progetto video non messo in coda');
@@ -90,7 +90,7 @@ export function registerBrandRoutes(
     const { brand, referencesChanged, instructionsChanged } = await saveBrand(pool, request.identity, brandId, body);
     if (body.referenceExamples?.length) await adoptExamples(files, brandId, body.referenceExamples, request.log);
     // Con il motore v2 lo stesso job riscrive anche istruzioni-personalizzate.md nella cartella del brand.
-    if (referencesChanged || body.referenceExamples?.length || (isEngineV2() && instructionsChanged)) await restyleBrand(pool, request.identity, brandId);
+    if (referencesChanged || body.referenceExamples?.length || (instructionsChanged && (await accountEngine(pool, request.identity.accountId)) === 'v2')) await restyleBrand(pool, request.identity, brandId);
     return brand;
   });
 

@@ -111,11 +111,13 @@ export async function activeJob(db: Queryable, conversationId: string): Promise<
   return rows[0]?.id ?? null;
 }
 
-// La sessione di Claude da riprendere: quella dell'ultimo turno che l'ha lasciata, anche se poi è fallito.
+// La sessione di Claude da riprendere: quella dell'ultimo turno che l'ha lasciata, anche se poi è fallito. Solo dei turni
+// fatti con il motore che l'account ha adesso: dopo il passaggio al v2 una conversazione della v1 riparte da una sessione nuova.
 export async function lastSession(db: Queryable, conversationId: string): Promise<string | null> {
   const { rows } = await db.query<{ session_id: string }>(
     `select j.session_id from presenza.conversation_turns t join presenza.ai_jobs j on j.id = t.job_id
      where t.conversation_id = $1 and j.session_id is not null
+       and j.engine = (select a.ai_engine from presenza.accounts a where a.id = j.account_id)
      order by t.created_at desc limit 1`,
     [conversationId],
   );

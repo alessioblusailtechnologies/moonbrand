@@ -17,9 +17,12 @@ export interface Account {
   emailConfirmed: boolean;
   // Il piano Ultra in omaggio (FREE_ULTRA_EMAILS dell'API): niente da pagare, lo studio non propone il checkout.
   freePlan?: boolean;
-  // Il motore dei job (AI_ENGINE dell'API), solo se non è quello di sempre: con v2 l'onboarding è più corto.
+  // Il motore dei job dell'account, solo se non è quello di sempre: con v2 l'onboarding è più corto.
   aiEngine?: 'v2';
 }
+
+// v1: moonbrand-ai; v2: moonbrand-ai-v2. Girano insieme, ogni account ha il suo.
+export type AiEngine = 'v1' | 'v2';
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.
 export interface SignUpRequest {
@@ -237,8 +240,11 @@ export interface BrandContext {
 }
 
 // Il job style legge i riferimenti dalla cartella del brand: gli basta sapere quale.
+// migrate: il passaggio dell'account a un altro motore. Verso v2 la roba della v1 va in v1/ e la cartella si prepara
+// da capo; verso v1 torna fuori da v1/.
 export interface StyleJobInput {
   brandId: string;
+  migrate?: AiEngine;
 }
 
 // Il job video-setup prepara il progetto Remotion nella cartella del brand: gli basta sapere quale.
@@ -828,6 +834,12 @@ export interface AdminAccount {
   lastActivityAt: string | null;
   cost: AdminCost;
   creditsMonth: number;
+  aiEngine: AiEngine;
+}
+
+// Il cambio di motore di un account dall'admin.
+export interface AdminEngineRequest {
+  engine: AiEngine;
 }
 
 export interface AdminJob {
@@ -1031,6 +1043,7 @@ export const VIEW_AS_HEADER = 'x-moonbrand-view-as';
 // Le versioni in fondo alle impostazioni: API e motore AI che stanno girando, e il commit del repo. null se non si leggono.
 export interface VersionResponse {
   api: string | null;
-  engine: { name: 'v1' | 'v2'; version: string | null };
+  // Le versioni dei due motori: lo studio mostra quella dell'account.
+  engines: Record<AiEngine, string | null>;
   commit: string | null;
 }

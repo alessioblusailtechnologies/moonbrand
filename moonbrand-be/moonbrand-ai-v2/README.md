@@ -181,21 +181,24 @@ Per i job che lavorano sulla cartella del brand (`style`, `chat`), il worker:
 
 ## Modifiche fuori da questa cartella
 
-Tutte dietro l'interruttore `AI_ENGINE=v2` nel `.env` dell'API. Il default è `v1`, quindi la produzione è invariata.
+Dal 19/10 il motore è **per account** (`presenza.accounts.ai_engine`, migration `20261019100000_ai_engine.sql`): i due worker girano insieme sulla stessa coda e ognuno prende solo i job del suo motore (`ai_jobs.engine`, scritto dall'API con il motore dell'account). `AI_ENGINE` nel `.env` dell'API dice solo con quale motore nascono gli account nuovi (default `v1`). Questo worker si chiama `<hostname>-v2` in `brand_workers`, per non prendere i brand del worker v1 sulla stessa macchina.
 
 - **moonbrand-api**
-  - `src/modules/ai/engine.ts` legge l'interruttore.
+  - `src/modules/ai/engine.ts`: il motore dell'account e quello degli account nuovi.
   - L'account espone `aiEngine: 'v2'`.
+  - Le conversazioni riprendono solo le sessioni fatte con il motore attuale dell'account: dopo il passaggio una conversazione della v1 riparte da una sessione nuova (`lastSession`).
+  - `POST /v1/admin/accounts/:id/engine` cambia il motore (dall'admin, scheda dell'utenza), solo senza lavori in coda. Stacca i brand dal loro worker e per ognuno mette in coda un job `style` con `migrate`, sempre per questo worker (`jobs/cartella/migrate.ts`). Verso v2 `CLAUDE.md`, `esempi/`, `riferimenti-da-seguire/`, `template/` e `video/` vanno in `v1/` (che la chat non legge) e la cartella si prepara da capo; verso v1 tornano fuori e il brand si stacca da questo worker.
+- **moonbrand-ai**: il worker prende solo i job con `engine = 'v1'`.
   - Alla creazione del brand non mette in coda `video-setup`.
   - Rimette in coda la cartella anche quando cambiano le istruzioni.
   - Carica i riferimenti direttamente in `riferimenti/` invece di `file-riferimento/`. I brand nati prima restano lì e il job li copia.
-- **moonbrand-shared**: `Account.aiEngine?: 'v2'`.
-- **moonbrand-studio**: con `aiEngine === 'v2'` lo step visual nasconde font, template ed esempi, e l'onboarding non chiede gli esempi.
+- **moonbrand-shared**: `Account.aiEngine?: 'v2'`, `AiEngine`, `StyleJobInput.migrate`, le versioni dei due motori.
+- **moonbrand-studio**: con `aiEngine === 'v2'` lo step visual nasconde font, template ed esempi, l'onboarding non chiede gli esempi e i contenuti della v1 non hanno rigenera, modifica, video dal copione e nuovo canale. Nell'admin la scheda dell'utenza mostra il motore e lo cambia.
 
 ## Come si prova
 
-1. Nel `.env` dell'API: `AI_ENGINE=v2`. Nel `.env` di questa cartella: `DATABASE_URL` e le chiavi `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`, `ELEVENLABS_API_KEY`.
-2. Spegni il worker di `moonbrand-ai` e avvia questo: `npm run worker`.
+1. Nel `.env` dell'API: `AI_ENGINE=v2` per gli account nuovi; quelli che ci sono si passano dall'admin. Nel `.env` di questa cartella: `DATABASE_URL` e le chiavi `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`, `ELEVENLABS_API_KEY`.
+2. Avvia questo worker: `npm run worker`. Quello di `moonbrand-ai` può girare insieme: prende solo i job della v1.
 3. Fai l'onboarding dallo studio di collaudo (https://45.14.185.228:4200), poi apri la chat.
 
 I job si possono lanciare anche a mano: `npm run brand`, `npm run ideas`, `npm run cartella`, `npm run chat`.

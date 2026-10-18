@@ -1,7 +1,8 @@
-import type { Account } from '@moonbrand/shared/api/contract';
+import type { Account, AiEngine } from '@moonbrand/shared/api/contract';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 
 import type { Queryable } from '../../db/pool';
+import { newAccountEngine } from '../ai/engine';
 
 interface AccountRow {
   id: string;
@@ -10,16 +11,25 @@ interface AccountRow {
   locale: Locale;
   active_brand_id: string | null;
   email_confirmed_at: Date | null;
+  ai_engine: AiEngine;
 }
 
 export async function findAccount(db: Queryable, accountId: string): Promise<(Account & { activeBrandId: string | null }) | null> {
   const { rows } = await db.query<AccountRow>(
-    'select id, email, name, locale, active_brand_id, email_confirmed_at from presenza.accounts where id = $1',
+    'select id, email, name, locale, active_brand_id, email_confirmed_at, ai_engine from presenza.accounts where id = $1',
     [accountId],
   );
   const row = rows[0];
   return row
-    ? { id: row.id, email: row.email, name: row.name, locale: row.locale, emailConfirmed: row.email_confirmed_at !== null, activeBrandId: row.active_brand_id }
+    ? {
+        id: row.id,
+        email: row.email,
+        name: row.name,
+        locale: row.locale,
+        emailConfirmed: row.email_confirmed_at !== null,
+        activeBrandId: row.active_brand_id,
+        ...(row.ai_engine === 'v2' && { aiEngine: 'v2' as const }),
+      }
     : null;
 }
 
@@ -62,11 +72,12 @@ export async function accountExists(db: Queryable, accountId: string): Promise<b
 }
 
 export async function createAccount(db: Queryable, account: Omit<Account, 'emailConfirmed'>): Promise<void> {
-  await db.query('insert into presenza.accounts (id, email, name, locale) values ($1, $2, $3, $4) on conflict (id) do nothing', [
+  await db.query('insert into presenza.accounts (id, email, name, locale, ai_engine) values ($1, $2, $3, $4, $5) on conflict (id) do nothing', [
     account.id,
     account.email,
     account.name,
     account.locale,
+    newAccountEngine(),
   ]);
 }
 
