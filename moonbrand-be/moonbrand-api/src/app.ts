@@ -5,6 +5,7 @@ import type pg from 'pg';
 
 import type { Config } from './config';
 import { registerErrorHandler } from './errors';
+import { readVersions } from './version';
 import { adminCheck } from './modules/admin/queries';
 import { registerAdminRoutes } from './modules/admin/routes';
 import { registerAgentRoutes } from './modules/agent/routes';
@@ -16,6 +17,7 @@ import type { BrandFiles } from './modules/brand-files/files';
 import type { Mailer } from './modules/email/mailer';
 import { DodoApi } from './modules/billing/dodo-api';
 import { registerDodoWebhook } from './modules/billing/dodo-webhook';
+import { setAiEngine } from './modules/ai/engine';
 import { setFreeUltraEmails } from './modules/billing/free-plan';
 import { registerBillingRoutes } from './modules/billing/routes';
 import { registerBrandFileRoutes } from './modules/brand-files/routes';
@@ -64,6 +66,7 @@ export interface AppOptions {
     | 'ADMIN_EMAILS'
     | 'FREE_ULTRA_EMAILS'
     | 'AI_DIR'
+    | 'AI_ENGINE'
   >;
 }
 
@@ -83,9 +86,12 @@ export function buildApp(options: AppOptions) {
   registerAuth(app, options.verifyToken, (id) => accountExists(options.pool, id), adminCheck(options.pool, options.settings));
 
   app.get('/v1/health', () => ({ ok: true }));
+  const versions = readVersions(options.settings);
+  app.get('/v1/version', () => versions);
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
   enforceBilling(options.settings.BILLING_ENFORCED);
   setFreeUltraEmails(options.settings);
+  setAiEngine(options.settings);
   const dodo = new DodoApi(options.settings);
   registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, dodo);
   registerBrandFileRoutes(app, options.files);

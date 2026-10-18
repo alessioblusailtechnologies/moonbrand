@@ -17,6 +17,8 @@ export interface Account {
   emailConfirmed: boolean;
   // Il piano Ultra in omaggio (FREE_ULTRA_EMAILS dell'API): niente da pagare, lo studio non propone il checkout.
   freePlan?: boolean;
+  // Il motore dei job (AI_ENGINE dell'API), solo se non è quello di sempre: con v2 l'onboarding è più corto.
+  aiEngine?: 'v2';
 }
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.
@@ -235,8 +237,11 @@ export interface BrandContext {
 }
 
 // Il job style legge i riferimenti dalla cartella del brand: gli basta sapere quale.
+// migrate: il passaggio di un brand della v1 al v2 (PRODUZIONE.md, «Motore v2»): la roba della v1 va in v1/ e la
+// cartella si prepara da capo.
 export interface StyleJobInput {
   brandId: string;
+  migrate?: true;
 }
 
 // Il job video-setup prepara il progetto Remotion nella cartella del brand: gli basta sapere quale.
@@ -1025,3 +1030,10 @@ export interface AdminAddCreditsRequest {
 
 // L'header con cui un admin guarda lo studio come un'altra utenza, in sola lettura.
 export const VIEW_AS_HEADER = 'x-moonbrand-view-as';
+
+// Le versioni in fondo alle impostazioni: API e motore AI che stanno girando, e il commit del repo. null se non si leggono.
+export interface VersionResponse {
+  api: string | null;
+  engine: { name: 'v1' | 'v2'; version: string | null };
+  commit: string | null;
+}

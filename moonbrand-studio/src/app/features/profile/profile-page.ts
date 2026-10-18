@@ -20,6 +20,7 @@ import { pageHeader } from '../../core/layout/page-header';
 import { BrandAvatar } from '../../ui/brand-avatar';
 import { Icon } from '../../ui/icon';
 import { Loader } from '../../ui/loader';
+import { VersionService } from '../../core/version/version.service';
 import { ToastService } from '../../ui/toast';
 import { PlanDialog } from '../plans/plan-dialog';
 import { ChannelChoiceDialog } from './channel-choice';
@@ -111,6 +112,7 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
             <button class="btn btn-secondary btn-sm" type="button" (click)="load(brand.id)">{{ 'common.retry' | t }}</button>
           </div>
         }
+        <p class="caption">{{ versions() }}</p>
       </section>
 
       @if (editing(); as key) {
@@ -258,6 +260,15 @@ export class ProfilePage {
     };
   });
 
+  // Le versioni di studio, API e motore AI, in fondo alla pagina; un trattino finché l'API non le dice.
+  private readonly version = inject(VersionService);
+  protected readonly versions = computed(() => {
+    const server = this.version.server();
+    const engine = server && `${server.engine.version ?? '–'} (${server.engine.name})`;
+    const line = this.i18n.t('profile.page.versions', { studio: this.version.studio, api: server?.api ?? '–', engine: engine ?? '–' });
+    return server?.commit ? `${line} · ${server.commit}` : line;
+  });
+
   protected openPortal(): void {
     const brandId = this.brands.activeBrand()?.id;
     if (brandId) void this.billing.openPortal(brandId);
@@ -284,6 +295,7 @@ export class ProfilePage {
 
   constructor() {
     pageHeader(() => [{ label: this.i18n.t('profile.title') }]);
+    this.version.load();
     this.finishConnection();
     effect(() => {
       const brandId = this.activeId();

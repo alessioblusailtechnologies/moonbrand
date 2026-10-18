@@ -8,8 +8,14 @@ import type pg from 'pg';
 
 import { brandsDir, type Config } from '../../config';
 import { ApiError } from '../../errors';
+import { isEngineV2 } from '../ai/engine';
 
 export const REFERENCES_DIR = 'file-riferimento';
+// Con il motore v2 i riferimenti caricati vanno direttamente in riferimenti/, la cartella che quel motore legge.
+const V2_REFERENCES_DIR = 'riferimenti';
+export const referencesDir = (): string => (isEngineV2() ? V2_REFERENCES_DIR : REFERENCES_DIR);
+// Un riferimento caricato, in una cartella o nell'altra: i brand nati prima restano in file-riferimento/.
+export const isReference = (path: string): boolean => path.startsWith(`${REFERENCES_DIR}/`) || path.startsWith(`${V2_REFERENCES_DIR}/`);
 export const FOLLOW_DIR = 'riferimenti-da-seguire';
 // Gli esempi dell'onboarding, una cartella per generazione; LEGACY_WORK_DIR è dove finivano i file di lavoro prima.
 export const EXAMPLES_DIR = 'esempi';

@@ -8,6 +8,7 @@ import { QUALITY_FONTS } from '@moonbrand/shared/domain/fonts';
 import { findTemplate, POST_TEMPLATES, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
+import { AuthService } from '../../../core/auth/auth.service';
 import { BrandsService } from '../../../core/brands/brands.service';
 import { errorMessage } from '../../../core/errors';
 import { I18nService } from '../../../core/i18n/i18n.service';
@@ -64,6 +65,9 @@ export class VisualStep implements OnInit {
   private readonly lightbox = inject(LightboxService);
   private readonly i18n = inject(I18nService);
   protected readonly store = inject(DraftStore);
+  // Con il motore v2 restano logo, palette e riferimenti: niente font, template ed esempi.
+  private readonly auth = inject(AuthService);
+  protected readonly v2 = computed(() => this.auth.account()?.aiEngine === 'v2');
   readonly draft = input.required<BrandDraft>();
   // Dalle Impostazioni: gli esempi che il brand segue già come riferimento, finché non se ne fanno di nuovi.
   readonly followed = input<MediaFile[]>([]);
@@ -83,7 +87,7 @@ export class VisualStep implements OnInit {
   // I template della categoria del brand; quello già scelto resta in elenco anche se la categoria è cambiata.
   // Se la categoria non ne ha, l'avviso che arriveranno e, a richiesta, tutti gli altri: lo stile vale anche fuori
   // dalla sua categoria. Con uno di quelli già scelto l'elenco resta aperto.
-  protected readonly template = computed(() => findTemplate(this.visual().template));
+  protected readonly template = computed(() => findTemplate(this.v2() ? null : this.visual().template));
   protected readonly ownTemplates = computed(() => templatesFor(this.draft().identity.category));
   protected readonly showOthers = signal(false);
   protected readonly templates = computed(() => {

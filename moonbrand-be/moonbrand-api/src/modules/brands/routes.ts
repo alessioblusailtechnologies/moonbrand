@@ -4,6 +4,7 @@ import type pg from 'pg';
 import type { CreateBrandResponse } from '@moonbrand/shared/api/contract';
 
 import type { Config } from '../../config';
+import { isEngineV2 } from '../ai/engine';
 import type { DodoApi } from '../billing/dodo-api';
 import { freePlanError, isFreeUltra } from '../billing/free-plan';
 import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
@@ -58,17 +59,20 @@ export function registerBrandRoutes(
         request.log.warn({ err: error }, 'stile non messo in coda');
         return null;
       }),
-      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS, true).then(
+      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).then(
         (job) => job.id,
         (error: unknown) => {
           request.log.warn({ err: error }, 'prime idee non messe in coda');
           return null;
         },
       ),
-      queueVideoSetup(pool, request.identity, body.id).catch((error: unknown) => {
-        request.log.warn({ err: error }, 'progetto video non messo in coda');
-        return null;
-      }),
+      // Il motore v2 non ha il progetto video: il job resterebbe in coda e l'onboarding lo aspetterebbe.
+      isEngineV2()
+        ? null
+        : queueVideoSetup(pool, request.identity, body.id).catch((error: unknown) => {
+            request.log.warn({ err: error }, 'progetto video non messo in coda');
+            return null;
+          }),
     ]);
     const response: CreateBrandResponse = { ...brand, setupJobs: queued.filter((id) => id !== null) };
     return reply.code(201).send(response);
@@ -83,9 +87,10 @@ export function registerBrandRoutes(
   app.put('/v1/brands/:brandId', async (request) => {
     const { brandId } = brandParams.parse(request.params);
     const body = updateBrandSchema.parse(request.body);
-    const { brand, referencesChanged } = await saveBrand(pool, request.identity, brandId, body);
+    const { brand, referencesChanged, instructionsChanged } = await saveBrand(pool, request.identity, brandId, body);
     if (body.referenceExamples?.length) await adoptExamples(files, brandId, body.referenceExamples, request.log);
-    if (referencesChanged || body.referenceExamples?.length) await restyleBrand(pool, request.identity, brandId);
+    // Con il motore v2 lo stesso job riscrive anche istruzioni-personalizzate.md nella cartella del brand.
+    if (referencesChanged || body.referenceExamples?.length || (isEngineV2() && instructionsChanged)) await restyleBrand(pool, request.identity, brandId);
     return brand;
   });
 

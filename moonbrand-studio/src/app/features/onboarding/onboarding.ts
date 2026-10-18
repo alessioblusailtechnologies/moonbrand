@@ -118,7 +118,8 @@ export class Onboarding {
     const draft = this.store.draft();
     if (!key || !draft) return null;
     // Senza almeno un esempio scelto il brand non avrebbe riferimenti da seguire: lo stile verrebbe solo dalle immagini caricate.
-    if (key === 'visual') {
+    // Il motore v2 non fa esempi: bastano le immagini caricate.
+    if (key === 'visual' && this.auth.account()?.aiEngine !== 'v2') {
       if (this.store.examplesPending()) return this.i18n.t('onboarding.visual.examples.stillPreparing');
       if (this.store.selectedExamples().length === 0) return this.i18n.t('onboarding.visual.examples.required');
     }

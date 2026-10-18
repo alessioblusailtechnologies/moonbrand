@@ -66,6 +66,8 @@ const schema = z.object({
   FREE_ULTRA_EMAILS: optional,
   // Il codice del worker (moonbrand-ai), da cui la sezione Prompt dell'admin legge i prompt; vuoto: quello accanto all'API.
   AI_DIR: optional,
+  // Il motore che prende i job: v2 (moonbrand-ai-v2) ha un onboarding senza template, font, esempi e progetto video.
+  AI_ENGINE: z.enum(['v1', 'v2']).default('v1'),
 });
 
 export type Config = z.infer<typeof schema>;

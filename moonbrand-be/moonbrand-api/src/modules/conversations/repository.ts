@@ -1,6 +1,7 @@
 import type { ConversationSummary, ConversationTurn } from '@moonbrand/shared/api/contract';
 
 import type { Queryable } from '../../db/pool';
+import { aiEngine } from '../ai/engine';
 
 interface ConversationRow {
   id: string;
@@ -111,13 +112,14 @@ export async function activeJob(db: Queryable, conversationId: string): Promise<
   return rows[0]?.id ?? null;
 }
 
-// La sessione di Claude da riprendere: quella dell'ultimo turno che l'ha lasciata, anche se poi è fallito.
+// La sessione di Claude da riprendere: quella dell'ultimo turno che l'ha lasciata, anche se poi è fallito. Solo dei turni
+// fatti con il motore di adesso: dopo il passaggio al v2 una conversazione della v1 riparte da una sessione nuova.
 export async function lastSession(db: Queryable, conversationId: string): Promise<string | null> {
   const { rows } = await db.query<{ session_id: string }>(
     `select j.session_id from presenza.conversation_turns t join presenza.ai_jobs j on j.id = t.job_id
-     where t.conversation_id = $1 and j.session_id is not null
+     where t.conversation_id = $1 and j.session_id is not null and j.engine = $2
      order by t.created_at desc limit 1`,
-    [conversationId],
+    [conversationId, aiEngine()],
   );
   return rows[0]?.session_id ?? null;
 }

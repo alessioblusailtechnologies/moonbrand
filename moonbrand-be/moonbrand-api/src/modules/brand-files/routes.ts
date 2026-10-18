@@ -7,7 +7,7 @@ import type { ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
 
 import { ApiError } from '../../errors';
 import { EXTENSIONS, parseImage, uploadSchema } from '../media/routes';
-import { REFERENCES_DIR, type BrandFiles } from './files';
+import { REFERENCES_DIR, referencesDir, type BrandFiles } from './files';
 import { LINK_CACHE_SECONDS } from './s3';
 
 const brandParams = z.object({ brandId: z.uuid('Brand non valido.') });
@@ -30,7 +30,7 @@ export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles)
     const { brandId } = brandParams.parse(request.params);
     const { bytes, mimeType } = parseImage(uploadSchema.parse(request.body).dataUri);
     await files.claim(brandId, request.identity.accountId);
-    const path = `${REFERENCES_DIR}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
+    const path = `${referencesDir()}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
     await files.save(brandId, path, bytes);
     return { path, url: files.url(brandId, path) };
   });
@@ -38,7 +38,9 @@ export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles)
   app.delete('/v1/brands/:brandId/references/:name', async (request, reply) => {
     const { brandId, name } = referenceParams.parse(request.params);
     await files.claim(brandId, request.identity.accountId);
+    // Con il motore v2 un brand nato prima ha ancora i riferimenti in file-riferimento/: si toglie da tutte e due.
     await files.remove(brandId, `${REFERENCES_DIR}/${name}`);
+    await files.remove(brandId, `${referencesDir()}/${name}`);
     return reply.code(204).send();
   });
 

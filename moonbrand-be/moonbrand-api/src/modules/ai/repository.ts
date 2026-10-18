@@ -3,6 +3,7 @@ import type { ChannelId } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
 import { assertCanSpend } from '../credits/balance';
+import { aiEngine } from './engine';
 
 // agentToken: il token con cui i tool del job chiamano l'API (solo per i job della chat).
 // free: il job non scala crediti (onboarding, creazione del brand, saluti del mattino); i trigger dei crediti lo saltano.
@@ -18,8 +19,9 @@ export async function insertJob(
   const brandId = (input as { brandId?: unknown } | null)?.brandId;
   if (!free && typeof brandId === 'string' && !(await isDraftBrand(db, brandId))) await assertCanSpend(db, accountId, brandId);
   const { rows } = await db.query<{ id: string }>(
-    'insert into presenza.ai_jobs (account_id, kind, input, agent_token, free) values ($1, $2, $3::jsonb, $4, $5) returning id',
-    [accountId, kind, JSON.stringify(input), agentToken ?? null, free],
+    // Il motore che lo farà, per ritrovare le sessioni della chat (lastSession).
+    'insert into presenza.ai_jobs (account_id, kind, input, agent_token, free, engine) values ($1, $2, $3::jsonb, $4, $5, $6) returning id',
+    [accountId, kind, JSON.stringify(input), agentToken ?? null, free, aiEngine()],
   );
   return rows[0].id;
 }

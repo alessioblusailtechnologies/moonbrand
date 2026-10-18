@@ -7,7 +7,7 @@ import type { SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
 import { insertJob } from '../ai/repository';
-import { FOLLOW_DIR, REFERENCES_DIR, type BrandFiles } from '../brand-files/files';
+import { FOLLOW_DIR, isReference, type BrandFiles } from '../brand-files/files';
 import { deleteOnboardingDraft } from '../onboarding/drafts';
 import { setActiveBrand } from '../auth/accounts';
 import type { MediaStorage } from '../media/storage';
@@ -55,7 +55,7 @@ export async function getBrandProfile(
   const draft = await withIdentity(pool, identity, (db) => findBrandDraft(db, brandId));
   if (!draft) throw ApiError.notFound('Brand non trovato.');
   // I file di riferimento stanno nella cartella del brand, le altre immagini nello storage dell'account.
-  const sign = (path: string) => (path.startsWith(`${REFERENCES_DIR}/`) ? Promise.resolve(files.url(brandId, path)) : storage.sign(path));
+  const sign = (path: string) => (isReference(path) ? Promise.resolve(files.url(brandId, path)) : storage.sign(path));
   const followed = (await files.list(brandId, FOLLOW_DIR)).map((path) => ({ path, url: files.url(brandId, path) }));
   return { id: brandId, draft: { ...draft, visual: await signedVisual(draft.visual, sign) }, followed };
 }
@@ -65,7 +65,7 @@ export async function saveBrand(
   identity: Identity,
   brandId: string,
   { referenceExamples: _examples, ...draft }: UpdateBrandRequest,
-): Promise<{ brand: BrandSummary; referencesChanged: boolean }> {
+): Promise<{ brand: BrandSummary; referencesChanged: boolean; instructionsChanged: boolean }> {
   return withIdentity(pool, identity, async (db) => {
     const before = await findBrandDraft(db, brandId);
     if (!before) throw ApiError.notFound('Brand non trovato.');
@@ -74,7 +74,7 @@ export async function saveBrand(
     if (!brand) throw ApiError.notFound('Brand non trovato.');
     // Anche il template conta come riferimento: cambiarlo cambia lo stile.
     const paths = (visual: Visual) => [visual.template ?? '', ...(visual.references ?? []).map((file) => file.path).sort()].join('\n');
-    return { brand, referencesChanged: paths(before.visual) !== paths(stored.visual) };
+    return { brand, referencesChanged: paths(before.visual) !== paths(stored.visual), instructionsChanged: before.instructions !== stored.instructions };
   });
 }
 
@@ -114,7 +114,7 @@ function connectionsFrom(channels: Channels, saved: Channels | null): Channels {
 
 function storableVisual(accountId: string, visual: Visual): Visual {
   const own = (file: MediaFile | null | undefined) =>
-    !file?.path || file.path.startsWith(`${accountId}/`) || file.path.startsWith(`${REFERENCES_DIR}/`);
+    !file?.path || file.path.startsWith(`${accountId}/`) || isReference(file.path);
   const unsigned = (file: MediaFile): MediaFile => (file.path ? { ...file, url: '' } : file);
   return {
     ...visual,

@@ -87,7 +87,7 @@
       <mb-content-preview [content]="current" [editable]="!preparing() && !locked()" (updated)="show($event)" />
     }
 
-    @if (scripted() && !current.conversationId && !locked()) {
+    @if (scripted() && !current.conversationId && !locked() && !v2()) {
       <mb-script-editor [content]="current" [busy]="preparing()" (saved)="saveScript($event)" (generated)="generateVideo($event)" />
     }
 
@@ -96,7 +96,7 @@
         <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
           <mb-icon name="message-circle" [size]="16" /> {{ 'contents.page.refineInChat' | t }}
         </a>
-      } @else {
+      } @else if (!v2()) {
         <div class="row edit">
           <input class="sunken grow" [attr.aria-label]="'contents.page.refineLabel' | t"
             [placeholder]="(ready() ? 'contents.page.refinePlaceholder' : 'contents.page.refineScriptPlaceholder') | t"
@@ -115,7 +115,7 @@
 <ng-template #headerActions>
   @if (content(); as current) {
     @if (!locked()) {
-      @if (!current.conversationId) {
+      @if (!current.conversationId && !v2()) {
         <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">{{ 'contents.page.regenerate' | t }}</button>
       }
       @if (current.status === 'approved') {
