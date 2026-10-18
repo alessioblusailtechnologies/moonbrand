@@ -82,6 +82,20 @@ del deploy trova ancora i pezzi della sua versione. Quelli che nessun deploy ha 
 Il riavvio del worker manda SIGTERM: i job in corso tornano in coda e li riprende appena riparte. Durante un
 riavvio dell'API (un paio di secondi) lo studio può mostrare un errore di rete e riprova da solo.
 
+### Versioni
+
+Studio, API e motore AI hanno ciascuno la sua versione nel `package.json`: si vedono in fondo a Impostazioni brand,
+con il motore attivo (v1 o v2) e il commit (`/v1/version`, letta dall'API all'avvio). Prima del merge su `master` si
+alza la versione di quello che è cambiato, dalla sua cartella:
+
+```bash
+npm version patch --no-git-tag-version   # correzioni: 1.0.0 → 1.0.1
+npm version minor --no-git-tag-version   # funzioni nuove: 1.0.1 → 1.1.0
+npm version major --no-git-tag-version   # cambi grossi: 1.1.0 → 2.0.0
+```
+
+Aggiorna `package.json` e `package-lock.json` insieme. Il motore v1 (`moonbrand-ai`) è alla 1, il v2 (`moonbrand-ai-v2`) alla 2.
+
 ## Migration del DB
 
 Una migration nuova è un file in `moonbrand-be/moonbrand-api/migrations` con data e ora nel nome, successiva a

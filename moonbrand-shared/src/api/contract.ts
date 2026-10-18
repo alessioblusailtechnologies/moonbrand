@@ -1027,3 +1027,10 @@ export interface AdminAddCreditsRequest {
 
 // L'header con cui un admin guarda lo studio come un'altra utenza, in sola lettura.
 export const VIEW_AS_HEADER = 'x-moonbrand-view-as';
+
+// Le versioni in fondo alle impostazioni: API e motore AI che stanno girando, e il commit del repo. null se non si leggono.
+export interface VersionResponse {
+  api: string | null;
+  engine: { name: 'v1' | 'v2'; version: string | null };
+  commit: string | null;
+}

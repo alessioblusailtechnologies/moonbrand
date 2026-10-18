@@ -5,6 +5,7 @@ import type pg from 'pg';
 
 import type { Config } from './config';
 import { registerErrorHandler } from './errors';
+import { readVersions } from './version';
 import { adminCheck } from './modules/admin/queries';
 import { registerAdminRoutes } from './modules/admin/routes';
 import { registerAgentRoutes } from './modules/agent/routes';
@@ -85,6 +86,8 @@ export function buildApp(options: AppOptions) {
   registerAuth(app, options.verifyToken, (id) => accountExists(options.pool, id), adminCheck(options.pool, options.settings));
 
   app.get('/v1/health', () => ({ ok: true }));
+  const versions = readVersions(options.settings);
+  app.get('/v1/version', () => versions);
   registerAuthRoutes(app, options.pool, options.auth, options.mailer, options.settings);
   enforceBilling(options.settings.BILLING_ENFORCED);
   setFreeUltraEmails(options.settings);
