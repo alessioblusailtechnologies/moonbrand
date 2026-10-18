@@ -5,11 +5,13 @@ import pg from 'pg';
 // Il passaggio di tutti i brand dalla v1 al v2, una volta sola, con questo worker già acceso al posto di quello della v1
 // (PRODUZIONE.md, «Motore v2»): per ogni brand mette in coda il job style con migrate, che mette la roba della v1 in v1/
 // e prepara la cartella del v2. Non parte se ci sono ancora job della v1 da fare, che il v2 non sa fare o farebbe sulla
-// cartella vecchia. Si può rilanciare: rifà solo i brand il cui job è fallito o non c'è.
+// cartella vecchia. Si può rilanciare: rifà solo i brand il cui job è fallito o non c'è. Con degli id dopo il comando
+// (npm run passaggio -- <brandId> ...) mette in coda solo quei brand, per passarli uno alla volta.
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 const url = process.env.DATABASE_URL ?? '';
 const local = url.includes('localhost') || url.includes('127.0.0.1');
+const only = process.argv.slice(2);
 const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { rejectUnauthorized: false } }) });
 
 try {
@@ -25,10 +27,12 @@ try {
       `insert into presenza.ai_jobs (account_id, kind, input, free, engine)
        select b.account_id, 'style', jsonb_build_object('brandId', b.id::text, 'migrate', true), true, 'v2'
        from presenza.brands b
-       where not exists (
+       where (cardinality($1::text[]) = 0 or b.id::text = any($1))
+         and not exists (
          select 1 from presenza.ai_jobs j
          where j.kind = 'style' and j.input->>'brandId' = b.id::text and j.input->>'migrate' = 'true' and j.status in ('queued', 'running', 'done')
-       )`,
+         )`,
+      [only],
     );
     console.log(`${rowCount ?? 0} brand in coda per il passaggio al v2: il worker li prende uno per uno.`);
   }
