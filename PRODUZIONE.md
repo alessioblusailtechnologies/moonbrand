@@ -388,7 +388,8 @@ tutti: un worker solo, che a un certo punto lancia il v2 al posto della v1.
 2. Nel `.env` dell'API `AI_ENGINE=v2`.
 3. In `/etc/systemd/system/moonbrand-worker.service` `WorkingDirectory=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v2`,
    poi `systemctl daemon-reload && systemctl restart moonbrand-api moonbrand-worker`.
-4. Dalla cartella del v2: `npm run passaggio`. Per ogni brand parte un job che mette in `v1/` la roba della v1
+4. Dalla cartella del v2: `npm run passaggio` per tutti, o `npm run passaggio -- <brandId> ...` per i brand dati, uno
+   alla volta (i brand non ancora passati intanto lavorano già col v2 sulla cartella vecchia: meglio non lasciarli a lungo). Per ogni brand parte un job che mette in `v1/` la roba della v1
    (`CLAUDE.md`, `esempi/`, `riferimenti-da-seguire/`, `template/`, `video/`) e prepara la cartella del v2. La prima
    volta ricarica sullo storage anche i progetti video spostati (qualche GB in tutto). Le conversazioni continuano
    con una sessione nuova.

@@ -8,7 +8,9 @@ Stato al 18/10: **spento**, anche in produzione. La chat del v2 gira come quella
 Nella chat Claude usa Bash per ffmpeg, i rendering e gli script. Senza sandbox Bash legge tutto quello che legge
 `moonbrand`: il repo, i `.env` (chiave Anthropic, Gemini, Atlas, ElevenLabs, S3, database), le credenziali di Claude
 in `/srv/moonbrand/claude`, le cartelle degli altri brand. Read, Grep e Glob hanno le loro regole di divieto
-(`moonbrand-ai-v2/src/jobs/chat/chat.ts`), ma Bash le scavalca.
+(`moonbrand-ai-v2/src/jobs/chat/chat.ts`). Claude Code le applica anche ai percorsi scritti nei comandi Bash (nella prova
+del 18/10 `cat ~/moonbrand/deploy.sh` è stato negato), ma è un controllo sul testo del comando: un programma che apre
+il file da sé (`node -e`, `python`) o un percorso costruito al momento lo scavalca.
 
 Il rischio concreto è un prompt malevolo dentro un file del brand o un riferimento scaricato (un post, una pagina) che
 fa leggere e mandare fuori le chiavi. Con il sandbox Bash scrive solo nella cartella del brand e non legge repo né home.
