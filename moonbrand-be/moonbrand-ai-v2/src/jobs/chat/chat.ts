@@ -116,10 +116,11 @@ try {
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
       // L'export dei video nel cloud c'è solo con le chiavi di Lambda; senza, Claude esporta in locale.
       mcpServers: { moonbrand: moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir), ...(lambda && { lambda: lambdaServer(brandDir, lambda) }) },
-      // Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home, tranne il brand (senza v1/).
-      // Su Windows (il collaudo) il sandbox non c'è: lì Bash resta libero, su Linux senza sandbox la chat non parte.
+      // Con BASH_SANDBOX=on Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home,
+      // tranne il brand (senza v1/); se il sandbox non parte, la chat non parte. Per ora è spento, come nella v1: su
+      // Ubuntu 26.04 serve prima un profilo AppArmor per bwrap (SANDBOX-BASH.md). Su Windows il sandbox non c'è comunque.
       sandbox: {
-        enabled: process.platform === 'linux',
+        enabled: process.platform === 'linux' && process.env.BASH_SANDBOX === 'on',
         failIfUnavailable: true,
         allowUnsandboxedCommands: false,
         filesystem: { denyRead: [REPO, homedir(), archive], allowRead: [brandRoot] },
