@@ -642,15 +642,13 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
       line-height: 1.4;
       color: var(--text-title);
     }
-    // Sul tablet la barra resta compressa: c'è posto solo per le icone.
+    // Sul telefono e sul tablet in verticale (gli iPad fino a 834 px) la barra laterale diventa un menu che entra da
+    // sinistra, aperto dal pulsante nella barra in alto, con le chat; la pagina occupa tutto lo schermo e i pulsanti
+    // della pagina vanno su una seconda riga.
     @media (max-width: 900px) {
       .toggle {
         display: none;
       }
-    }
-    // Sul telefono la barra laterale diventa un menu che entra da sinistra, aperto dal pulsante nella barra in alto;
-    // la pagina occupa tutto lo schermo e i pulsanti della pagina vanno su una seconda riga.
-    @media (max-width: 760px) {
       :host {
         --content-padding: 16px;
         --frame: 0px;
@@ -747,11 +745,10 @@ export class Shell {
   private readonly topbar = viewChild.required<ElementRef<HTMLElement>>('topbar');
   private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
 
-  // Compressa con il pulsante, e la scelta resta tra una visita e l'altra; sul tablet sempre, sul telefono mai (è un menu).
+  // Compressa con il pulsante, e la scelta resta tra una visita e l'altra; sul telefono e sul tablet mai (è un menu).
   private readonly userCollapsed = signal(readCollapsed());
-  private readonly tablet = mediaQuery('(min-width: 761px) and (max-width: 900px)');
-  private readonly phone = mediaQuery('(max-width: 760px)');
-  protected readonly collapsed = computed(() => this.tablet() || (this.userCollapsed() && !this.phone()));
+  private readonly phone = mediaQuery('(max-width: 900px)');
+  protected readonly collapsed = computed(() => this.userCollapsed() && !this.phone());
 
   private readonly url = toSignal(
     this.router.events.pipe(
