@@ -59,7 +59,7 @@ export function registerBrandRoutes(
         request.log.warn({ err: error }, 'stile non messo in coda');
         return null;
       }),
-      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS, true).then(
+      queueIdeasJob(pool, request.identity, body.id, FIRST_IDEAS).then(
         (job) => job.id,
         (error: unknown) => {
           request.log.warn({ err: error }, 'prime idee non messe in coda');

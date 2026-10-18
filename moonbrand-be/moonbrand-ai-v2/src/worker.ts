@@ -8,18 +8,20 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import { toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
-import type { ChatJobInput, IdeasJobInput, StyleJobInput, WebsiteJobRequest } from '@moonbrand/shared/api/contract';
+import type { ChatJobInput, IdeasJobInput, StyleJobInput, WebsiteJobRequest, WelcomeJobInput } from '@moonbrand/shared/api/contract';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { withLogo } from './jobs/brand/logo';
 import type { FolderBrand } from './jobs/cartella/cartella';
 import { saveIdeas } from './jobs/ideas/save';
+import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
 import { estimatesEnv, measureEstimates } from './lib/estimate';
 import { startProxy, type Usage } from './lib/proxy';
 import { createStepReader } from './lib/step-reader';
+import { chatTitle } from './lib/title';
 
 // Il motore v2: l'onboarding e la chat. La coda è la stessa di moonbrand-ai (presenza.ai_jobs), con gli stessi tipi
 // di job che mette in coda l'API, quindi per provarlo basta far girare questo worker al posto dell'altro.
@@ -103,11 +105,34 @@ const JOBS: Record<string, JobKind> = {
         env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '', ...estimatesEnv(await measureEstimates(pool)) },
       };
     },
+    // Al primo turno la conversazione prende il titolo che scrive Sonnet; intanto il job è già finito.
+    save: async (job, result) => {
+      const input = job.input as ChatJobInput;
+      if (input.sessionId) return;
+      void retitle(job, input, (result as { text?: string } | undefined)?.text ?? '');
+    },
     folder: true,
     reply: true,
     proxy: true,
   },
+  // I saluti e gli spunti della chat per un brand: nel prompt c'è già tutto, quindi niente cartella.
+  welcome: {
+    launch: async (input) => {
+      const { brandId: _brand, ...rest } = input as WelcomeJobInput;
+      return { script: 'src/jobs/welcome/welcome.ts', args: [JSON.stringify(rest)] };
+    },
+    save: (job, result) => saveWelcome(pool, job.id, job.input as WelcomeJobInput, result),
+  },
 };
+
+async function retitle(job: Job, input: ChatJobInput, reply: string): Promise<void> {
+  try {
+    const title = await chatTitle(job.locale, input.message, reply);
+    if (title) await pool.query('update presenza.conversations set title = $2 where id = $1', [input.conversationId, title]);
+  } catch (error) {
+    console.error(`[${job.id}] titolo non scritto`, error);
+  }
+}
 
 async function folderBrand(brandId: string): Promise<FolderBrand> {
   const { rows } = await pool.query<{ identity: FolderBrand['identity']; positioning: FolderBrand['positioning']; themes: FolderBrand['themes'] | null; instructions: string | null; visual: { palette?: { colors?: string[] }; references?: { path?: string }[] } | null }>(

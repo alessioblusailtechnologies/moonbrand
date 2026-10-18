@@ -127,6 +127,14 @@ Le stesse rotte `/v1/agent/*` della v1, con il token del job e descrizioni di un
 - Prima carica i file sullo storage, perché l'API li copia da lì.
 - Il token del job (`agent_token`, passato dal worker) resta nel processo: Claude non lo vede.
 
+#### Il titolo della conversazione (`lib/title.ts`)
+
+A fine primo turno il worker chiede a Sonnet (`claude-sonnet-5-5`) un titolo di al massimo 6 parole, dal messaggio e dalla risposta, nella lingua dell'account, e lo scrive in `presenza.conversations` al posto del messaggio tagliato che mette l'API. Non blocca il job e non costa crediti.
+
+### Job `welcome` (welcome/)
+
+Saluti per fascia oraria e spunti per la prima domanda, come nella v1, con un prompt corto: il tono di Claude, simpatico ma professionale. Sonnet 5.5, senza tool né cartella; `save.ts` scarta emoji, doppioni, testi troppo lunghi e parole che indovinano il genere. Lo mette in coda l'API, gratis.
+
 #### Il proxy dei servizi (`lib/proxy.ts`)
 
 Per ogni chat il worker apre un server su 127.0.0.1 che inoltra a Gemini, Atlas ed ElevenLabs. Claude ha l'indirizzo del proxy, con un token del job nel percorso, e come chiave lo stesso token: le chiavi vere restano nel worker e ai servizi veri il token non vale niente.
@@ -155,7 +163,7 @@ Stessa coda Postgres `presenza.ai_jobs` di `moonbrand-ai`:
 - step letti da Haiku;
 - costo proprio e costo di sessione.
 
-Il worker v2 prende solo `website`, `ideas`, `style` e `chat`. Gli altri kind (`welcome`, `video-setup`, `visual`) restano in coda: si prova il v2 scambiando il worker.
+Il worker v2 prende solo `website`, `ideas`, `style`, `chat` e `welcome`. Gli altri kind (`video-setup`, `visual`, `content`, `content-edit`, `content-video`) restano in coda: si prova il v2 scambiando il worker.
 
 Per i job che lavorano sulla cartella del brand (`style`, `chat`), il worker:
 1. scarica la cartella dallo storage (Supabase S3, se configurato);
@@ -196,9 +204,21 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 
 ## Cosa manca
 
-- **Un contenuto per più canali.** Claude ha salvato il carosello Instagram e quello TikTok come due contenuti separati, quindi nello studio non compare la barra dei canali (che c'è solo con più di un canale). Per sistemarlo: dire nella descrizione del tool che un contenuto è uno per idea, e aggiungere `canale` facoltativo ai file (serve per il reel, dove Instagram e TikTok sono tutti e due 9:16). Per ora lasciato così.
+Rispetto a moonbrand-ai, in ordine di priorità (saluto del giorno e titoli delle chat fatti il 18/10):
+
+- **Riferimenti dai social (`scarica_social`).** Nella v1 un link TikTok o Instagram incollato in chat si scaricava con Zernio; qui Claude non ha la chiave. Da aggiungere al proxy come gli altri servizi (gratis, niente costo da contare).
+- **Export e controllo dei video.** La v1 aveva `esporta_video` su Remotion Lambda (13–20 s, circa 0,01 $ a video) e `controlla_video`; qui Claude monta da sé in locale con ffmpeg o Remotion, più lento. Lambda si può dare anche alla v2, sempre dal proxy.
+- **Canzoni con Mureka (`genera_canzone`).** Qui c'è solo la musica di ElevenLabs; serve solo se si vogliono ancora canzoni cantate.
+
+Tecniche:
+
+- **Sandbox su Linux.** Va provato prima della produzione (bubblewrap e socat installati), compresa la chat che raggiunge il proxy su 127.0.0.1.
+- **Prezzi Atlas.** Per Grok e Kling serve una tabella di prezzi misurati che vinca sul catalogo, che può segnare meno del costo vero (Grok 0,08 $/s a catalogo, 0,145 misurato a 720p).
+- **Contenuti vecchi della v1.** Quelli senza conversazione hanno ancora «Rigenera» e «Modifica» nello studio: con il worker v2 quei job (`content`, `content-edit`, `content-video`) restano in coda. Da nascondere nello studio con `aiEngine === 'v2'`.
 - **Usa il repo come cassetta degli attrezzi.** Ha letto `moonbrand-ai-fresh/src/tools/atlas.ts` per capire Atlas e ha preso `ffmpeg.exe` da `node_modules/@remotion/compositor-win32-x64-msvc`. In produzione col sandbox non ci arriva: servono ffmpeg nel PATH del server e Read/Grep limitati alla cartella del brand.
 - **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s.
-- **Versioni dei contenuti.** Una modifica riscrive il contenuto e l'API cancella i file vecchi: si perde la versione precedente. Idea discussa: tabella delle versioni, file per versione, «torna a questa» nello studio. Rimandato.
-- Il job `welcome` (saluto e spunti del giorno): lo studio usa i saluti di riserva.
-- Il sandbox va provato su Linux (bubblewrap e socat installati) prima di andare in produzione.
+
+Rimandati dall'utente:
+
+- **Un contenuto per più canali.** Claude ha salvato il carosello Instagram e quello TikTok come due contenuti separati, quindi nello studio non compare la barra dei canali. Per sistemarlo: dire nella descrizione del tool che un contenuto è uno per idea, e aggiungere `canale` facoltativo ai file (serve per il reel, dove Instagram e TikTok sono tutti e due 9:16).
+- **Versioni dei contenuti.** Una modifica riscrive il contenuto e l'API cancella i file vecchi: si perde la versione precedente. Idea discussa: tabella delle versioni, file per versione, «torna a questa» nello studio.
