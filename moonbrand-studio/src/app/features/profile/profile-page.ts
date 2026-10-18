@@ -286,7 +286,8 @@ export class ProfilePage {
     const draft = this.profile()?.draft;
     if (!draft) return [];
     const locale = this.i18n.locale();
-    return SECTION_KEYS.map((key) => {
+    // Riferimenti (profili, fonti, ricorrenze) per ora non si mostra: il motore v2 non li usa.
+    return SECTION_KEYS.filter((key) => key !== 'references').map((key) => {
       const status = STATUS[sectionStatus(key, draft)];
       const name = sectionCopy(key, draft.identity.kind, locale).name;
       return { key, name, summary: sectionSummary(key, draft, locale), color: status.color, status: status.label };
