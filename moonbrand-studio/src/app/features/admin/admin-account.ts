@@ -2,12 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { AdminAccount, AdminAccountDetail, AdminEngineRequest, AiEngine } from '@moonbrand/shared/api/contract';
+import type { AdminAccountDetail } from '@moonbrand/shared/api/contract';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
-import { ConfirmService } from '../../ui/confirm';
 import { LightboxService } from '../../ui/lightbox';
 import { Loader } from '../../ui/loader';
 import { ToastService } from '../../ui/toast';
@@ -32,13 +31,6 @@ import { AdminJobsTable, AdminTabs, money, total, when } from './admin-ui';
               {{ d.account.name }} · creata {{ when(d.account.createdAt) }} · ultimo accesso {{ when(d.account.lastSignInAt) }}
               {{ d.account.emailConfirmed ? '' : ' · email non confermata' }}
             </span>
-          </div>
-          <div class="stat">
-            <span class="caption">Motore AI</span>
-            <span class="heading">{{ d.account.aiEngine }}</span>
-            <button class="btn btn-ghost btn-sm" type="button" [disabled]="switching()" (click)="switchEngine(d)">
-              {{ d.account.aiEngine === 'v1' ? 'Passa al v2' : 'Torna alla v1' }}
-            </button>
           </div>
           <div class="stat"><span class="caption">Crediti del mese</span><span class="heading">{{ d.account.creditsMonth }}</span></div>
           <div class="stat" [title]="'Claude ' + money(d.account.cost.claude) + ' · servizi ' + money(d.account.cost.generations)">
@@ -276,7 +268,6 @@ export class AdminAccountPage {
   private readonly lightbox = inject(LightboxService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
-  private readonly confirm = inject(ConfirmService);
 
   readonly accountId = input.required<string>();
 
@@ -284,7 +275,6 @@ export class AdminAccountPage {
   protected readonly loading = signal(true);
   protected readonly failed = signal('');
   protected readonly adding = signal<string | null>(null);
-  protected readonly switching = signal(false);
 
   protected readonly money = money;
   protected readonly total = total;
@@ -327,31 +317,6 @@ export class AdminAccountPage {
       this.toast.show(errorMessage(error, 'I crediti non si sono aggiunti.'));
     } finally {
       this.adding.set(null);
-    }
-  }
-
-  // Il motore AI dell'utenza. Per ogni brand parte un job che sistema la cartella: verso il v2 la roba della v1 va in v1/,
-  // verso la v1 torna com'era. Le conversazioni ripartono con una sessione nuova del motore scelto.
-  protected async switchEngine(detail: AdminAccountDetail): Promise<void> {
-    const engine: AiEngine = detail.account.aiEngine === 'v1' ? 'v2' : 'v1';
-    const confirmed = await this.confirm.ask({
-      title: engine === 'v2' ? 'Passare al motore v2?' : 'Tornare alla v1?',
-      message:
-        engine === 'v2'
-          ? `I ${detail.brands.length} brand passano al v2: le cartelle si preparano da capo e la roba della v1 va in v1/. Le conversazioni continuano con una sessione nuova, i contenuti della v1 restano ma non si rigenerano.`
-          : `I ${detail.brands.length} brand tornano alla v1: le cartelle tornano com’erano e le conversazioni riprendono le sessioni della v1.`,
-      confirmLabel: engine === 'v2' ? 'Passa al v2' : 'Torna alla v1',
-    });
-    if (!confirmed) return;
-    this.switching.set(true);
-    try {
-      await firstValueFrom(this.http.post<AdminAccount>(`/v1/admin/accounts/${detail.account.id}/engine`, { engine } satisfies AdminEngineRequest));
-      this.toast.show(engine === 'v2' ? 'Utenza passata al v2: le cartelle si stanno preparando.' : 'Utenza tornata alla v1.');
-      await this.load(this.accountId());
-    } catch (error) {
-      this.toast.show(errorMessage(error, 'Il motore non è cambiato.'));
-    } finally {
-      this.switching.set(false);
     }
   }
 

@@ -8,7 +8,6 @@ import { SUBSCRIPTION_PLANS } from '@moonbrand/shared/domain/subscription';
 import { identityLine, SECTION_KEYS, sectionCopy, sectionStatus, sectionSummary, type SectionStatus } from '@moonbrand/shared/domain/sections';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 
-import { AuthService } from '../../core/auth/auth.service';
 import { BillingService } from '../../core/billing/billing.service';
 import { subscriptionLive, subscriptionStatusLine } from '../../core/billing/subscription-status';
 import { BrandsService } from '../../core/brands/brands.service';
@@ -263,11 +262,9 @@ export class ProfilePage {
 
   // Le versioni di studio, API e motore AI, in fondo alla pagina; un trattino finché l'API non le dice.
   private readonly version = inject(VersionService);
-  private readonly auth = inject(AuthService);
   protected readonly versions = computed(() => {
     const server = this.version.server();
-    const name = this.auth.account()?.aiEngine ?? 'v1';
-    const engine = server && `${server.engines[name] ?? '–'} (${name})`;
+    const engine = server && `${server.engine.version ?? '–'} (${server.engine.name})`;
     const line = this.i18n.t('profile.page.versions', { studio: this.version.studio, api: server?.api ?? '–', engine: engine ?? '–' });
     return server?.commit ? `${line} · ${server.commit}` : line;
   });

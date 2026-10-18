@@ -6,6 +6,7 @@ import { DEFAULT_LOCALE, type Locale } from '@moonbrand/shared/i18n/locales';
 
 import { withIdentity, type Identity } from '../../db/identity';
 import { ApiError } from '../../errors';
+import { isEngineV2 } from '../ai/engine';
 import { isFreeUltra } from '../billing/free-plan';
 import type { Mailer } from '../email/mailer';
 import { confirmEmail as confirmTemplate, resetEmail, welcomeEmail } from '../email/templates';
@@ -25,15 +26,15 @@ export interface AuthMail {
 }
 
 // freePlan: l'utenza con il piano Ultra in omaggio (free-plan.ts), per cui lo studio non propone pagamenti.
-// aiEngine: il motore v2 dell'account (ai/engine.ts), per cui lo studio accorcia l'onboarding.
-const publicAccount = ({ id, email, name, locale, emailConfirmed, aiEngine }: Account): Account => ({
+// aiEngine: il motore v2 (ai/engine.ts), per cui lo studio accorcia l'onboarding.
+const publicAccount = ({ id, email, name, locale, emailConfirmed }: Account): Account => ({
   id,
   email,
   name,
   locale,
   emailConfirmed,
   freePlan: isFreeUltra(email),
-  ...(aiEngine && { aiEngine }),
+  ...(isEngineV2() && { aiEngine: 'v2' as const }),
 });
 
 // Le email partono senza farsi aspettare: chi si registra entra subito, e chi chiede la password non capisce dal

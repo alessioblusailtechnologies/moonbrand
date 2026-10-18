@@ -14,7 +14,7 @@ import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { withLogo } from './jobs/brand/logo';
 import type { FolderBrand } from './jobs/cartella/cartella';
-import { archiveV1, restoreV1 } from './jobs/cartella/migrate';
+import { archiveV1 } from './jobs/cartella/migrate';
 import { saveIdeas } from './jobs/ideas/save';
 import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
@@ -25,18 +25,16 @@ import { createStepReader } from './lib/step-reader';
 import { chatTitle } from './lib/title';
 import { USAGE_MESSAGE, type Usage } from './lib/usage';
 
-// Il motore v2: l'onboarding e la chat. La coda è la stessa di moonbrand-ai (presenza.ai_jobs), con gli stessi tipi di
-// job che mette in coda l'API: i due worker girano insieme e ognuno prende solo i job del suo motore (ai_jobs.engine,
-// quello dell'account).
+// Il motore v2: l'onboarding e la chat. La coda è la stessa di moonbrand-ai (presenza.ai_jobs), con gli stessi tipi
+// di job che mette in coda l'API, quindi per provarlo basta far girare questo worker al posto dell'altro.
 
 process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const BRANDS_DIR = path.resolve(process.env.BRANDS_DIR || path.join(ROOT, '../../moonbrand-brands'));
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY) || 2;
-// Il nome di questo worker in presenza.brand_workers: deve restare lo stesso tra un riavvio e l'altro, e diverso da
-// quello del worker v1 sulla stessa macchina.
-const WORKER_ID = process.env.WORKER_ID || `${hostname()}-v2`;
+// Il nome di questo worker in presenza.brand_workers: deve restare lo stesso tra un riavvio e l'altro.
+const WORKER_ID = process.env.WORKER_ID || hostname();
 const POLL_MS = 2000;
 const LEASE = '5 minutes';
 const HEARTBEAT_MS = 60_000;
@@ -87,23 +85,20 @@ const JOBS: Record<string, JobKind> = {
     },
   },
   // Il tipo è quello che l'API mette in coda a fine onboarding e quando cambiano i riferimenti: in v2 prepara la cartella
-  // del brand. style_guide vuoto dice all'API che non serve rimetterlo in coda. Con migrate è il cambio di motore
-  // dell'account (dall'admin), in tutte e due le direzioni: prima si spostano i file della v1 (cartella/migrate.ts).
+  // del brand. style_guide vuoto dice all'API che non serve rimetterlo in coda. Con migrate è il passaggio di un brand
+  // della v1: prima la roba della v1 va in v1/ (cartella/migrate.ts).
   style: {
     launch: async (input, job) => {
       const { brandId, migrate } = input as StyleJobInput;
       const dir = path.join(BRANDS_DIR, brandId);
       if (migrate) {
-        const moved = migrate === 'v2' ? await archiveV1(dir) : await restoreV1(dir);
-        console.log(`[${job.id}] verso ${migrate}: ${moved.length > 0 ? moved.join(', ') : 'niente da spostare'}`);
+        const moved = await archiveV1(dir);
+        console.log(`[${job.id}] in v1/: ${moved.length > 0 ? moved.join(', ') : 'niente'}`);
       }
       return { script: 'src/jobs/cartella/cartella.ts', args: [dir, JSON.stringify(await folderBrand(brandId))] };
     },
     save: async (job) => {
-      const { brandId, migrate } = job.input as StyleJobInput;
-      await pool.query(`update presenza.brands set style_guide = '' where id = $1 and style_guide is null`, [brandId]);
-      // Tornato alla v1, il brand si stacca da questo worker: i suoi job li prende moonbrand-ai.
-      if (migrate === 'v1') await pool.query('delete from presenza.brand_workers where brand_id = $1', [brandId]);
+      await pool.query(`update presenza.brands set style_guide = '' where id = $1 and style_guide is null`, [(job.input as StyleJobInput).brandId]);
     },
     folder: true,
   },
@@ -196,7 +191,6 @@ async function claim(): Promise<Job | null> {
          left join presenza.brand_workers w on w.brand_id = j.input->>'brandId'
          where (j.status = 'queued' or (j.status = 'running' and j.locked_until < now()))
            and j.kind = any($2)
-           and j.engine = 'v2'
            and (w.worker_id is null or w.worker_id = $1)
          order by j.created_at
          for update of j skip locked

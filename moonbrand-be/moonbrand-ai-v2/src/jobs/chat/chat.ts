@@ -56,7 +56,7 @@ const readRule = (target: string) => `Read(/${target.replace(/^([A-Za-z]):/, (_,
 const brandRoot = path.resolve(brandDir);
 const home = homedir();
 const outer = path.relative(home, REPO).startsWith('..') ? [REPO, home] : [home];
-// Anche v1/, la roba della v1 archiviata quando l'account è passato al v2.
+// Anche v1/, la roba della v1 archiviata al passaggio del brand al v2.
 const archive = path.join(brandRoot, ARCHIVE);
 const readDeny = [...outer.flatMap((root) => aroundBrand(root, brandRoot)), `${archive}${path.sep}**`].map(readRule);
 

@@ -94,7 +94,7 @@ export function buildApp(options: AppOptions) {
   setAiEngine(options.settings);
   const dodo = new DodoApi(options.settings);
   registerBrandRoutes(app, options.pool, options.files, options.storage, options.settings, dodo);
-  registerBrandFileRoutes(app, options.pool, options.files);
+  registerBrandFileRoutes(app, options.files);
   registerMediaRoutes(app, options.storage);
   registerAiRoutes(app, options.pool, options.files);
   registerIdeaRoutes(app, options.pool);

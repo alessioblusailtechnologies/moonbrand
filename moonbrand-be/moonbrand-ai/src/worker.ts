@@ -188,8 +188,7 @@ let stopping = false;
 
 // Si prendono solo i job dei brand di questo worker, o di brand che non hanno ancora un worker: il brand diventa suo
 // (presenza.brand_workers). Se nel frattempo un altro worker ha preso lo stesso brand nuovo, il job resta a lui e si
-// cerca il prossimo: il brand appena assegnato non passa più il filtro. Solo i job del motore v1: quelli degli account
-// passati al v2 li prende moonbrand-ai-v2.
+// cerca il prossimo: il brand appena assegnato non passa più il filtro.
 async function claim(): Promise<Job | null> {
   await pool.query(
     `update presenza.ai_jobs set status = 'failed', error = 'Interrotto troppe volte.', finished_at = now(), locked_until = null
@@ -204,7 +203,6 @@ async function claim(): Promise<Job | null> {
         `select j.id, j.input->>'brandId' as brand_id from presenza.ai_jobs j
          left join presenza.brand_workers w on w.brand_id = j.input->>'brandId'
          where (j.status = 'queued' or (j.status = 'running' and j.locked_until < now()))
-           and j.engine = 'v1'
            and (w.worker_id is null or w.worker_id = $1)
          order by j.created_at
          for update of j skip locked

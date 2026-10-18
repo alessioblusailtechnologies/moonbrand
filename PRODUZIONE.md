@@ -357,40 +357,39 @@ soli dallo storage al primo job).
 
 ## 14. Motore v2
 
-Il worker v2 (`moonbrand-be/moonbrand-ai-v2`) gira accanto a quello della v1, sulla stessa coda: ognuno prende solo i
-job del motore dell'account (`presenza.accounts.ai_engine`, default `v1`). Finché nessun account è passato al v2 dalla
-scheda dell'utenza nell'admin, per gli utenti non cambia niente. Una volta sola:
+Il passaggio dalla v1 (`moonbrand-be/moonbrand-ai`) al v2 (`moonbrand-be/moonbrand-ai-v2`) si fa in un colpo, per
+tutti: un worker solo, che a un certo punto lancia il v2 al posto della v1.
 
-1. Migration `20261019100000_ai_engine.sql` (OPERAZIONI.md, «Migration del DB»), **prima** del deploy: il worker v1
-   nuovo legge `ai_jobs.engine`.
-2. Pacchetti: `apt install ffmpeg bubblewrap socat` (ffmpeg per la chat, bubblewrap e socat per il sandbox di Bash).
-3. `.env` del v2 in `~/moonbrand/moonbrand-be/moonbrand-ai-v2/.env`: gli stessi valori del worker v1 per
-   `DATABASE_URL`, `API_URL`, `BRANDS_DIR`, `CLAUDE_CONFIG_DIR`, `S3_*`, `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`,
-   `ELEVENLABS_API_KEY`; niente `WORKER_ID` (vale `<hostname>-v2`). Accanto, `.env.lambda` con le chiavi di Remotion
-   Lambda (si copia da quello di sviluppo).
-4. Servizio `/etc/systemd/system/moonbrand-worker-v2.service`, come quello della v1 con la cartella del v2:
+**Prima, senza toccare gli utenti**
 
-   ```
-   [Unit]
-   Description=moonbrand worker v2
-   After=network-online.target
+1. Migration `20261019100000_ai_engine.sql` (OPERAZIONI.md, «Migration del DB»), prima del deploy: l'API scrive il
+   motore di ogni job (`ai_jobs.engine`).
+2. Deploy normale (`bash deploy.sh`): installa anche le dipendenze del v2; il worker resta la v1.
+3. `apt install ffmpeg bubblewrap socat`: ffmpeg per la chat, bubblewrap e socat per il sandbox di Bash.
+4. `~/moonbrand/moonbrand-be/moonbrand-ai-v2/.env` con gli stessi valori del worker v1 (`DATABASE_URL`, `API_URL`,
+   `BRANDS_DIR`, `CLAUDE_CONFIG_DIR`, `S3_*`, `WORKER_ID` se c'è, `GEMINI_API_KEY`, `ATLASCLOUD_API_KEY`,
+   `ELEVENLABS_API_KEY`), e accanto `.env.lambda` con le chiavi di Remotion Lambda (da quello di sviluppo).
+5. Prova del sandbox su una copia di un brand, come utente `moonbrand`:
 
-   [Service]
-   User=moonbrand
-   WorkingDirectory=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v2
-   ExecStart=/usr/bin/npx tsx src/worker.ts
-   KillSignal=SIGTERM
-   TimeoutStopSec=30
-   Restart=always
-
-   [Install]
-   WantedBy=multi-user.target
+   ```bash
+   rsync -a --exclude video --exclude node_modules /srv/moonbrand/brands/<brand>/ /tmp/prova-v2/
+   cd ~/moonbrand/moonbrand-be/moonbrand-ai-v2
+   CLAUDE_CONFIG_DIR=/srv/moonbrand/claude npm run chat -- /tmp/prova-v2 '{"sessionId":null,"message":"Test tecnico: esegui ffmpeg -version, prova a leggere ~/moonbrand/deploy.sh e scrivi un file in lavoro/. Dimmi cosa è riuscito.","attachments":[]}'
    ```
 
-   poi `systemctl daemon-reload && systemctl enable --now moonbrand-worker-v2`. Da lì `deploy.sh` lo aggiorna e lo
-   riavvia insieme agli altri.
+   Deve riuscire ffmpeg e la scrittura in `lavoro/`, non la lettura del repo. Poi `rm -rf /tmp/prova-v2`.
 
-Il passaggio di un account (admin → utenza → «Passa al v2») si fa solo senza lavori in coda: per ogni brand parte un
-job che mette in `v1/` la roba della v1 (`CLAUDE.md`, `esempi/`, `riferimenti-da-seguire/`, `template/`, `video/`) e
-prepara la cartella del v2. Le conversazioni ripartono con una sessione nuova. «Torna alla v1» rimette tutto com'era.
-`AI_ENGINE=v2` nel `.env` dell'API fa nascere sul v2 gli account nuovi.
+**Il passaggio**
+
+1. Nessun job della v1 in corso (admin → Lavori); `npm run passaggio` si rifiuta se ce ne sono.
+2. Nel `.env` dell'API `AI_ENGINE=v2`.
+3. In `/etc/systemd/system/moonbrand-worker.service` `WorkingDirectory=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v2`,
+   poi `systemctl daemon-reload && systemctl restart moonbrand-api moonbrand-worker`.
+4. Dalla cartella del v2: `npm run passaggio`. Per ogni brand parte un job che mette in `v1/` la roba della v1
+   (`CLAUDE.md`, `esempi/`, `riferimenti-da-seguire/`, `template/`, `video/`) e prepara la cartella del v2. La prima
+   volta ricarica sullo storage anche i progetti video spostati (qualche GB in tutto). Le conversazioni continuano
+   con una sessione nuova.
+5. Prova dallo studio con un account nostro: onboarding, chat, un carosello.
+
+**Per tornare indietro**: `AI_ENGINE=v1`, il servizio di nuovo su `moonbrand-ai`, e in ogni brand il `CLAUDE.md` del v2
+tolto e quello che c'è in `v1/` rimesso fuori.
