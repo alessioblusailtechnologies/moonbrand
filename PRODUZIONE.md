@@ -357,8 +357,7 @@ soli dallo storage al primo job).
 
 ## 14. Motore v2
 
-Fatto il 18/10 sera: switch alle 21:20, i 7 brand passati uno alla volta (da 1 a 21 secondi l'uno). Sul server restano
-`moonbrand-api/.env.prima-v2` e `/etc/systemd/system/moonbrand-worker.service.prima-v2` per tornare indietro.
+Fatto il 18/10 sera: il resoconto è in fondo alla sezione, «Com'è andato».
 
 Il passaggio dalla v1 (`moonbrand-be/moonbrand-ai`) al v2 (`moonbrand-be/moonbrand-ai-v2`) si fa in un colpo, per
 tutti: un worker solo, che a un certo punto lancia il v2 al posto della v1.
@@ -400,3 +399,35 @@ tutti: un worker solo, che a un certo punto lancia il v2 al posto della v1.
 
 **Per tornare indietro**: `AI_ENGINE=v1`, il servizio di nuovo su `moonbrand-ai`, e in ogni brand il `CLAUDE.md` del v2
 tolto e quello che c'è in `v1/` rimesso fuori.
+
+**Com'è andato (18-19/10)**
+
+- Migration `ai_engine` lanciata in produzione (annotata in OPERAZIONI.md), poi deploy con il v2 installato.
+- `ffmpeg` 8.0.1, `bubblewrap` 0.11.1 e `socat` 1.8.1.1 installati. `.env` del v2 fatto dalle chiavi del worker v1
+  (anche `ANTHROPIC_API_KEY`, non `ZERNIO_API_KEY`), `.env.lambda` copiato da quello della v1 sul server.
+- Prova della chat su una copia di Atelier Juella: il sandbox di Bash non partiva (Ubuntu 26.04, profilo AppArmor
+  `bwrap-userns-restrict`). Sandbox spento con `BASH_SANDBOX` (`SANDBOX-BASH.md`); rifatta la prova: ffmpeg e
+  `lavoro/` ok, `deploy.sh` negato sia a Read sia a `cat` da Bash. Lo script di prova va lanciato con `</dev/null`:
+  la chat legge lo stdin (lo «stop») e si mangia il resto dello script.
+- Prima del passaggio cancellate tre utenze di prova con i loro brand (novex43393, genko7662, ximijaw683: Moonbrand,
+  Studio Dentistico De Bartolomeo, 2D Group, nessun contenuto): utente Supabase Auth (il DB `presenza` va via in
+  cascata da `auth.users`), file sullo storage (`<brand>/` e `_sessions/<brand>/`), cartella, sessioni di Claude e
+  stato della sincronizzazione sul server, profilo Zernio. Su Zernio un profilo con un account collegato non si
+  cancella (400): prima `DELETE /accounts/:id`, poi `DELETE /profiles/:id`. Restano su Zernio profili di sviluppo
+  e collaudo senza account, da non toccare alla cieca.
+- Switch alle 21:20 (nessun job in corso). Sul server restano `moonbrand-api/.env.prima-v2` e
+  `/etc/systemd/system/moonbrand-worker.service.prima-v2` per tornare indietro.
+- I 7 brand passati uno alla volta con `npm run passaggio -- <brandId>`, tutti `done`, compreso il caricamento sullo
+  storage: Velia 4 s, Blusail 2 s, Moonbrand 21 s (l'unico con `template/`), janek 1 s, Sunraise 5 s, Atelier
+  Juella 5 s, Auremalab 15 s. I GB sul disco sono quasi tutti `node_modules` dei progetti video, che sullo storage
+  non vanno.
+- `file-riferimento/` resta nei brand nati prima: i percorsi dei riferimenti nel DB (`visual.references`) puntano lì
+  e lo studio li mostra da lì; il job cartella li copia in `riferimenti/`, che è quella che legge la chat. Moonbrand
+  e janek non hanno riferimenti nel profilo, quindi niente `riferimenti/` (Moonbrand nella v1 aveva un template, che
+  toglie i riferimenti): si ricaricano a mano dallo studio.
+- Studio, nello stesso giro: tolta dalle impostazioni del brand la sezione Riferimenti (profili, fonti, ricorrenze),
+  che il v2 non usa (dati ed editor restano, `profile-page.ts`); sul tablet in verticale (fino a 900 px, gli iPad)
+  la sidebar è il menu del telefono con la lista delle chat, prima era compressa a icone senza chat e senza modo di
+  aprirla. Provato in produzione a 816 px.
+- Da riprendere: il sandbox di Bash (`SANDBOX-BASH.md`), le copie `.prima-v2` da togliere dopo qualche giorno, i
+  doppioni in `file-riferimento/`.
