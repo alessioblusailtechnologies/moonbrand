@@ -80,6 +80,22 @@ export async function atlasPrice(apiKey: string, model: string): Promise<AtlasPr
   return catalog.prices.get(model);
 }
 
+// I prezzi al secondo misurati dal saldo di Atlas, che vincono sul catalogo: per alcuni modelli il catalogo dà solo il
+// prezzo «a partire da». Si riconoscono dall'inizio del nome, perché il catalogo ha un modello per modo (image-to-video,
+// text-to-video...). Grok 1.5 misurato il 2 ottobre 2026 (il 1080p è approssimato); Kling 3.0 Pro, sempre in 1080p con l'audio, il 9
+// ottobre. Senza risoluzione nella richiesta si conta la più cara. Gemini Omni Flash segue il catalogo, verificato.
+const ATLAS_MEASURED: Record<string, Record<string, number>> = {
+  'xai/grok-imagine-video-v1.5/': { '720p': 0.145, '1080p': 0.25 },
+  'kwaivgi/kling-v3.0-pro/': { '1080p': 0.143 },
+};
+
+export function atlasMeasured(model: string, resolution?: string): number | undefined {
+  const prefix = Object.keys(ATLAS_MEASURED).find((key) => model.startsWith(key));
+  if (!prefix) return undefined;
+  const prices = ATLAS_MEASURED[prefix]!;
+  return (resolution && prices[resolution.toLowerCase()]) || Math.max(...Object.values(prices));
+}
+
 // Il listino in crediti che la chat usa per le stime: 1 credito è 1 centesimo di dollaro di costo vero. Un'immagine
 // di Gemini 3 Pro a 2K sono 1120 token; la clip è Gemini Omni Flash su Atlas, da foto.
 const credits = (usd: number) => Math.round(usd * 100);

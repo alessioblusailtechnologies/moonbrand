@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
-import { atlasPrice, ELEVENLABS, geminiCost } from './prices';
+import { atlasMeasured, atlasPrice, ELEVENLABS, geminiCost } from './prices';
 import type { Usage } from './usage';
 
 // La chat chiama Gemini, Atlas ed ElevenLabs da sé, con node o curl: passa da qui, un server del worker su 127.0.0.1, uno
@@ -121,16 +121,17 @@ export async function startProxy(keys: ServiceKeys, record: (usage: Usage) => vo
     if (method === 'POST' && /\/model\/generate(Video|Image)$/.test(path)) {
       const model = String(body.model ?? '');
       if (status >= 400 || !data?.id) return record({ task: path.endsWith('Video') ? 'clip' : 'image', model, outcome: 'error', error: `${status}`, durationMs });
-      const price = await atlasPrice(keys.atlas!, model).catch((error: unknown) => warn(String(error)));
-      if (!price?.base) warn(`Atlas ${model} senza prezzo nel catalogo`);
       const video = path.endsWith('Video');
+      const measured = video ? atlasMeasured(model, typeof body.resolution === 'string' ? body.resolution : undefined) : undefined;
+      const price = measured === undefined ? await atlasPrice(keys.atlas!, model).catch((error: unknown) => warn(String(error))) : undefined;
+      if (measured === undefined && !price?.base) warn(`Atlas ${model} senza prezzo nel catalogo`);
       const seconds = Number(body.duration);
       if (video && !(seconds > 0)) warn(`Atlas ${model} senza durata: contati 5 secondi`);
       pending.set(data.id, {
         model,
         units: video ? (seconds > 0 ? seconds : 5) : Number(body.num_images ?? body.n ?? 1) || 1,
         unit: video ? 'secondi' : 'immagini',
-        usdPerUnit: price?.base,
+        usdPerUnit: measured ?? price?.base,
         startedAt: Date.now() - durationMs,
       });
       return;

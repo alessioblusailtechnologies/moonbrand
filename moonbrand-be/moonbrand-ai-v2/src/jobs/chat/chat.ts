@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,7 +20,7 @@ import { moonbrandServer } from './moonbrand';
 const { carousel, video } = estimatesFromEnv(process.env);
 const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
 
-const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl.
+const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl. I modelli di Atlas con i prezzi sono in GET /api/v1/models. ffmpeg è nel PATH.
 Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).
 Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un contenuto è pronto salvalo con salva_contenuto; per cambiarlo passa il suo id. Contenuti, piano e idee li leggi e li cambi con gli altri tool di moonbrand.`;
 
@@ -29,6 +31,39 @@ const [brandDir, inputJson] = process.argv.slice(2);
 if (!brandDir || !inputJson) {
   console.error('Uso: npm run chat -- <cartella del brand> <input del job in JSON>');
   process.exit(1);
+}
+
+// Read, Grep e Glob non passano dal sandbox e un divieto vince su ogni eccezione: la cartella del brand sta dentro il
+// repo e la home, quindi si vieta tutto quello che sta attorno al percorso che porta al brand, livello per livello.
+// Altrimenti la chat usa il codice del repo per capire i servizi e ne prende i programmi (ffmpeg dei pacchetti Remotion).
+function aroundBrand(root: string, brand: string): string[] {
+  const relative = path.relative(root, brand);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return [root];
+  const denied: string[] = [];
+  let dir = root;
+  for (const step of relative.split(path.sep).filter(Boolean)) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name !== step) denied.push(path.join(dir, entry.name) + (entry.isDirectory() ? `${path.sep}**` : ''));
+    }
+    dir = path.join(dir, step);
+  }
+  return denied;
+}
+
+// Le regole vogliono percorsi assoluti in stile POSIX con // davanti: su Windows C:\Users diventa //c/Users.
+const readRule = (target: string) => `Read(/${target.replace(/^([A-Za-z]):/, (_, drive: string) => `/${drive.toLowerCase()}`).replaceAll('\\', '/')})`;
+const brandRoot = path.resolve(brandDir);
+const home = homedir();
+const outer = path.relative(home, REPO).startsWith('..') ? [REPO, home] : [home];
+const readDeny = outer.flatMap((root) => aroundBrand(root, brandRoot)).map(readRule);
+
+// ffmpeg: su Linux quello del sistema; su Windows (il collaudo) quello dei pacchetti Remotion, messo nel PATH perché
+// la chat non lo vada a cercare nel repo.
+function withFfmpeg(environment: Record<string, string | undefined>) {
+  if (process.platform !== 'win32') return environment;
+  const dir = path.dirname(createRequire(import.meta.url).resolve('@remotion/compositor-win32-x64-msvc/package.json'));
+  const key = Object.keys(environment).find((name) => name.toUpperCase() === 'PATH') ?? 'PATH';
+  return { ...environment, [key]: `${dir}${path.delimiter}${environment[key] ?? ''}` };
 }
 
 // Il token del job e le credenziali dello storage servono ai tool di moonbrand e al worker, non a Claude.
@@ -72,7 +107,7 @@ try {
     prompt,
     options: {
       cwd: brandDir,
-      env,
+      env: withFfmpeg(env),
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
@@ -86,8 +121,9 @@ try {
         allowUnsandboxedCommands: false,
         filesystem: { denyRead: [REPO, homedir()], allowRead: [path.resolve(brandDir)] },
       },
-      // Read, Grep e Glob non passano dal sandbox: niente .env né credenziali di Claude, ovunque siano.
-      settings: { permissions: { deny: ['Read(//**/.env)', 'Read(//**/.env.*)', 'Read(~/.claude/**)'] } },
+      // Read, Grep e Glob non passano dal sandbox: niente .env né credenziali di Claude, ovunque siano, e niente fuori
+      // dalla cartella del brand nel repo e nella home.
+      settings: { permissions: { deny: ['Read(//**/.env)', 'Read(//**/.env.*)', 'Read(~/.claude/**)', ...readDeny] } },
       includePartialMessages: true,
       abortController: abort,
       permissionMode: 'bypassPermissions',

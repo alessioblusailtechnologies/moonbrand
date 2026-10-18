@@ -212,17 +212,15 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 
 ## Cosa manca
 
-Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servizi e stima prima di caroselli e video, tool di contenuti, piano e idee, idea e uscita nel messaggio, saluto del giorno, titoli delle chat (questi ultimi non c'erano nemmeno nella v1), PDF del carosello per LinkedIn, export dei video su Lambda. I link social (Instagram, Facebook) la chat li scarica già da sé, senza `scarica_social`.
+Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servizi e stima prima di caroselli e video, tool di contenuti, piano e idee, idea e uscita nel messaggio, saluto del giorno, titoli delle chat (questi ultimi non c'erano nemmeno nella v1), PDF del carosello per LinkedIn, export dei video su Lambda. Il 18/10 sera anche Read/Grep/Glob limitati alla cartella del brand (regole di divieto attorno al percorso, in chat.ts), ffmpeg nel PATH (su Windows quello di Remotion) e i prezzi misurati di Grok 1.5 e Kling 3.0 Pro, che vincono sul catalogo di Atlas (prices.ts). I link social (Instagram, Facebook) la chat li scarica già da sé, senza `scarica_social`.
 
 - **Canzoni con Mureka (`genera_canzone`).** Qui c'è solo la musica di ElevenLabs; serve solo se si vogliono ancora canzoni cantate.
 
 Tecniche:
 
-- **Sandbox su Linux.** Va provato prima della produzione (bubblewrap e socat installati), compresa la chat che raggiunge il proxy su 127.0.0.1.
-- **Prezzi Atlas.** Per Grok e Kling serve una tabella di prezzi misurati che vinca sul catalogo, che può segnare meno del costo vero (Grok 0,08 $/s a catalogo, 0,145 misurato a 720p).
+- **Sandbox su Linux.** Va provato prima della produzione (bubblewrap, socat e ffmpeg installati: oggi sul server ffmpeg non c’è), compresa la chat che raggiunge il proxy su 127.0.0.1.
 - **Contenuti vecchi della v1.** Quelli senza conversazione hanno ancora «Rigenera» e «Modifica» nello studio: con il worker v2 quei job (`content`, `content-edit`, `content-video`) restano in coda. Da nascondere nello studio con `aiEngine === 'v2'`.
-- **Usa il repo come cassetta degli attrezzi.** Ha letto `moonbrand-ai-fresh/src/tools/atlas.ts` per capire Atlas e ha preso `ffmpeg.exe` da `node_modules/@remotion/compositor-win32-x64-msvc`. In produzione col sandbox non ci arriva: servono ffmpeg nel PATH del server e Read/Grep limitati alla cartella del brand.
-- **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s.
+- **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s. Ora che il repo è chiuso la chat ha solo il catalogo (GET /api/v1/models, citato nel prompt): da riguardare alla prossima clip.
 
 Rimandati dall'utente:
 
