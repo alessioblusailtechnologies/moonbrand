@@ -157,9 +157,9 @@ Per ogni chat il worker apre un server su 127.0.0.1 che inoltra a Gemini, Atlas 
 
 - Dall'ambiente di Claude si tolgono il token del job e le credenziali S3; `DATABASE_URL` lo toglie già il worker.
 - Read, Grep e Glob non leggono `.env` e `~/.claude` (regole `deny` nelle impostazioni del job).
-- Bash gira nel sandbox dell'SDK solo su Linux: scrive nella cartella del brand e non legge il repo né la home. Se il sandbox non parte, la chat non parte (`failIfUnavailable`).
-- Su Windows (il collaudo, questa macchina) il sandbox non c'è («feature gate off»): lì Bash resta libero e può leggere i file della macchina. Scelta consapevole per poter provare.
-- Le chiavi di generazione non sono più nell'ambiente di Claude: le ha solo il proxy. Su Windows, senza sandbox, Claude potrebbe ancora leggerle dal `.env` con Bash. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
+- Con `BASH_SANDBOX=on`, solo su Linux, Bash gira nel sandbox dell'SDK: scrive nella cartella del brand e non legge il repo né la home. Se il sandbox non parte, la chat non parte (`failIfUnavailable`).
+- Per ora il sandbox è spento anche in produzione, come nella v1: su Ubuntu 26.04 bwrap annidato è bloccato da AppArmor e serve prima un profilo (`SANDBOX-BASH.md`, nella radice del repo). Senza sandbox Bash resta libero e può leggere i file della macchina. Su Windows il sandbox non c'è comunque («feature gate off»).
+- Le chiavi di generazione non sono più nell'ambiente di Claude: le ha solo il proxy. Senza sandbox Claude potrebbe ancora leggerle dal `.env` con Bash. Database, Supabase, Dodo e simili non devono mai essere raggiungibili.
 - Da verificare su Linux: che dal sandbox la chat raggiunga il proxy su 127.0.0.1 (potrebbe servire `sandbox.network`).
 
 
@@ -220,7 +220,7 @@ Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servi
 
 Tecniche:
 
-- **Sandbox su Linux.** Va provato prima della produzione (bubblewrap, socat e ffmpeg installati: oggi sul server ffmpeg non c’è), compresa la chat che raggiunge il proxy su 127.0.0.1.
+- **Sandbox su Linux.** Provato il 18/10 sul server: bubblewrap, socat e ffmpeg ci sono, ma AppArmor blocca il namespace annidato. Spento finché non si fa il profilo (`SANDBOX-BASH.md`); poi va provata anche la chat che raggiunge il proxy su 127.0.0.1.
 - **Scelta del modello delle clip.** Conta la qualità, non il prezzo: Gemini Omni Flash (0,13 $/s) era stato scelto il 2/10 dopo una prova sulle stesse foto perché è quello che segue meglio il prompt. Su Atlas c’è anche `google/gemini-omni-1.1-flash` a 0,039 $/s: va provato sulle stesse foto prima di preferirlo. Ora che il repo è chiuso, la chat sceglie dal catalogo (GET /api/v1/models, citato nel prompt solo come elenco dei modelli).
 
 Rimandati dall'utente:
