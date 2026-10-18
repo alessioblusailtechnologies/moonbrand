@@ -220,7 +220,7 @@ Tecniche:
 
 - **Sandbox su Linux.** Va provato prima della produzione (bubblewrap, socat e ffmpeg installati: oggi sul server ffmpeg non c’è), compresa la chat che raggiunge il proxy su 127.0.0.1.
 - **Contenuti vecchi della v1.** Quelli senza conversazione hanno ancora «Rigenera» e «Modifica» nello studio: con il worker v2 quei job (`content`, `content-edit`, `content-video`) restano in coda. Da nascondere nello studio con `aiEngine === 'v2'`.
-- **Modello più caro del necessario.** Per le clip ha scelto `google/gemini-omni-flash` (0,13 $/s) perché era nel codice del fresh; su Atlas c'è `google/gemini-omni-1.1-flash` a 0,039 $/s. Ora che il repo è chiuso la chat ha solo il catalogo (GET /api/v1/models, citato nel prompt): da riguardare alla prossima clip.
+- **Scelta del modello delle clip.** Conta la qualità, non il prezzo: Gemini Omni Flash (0,13 $/s) era stato scelto il 2/10 dopo una prova sulle stesse foto perché è quello che segue meglio il prompt. Su Atlas c’è anche `google/gemini-omni-1.1-flash` a 0,039 $/s: va provato sulle stesse foto prima di preferirlo. Ora che il repo è chiuso, la chat sceglie dal catalogo (GET /api/v1/models, citato nel prompt solo come elenco dei modelli).
 
 Rimandati dall'utente:
 
