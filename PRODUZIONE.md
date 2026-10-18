@@ -357,6 +357,9 @@ soli dallo storage al primo job).
 
 ## 14. Motore v2
 
+Fatto il 18/10 sera: switch alle 21:20, i 7 brand passati uno alla volta (da 1 a 21 secondi l'uno). Sul server restano
+`moonbrand-api/.env.prima-v2` e `/etc/systemd/system/moonbrand-worker.service.prima-v2` per tornare indietro.
+
 Il passaggio dalla v1 (`moonbrand-be/moonbrand-ai`) al v2 (`moonbrand-be/moonbrand-ai-v2`) si fa in un colpo, per
 tutti: un worker solo, che a un certo punto lancia il v2 al posto della v1.
 
