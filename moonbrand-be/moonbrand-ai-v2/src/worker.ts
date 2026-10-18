@@ -19,9 +19,10 @@ import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
 import { estimatesEnv, measureEstimates } from './lib/estimate';
-import { startProxy, type Usage } from './lib/proxy';
+import { startProxy } from './lib/proxy';
 import { createStepReader } from './lib/step-reader';
 import { chatTitle } from './lib/title';
+import { USAGE_MESSAGE, type Usage } from './lib/usage';
 
 // Il motore v2: l'onboarding e la chat. La coda è la stessa di moonbrand-ai (presenza.ai_jobs), con gli stessi tipi
 // di job che mette in coda l'API, quindi per provarlo basta far girare questo worker al posto dell'altro.
@@ -334,6 +335,12 @@ async function run(job: Job): Promise<void> {
     try {
       message = JSON.parse(line) as SDKMessage;
     } catch {
+      return;
+    }
+    // Le generazioni che lo script del job ha fatto da sé (l'export su Lambda): vanno in ai_usage.
+    if ((message as { type: string }).type === USAGE_MESSAGE) {
+      const { type: _type, ...usage } = message as unknown as Usage & { type: string };
+      void saveUsage(job, usage);
       return;
     }
     if ('session_id' in message && message.session_id) sessionId = message.session_id;

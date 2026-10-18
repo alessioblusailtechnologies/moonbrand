@@ -2,8 +2,10 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 import type { AgentContentRequest } from '@moonbrand/shared/api/contract';
+import { FORMAT_ASPECT, hasDocument } from '@moonbrand/shared/domain/content';
 
 import { putBrandFiles } from '../../lib/brand-sync';
+import { carouselDocument } from '../../lib/document';
 
 // I tool di moonbrand nella chat: contenuti, piano e idee, con le stesse rotte dell'API che usa moonbrand-ai. Il token
 // del job resta qui, Claude non lo vede; l'API agisce solo sul brand del job e solo mentre il job è in corso.
@@ -70,13 +72,24 @@ export function moonbrandServer(apiUrl: string, token: string, brandDir: string)
     }
   };
 
+  // Un carosello per LinkedIn esce anche come documento PDF: lo fa il codice dalle slide, prima di salvare. Se le slide
+  // non si leggono si salva senza, e la pubblicazione su LinkedIn dirà che manca.
   // L'API copia i file dallo storage: prima ci vanno quelli fatti in questo turno.
   const save = async (route: string, method: string, input: ContentInput) => {
+    const body = request(input);
+    if (hasDocument(input.formato, input.canali)) {
+      const target = `contenuti/carosello-linkedin-${Date.now().toString(36)}.pdf`;
+      const document = await carouselDocument(brandDir, input.file, target).catch((error: unknown) => {
+        console.error('PDF del carosello non fatto', error);
+        return null;
+      });
+      if (document) body.files.push({ file: document, role: 'document', index: 0, aspect: FORMAT_ASPECT.carousel.linkedin! });
+    }
     await putBrandFiles(
       brandDir,
-      input.file.map((item) => item.file),
+      body.files.map((item) => item.file),
     ).catch((error: unknown) => console.error('file del contenuto non caricati', error));
-    return call(method, route, request(input));
+    return call(method, route, body);
   };
 
   const options = { alwaysLoad: true };

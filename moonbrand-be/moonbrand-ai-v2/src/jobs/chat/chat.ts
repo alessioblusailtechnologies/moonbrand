@@ -8,6 +8,7 @@ import type { ChatJobInput } from '@moonbrand/shared/api/contract';
 
 import { estimatesFromEnv } from '../../lib/estimate';
 import { LISTINO } from '../../lib/prices';
+import { lambdaKeys, lambdaServer } from './lambda';
 import { moonbrandServer } from './moonbrand';
 
 // La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Poche righe dicono quali servizi
@@ -58,6 +59,8 @@ const ideaBlock =
 
 const prompt = [message, slotBlock, ideaBlock, attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`].filter(Boolean).join('\n\n');
 
+const lambda = lambdaKeys();
+
 // Lo stop arriva dal worker sullo stdin: Claude si ferma e la sessione resta riprendibile.
 const abort = new AbortController();
 process.stdin.on('data', (chunk: Buffer) => {
@@ -73,7 +76,8 @@ try {
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
-      mcpServers: { moonbrand: moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir) },
+      // L'export dei video nel cloud c'è solo con le chiavi di Lambda; senza, Claude esporta in locale.
+      mcpServers: { moonbrand: moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir), ...(lambda && { lambda: lambdaServer(brandDir, lambda) }) },
       // Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home, tranne il brand.
       // Su Windows (il collaudo) il sandbox non c'è: lì Bash resta libero, su Linux senza sandbox la chat non parte.
       sandbox: {

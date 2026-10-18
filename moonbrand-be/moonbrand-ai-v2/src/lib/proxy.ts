@@ -3,24 +3,12 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import type { AddressInfo } from 'node:net';
 
 import { atlasPrice, ELEVENLABS, geminiCost } from './prices';
+import type { Usage } from './usage';
 
 // La chat chiama Gemini, Atlas ed ElevenLabs da sé, con node o curl: passa da qui, un server del worker su 127.0.0.1, uno
 // per job. Claude ha l'indirizzo del proxy al posto di quello del servizio e una chiave che vale solo qui: la chiave vera
 // la mette il proxy, che registra ogni generazione con il suo costo in ai_usage, da cui partono i crediti.
 // Il token nel percorso dice di quale job è la chiamata.
-
-export interface Usage {
-  task: string;
-  model: string;
-  outcome: 'ok' | 'error';
-  error?: string;
-  durationMs: number;
-  units?: number;
-  unit?: string;
-  costUsd?: number;
-  inputTokens?: number;
-  outputTokens?: number;
-}
 
 export interface ServiceKeys {
   gemini?: string;

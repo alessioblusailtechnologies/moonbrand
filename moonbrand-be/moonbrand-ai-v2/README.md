@@ -135,6 +135,14 @@ A fine primo turno il worker chiede a Sonnet (`claude-sonnet-5-5`) un titolo di 
 
 Saluti per fascia oraria e spunti per la prima domanda, come nella v1, con un prompt corto: il tono di Claude, simpatico ma professionale. Sonnet 5.5, senza tool né cartella; `save.ts` scarta emoji, doppioni, testi troppo lunghi e parole che indovinano il genere. Lo mette in coda l'API, gratis.
 
+#### Il PDF del carosello per LinkedIn (`lib/document.ts`)
+
+Su LinkedIn il carosello esce come PDF delle slide (`publisher.ts` nell'API). Quando un carosello ha LinkedIn tra i canali, `salva_contenuto` riunisce le slide in 4:5 (o quelle della prima proporzione) in un PDF, una per pagina, con `pdf-lib`, senza browser, e lo aggiunge come file `document`. Se il PDF non riesce si salva senza, e la pubblicazione su LinkedIn dirà che manca.
+
+#### L'export dei video su Lambda (`jobs/chat/lambda.ts`)
+
+Il tool `esporta_video` (server `lambda`) pubblica su S3 il progetto Remotion che Claude ha fatto nella cartella del brand (un sito per brand) e renderizza le composizioni su Remotion Lambda, come `tools/lambda.ts` della v1: un Reel di 20 s in 19 s di render, 37 s con la pubblicazione, 0,8 centesimi (prova del 18/10). La funzione su AWS è di Remotion 4.0.529 (`@remotion/lambda` fissato a quella versione): se il progetto ne usa un'altra il tool lo dice prima di partire. Le chiavi stanno in `.env.lambda` in questa cartella (le stesse della v1, da copiare anche sul server); senza, il tool non c'è e Claude esporta in locale. Il costo del render arriva al worker con una riga `moonbrand_usage` sullo stdout e va in `ai_usage`.
+
 #### Il proxy dei servizi (`lib/proxy.ts`)
 
 Per ogni chat il worker apre un server su 127.0.0.1 che inoltra a Gemini, Atlas ed ElevenLabs. Claude ha l'indirizzo del proxy, con un token del job nel percorso, e come chiave lo stesso token: le chiavi vere restano nel worker e ai servizi veri il token non vale niente.
@@ -204,10 +212,8 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 
 ## Cosa manca
 
-Rispetto a moonbrand-ai, in ordine di priorità (saluto del giorno e titoli delle chat fatti il 18/10):
+Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servizi e stima prima di caroselli e video, tool di contenuti, piano e idee, idea e uscita nel messaggio, saluto del giorno, titoli delle chat (questi ultimi non c'erano nemmeno nella v1), PDF del carosello per LinkedIn, export dei video su Lambda. I link social (Instagram, Facebook) la chat li scarica già da sé, senza `scarica_social`.
 
-- **Riferimenti dai social (`scarica_social`).** Nella v1 un link TikTok o Instagram incollato in chat si scaricava con Zernio; qui Claude non ha la chiave. Da aggiungere al proxy come gli altri servizi (gratis, niente costo da contare).
-- **Export e controllo dei video.** La v1 aveva `esporta_video` su Remotion Lambda (13–20 s, circa 0,01 $ a video) e `controlla_video`; qui Claude monta da sé in locale con ffmpeg o Remotion, più lento. Lambda si può dare anche alla v2, sempre dal proxy.
 - **Canzoni con Mureka (`genera_canzone`).** Qui c'è solo la musica di ElevenLabs; serve solo se si vogliono ancora canzoni cantate.
 
 Tecniche:
