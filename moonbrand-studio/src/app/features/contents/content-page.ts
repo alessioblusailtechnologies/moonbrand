@@ -10,6 +10,7 @@ import { contentState, isOut, publicationProblem, type Publication } from '@moon
 import type { MessageKey, MessageParams } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ContentsService } from '../../core/contents/contents.service';
 import { errorMessage } from '../../core/errors';
@@ -49,6 +50,7 @@ export class ContentPage {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly i18n = inject(I18nService);
+  private readonly auth = inject(AuthService);
 
   // Dal percorso /contenuti/:contentId.
   readonly contentId = input.required<string>();
@@ -57,6 +59,9 @@ export class ContentPage {
   protected readonly content = signal<Content | null>(null);
   protected readonly loading = signal(true);
   protected readonly preparing = signal(false);
+  // Il motore v2 fa tutto in chat: i job dei contenuti della v1 (rigenera, modifica, video dal copione, nuovo canale)
+  // non li prende nessuno, quindi sui contenuti vecchi quei comandi non ci sono.
+  protected readonly v2 = computed(() => this.auth.account()?.aiEngine === 'v2');
   protected readonly work = signal<Work>('prepare');
   protected readonly steps = signal<AiStep[]>([]);
   protected readonly instruction = signal('');
@@ -99,7 +104,7 @@ export class ContentPage {
   // nella sua conversazione, tranne il copione di un video, che non ha ancora testi né file.
   protected readonly addable = computed(() => {
     const content = this.content();
-    if (!content) return [];
+    if (!content || this.v2()) return [];
     const scriptOnly = content.format === 'video' && hasScript(content) && !hasVideo(content);
     if (content.conversationId && !scriptOnly) return [];
     return this.brandChannels().filter((channel) => !content.channels.includes(channel) && supportsFormat(content.format, channel));

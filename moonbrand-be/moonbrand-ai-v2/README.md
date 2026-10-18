@@ -212,14 +212,13 @@ Prove fatte la sera del 17/10, dopo chiavi e `salva_contenuto` (chat di Tezenis 
 
 ## Cosa manca
 
-Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servizi e stima prima di caroselli e video, tool di contenuti, piano e idee, idea e uscita nel messaggio, saluto del giorno, titoli delle chat (questi ultimi non c'erano nemmeno nella v1), PDF del carosello per LinkedIn, export dei video su Lambda. Il 18/10 sera anche Read/Grep/Glob limitati alla cartella del brand (regole di divieto attorno al percorso, in chat.ts), ffmpeg nel PATH (su Windows quello di Remotion) e i prezzi misurati di Grok 1.5 e Kling 3.0 Pro, che vincono sul catalogo di Atlas (prices.ts). I link social (Instagram, Facebook) la chat li scarica già da sé, senza `scarica_social`.
+Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servizi e stima prima di caroselli e video, tool di contenuti, piano e idee, idea e uscita nel messaggio, saluto del giorno, titoli delle chat (questi ultimi non c'erano nemmeno nella v1), PDF del carosello per LinkedIn, export dei video su Lambda. Il 18/10 sera anche Read/Grep/Glob limitati alla cartella del brand (regole di divieto attorno al percorso, in chat.ts), ffmpeg nel PATH (su Windows quello di Remotion) e i prezzi misurati di Grok 1.5 e Kling 3.0 Pro, che vincono sul catalogo di Atlas (prices.ts). Nello studio, con `aiEngine === 'v2'`, i contenuti vecchi della v1 non hanno più Rigenera, Modifica, video dal copione e nuovo canale (job che il worker v2 non prende). I link social (Instagram, Facebook) la chat li scarica già da sé, senza `scarica_social`.
 
 - **Canzoni con Mureka (`genera_canzone`).** Qui c'è solo la musica di ElevenLabs; serve solo se si vogliono ancora canzoni cantate.
 
 Tecniche:
 
 - **Sandbox su Linux.** Va provato prima della produzione (bubblewrap, socat e ffmpeg installati: oggi sul server ffmpeg non c’è), compresa la chat che raggiunge il proxy su 127.0.0.1.
-- **Contenuti vecchi della v1.** Quelli senza conversazione hanno ancora «Rigenera» e «Modifica» nello studio: con il worker v2 quei job (`content`, `content-edit`, `content-video`) restano in coda. Da nascondere nello studio con `aiEngine === 'v2'`.
 - **Scelta del modello delle clip.** Conta la qualità, non il prezzo: Gemini Omni Flash (0,13 $/s) era stato scelto il 2/10 dopo una prova sulle stesse foto perché è quello che segue meglio il prompt. Su Atlas c’è anche `google/gemini-omni-1.1-flash` a 0,039 $/s: va provato sulle stesse foto prima di preferirlo. Ora che il repo è chiuso, la chat sceglie dal catalogo (GET /api/v1/models, citato nel prompt solo come elenco dei modelli).
 
 Rimandati dall'utente:
