@@ -164,43 +164,52 @@
 }
 
 .preset {
+  position: relative;
   overflow: hidden;
   border: 1.5px solid var(--border-field);
   border-radius: var(--radius-md);
 
   &.selected {
     border-color: var(--primary);
-  }
-
-  .zoom {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: zoom-in;
+    box-shadow: 0 0 0 1.5px var(--primary);
   }
 
   img {
     display: block;
     width: 100%;
-    height: 100%;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
   }
 }
 
+.preset-zoom {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+}
+
 .preset-pick {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   width: 100%;
-  padding: 8px 10px;
+  padding: 0;
   border: 0;
   background: none;
   color: inherit;
   text-align: left;
   cursor: pointer;
+
+  &:disabled {
+    cursor: progress;
+  }
+}
+
+.preset-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
 
   .check {
     display: flex;

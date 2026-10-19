@@ -187,26 +187,32 @@
       <p class="strong-sm">{{ 'onboarding.visual.references.presets' | t }}</p>
       <div class="presets">
         @for (preset of presets(); track preset.id; let i = $index) {
+          <!-- Tutta la scheda sceglie lo stile; la lente nell'angolo lo ingrandisce. -->
           <div class="preset" [class.selected]="preset.chosen">
-            <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.presetZoom' | t: { name: preset.name }" (click)="openPreset(i)">
-              <img [src]="preset.url" [alt]="preset.name" loading="lazy" />
-            </button>
             <button class="preset-pick" type="button" role="checkbox" [attr.aria-checked]="preset.chosen" [disabled]="addingPreset() !== null"
               (click)="togglePreset(preset)">
-              <span class="strong-sm grow">{{ preset.name }}</span>
-              @if (addingPreset() === preset.id) {
-                <span class="spinner"></span>
-              } @else {
-                <span class="check" [class.on]="preset.chosen">
-                  @if (preset.chosen) {
-                    <mb-icon name="check" [size]="12" [stroke]="3" />
-                  }
-                </span>
-              }
+              <img [src]="preset.url" [alt]="preset.name" loading="lazy" />
+              <span class="preset-name">
+                <span class="strong-sm grow">{{ preset.name }}</span>
+                @if (addingPreset() === preset.id) {
+                  <span class="spinner"></span>
+                } @else {
+                  <span class="check" [class.on]="preset.chosen">
+                    @if (preset.chosen) {
+                      <mb-icon name="check" [size]="12" [stroke]="3" />
+                    }
+                  </span>
+                }
+              </span>
+            </button>
+            <button class="icon-btn solid preset-zoom" type="button" [attr.aria-label]="'onboarding.visual.references.presetZoom' | t: { name: preset.name }"
+              (click)="openPreset(i)">
+              <mb-icon name="search" [size]="14" [stroke]="2.5" />
             </button>
           </div>
         }
       </div>
+      <p class="caption">{{ 'onboarding.visual.references.presetsSoon' | t }}</p>
       <p class="strong-sm">{{ 'onboarding.visual.references.own' | t }}</p>
     }
     <div class="references">
