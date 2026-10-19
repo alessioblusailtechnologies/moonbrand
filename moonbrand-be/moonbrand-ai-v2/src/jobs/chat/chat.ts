@@ -24,7 +24,8 @@ const range = ({ typical, high }: { typical: number; high: number }) => `${typic
 
 const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini; i video si guardano con Gemini, che vede movimento e audio), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl. I modelli di Atlas con i prezzi sono in GET /api/v1/models. ffmpeg è nel PATH.
 Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).
-Un video per TikTok ha le scritte a schermo nello stile di TikTok, nei colori e nei caratteri del brand: salvalo con canale tiktok accanto alla versione per gli altri canali.
+La copertina di un video è un contenuto a sé, quello che si vede nella griglia e fa fermare chi scorre: non un fotogramma preso dal video, ma un'immagine pensata, con il momento più forte reso nitido, un titolo che si legge da piccolo e lo stile del brand.
+Un video per TikTok ha le scritte a schermo nello stile di TikTok, copertina compresa, nei colori e nei caratteri del brand: salvalo con canale tiktok accanto alla versione per gli altri canali.
 Quello che salvi deve essere pubblicabile così com'è: foto e video nitidi come uno scatto fatto bene. Se il materiale dell'utente non lo è, lo migliori con l'AI partendo da quello, tenendo uguali persone e colori.
 Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un contenuto è pronto salvalo con salva_contenuto; per cambiarlo passa il suo id. Contenuti, piano e idee li leggi e li cambi con gli altri tool di moonbrand.`;
 
