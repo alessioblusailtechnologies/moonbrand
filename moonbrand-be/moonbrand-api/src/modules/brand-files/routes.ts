@@ -4,6 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 
 import type { ReferenceUploadResponse } from '@moonbrand/shared/api/contract';
+import { PRESET_ID } from '@moonbrand/shared/domain/reference-presets';
 
 import { ApiError } from '../../errors';
 import { EXTENSIONS, parseImage, uploadSchema } from '../media/routes';
@@ -12,6 +13,7 @@ import { LINK_CACHE_SECONDS } from './s3';
 
 const brandParams = z.object({ brandId: z.uuid('Brand non valido.') });
 const referenceParams = brandParams.extend({ name: z.string().regex(/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/, 'File non valido.') });
+const referenceUpload = uploadSchema.extend({ preset: z.string().regex(PRESET_ID, 'Stile non valido.').optional() });
 const fileParams = brandParams.extend({ '*': z.string().min(1) });
 const fileQuery = z.object({ sig: z.string().min(1) });
 
@@ -28,9 +30,10 @@ function parseRange(header: string | undefined, size: number): { start: number; 
 export function registerBrandFileRoutes(app: FastifyInstance, files: BrandFiles): void {
   app.post('/v1/brands/:brandId/references', async (request): Promise<ReferenceUploadResponse> => {
     const { brandId } = brandParams.parse(request.params);
-    const { bytes, mimeType } = parseImage(uploadSchema.parse(request.body).dataUri);
+    const { dataUri, preset } = referenceUpload.parse(request.body);
+    const { bytes, mimeType } = parseImage(dataUri);
     await files.claim(brandId, request.identity.accountId);
-    const path = `${referencesDir()}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
+    const path = `${referencesDir()}/${preset ? `stile-${preset}` : randomUUID()}.${EXTENSIONS[mimeType]}`;
     await files.save(brandId, path, bytes);
     return { path, url: files.url(brandId, path) };
   });

@@ -5,6 +5,7 @@ import type { VisualBrandContext, VisualExampleFile } from '@moonbrand/shared/ap
 import { type BrandDraft, type ChannelId, type MediaFile, type Palette, type Visual } from '@moonbrand/shared/domain/brand';
 import { CHANNELS, categoryLabel, channelName, exampleChannels, paletteSlotLabels } from '@moonbrand/shared/domain/catalog';
 import { QUALITY_FONTS } from '@moonbrand/shared/domain/fonts';
+import { presetImage, presetOf, presetsFor, type ReferencePreset } from '@moonbrand/shared/domain/reference-presets';
 import { findTemplate, POST_TEMPLATES, templateDescription, templatesFor, type PostTemplate } from '@moonbrand/shared/domain/templates';
 
 import { AiJobsService } from '../../../core/ai/ai-jobs.service';
@@ -84,6 +85,12 @@ export class VisualStep implements OnInit {
 
   protected readonly visual = computed(() => this.draft().visual);
   protected readonly references = computed(() => this.visual().references ?? []);
+  // Gli stili pronti della categoria del brand: sceglierne uno lo aggiunge ai riferimenti, toccarlo di nuovo lo toglie.
+  protected readonly presets = computed(() => {
+    const chosen = new Set(this.references().map(presetOf));
+    return presetsFor(this.draft().identity.category).map((preset) => ({ ...preset, url: presetImage(preset), chosen: chosen.has(preset.id) }));
+  });
+  protected readonly addingPreset = signal<string | null>(null);
   // I template della categoria del brand; quello già scelto resta in elenco anche se la categoria è cambiata.
   // Se la categoria non ne ha, l'avviso che arriveranno e, a richiesta, tutti gli altri: lo stile vale anche fuori
   // dalla sua categoria. Con uno di quelli già scelto l'elenco resta aperto.
@@ -217,6 +224,35 @@ export class VisualStep implements OnInit {
         this.uploading.update((count) => Math.max(0, count - 1));
       }
     }
+  }
+
+  protected async togglePreset(preset: ReferencePreset): Promise<void> {
+    const brandId = this.store.brandId();
+    if (!brandId || this.addingPreset()) return;
+    const existing = this.references().find((file) => presetOf(file) === preset.id);
+    if (existing) {
+      await this.removeReference(existing);
+      return;
+    }
+    if (this.references().length + this.uploading() >= MAX_REFERENCES) {
+      this.toast.show(this.i18n.t('onboarding.visual.references.max', { n: MAX_REFERENCES }));
+      return;
+    }
+    this.addingPreset.set(preset.id);
+    try {
+      const blob = await (await fetch(presetImage(preset))).blob();
+      const dataUri = await resizedDataUri(new File([blob], `${preset.id}.jpg`, { type: 'image/jpeg' }), 1600, 'image/jpeg');
+      const uploaded = await this.brands.uploadReference(brandId, dataUri, preset.id);
+      this.set({ references: [...(this.current().references ?? []), uploaded] });
+    } catch (error) {
+      this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.uploadFailed')));
+    } finally {
+      this.addingPreset.set(null);
+    }
+  }
+
+  protected openPreset(index: number): void {
+    this.lightbox.open(this.presets().map((preset) => ({ url: preset.url, alt: preset.name })), index);
   }
 
   protected async removeReference(file: MediaFile): Promise<void> {

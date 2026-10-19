@@ -120,6 +120,8 @@ export interface ActiveBrandRequest {
 
 export interface ReferenceUploadRequest {
   dataUri: string;
+  // Uno stile pronto (domain/reference-presets): il file prende il suo nome invece di uno a caso.
+  preset?: string;
 }
 
 export type ReferenceUploadResponse = MediaFile;
