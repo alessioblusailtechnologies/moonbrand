@@ -52,11 +52,10 @@ const SITE_PLACEHOLDER: Record<BrandKind, string> = { person: 'nodo.it', company
       <div class="field-row">
         <input id="site" type="url" autocomplete="url" [placeholder]="sitePlaceholder()" [value]="value.site"
           (input)="update('site', $any($event.target).value)" (keydown.enter)="canRead() && read()" />
-        @if (canRead()) {
-          <button class="btn btn-secondary btn-sm" type="button" [disabled]="reading()" (click)="read()">
-            {{ (reading() ? 'onboarding.identity.reading' : 'onboarding.identity.read') | t }}
-          </button>
-        }
+        <!-- Sempre visibile: si attiva quando l'indirizzo sembra un sito e non è già stato letto. -->
+        <button class="btn btn-secondary btn-sm" type="button" [disabled]="reading() || !canRead()" (click)="read()">
+          {{ (reading() ? 'onboarding.identity.reading' : 'onboarding.identity.read') | t }}
+        </button>
       </div>
     </div>
 

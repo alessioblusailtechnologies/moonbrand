@@ -229,6 +229,9 @@ export const onboarding = defineMessages({
         max: 'Al massimo {n} immagini: togline una per aggiungerne altre.',
         uploadFailed: 'Un’immagine è troppo pesante o non si legge: l’ho saltata.',
         removeFailed: 'Non sono riuscito a togliere l’immagine. Riprova.',
+        presets: 'Parti da uno stile pronto',
+        presetZoom: 'Ingrandisci lo stile {name}',
+        own: 'Oppure carica le tue',
         required: 'Carica almeno un’immagine di riferimento per andare avanti.',
       },
       examples: {
@@ -526,6 +529,9 @@ export const onboarding = defineMessages({
         max: 'Up to {n} images: remove one to add more.',
         uploadFailed: 'An image is too large or can’t be read: I skipped it.',
         removeFailed: 'I couldn’t remove the image. Try again.',
+        presets: 'Start from a ready-made style',
+        presetZoom: 'Enlarge the {name} style',
+        own: 'Or upload your own',
         required: 'Upload at least one reference image to continue.',
       },
       examples: {
@@ -823,6 +829,9 @@ export const onboarding = defineMessages({
         max: '{n} images au maximum : retirez-en une pour en ajouter d’autres.',
         uploadFailed: 'Une image est trop lourde ou illisible : je l’ai ignorée.',
         removeFailed: 'Je n’ai pas réussi à retirer l’image. Réessayez.',
+        presets: 'Partez d’un style prêt à l’emploi',
+        presetZoom: 'Agrandir le style {name}',
+        own: 'Ou importez les vôtres',
         required: 'Ajoutez au moins une image de référence pour continuer.',
       },
       examples: {

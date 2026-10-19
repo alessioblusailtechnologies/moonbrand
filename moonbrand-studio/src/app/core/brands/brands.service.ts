@@ -13,6 +13,7 @@ import type {
   ConnectChannelResponse,
   CreateBrandRequest,
   CreateBrandResponse,
+  ReferenceUploadRequest,
   ReferenceUploadResponse,
   SelectChannelRequest,
   SocialSimulationResponse,
@@ -146,8 +147,9 @@ export class BrandsService {
     return firstValueFrom(this.http.delete<ChannelConnectionResponse>(`/v1/brands/${brandId}/channels/${channel}`));
   }
 
-  uploadReference(brandId: string, dataUri: string): Promise<ReferenceUploadResponse> {
-    return firstValueFrom(this.http.post<ReferenceUploadResponse>(`/v1/brands/${brandId}/references`, { dataUri }));
+  uploadReference(brandId: string, dataUri: string, preset?: string): Promise<ReferenceUploadResponse> {
+    const body: ReferenceUploadRequest = preset ? { dataUri, preset } : { dataUri };
+    return firstValueFrom(this.http.post<ReferenceUploadResponse>(`/v1/brands/${brandId}/references`, body));
   }
 
   async removeReference(brandId: string, path: string): Promise<void> {
