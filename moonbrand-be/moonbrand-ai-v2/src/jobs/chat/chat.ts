@@ -21,7 +21,7 @@ import { moonbrandServer } from './moonbrand';
 const { carousel, video } = estimatesFromEnv(process.env);
 const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
 
-const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini, e per guardare i video), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl. I modelli di Atlas con i prezzi sono in GET /api/v1/models. ffmpeg è nel PATH.
+const STRUMENTI = `Nell'ambiente hai, per ogni servizio, l'indirizzo da usare al posto di quello pubblico e la chiave: GEMINI_BASE_URL e GEMINI_API_KEY (immagini; i video si guardano con Gemini, che vede movimento e audio), ATLASCLOUD_BASE_URL e ATLASCLOUD_API_KEY (clip video), ELEVENLABS_BASE_URL e ELEVENLABS_API_KEY (voce e musica). Chiamali tu con node o curl. I modelli di Atlas con i prezzi sono in GET /api/v1/models. ffmpeg è nel PATH.
 Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).
 Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un contenuto è pronto salvalo con salva_contenuto; per cambiarlo passa il suo id. Contenuti, piano e idee li leggi e li cambi con gli altri tool di moonbrand.`;
 
@@ -110,7 +110,9 @@ try {
     prompt,
     options: {
       cwd: brandDir,
-      env: withFfmpeg(env),
+      // Niente comandi in background: con un prompt solo l'SDK chiude il canale alla fine del turno, e se Claude aspetta un
+      // comando in background il turno che riparte dalla notifica non ha più i tool di moonbrand (salva_contenuto fallisce).
+      env: { ...withFfmpeg(env), CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1' },
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
       systemPrompt: { type: 'preset', preset: 'claude_code', append: STRUMENTI },
