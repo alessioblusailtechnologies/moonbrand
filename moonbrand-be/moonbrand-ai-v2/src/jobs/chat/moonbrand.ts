@@ -19,7 +19,15 @@ const content = {
   canali: z.array(channel).min(1),
   testi: z.array(z.object({ canale: channel, testo: z.string().min(1), hashtag: z.array(z.string()) })).min(1).describe('Il testo del post per ogni canale'),
   file: z
-    .array(z.object({ file: z.string().describe('Relativo alla cartella del brand, es. contenuti/post.png'), proporzione: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']) }))
+    .array(
+      z.object({
+        file: z.string().describe('Relativo alla cartella del brand, es. contenuti/post.png'),
+        proporzione: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']),
+        canale: channel
+          .optional()
+          .describe('Solo per un file fatto apposta per un canale, per esempio il video TikTok accanto al Reel. Senza, vale per tutti i canali con quella proporzione che non hanno il loro'),
+      }),
+    )
     .min(1)
     .describe('Le immagini (PNG o JPEG) e i video (MP4) finali, nell’ordine; un video vuole anche la sua copertina'),
 };
@@ -37,12 +45,13 @@ function request({ slotId, titolo, formato, canali, testi, file }: ContentInput)
     variants: testi.map(({ canale, testo, hashtag }) => ({ channel: canale, text: testo, hashtags: hashtag })),
     headline: '',
     slides: [],
-    files: file.map(({ file, proporzione }) => {
+    files: file.map(({ file, proporzione, canale }) => {
       const role = file.toLowerCase().endsWith('.mp4') ? 'video' : formato === 'carousel' ? 'slide' : 'cover';
-      const key = `${role}:${proporzione}`;
+      // L'ordine si conta per ruolo, proporzione e canale: il giro di slide di TikTok riparte da 0 accanto a quello comune.
+      const key = `${role}:${proporzione}:${canale ?? ''}`;
       const index = counters.get(key) ?? 0;
       counters.set(key, index + 1);
-      return { file, role, index, aspect: proporzione };
+      return { file, role, index, aspect: proporzione, ...(canale && { channel: canale }) };
     }),
   };
 }
@@ -79,7 +88,10 @@ export function moonbrandServer(apiUrl: string, token: string, brandDir: string)
     const body = request(input);
     if (hasDocument(input.formato, input.canali)) {
       const target = `contenuti/carosello-linkedin-${Date.now().toString(36)}.pdf`;
-      const document = await carouselDocument(brandDir, input.file, target).catch((error: unknown) => {
+      // Il PDF si fa con le slide di LinkedIn, o con quelle comuni: mai con quelle fatte per un altro canale.
+      const own = input.file.filter((item) => item.canale === 'linkedin');
+      const slides = own.length > 0 ? own : input.file.filter((item) => !item.canale);
+      const document = await carouselDocument(brandDir, slides, target).catch((error: unknown) => {
         console.error('PDF del carosello non fatto', error);
         return null;
       });
