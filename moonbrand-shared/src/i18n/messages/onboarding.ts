@@ -57,6 +57,8 @@ export const onboarding = defineMessages({
     },
     identity: {
       site: 'Sito',
+      siteRequired: 'Scrivi l’indirizzo del sito per andare avanti.',
+      siteNotRead: 'Premi «Leggi» e aspetta che finisca di leggere il sito.',
       read: 'Leggi',
       reading: 'Leggo…',
       readingSite: 'Sto leggendo {site}',
@@ -352,6 +354,8 @@ export const onboarding = defineMessages({
     },
     identity: {
       site: 'Website',
+      siteRequired: 'Enter the website address to continue.',
+      siteNotRead: 'Press “Read” and wait until I’ve finished reading the website.',
       read: 'Read',
       reading: 'Reading…',
       readingSite: 'Reading {site}',
@@ -647,6 +651,8 @@ export const onboarding = defineMessages({
     },
     identity: {
       site: 'Site',
+      siteRequired: 'Indiquez l’adresse du site pour continuer.',
+      siteNotRead: 'Appuyez sur « Lire » et attendez que j’aie fini de lire le site.',
       read: 'Lire',
       reading: 'Je lis…',
       readingSite: 'Je lis {site}',

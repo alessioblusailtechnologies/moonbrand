@@ -5,6 +5,7 @@ import type { AiStep } from '@moonbrand/shared/ai/steps';
 import type { BrandKind, ChannelId, ChannelState, SectionKey } from '@moonbrand/shared/domain/brand';
 import { isSkippable, sectionCopy, sectionError } from '@moonbrand/shared/domain/sections';
 import { DEFAULT_SUBSCRIPTION_PLAN } from '@moonbrand/shared/domain/subscription';
+import { normalizeSite } from '@moonbrand/shared/lib/site';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
@@ -117,6 +118,12 @@ export class Onboarding {
     const key = this.sectionStep();
     const draft = this.store.draft();
     if (!key || !draft) return null;
+    // Il sito va scritto e letto: da lì vengono nome, temi, palette e logo dei passi dopo.
+    if (key === 'identity') {
+      const site = normalizeSite(draft.identity.site ?? '');
+      if (!site.includes('.')) return this.i18n.t('onboarding.identity.siteRequired');
+      if (this.store.insights()?.site !== site) return this.i18n.t('onboarding.identity.siteNotRead');
+    }
     // Senza almeno un esempio scelto il brand non avrebbe riferimenti da seguire: lo stile verrebbe solo dalle immagini caricate.
     // Il motore v2 non fa esempi: serve almeno un'immagine caricata.
     if (key === 'visual' && this.auth.account()?.aiEngine !== 'v2') {
