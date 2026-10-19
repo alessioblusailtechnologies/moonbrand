@@ -118,10 +118,12 @@ export class Onboarding {
     const draft = this.store.draft();
     if (!key || !draft) return null;
     // Senza almeno un esempio scelto il brand non avrebbe riferimenti da seguire: lo stile verrebbe solo dalle immagini caricate.
-    // Il motore v2 non fa esempi: bastano le immagini caricate.
+    // Il motore v2 non fa esempi: serve almeno un'immagine caricata.
     if (key === 'visual' && this.auth.account()?.aiEngine !== 'v2') {
       if (this.store.examplesPending()) return this.i18n.t('onboarding.visual.examples.stillPreparing');
       if (this.store.selectedExamples().length === 0) return this.i18n.t('onboarding.visual.examples.required');
+    } else if (key === 'visual' && (draft.visual.references ?? []).length === 0) {
+      return this.i18n.t('onboarding.visual.references.required');
     }
     return sectionError(key, draft, this.i18n.locale());
   });

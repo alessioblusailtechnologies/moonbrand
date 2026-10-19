@@ -227,6 +227,7 @@ export const onboarding = defineMessages({
         max: 'Al massimo {n} immagini: togline una per aggiungerne altre.',
         uploadFailed: 'Un’immagine è troppo pesante o non si legge: l’ho saltata.',
         removeFailed: 'Non sono riuscito a togliere l’immagine. Riprova.',
+        required: 'Carica almeno un’immagine di riferimento per andare avanti.',
       },
       examples: {
         label: 'Esempi di post',
@@ -521,6 +522,7 @@ export const onboarding = defineMessages({
         max: 'Up to {n} images: remove one to add more.',
         uploadFailed: 'An image is too large or can’t be read: I skipped it.',
         removeFailed: 'I couldn’t remove the image. Try again.',
+        required: 'Upload at least one reference image to continue.',
       },
       examples: {
         label: 'Example posts',
@@ -815,6 +817,7 @@ export const onboarding = defineMessages({
         max: '{n} images au maximum : retirez-en une pour en ajouter d’autres.',
         uploadFailed: 'Une image est trop lourde ou illisible : je l’ai ignorée.',
         removeFailed: 'Je n’ai pas réussi à retirer l’image. Réessayez.',
+        required: 'Ajoutez au moins une image de référence pour continuer.',
       },
       examples: {
         label: 'Exemples de publications',
