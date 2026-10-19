@@ -202,7 +202,9 @@ async function buildPost(client: Zernio, files: BrandFiles, content: Content, ch
     if (slides.length === 0) throw ApiError.invalid('Mancano le slide del carosello.');
     mediaItems = await Promise.all(slides.map(async (slide) => ({ type: 'image' as const, url: await upload(slide) })));
   } else {
-    const cover = mine.find((file) => file.role === 'cover');
+    // Senza la copertina nella proporzione del canale va quella che c'è: meglio un'immagine non tagliata apposta che un
+    // post di solo testo (LinkedIn e Facebook lo accetterebbero senza dire niente).
+    const cover = mine.find((file) => file.role === 'cover') ?? sortFiles(all).find((file) => file.role === 'cover' && (!file.channel || file.channel === channel));
     if (cover) mediaItems = [{ type: 'image', url: await upload(cover) }];
     else if (channel === 'instagram' || channel === 'tiktok' || channel === 'pinterest') {
       throw ApiError.invalid(`Su ${channelName(channel)} serve un’immagine.`);

@@ -12,6 +12,17 @@ import { carouselDocument } from '../../lib/document';
 
 const channel = z.enum(['linkedin', 'instagram', 'facebook', 'tiktok', 'x', 'pinterest']);
 
+// Le proporzioni che ogni canale prende, per formato: un file per ognuna di quelle dei canali del contenuto.
+const ASPECTS = `Ogni canale esce con i file della sua proporzione, quindi serve un file per ognuna di quelle dei canali del contenuto. ${(['post', 'carousel', 'video'] as const)
+  .map(
+    (format) =>
+      `${format}: ${Object.entries(FORMAT_ASPECT[format])
+        .filter(([, aspect]) => aspect)
+        .map(([name, aspect]) => `${name} ${aspect}`)
+        .join(', ')}`,
+  )
+  .join('; ')}.`;
+
 const content = {
   slotId: z.string().optional().describe('L’id dell’uscita del piano, se il contenuto è per quella'),
   titolo: z.string().min(1),
@@ -22,7 +33,7 @@ const content = {
     .array(
       z.object({
         file: z.string().describe('Relativo alla cartella del brand, es. contenuti/post.png'),
-        proporzione: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']),
+        proporzione: z.enum(['4:5', '1:1', '9:16', '16:9', '1.91:1', '2:3']).describe(ASPECTS),
         canale: channel
           .optional()
           .describe('Solo per un file fatto apposta per un canale, per esempio il video TikTok accanto al Reel. Senza, vale per tutti i canali con quella proporzione che non hanno il loro'),
