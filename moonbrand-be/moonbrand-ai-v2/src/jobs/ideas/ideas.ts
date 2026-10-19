@@ -76,7 +76,7 @@ const schema = {
         properties: {
           title: { type: 'string', description: 'L’idea in una frase specifica, massimo 110 caratteri, con la voce del brand' },
           angleLabel: { type: 'string', description: 'Il taglio in 2-4 parole, es. «Il dietro le quinte», «Prima e dopo», «La domanda frequente»' },
-          angle: { type: 'string', description: 'Cosa raccontare e con quali elementi, in due o tre frasi, senza formato né canale' },
+          angle: { type: 'string', description: 'Cosa raccontare e con quali elementi, in due o tre frasi, senza formato né canale tranne per un trend social che è un formato' },
           rationale: { type: 'string', description: 'Perché ha senso adesso, in una frase che cita il segnale da cui nasce' },
           themeId: {
             type: ['string', 'null'],
@@ -92,7 +92,7 @@ const schema = {
               kind: {
                 type: 'string',
                 enum: ['theme', 'trend', 'recurrence', 'season'],
-                description: 'theme: un tema del brand; trend: una notizia trovata sul web; recurrence: una ricorrenza; season: il periodo dell’anno',
+                description: 'theme: un tema del brand; trend: una notizia o un trend social trovato sul web; recurrence: una ricorrenza; season: il periodo dell’anno',
               },
               label: { type: 'string', description: 'Facoltativo: la fonte, la ricorrenza con il giorno o il periodo, in poche parole' },
               sourceUrl: { type: ['string', 'null'], description: 'Per un trend, l’indirizzo dell’articolo trovato; null per gli altri segnali' },
@@ -110,8 +110,8 @@ const prompt = `Proponi fino a ${count} idee di contenuto social nuove per quest
 ${brandLines}
 
 ## Come
-- Meglio meno idee ma forti: specifiche di questo brand, con un gancio concreto, utili a un obiettivo e a un pubblico. Niente formati né canali.
-- Prima cerca sul web notizie delle ultime settimane su settore e pubblico del brand. Un trend vale solo con una fonte vera, recente e pertinente; al massimo ${MAX_TRENDS}.
+- Meglio meno idee ma forti: specifiche di questo brand, con un gancio concreto, utili a un obiettivo e a un pubblico. Niente formati né canali, tranne quando l'idea nasce da un trend social che è un formato.
+- Prima cerca sul web notizie delle ultime settimane su settore e pubblico del brand, e i trend social del momento nel settore (formati, tormentoni e sfide di TikTok e Instagram). Un trend vale solo con una fonte vera, recente e pertinente; al massimo ${MAX_TRENDS}.
 - Ricorrenze con la data esatta entro ${day(horizon)}, del paese del brand (se non è chiaro, l'Italia).
 - Al massimo ${MAX_PER_THEME} idee sullo stesso tema; più spazio ai temi con più peso e più graditi.
 
