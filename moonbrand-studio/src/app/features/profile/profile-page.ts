@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import type { BrandProfile } from '@moonbrand/shared/api/contract';
@@ -276,6 +277,8 @@ export class ProfilePage {
   protected readonly connection = inject(ChannelConnectionService);
   // Solo l'id: dopo un salvataggio nome e logo cambiano, ma il profilo non va riletto.
   private readonly activeId = computed(() => this.brands.activeBrand()?.id ?? null);
+  // La sezione da aprire appena il profilo è caricato (il Ricollega dell'avviso in alto porta ai Canali).
+  private opening: SectionKey | null = null;
 
   protected readonly line = computed(() => {
     const draft = this.profile()?.draft;
@@ -298,6 +301,7 @@ export class ProfilePage {
     pageHeader(() => [{ label: this.i18n.t('profile.title') }]);
     this.version.load();
     this.finishConnection();
+    this.openFromLink();
     effect(() => {
       const brandId = this.activeId();
       if (brandId) untracked(() => void this.load(brandId));
@@ -308,6 +312,16 @@ export class ProfilePage {
   private finishConnection(): void {
     const back = this.connection.finish(this.route.snapshot.queryParamMap, this.connected);
     if (back) void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+  }
+
+  // /impostazioni?sezione=canali apre i Canali, anche quando si è già su questa pagina.
+  private openFromLink(): void {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      if (params.get('sezione') !== 'canali') return;
+      void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      if (this.profile() && !this.loading()) this.editing.set('channels');
+      else this.opening = 'channels';
+    });
   }
 
   protected readonly connected = async (brandId: string) => {
@@ -332,7 +346,11 @@ export class ProfilePage {
     this.loading.set(true);
     try {
       const profile = await this.brands.profile(brandId);
-      if (this.activeId() === brandId) this.profile.set(profile);
+      if (this.activeId() === brandId) {
+        this.profile.set(profile);
+        this.editing.set(this.opening);
+        this.opening = null;
+      }
     } catch (error) {
       this.profile.set(null);
       this.toast.show(errorMessage(error, this.i18n.t('profile.page.loadFailed')));
