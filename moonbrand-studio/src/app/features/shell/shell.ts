@@ -210,7 +210,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
           <div class="lost" role="alert">
             <mb-icon name="repeat" [size]="18" />
             <span class="grow">{{ lost }}</span>
-            <a class="btn btn-primary btn-sm" routerLink="/impostazioni">{{ 'shell.lostAction' | t }}</a>
+            <a class="btn btn-primary btn-sm" routerLink="/impostazioni" [queryParams]="{ sezione: 'canali' }">{{ 'shell.lostAction' | t }}</a>
           </div>
         }
         @if (billingBanner(); as banner) {
