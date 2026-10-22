@@ -1,0 +1,82 @@
+// node esegui.mjs <cartella>/<nome>.ts [numero fotogrammi]
+// Esegue lo script preparato da prepara.mjs (<cartella>/<nome>/script.jsx) in After Effects, renderizza la composizione
+// «Video» con aerender, la converte in <cartella>/<nome>/video.mp4 e ne estrae alcuni fotogrammi in <cartella>/<nome>/fotogrammi/.
+import { spawn, spawnSync } from 'node:child_process'
+import fs from 'node:fs'
+import path from 'node:path'
+import ffmpeg from 'ffmpeg-static'
+
+const sorgente = process.argv[2]
+const quanti = Number(process.argv[3] ?? 6)
+if (!sorgente) { console.error('uso: node esegui.mjs <file.ts> [fotogrammi]'); process.exit(2) }
+const radice = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'))
+const cartella = path.join(path.dirname(path.resolve(sorgente)), path.basename(sorgente, path.extname(sorgente)))
+const script = path.join(cartella, 'script.jsx')
+if (!fs.existsSync(script)) { console.error(`manca ${script}: prima node prepara.mjs ${sorgente}`); process.exit(2) }
+
+function trovaAE() {
+  if (process.env.AE_DIR) return process.env.AE_DIR
+  const adobe = 'C:\\Program Files\\Adobe'
+  const versioni = fs.existsSync(adobe) ? fs.readdirSync(adobe).filter(d => d.startsWith('Adobe After Effects')).sort() : []
+  if (!versioni.length) throw new Error('After Effects non trovato (si può indicare la cartella Support Files con AE_DIR)')
+  return path.join(adobe, versioni.at(-1), 'Support Files')
+}
+const ae = trovaAE()
+const tempi = {}
+let t = Date.now()
+
+// 1. Script: AfterFX -r lo passa all'istanza aperta; la fine si riconosce da esito.txt.
+// AE avviato da qui al primo colpo dà errore, quindi deve essere già aperto.
+if (!spawnSync('tasklist', ['/FI', 'IMAGENAME eq AfterFX.exe'], { encoding: 'utf8' }).stdout.includes('AfterFX.exe')) {
+  console.error('After Effects non è aperto: va aperto a mano una volta, poi resta aperto')
+  process.exit(1)
+}
+// After Effects è uno solo per tutti i brand: uno script alla volta, con una cartella come lucchetto (il render invece
+// gira in un processo suo e può andare in parallelo).
+const lucchetto = path.join(radice, '.ae-occupato')
+const attesa = Date.now() + 15 * 60_000
+for (;;) {
+  try { fs.mkdirSync(lucchetto); break } catch {}
+  // Un lucchetto più vecchio di 10 minuti è di uno script finito male.
+  try { if (Date.now() - fs.statSync(lucchetto).mtimeMs > 10 * 60_000) { fs.rmSync(lucchetto, { recursive: true, force: true }); continue } } catch {}
+  if (Date.now() > attesa) { console.error('After Effects è occupato da un altro script da più di 15 minuti'); process.exit(1) }
+  await new Promise(r => setTimeout(r, 1000))
+}
+const libera = () => fs.rmSync(lucchetto, { recursive: true, force: true })
+const esito = path.join(cartella, 'esito.txt')
+fs.rmSync(esito, { force: true })
+spawn(path.join(ae, 'AfterFX.exe'), ['-noui', '-r', script], { detached: true, stdio: 'ignore' }).unref()
+const scadenza = Date.now() + 5 * 60_000
+while (!fs.existsSync(esito)) {
+  if (Date.now() > scadenza) { libera(); console.error('After Effects non ha finito lo script entro 5 minuti'); process.exit(1) }
+  await new Promise(r => setTimeout(r, 500))
+}
+await new Promise(r => setTimeout(r, 300))
+const risultato = fs.readFileSync(esito, 'utf8').trim()
+libera()
+tempi.script = (Date.now() - t) / 1000
+if (risultato !== 'ok') { console.error(risultato); process.exit(1) }
+
+// 2. Render della composizione «Video», con il render multi-fotogramma.
+t = Date.now()
+for (const f of fs.readdirSync(cartella)) if (f.startsWith('grezzo.')) fs.rmSync(path.join(cartella, f))
+const render = spawnSync(path.join(ae, 'aerender.exe'), ['-project', path.join(cartella, 'progetto.aep'), '-comp', 'Video', '-output', path.join(cartella, 'grezzo.mov'), '-mfr', 'ON', '100'], { encoding: 'utf8' })
+tempi.render = (Date.now() - t) / 1000
+const grezzo = fs.readdirSync(cartella).find(f => f.startsWith('grezzo.'))
+if (render.status !== 0 || !grezzo) { console.error(render.stdout.split('\n').slice(-40).join('\n'), render.stderr); process.exit(1) }
+
+// 3. mp4 per i social e fotogrammi da guardare.
+t = Date.now()
+const mp4 = path.join(cartella, 'video.mp4')
+const conv = spawnSync(ffmpeg, ['-y', '-v', 'error', '-i', path.join(cartella, grezzo), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', mp4], { encoding: 'utf8' })
+if (conv.status !== 0) { console.error(conv.stderr); process.exit(1) }
+const durata = Number(spawnSync(ffmpeg, ['-i', mp4], { encoding: 'utf8' }).stderr.match(/Duration: (\d+):(\d+):([\d.]+)/)?.slice(1).reduce((s, v) => s * 60 + Number(v), 0))
+const fotogrammi = path.join(cartella, 'fotogrammi')
+fs.rmSync(fotogrammi, { recursive: true, force: true })
+fs.mkdirSync(fotogrammi)
+for (let i = 0; i < quanti; i++) {
+  const s = (durata * (i + 0.5)) / quanti
+  spawnSync(ffmpeg, ['-y', '-v', 'error', '-ss', s.toFixed(2), '-i', mp4, '-frames:v', '1', '-q:v', '3', path.join(fotogrammi, `${String(i + 1).padStart(2, '0')}_${s.toFixed(1)}s.jpg`)])
+}
+tempi.conversione = (Date.now() - t) / 1000
+console.log(JSON.stringify({ video: mp4, durata, fotogrammi, tempi }, null, 2))
