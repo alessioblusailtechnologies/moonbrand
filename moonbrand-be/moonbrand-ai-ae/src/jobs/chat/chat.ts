@@ -128,7 +128,8 @@ try {
       cwd: brandDir,
       // Niente comandi in background: con un prompt solo l'SDK chiude il canale alla fine del turno, e se Claude aspetta un
       // comando in background il turno che riparte dalla notifica non ha più i tool di moonbrand (salva_contenuto fallisce).
-      env: { ...withFfmpeg(env), CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1' },
+      // I render di AE durano minuti: due versioni in un comando superano i 10 minuti che Bash concede di solito.
+      env: { ...withFfmpeg(env), CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1', BASH_MAX_TIMEOUT_MS: '1800000' },
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
       systemPrompt: { type: 'preset', preset: 'claude_code', append: [STRUMENTI, category].filter(Boolean).join('\n') },
