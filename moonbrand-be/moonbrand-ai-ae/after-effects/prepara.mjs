@@ -29,6 +29,7 @@ const esito = path.join(cartella, 'esito.txt').replace(/\\/g, '/')
 const jsx = `${fs.readFileSync(path.join(radice, 'lib', 'es5.jsx'), 'utf8')}
 (function () {
   function __esito(testo) { var f = new File(${JSON.stringify(esito)}); f.encoding = "UTF-8"; f.open("w"); f.write(testo); f.close(); }
+  __esito("avviato");
   app.beginSuppressDialogs();
   try {
     if (app.project) app.project.close(CloseOptions.DO_NOT_SAVE_CHANGES);

@@ -31,28 +31,45 @@ if (!spawnSync('tasklist', ['/FI', 'IMAGENAME eq AfterFX.exe'], { encoding: 'utf
   console.error('After Effects non è aperto: va aperto a mano una volta, poi resta aperto')
   process.exit(1)
 }
-// After Effects è uno solo per tutti i brand: uno script alla volta, con una cartella come lucchetto (il render invece
-// gira in un processo suo e può andare in parallelo).
+// After Effects è uno solo per tutti i brand: uno script alla volta, con una cartella come lucchetto che dice chi lo tiene
+// (il render invece gira in un processo suo e può andare in parallelo). Il lucchetto di un processo che non c'è più (un
+// comando chiuso a metà) si toglie.
 const lucchetto = path.join(radice, '.ae-occupato')
+const vivo = pid => { try { process.kill(pid, 0); return true } catch { return false } }
 const attesa = Date.now() + 30 * 60_000
 for (;;) {
-  try { fs.mkdirSync(lucchetto); break } catch {}
-  // Un lucchetto più vecchio di 20 minuti è di uno script finito male.
-  try { if (Date.now() - fs.statSync(lucchetto).mtimeMs > 20 * 60_000) { fs.rmSync(lucchetto, { recursive: true, force: true }); continue } } catch {}
+  try { fs.mkdirSync(lucchetto); fs.writeFileSync(path.join(lucchetto, 'pid'), String(process.pid)); break } catch {}
+  try {
+    const chi = Number(fs.readFileSync(path.join(lucchetto, 'pid'), 'utf8'))
+    if ((chi && !vivo(chi)) || Date.now() - fs.statSync(lucchetto).mtimeMs > 20 * 60_000) { fs.rmSync(lucchetto, { recursive: true, force: true }); continue }
+  } catch {}
   if (Date.now() > attesa) { console.error('After Effects è occupato da un altro script da più di 30 minuti'); process.exit(1) }
   await new Promise(r => setTimeout(r, 1000))
 }
 const libera = () => fs.rmSync(lucchetto, { recursive: true, force: true })
+process.on('exit', libera)
+// Lo script scrive «avviato» appena parte e l'esito alla fine. AE a volte perde lo script che gli arriva: se dopo 30
+// secondi non è partito, si rimanda (fino a 5 volte).
 const esito = path.join(cartella, 'esito.txt')
+const leggi = () => { try { return fs.readFileSync(esito, 'utf8').trim() } catch { return '' } }
 fs.rmSync(esito, { force: true })
-spawn(path.join(ae, 'AfterFX.exe'), ['-noui', '-r', script], { detached: true, stdio: 'ignore' }).unref()
+const manda = () => spawn(path.join(ae, 'AfterFX.exe'), ['-noui', '-r', script], { detached: true, stdio: 'ignore' }).unref()
+manda()
+let invii = 1
+let mandato = Date.now()
 const scadenza = Date.now() + 15 * 60_000
-while (!fs.existsSync(esito)) {
-  if (Date.now() > scadenza) { libera(); console.error('After Effects non ha finito lo script entro 15 minuti'); process.exit(1) }
+for (;;) {
+  const stato = leggi()
+  if (stato && stato !== 'avviato') break
+  if (!stato && Date.now() - mandato > 30_000) {
+    if (invii >= 5) { console.error('After Effects non prende lo script: controlla che non abbia una finestra aperta'); process.exit(1) }
+    manda(); invii++; mandato = Date.now()
+  }
+  if (Date.now() > scadenza) { console.error('After Effects non ha finito lo script entro 15 minuti'); process.exit(1) }
   await new Promise(r => setTimeout(r, 500))
 }
 await new Promise(r => setTimeout(r, 300))
-const risultato = fs.readFileSync(esito, 'utf8').trim()
+const risultato = leggi()
 libera()
 tempi.script = (Date.now() - t) / 1000
 if (risultato !== 'ok') { console.error(risultato); process.exit(1) }
