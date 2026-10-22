@@ -44,6 +44,7 @@ for (;;) {
     if ((chi && !vivo(chi)) || Date.now() - fs.statSync(lucchetto).mtimeMs > 20 * 60_000) { fs.rmSync(lucchetto, { recursive: true, force: true }); continue }
   } catch {}
   if (Date.now() > attesa) { console.error('After Effects è occupato da un altro script da più di 30 minuti'); process.exit(1) }
+  if ((Date.now() - t) % 30_000 < 1000) console.log('After Effects è occupato da un altro brand, aspetto il mio turno')
   await new Promise(r => setTimeout(r, 1000))
 }
 const libera = () => fs.rmSync(lucchetto, { recursive: true, force: true })
@@ -58,6 +59,7 @@ manda()
 let invii = 1
 let mandato = Date.now()
 const scadenza = Date.now() + 15 * 60_000
+let battito = Date.now()
 for (;;) {
   const stato = leggi()
   if (stato && stato !== 'avviato') break
@@ -66,6 +68,7 @@ for (;;) {
     manda(); invii++; mandato = Date.now()
   }
   if (Date.now() > scadenza) { console.error('After Effects non ha finito lo script entro 15 minuti'); process.exit(1) }
+  if (Date.now() - battito > 30_000) { console.log(`script in After Effects da ${Math.round((Date.now() - t) / 1000)} s`); battito = Date.now() }
   await new Promise(r => setTimeout(r, 500))
 }
 await new Promise(r => setTimeout(r, 300))
@@ -77,10 +80,22 @@ if (risultato !== 'ok') { console.error(risultato); process.exit(1) }
 // 2. Render della composizione «Video», con il render multi-fotogramma.
 t = Date.now()
 for (const f of fs.readdirSync(cartella)) if (f.startsWith('grezzo.')) fs.rmSync(path.join(cartella, f))
-const render = spawnSync(path.join(ae, 'aerender.exe'), ['-project', path.join(cartella, 'progetto.aep'), '-comp', 'Video', '-output', path.join(cartella, 'grezzo.mov'), '-mfr', 'ON', '100'], { encoding: 'utf8' })
+// Ogni 30 secondi una riga sull'avanzamento: chi aspetta (e il controllo dei comandi fermi) sa che sta lavorando.
+const render = await new Promise(resolve => {
+  const figlio = spawn(path.join(ae, 'aerender.exe'), ['-project', path.join(cartella, 'progetto.aep'), '-comp', 'Video', '-output', path.join(cartella, 'grezzo.mov'), '-mfr', 'ON', '100'])
+  let uscita = ''
+  const leggiUscita = d => { uscita = (uscita + d).slice(-20_000) }
+  figlio.stdout.on('data', leggiUscita)
+  figlio.stderr.on('data', leggiUscita)
+  const battito = setInterval(() => {
+    const ultimo = uscita.match(/PROGRESS:\s+\d+:\d+:\d+:\d+ \(\d+\)/g)?.at(-1)
+    console.log(`render in corso da ${Math.round((Date.now() - t) / 1000)} s${ultimo ? `, ${ultimo.replace(/^PROGRESS:\s+/, 'arrivato a ')}` : ''}`)
+  }, 30_000)
+  figlio.on('close', status => { clearInterval(battito); resolve({ status, uscita }) })
+})
 tempi.render = (Date.now() - t) / 1000
 const grezzo = fs.readdirSync(cartella).find(f => f.startsWith('grezzo.'))
-if (render.status !== 0 || !grezzo) { console.error(render.stdout.split('\n').slice(-40).join('\n'), render.stderr); process.exit(1) }
+if (render.status !== 0 || !grezzo) { console.error(render.uscita.split('\n').slice(-40).join('\n')); process.exit(1) }
 
 // 3. mp4 per i social e fotogrammi da guardare.
 t = Date.now()

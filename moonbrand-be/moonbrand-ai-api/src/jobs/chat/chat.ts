@@ -21,14 +21,24 @@ import { Editor, Shell, type EditorInput, type ToolOutcome } from './strumenti';
 // la conversazione, esegue i tool che Claude chiede (shell, editor dei file, tool di moonbrand, export su Lambda) e gli
 // rimanda i risultati. Al worker scrive le stesse righe JSON di Claude Code, così passi, testo e costo arrivano allo studio
 // come con il v2.
-// La conversazione resta in sessioni/<brand>/<id>.json, fuori dalla cartella del brand. Il contesto lo tiene piccolo
-// l'API: i risultati dei tool vecchi si tolgono e oltre una soglia la conversazione si riassume.
+// La conversazione resta in sessioni/<brand>/<id>.json, fuori dalla cartella del brand; oltre 150K token l'API la
+// riassume. Con VIDEO_ENGINE=ae i video si fanno con After Effects (gli strumenti di moonbrand-ai-ae in AE_TOOLKIT) al
+// posto di Remotion su Lambda.
 
 const MODEL = 'claude-opus-5-5';
-const BETAS = ['thinking-display-updates-2026-08-18', 'context-management-2025-06-27', 'compact-2026-01-12', 'server-side-fallback-2026-07-01'];
+const BETAS = ['thinking-display-updates-2026-08-18', 'compact-2026-01-12', 'server-side-fallback-2026-07-01'];
 // Opus 5.5 per milione di token: entrata, uscita, scrittura in cache (5 minuti), lettura dalla cache; ricerca web a richiesta.
 const PRICE = { input: 4, output: 20, cacheWrite: 5, cacheRead: 0.2, webSearch: 0.01 };
 const SESSIONS = fileURLToPath(new URL('../../../sessioni', import.meta.url));
+
+const AFTER_EFFECTS = process.env.VIDEO_ENGINE === 'ae';
+const AE = (process.env.AE_TOOLKIT ?? 'C:/moonbrand-ae').replaceAll('\\', '/');
+const VIDEO_AE = `I video li fai con After Effects 2026, che è aperto, e ne usi a fondo gli effetti. Scrivi uno script TypeScript con l'API di scripting di AE, in un file .ts dentro lavoro/, e:
+- node ${AE}/prepara.mjs <file.ts> lo controlla con i tipi di AE e lo converte in ExtendScript, in una cartella con il nome dello script accanto al file; se ci sono errori li elenca;
+- node ${AE}/esegui.mjs <file.ts> [quanti fotogrammi] lo esegue in AE partendo da un progetto vuoto, renderizza la composizione che si chiama «Video» e lascia in quella cartella video.mp4, alcuni fotogrammi in fotogrammi/ e il progetto progetto.aep. AE è uno per tutti i brand: gli script girano uno alla volta;
+- node ${AE}/installa-font.mjs <file.ttf|.otf> installa un font, che AE vede subito (app.fonts per trovarne il nome PostScript).
+Il JavaScript può essere moderno: viene convertito in ES3, con forEach/map/filter/reduce/indexOf, Object.keys, trim e JSON aggiunti. File esterni (immagini, audio) si importano con percorsi assoluti.
+Documentazione, da leggere con la shell: ${AE}/docs/after-effects-scripting-guide/docs/ (scripting), ${AE}/docs/after-effects-expression-reference/docs/ (espressioni), ${AE}/docs/javascript-tools-guide/docs/ (ExtendScript), ${AE}/node_modules/types-for-adobe/AfterEffects/26.0/index.d.ts (firme esatte).`;
 
 const { carousel, video } = estimatesFromEnv(process.env);
 const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
@@ -102,7 +112,9 @@ const prompt = [message, slotBlock, ideaBlock, attachments.length > 0 && `Allega
 const claudeMd = existsSync(path.join(root, 'CLAUDE.md')) ? await readFile(path.join(root, 'CLAUDE.md'), 'utf8') : '';
 const AMBIENTE = `Lavori nella cartella del brand, ${root.replaceAll('\\', '/')}: ogni comando della shell parte da lì, in una shell nuova (cd e variabili non restano da un comando all'altro). La shell è bash${process.platform === 'win32' ? ' di Git su Windows' : ' su Linux'}, con node e npm. Un comando che per 3 minuti non stampa niente e non scrive file si ferma da solo, come uno che dura più di 30 minuti: in quelli lunghi stampa l'avanzamento. Con l'editor leggi, scrivi e modifichi i file del brand e guardi le immagini.
 Prima di cominciare un lavoro di' in una riga cosa farai; mentre lavori, brevi aggiornamenti quando trovi qualcosa che conta o cambi strada; alla fine un riepilogo che si capisce da solo.`;
-const system: Anthropic.Beta.BetaTextBlockParam[] = [{ type: 'text', text: [claudeMd, AMBIENTE, STRUMENTI, category].filter(Boolean).join('\n\n'), cache_control: { type: 'ephemeral' } }];
+const system: Anthropic.Beta.BetaTextBlockParam[] = [
+  { type: 'text', text: [claudeMd, AMBIENTE, STRUMENTI, AFTER_EFFECTS && VIDEO_AE, category].filter(Boolean).join('\n\n'), cache_control: { type: 'ephemeral' } },
+];
 
 // I tool di moonbrand e l'export su Lambda arrivano come definizioni dell'Agent SDK (schema Zod e funzione): qui diventano
 // tool della Messages API.
@@ -112,7 +124,7 @@ interface SdkTool {
   inputSchema: z.ZodRawShape;
   handler: (args: unknown, extra: unknown) => Promise<{ content: { type: string; text?: string }[]; isError?: boolean }>;
 }
-const lambda = lambdaKeys();
+const lambda = AFTER_EFFECTS ? null : lambdaKeys();
 const sdkTools = [...moonbrandTools(API_URL, MOONBRAND_AGENT_TOKEN, brandDir), ...(lambda ? lambdaTools(brandDir, lambda) : [])] as unknown as SdkTool[];
 const byName = new Map(sdkTools.map((item) => [item.name, item]));
 const tools: Anthropic.Beta.BetaToolUnion[] = [
@@ -215,19 +227,15 @@ try {
         betas: BETAS,
         fallbacks: 'default',
         thinking: { type: 'adaptive', display: 'updates' },
-        output_config: { effort: 'high' },
+        // xhigh come Claude Code: con high il reel di Velia del 23/10 era venuto peggio di quello del v2.
+        output_config: { effort: 'xhigh' },
         system,
         tools,
         messages,
         cache_control: { type: 'ephemeral' },
-        // I risultati dei tool vecchi (comandi, file letti, immagini guardate) escono dal contesto oltre 80K token; oltre
-        // 150K la conversazione si riassume.
-        context_management: {
-          edits: [
-            { type: 'clear_tool_uses_20250919', trigger: { type: 'input_tokens', value: 80_000 }, keep: { type: 'tool_uses', value: 8 }, exclude_tools: ['salva_contenuto'] },
-            { type: 'compact_20260112', trigger: { type: 'input_tokens', value: 150_000 } },
-          ],
-        },
+        // Oltre 150K token la conversazione si riassume. Niente taglio dei risultati vecchi dei tool: toglieva a Claude gli
+        // screen di riferimento e i fotogrammi già guardati, e la qualità calava.
+        context_management: { edits: [{ type: 'compact_20260112', trigger: { type: 'input_tokens', value: 150_000 } }] },
       },
       { signal: abort.signal },
     );

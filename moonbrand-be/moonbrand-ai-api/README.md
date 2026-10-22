@@ -9,14 +9,13 @@ export su Lambda) è uguale al v2.
 - **Comandi che si bloccano.** Con Claude Code un comando piantato (ffmpeg in prod il 22/10) tiene ferma la chat fino al
   limite di 10 minuti. Qui un comando che per 3 minuti non stampa niente e non scrive file si ferma, con un messaggio che
   dice a Claude cosa è successo.
-- **Contesto.** Con Claude Code ogni messaggio riprende la sessione intera: sulle chat lunghe ogni passo rilegge
-  200-300K token. Qui il contesto lo gestisce l'API: i risultati dei tool vecchi (comandi, file, immagini guardate)
-  escono oltre 80K token, e oltre 150K la conversazione si riassume.
+- **Contesto.** Oltre 150K token la conversazione la riassume l'API. Il 23/10 c'era anche il taglio dei risultati
+  vecchi dei tool oltre 80K, ma toglieva a Claude gli screen di riferimento e la qualità calava: tolto.
 - **Controllo.** Prompt, tool e informazioni sono tutti nel nostro codice.
 
 ## Com'è fatta la chat (`src/jobs/chat/chat.ts`)
 
-- Modello `claude-opus-5-5`, effort `high`, ragionamento adattivo. Gli aggiornamenti tra un tool e l'altro
+- Modello `claude-opus-5-5`, effort `xhigh` (con `high` il 23/10 la qualità era calata), ragionamento adattivo. Gli aggiornamenti tra un tool e l'altro
   (`display: "updates"`) arrivano allo studio come testo. Il fallback sulle risposte rifiutate è attivo
   (`fallbacks: "default"`).
 - Prompt di sistema: il `CLAUDE.md` del brand, poi l'ambiente e i servizi (le stesse righe STRUMENTI del v2). Sta in
@@ -46,3 +45,9 @@ i comandi della shell non la vedono.
 1. `ferma-worker.cmd` ferma il worker che gira, qualunque dei motori sia.
 2. `avvia-collaudo.ps1` avvia questo worker. Il log va in `%TEMP%\moonbrand-worker-api.log`.
 3. Per tornare al v2: `ferma-worker.cmd`, poi `avvia-v2.ps1`.
+
+## Video con After Effects
+
+Con `VIDEO_ENGINE=ae` nel `.env` (così sul collaudo dal 23/10) i video si fanno con After Effects invece che con Remotion
+su Lambda: il prompt descrive gli strumenti di `moonbrand-ai-ae` (installati in `AE_TOOLKIT`, default `C:\moonbrand-ae`,
+con `npm run installa-ae` da quella cartella) e `esporta_video` non c'è. After Effects va tenuto aperto.
