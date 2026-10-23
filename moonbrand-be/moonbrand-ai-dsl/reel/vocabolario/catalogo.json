@@ -1,0 +1,175 @@
+[
+  {
+    "id": "word_stagger_up", "category": "text_in",
+    "when": "Titoli brevi e hook. Evitare su testi oltre 8 parole.",
+    "params": { "stagger_ms": { "min": 30, "max": 120, "default": 60 }, "distance_pct": { "min": 10, "max": 60, "default": 30 }, "overshoot": { "min": 0, "max": 0.3, "default": 0.1 } },
+    "duration_ms": { "min": 400, "max": 1500, "default": 700 }, "max_words": 8,
+    "energy": "medium", "tags": ["clean", "bold"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "char_cascade", "category": "text_in",
+    "when": "Parole singole o titoli cortissimi (max 3 parole) da far sentire lettera per lettera.",
+    "params": { "stagger_ms": { "min": 15, "max": 60, "default": 28 }, "distance_pct": { "min": 10, "max": 80, "default": 40 }, "overshoot": { "min": 0, "max": 0.3, "default": 0 } },
+    "duration_ms": { "min": 300, "max": 900, "default": 500 }, "max_words": 3,
+    "energy": "high", "tags": ["bold", "playful"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "line_mask_reveal", "category": "text_in",
+    "when": "Titoli su più righe, tono editoriale: ogni riga sale da dietro un taglio invisibile.",
+    "params": { "stagger_ms": { "min": 60, "max": 250, "default": 120 } },
+    "duration_ms": { "min": 500, "max": 1400, "default": 800 }, "max_words": 14,
+    "energy": "medium", "tags": ["editorial", "clean", "elegant"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "word_blur_in", "category": "text_in",
+    "when": "Frasi morbide, citazioni, testi medi: le parole emergono da una sfocatura.",
+    "params": { "stagger_ms": { "min": 40, "max": 160, "default": 80 }, "blur": { "min": 8, "max": 40, "default": 20 } },
+    "duration_ms": { "min": 500, "max": 1600, "default": 900 }, "max_words": 16,
+    "energy": "low", "tags": ["elegant", "soft"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "tracking_expand", "category": "text_in",
+    "when": "Scritte piccole in maiuscolo, etichette, firme: la spaziatura si chiude mentre compaiono.",
+    "params": { "tracking_from": { "min": 100, "max": 600, "default": 300 } },
+    "duration_ms": { "min": 500, "max": 1500, "default": 900 }, "max_words": 6,
+    "energy": "low", "tags": ["editorial", "elegant"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "typewriter", "category": "text_in",
+    "when": "Testi informali o domande: le lettere appaiono una alla volta, senza movimento.",
+    "params": { "cps": { "min": 15, "max": 45, "default": 28 } },
+    "duration_ms": { "min": 300, "max": 2000, "default": 800 }, "max_words": 10,
+    "energy": "medium", "tags": ["casual"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "fade_up", "category": "element_in",
+    "when": "Elementi secondari (righe piccole, voci di lista, loghi): salgono di poco e compaiono.",
+    "params": { "distance_pct": { "min": 1, "max": 6, "default": 2 } },
+    "duration_ms": { "min": 300, "max": 900, "default": 500 },
+    "energy": "low", "tags": ["clean"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "scale_pop", "category": "element_in",
+    "when": "Loghi, numeri, CTA: crescono da piccoli con un rimbalzo.",
+    "params": { "from_pct": { "min": 0, "max": 80, "default": 40 }, "overshoot": { "min": 0, "max": 0.3, "default": 0.15 } },
+    "duration_ms": { "min": 300, "max": 900, "default": 500 },
+    "energy": "high", "tags": ["bold", "playful"], "signature": false, "invertible": true, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "scale_settle", "category": "media_in",
+    "when": "Ripresa che entra leggermente ingrandita e si assesta: dà peso al primo istante.",
+    "params": { "from_pct": { "min": 103, "max": 125, "default": 110 } },
+    "duration_ms": { "min": 300, "max": 1200, "default": 600 },
+    "energy": "medium", "tags": ["clean"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "none", "category": "media_in",
+    "when": "La ripresa entra com'è.",
+    "params": {}, "duration_ms": { "min": 0, "max": 0, "default": 0 },
+    "energy": "low", "tags": [], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "cut", "category": "transition",
+    "when": "Taglio netto sul tempo: la transizione di base, da usare più spesso.",
+    "params": {}, "duration_ms": { "min": 0, "max": 0, "default": 0 },
+    "energy": "medium", "tags": ["clean"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "dissolve", "category": "transition",
+    "when": "Dissolvenza incrociata: passaggi lenti, tono morbido.",
+    "params": {}, "duration_ms": { "min": 200, "max": 1200, "default": 500 },
+    "energy": "low", "tags": ["soft", "elegant"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "push", "category": "transition",
+    "when": "La nuova ripresa spinge fuori la vecchia da un lato.",
+    "params": { "direction": { "enum": ["left", "right", "up", "down"], "default": "up" } },
+    "duration_ms": { "min": 300, "max": 900, "default": 500 },
+    "energy": "medium", "tags": ["clean", "dynamic"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "mask_wipe", "category": "transition",
+    "when": "Una tendina netta scopre la nuova ripresa sopra la vecchia; la diagonale è la più grafica.",
+    "params": { "direction": { "enum": ["left", "right", "up", "down", "diag"], "default": "diag" } },
+    "duration_ms": { "min": 300, "max": 1000, "default": 550 },
+    "energy": "medium", "tags": ["editorial", "graphic"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "iris_reveal", "category": "transition",
+    "when": "Un cerchio che si allarga dal centro scopre la nuova ripresa: rivelazioni, prima/dopo.",
+    "params": {}, "duration_ms": { "min": 400, "max": 1100, "default": 650 },
+    "energy": "medium", "tags": ["graphic", "playful"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "zoom_through", "category": "transition",
+    "when": "La vecchia ripresa si ingrandisce e svanisce mentre la nuova arriva da lontano: energia, accelerazione.",
+    "params": { "amount_pct": { "min": 20, "max": 80, "default": 45 } },
+    "duration_ms": { "min": 300, "max": 800, "default": 450 },
+    "energy": "high", "tags": ["dynamic", "bold"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "whip_pan", "category": "transition",
+    "when": "Frustata laterale con scia di movimento: solo su musica veloce, di rado.",
+    "params": { "direction": { "enum": ["left", "right"], "default": "left" } },
+    "duration_ms": { "min": 250, "max": 600, "default": 350 },
+    "energy": "high", "tags": ["dynamic", "bold"], "signature": true, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "flash", "category": "transition",
+    "when": "Lampo bianco sul taglio: un colpo forte, una volta per reel al massimo.",
+    "params": { "intensity": { "min": 0.3, "max": 1, "default": 0.6 } },
+    "duration_ms": { "min": 150, "max": 500, "default": 260 },
+    "energy": "high", "tags": ["bold"], "signature": true, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "static", "category": "camera",
+    "when": "Inquadratura ferma: quando la ripresa si muove già.",
+    "params": {}, "energy": "low", "tags": [], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "slow_push", "category": "camera",
+    "when": "Avvicinamento lento per tutta la durata: prodotti, dettagli, riprese ferme.",
+    "params": { "amount_pct": { "min": 2, "max": 15, "default": 6 } },
+    "energy": "low", "tags": ["clean", "elegant"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "pull_out", "category": "camera",
+    "when": "Allontanamento lento: rivelare il contesto, chiusure.",
+    "params": { "amount_pct": { "min": 2, "max": 15, "default": 6 } },
+    "energy": "low", "tags": ["elegant"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "drift", "category": "camera",
+    "when": "Scivolamento laterale lento con leggero ingrandimento: foto ferme da animare.",
+    "params": { "direction": { "enum": ["left", "right", "up", "down"], "default": "left" }, "amount_pct": { "min": 1, "max": 6, "default": 3 } },
+    "energy": "low", "tags": ["soft"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "zoom_punch", "category": "emphasis",
+    "when": "Colpo di ingrandimento sul battito della musica, su testo o ripresa.",
+    "params": { "amount_pct": { "min": 3, "max": 15, "default": 7 } },
+    "duration_ms": { "min": 200, "max": 600, "default": 350 },
+    "energy": "high", "tags": ["bold", "dynamic"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "underline_draw", "category": "emphasis",
+    "when": "Una linea si disegna sotto il titolo: sottolinea il concetto chiave.",
+    "params": { "thickness": { "min": 3, "max": 14, "default": 6 } },
+    "duration_ms": { "min": 300, "max": 900, "default": 550 },
+    "energy": "medium", "tags": ["editorial", "clean"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "highlight_box", "category": "emphasis",
+    "when": "Un blocco di colore si allarga dietro il titolo, che resta leggibile su qualsiasi fondo.",
+    "params": { "padding_pct": { "min": 2, "max": 8, "default": 4 } },
+    "duration_ms": { "min": 300, "max": 800, "default": 450 },
+    "energy": "medium", "tags": ["graphic", "bold"], "signature": false, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  },
+  {
+    "id": "shake_hit", "category": "emphasis",
+    "when": "Scossa breve dell'inquadratura su un colpo forte della musica.",
+    "params": { "amount_px": { "min": 6, "max": 30, "default": 14 } },
+    "duration_ms": { "min": 150, "max": 500, "default": 280 },
+    "energy": "high", "tags": ["bold"], "signature": true, "invertible": false, "incompatible_with": [], "version": "0.1.0"
+  }
+]

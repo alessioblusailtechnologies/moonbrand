@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES3",
+    "ignoreDeprecations": "5.0",
+    "module": "none",
+    "noLib": true,
+    "types": [],
+    "strict": true,
+    "alwaysStrict": false,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "newLine": "lf"
+  },
+  "files": [
+    "../node_modules/types-for-adobe/AfterEffects/26.0/index.d.ts",
+    "es5.d.ts"
+  ]
+}
