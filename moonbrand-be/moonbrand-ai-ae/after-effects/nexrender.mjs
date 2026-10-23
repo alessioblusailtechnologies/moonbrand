@@ -210,8 +210,16 @@ export async function renderCloud(cartella, { pacchetto, fotogrammi, font }, tok
   const grezzo = path.join(cartella, 'grezzo.mp4')
   if (file.length === 1) fs.renameSync(file[0], grezzo)
   else {
+    // Nexrender non mette le tracce sempre nello stesso ordine (a volte prima l'audio, a volte il video) e concat le
+    // abbina per posizione: prima ogni pezzo viene riscritto con il video e poi l'audio.
+    const ordinati = file.map(f => {
+      const o = f.replace(/\.mp4$/, '-o.mp4')
+      const r = spawnSync(ffmpeg, ['-y', '-v', 'error', '-i', f, '-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', o], { encoding: 'utf8' })
+      if (r.status !== 0) throw new Error(`pezzo ${path.basename(f)}: ${r.stderr}`)
+      return o
+    })
     const lista = path.join(dir, 'lista.txt')
-    fs.writeFileSync(lista, file.map(f => `file '${js(f)}'`).join('\n'))
+    fs.writeFileSync(lista, ordinati.map(f => `file '${js(f)}'`).join('\n'))
     const c = spawnSync(ffmpeg, ['-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', lista, '-c', 'copy', grezzo], { encoding: 'utf8' })
     if (c.status !== 0) throw new Error(`unione dei pezzi: ${c.stderr}`)
   }
