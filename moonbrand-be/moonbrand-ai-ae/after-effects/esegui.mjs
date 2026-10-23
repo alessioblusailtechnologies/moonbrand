@@ -5,6 +5,7 @@ import { spawn, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import ffmpeg from 'ffmpeg-static'
+import { raccogli, renderCloud } from './nexrender.mjs'
 
 const sorgente = process.argv[2]
 const quanti = Number(process.argv[3] ?? 6)
@@ -51,37 +52,48 @@ const libera = () => fs.rmSync(lucchetto, { recursive: true, force: true })
 process.on('exit', libera)
 // Lo script scrive «avviato» appena parte e l'esito alla fine. AE a volte perde lo script che gli arriva: se dopo 30
 // secondi non è partito, si rimanda (fino a 5 volte).
-const esito = path.join(cartella, 'esito.txt')
-const leggi = () => { try { return fs.readFileSync(esito, 'utf8').trim() } catch { return '' } }
-fs.rmSync(esito, { force: true })
-const manda = () => spawn(path.join(ae, 'AfterFX.exe'), ['-noui', '-r', script], { detached: true, stdio: 'ignore' }).unref()
-manda()
-let invii = 1
-let mandato = Date.now()
-const scadenza = Date.now() + 15 * 60_000
-let battito = Date.now()
-for (;;) {
-  const stato = leggi()
-  if (stato && stato !== 'avviato') break
-  if (!stato && Date.now() - mandato > 30_000) {
-    if (invii >= 5) { console.error('After Effects non prende lo script: controlla che non abbia una finestra aperta'); process.exit(1) }
-    manda(); invii++; mandato = Date.now()
+async function inAE(file, esito) {
+  const leggi = () => { try { return fs.readFileSync(esito, 'utf8').trim() } catch { return '' } }
+  fs.rmSync(esito, { force: true })
+  const manda = () => spawn(path.join(ae, 'AfterFX.exe'), ['-noui', '-r', file], { detached: true, stdio: 'ignore' }).unref()
+  manda()
+  let invii = 1
+  let mandato = Date.now()
+  const scadenza = Date.now() + 15 * 60_000
+  let battito = Date.now()
+  for (;;) {
+    const stato = leggi()
+    if (stato && stato !== 'avviato') break
+    if (!stato && Date.now() - mandato > 30_000) {
+      if (invii >= 5) { console.error('After Effects non prende lo script: controlla che non abbia una finestra aperta'); process.exit(1) }
+      manda(); invii++; mandato = Date.now()
+    }
+    if (Date.now() > scadenza) { console.error('After Effects non ha finito lo script entro 15 minuti'); process.exit(1) }
+    if (Date.now() - battito > 30_000) { console.log(`script in After Effects da ${Math.round((Date.now() - t) / 1000)} s`); battito = Date.now() }
+    await new Promise(r => setTimeout(r, 500))
   }
-  if (Date.now() > scadenza) { console.error('After Effects non ha finito lo script entro 15 minuti'); process.exit(1) }
-  if (Date.now() - battito > 30_000) { console.log(`script in After Effects da ${Math.round((Date.now() - t) / 1000)} s`); battito = Date.now() }
-  await new Promise(r => setTimeout(r, 500))
+  await new Promise(r => setTimeout(r, 300))
+  return leggi()
 }
-await new Promise(r => setTimeout(r, 300))
-const risultato = leggi()
+const risultato = await inAE(script, path.join(cartella, 'esito.txt'))
+if (risultato !== 'ok') { libera(); console.error(risultato); process.exit(1) }
+// Con Nexrender il progetto, ancora aperto, va reso portabile prima di lasciare AE: i file che usa copiati in pacchetto/.
+const pacchetto = process.env.NEXRENDER_TOKEN
+  ? await raccogli(cartella, inAE).catch(e => { console.log(`${e.message}: rendo qui`); return null })
+  : null
 libera()
 tempi.script = (Date.now() - t) / 1000
-if (risultato !== 'ok') { console.error(risultato); process.exit(1) }
 
-// 2. Render della composizione «Video», con il render multi-fotogramma.
+// 2. Render della composizione «Video»: su Nexrender se c'è il token (in pezzi paralleli), se no o se lì fallisce qui,
+// con il render multi-fotogramma.
 t = Date.now()
 for (const f of fs.readdirSync(cartella)) if (f.startsWith('grezzo.')) fs.rmSync(path.join(cartella, f))
+const cloud = pacchetto
+  ? await renderCloud(cartella, pacchetto, process.env.NEXRENDER_TOKEN).catch(e => { console.log(`${e.message}: rendo qui`); return null })
+  : null
+if (cloud) tempi.nexrender = cloud
 // Ogni 30 secondi una riga sull'avanzamento: chi aspetta (e il controllo dei comandi fermi) sa che sta lavorando.
-const render = await new Promise(resolve => {
+const render = cloud ? { status: 0, uscita: '' } : await new Promise(resolve => {
   const figlio = spawn(path.join(ae, 'aerender.exe'), ['-project', path.join(cartella, 'progetto.aep'), '-comp', 'Video', '-output', path.join(cartella, 'grezzo.mov'), '-mfr', 'ON', '100'])
   let uscita = ''
   const leggiUscita = d => { uscita = (uscita + d).slice(-20_000) }

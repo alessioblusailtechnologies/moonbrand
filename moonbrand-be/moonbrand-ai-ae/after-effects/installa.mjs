@@ -9,7 +9,7 @@ import path from 'node:path'
 const sorgente = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'))
 const dest = process.env.AE_TOOLKIT ?? 'C:\\moonbrand-ae'
 fs.mkdirSync(dest, { recursive: true })
-for (const f of ['prepara.mjs', 'esegui.mjs', 'installa-font.mjs', 'tsconfig.json', 'package.json', 'lib']) {
+for (const f of ['prepara.mjs', 'esegui.mjs', 'nexrender.mjs', 'installa-font.mjs', 'tsconfig.json', 'package.json', 'lib']) {
   fs.cpSync(path.join(sorgente, f), path.join(dest, f), { recursive: true })
 }
 execSync('npm install --no-audit --no-fund', { cwd: dest, stdio: 'inherit' })
