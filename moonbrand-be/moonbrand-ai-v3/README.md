@@ -126,12 +126,13 @@ Le righe stanno in `chat.ts` e non nel `CLAUDE.md`, così si cambiano senza risc
 
 Riprendere la sessione costa sempre di più: ogni chiamata di Opus rilegge tutto il contesto, e dopo un'ora di pausa la cache è scaduta e il resume lo riscrive per intero. Per questo, prima di riprendere, `chat.ts` legge il JSONL della sessione. Se all'ultima chiamata il contesto superava i 100K (`MOONBRAND_CHAT_MAX_CONTEXT`), o se dall'ultimo turno sono passati più di 55 minuti, apre una sessione nuova.
 
-Alla sessione nuova arriva il dialogo fin qui, preso dal JSONL con il codice e non riassunto da un modello: i messaggi dell'utente parola per parola e la risposta finale di Claude a ogni turno, fino a 60.000 caratteri, con i più recenti per primi. Non arrivano i passaggi intermedi né i risultati dei tool. Il lavoro sta nella cartella del brand e i contenuti si leggono con i tool. Nello studio la conversazione resta una sola. Con `MOONBRAND_CHAT_HANDOVER=off` si riprende sempre la sessione, come nel v2.
+Alla sessione nuova arriva il dialogo fin qui, preso dal JSONL con il codice e non riassunto da un modello: i messaggi dell'utente parola per parola e la risposta finale di Claude a ogni turno, fino a 60.000 caratteri, con i più recenti per primi. Non arrivano i passaggi intermedi né i risultati dei tool. Dalle chiamate ai tool, sempre nel JSONL, il codice aggiunge «Cosa c'è già»: i contenuti salvati nella conversazione (titolo, formato, canali, id per riscriverli e file finali, all'ultimo salvataggio) e le cartelle di lavoro toccate, dalla più usata. Il brand resta quello del CLAUDE.md, che si carica a ogni sessione. Nello studio la conversazione resta una sola. Con `MOONBRAND_CHAT_HANDOVER=off` si riprende sempre la sessione, come nel v2.
 
 Prova del 26/10 sulla chat di Velia (reel, 10 turni, 149K di contesto, ripresa dopo ore), con la domanda «ricordami cosa abbiamo deciso per voce e musica»:
 - con la sessione nuova il dialogo passato era di circa 4K token: una chiamata a 44K, 0,19 $, 8 s;
 - con il resume si riscrive tutto in cache: una chiamata a 160K, 6,00 $ (il costo dell'SDK), 11 s;
 - la risposta ha lo stesso contenuto: le voci provate, le due musiche scartate, il punto da riascoltare al 13° secondo.
+- poi un ritocco vero su una copia della cartella, «abbassa un po' la musica, la voce deve sentirsi meglio»: è andato dritto a `lavoro/video`, ha cambiato il volume, ha riesportato su Lambda, ha controllato con `guarda_file` e ha salvato con l'id giusto (il salvataggio fallisce fuori dal worker, perché manca il token). 11 chiamate a 41-67K, 0,53 $, 83 s; sul reel Sunraise, con il resume, un ritocco costava 1,2-1,7 $.
 
 #### I tool di moonbrand (`moonbrand.ts`)
 
