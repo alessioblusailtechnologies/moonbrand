@@ -42,7 +42,6 @@ export function geminiCost(model: string, tokens: { input: number; output: numbe
 // ElevenLabs a consumo (elevenlabs.io/pricing/api). L'allineamento delle parole non è in listino: si conta come la trascrizione.
 export const ELEVENLABS = {
   voicePerThousandCharacters: 0.08,
-  musicPerMinute: 0.15,
   effectPerMinute: 0.12,
   transcriptionPerHour: 0.22,
 };
@@ -72,5 +71,5 @@ const credits = (usd: number) => Math.round(usd * 100);
 
 export const LISTINO =
   `un'immagine di Gemini 3 Pro ${credits((1120 * GEMINI_PER_MILLION['gemini-3-pro-image']!.image!) / 1_000_000)}, ` +
-  `una clip circa 13 al secondo, la musica ${credits(ELEVENLABS.musicPerMinute)} al minuto, ` +
+  `una clip circa 13 al secondo, una musica o una canzone di Suno 13 (con 2 versioni), ` +
   `la voce ${credits(ELEVENLABS.voicePerThousandCharacters)} ogni 1000 caratteri`;

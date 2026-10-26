@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { atlasMeasured } from '../../lib/prices';
 
-// Atlas Cloud per i tool della chat: clip, immagini e upscaler. Ogni modello ha i suoi nomi per gli stessi parametri
+// Atlas Cloud per i tool della chat: clip, immagini, upscaler e musica (Suno, MiniMax). Ogni modello ha i suoi nomi per gli stessi parametri
 // (aspect_ratio o ratio, end_image o last_image, sound o generate_audio): li legge dallo schema del modello, così Claude
 // passa sempre gli stessi campi.
 
@@ -150,7 +150,7 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
     return base === undefined ? undefined : base * (found.type === 'Video' ? seconds : 1);
   };
 
-  const start = async (endpoint: 'generateVideo' | 'generateImage', request: Record<string, unknown>) => {
+  const start = async (endpoint: 'generateVideo' | 'generateImage' | 'generateAudio', request: Record<string, unknown>) => {
     const { id } = await call<Prediction>(`${API}/model/${endpoint}`, request);
     if (!id) throw new Error('Atlas non ha restituito il lavoro');
     return id;

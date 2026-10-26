@@ -5,21 +5,42 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 import { ELEVENLABS } from '../../lib/prices';
-import { brandFolder, failure, measured, PARALLEL, SAVE_PATH, text } from './servizi';
+import { atlasClient } from './atlas';
+import { brandFolder, credits, download, failure, measured, PARALLEL, SAVE_PATH, text, type ServiceKeys } from './servizi';
 
-// La parte audio della chat, con ElevenLabs: musica, voce fuori campo, effetti e trascrizione con i tempi delle parole.
-// I file si salvano nella cartella del brand; a Claude torna solo dove sono e quanto durano.
+// La parte audio della chat. Musica e canzoni sempre con Suno su Atlas (2 versioni a generazione); voce fuori campo,
+// effetti e trascrizione con i tempi delle parole con ElevenLabs. I file si salvano nella cartella del brand; a Claude torna solo dove sono.
 
 const API = 'https://api.elevenlabs.io';
 const OUTPUT = 'mp3_44100_192';
 // La voce a 192 kbps vuole il piano Creator di ElevenLabs.
 const VOICE_OUTPUT = 'mp3_44100_128';
 const DEFAULT_VOICE_MODEL = 'eleven_v3';
+const SUNO = 'suno/chirp-v6';
+const SUNO_MODELS = z.enum(['suno/chirp-v6', 'suno/chirp-v6-wild', 'suno/chirp-v6-mini']);
 
 const savePath = z.string().regex(SAVE_PATH).describe('Dove salvare l’MP3, es. lavoro/musica.mp3');
 
-export function audioServer(brandDir: string, apiKey: string) {
+export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 'elevenlabs'>) {
   const { inside, save } = brandFolder(brandDir);
+  const apiKey = keys.elevenlabs ?? '';
+  const atlas = keys.atlas ? atlasClient(keys.atlas, inside) : undefined;
+
+  // Una musica o una canzone di Suno: aspetta e salva le versioni restituite, numerate se sono più di una.
+  const suno = async (model: string, request: Record<string, unknown>, target: string) => {
+    if (!atlas) throw new Error('Atlas non è configurato');
+    const found = await atlas.find(model);
+    const costUsd = atlas.cost(found, request, 1);
+    const urls = await measured(
+      { task: 'music', model },
+      async () => atlas.result(await atlas.start('generateAudio', { ...request, model })),
+      () => ({ costUsd, units: 1, unit: 'generazioni' }),
+    );
+    const numbered = (index: number) => target.replace(/(\.[a-z0-9]+)?$/i, (extension) => `-${index + 1}${extension || '.mp3'}`);
+    const targets = urls.length === 1 ? [target] : urls.map((_, index) => numbered(index));
+    await Promise.all(urls.map(async (url, index) => save(targets[index]!, await download(url))));
+    return `${targets.length === 1 ? 'Salvata in' : `${targets.length} versioni in`} ${targets.join(', ')}, circa ${credits(costUsd)}.`;
+  };
 
   const request = async (endpoint: string, init: { method?: string; json?: unknown; form?: FormData } = {}) => {
     const response = await fetch(`${API}${endpoint}`, {
@@ -39,54 +60,65 @@ export function audioServer(brandDir: string, apiKey: string) {
 
   const music = tool(
     'genera_musica',
-    'Compone una musica e la salva. Con sezioni la struttura segue i tagli del video (strofa, drop, finale, con la loro durata); senza, basta il prompt.',
+    'Compone con Suno una musica strumentale di sottofondo e la salva. Ne fa 2 versioni, da ascoltare e scegliere. Per una musica cantata c’è genera_canzone.',
     {
-      prompt: z.string().optional().describe('Genere, umore, strumenti, tempo; obbligatorio senza sezioni'),
-      durata: z.number().min(3).max(300).describe('In secondi'),
-      strumentale: z.boolean().optional().describe('Senza voce cantata, di default sì'),
-      stili: z.array(z.string()).optional().describe('Con sezioni: gli stili di tutto il brano'),
+      descrizione: z.string().min(1).describe('Genere, umore, strumenti, tempo, es. «acustico caldo, chitarra e piano leggero, 100 bpm»'),
+      durata: z.number().min(10).max(360).describe('In secondi'),
       stili_da_evitare: z.array(z.string()).optional(),
-      sezioni: z
-        .array(
-          z.object({
-            nome: z.string(),
-            durata: z.number().positive().describe('In secondi'),
-            stili: z.array(z.string()),
-            stili_da_evitare: z.array(z.string()).optional(),
-            testo: z.array(z.string()).optional().describe('Le righe cantate, se non è strumentale'),
-          }),
-        )
-        .optional(),
-      modello: z.string().optional().describe('es. music_v1, music_v2_5; di default quello di ElevenLabs'),
+      modello: SUNO_MODELS.optional().describe(`Di default ${SUNO}; suno/chirp-v6-wild ha arrangiamenti più audaci, suno/chirp-v6-mini è più veloce`),
       salva: savePath,
     },
-    async ({ prompt, durata, strumentale = true, stili = [], stili_da_evitare = [], sezioni, modello, salva }) => {
+    async ({ descrizione, durata, stili_da_evitare = [], modello = SUNO, salva }) => {
       try {
         inside(salva);
-        if (!prompt && !sezioni?.length) throw new Error('serve il prompt o le sezioni');
-        const body = sezioni?.length
+        // In Suno la durata vale solo nel modo custom, dove la descrizione va in style e il prompt è il testo cantato.
+        const request = {
+          custom: true,
+          instrumental: true,
+          prompt: '',
+          style: descrizione.slice(0, 500),
+          ...(stili_da_evitare.length > 0 && { negative_tags: stili_da_evitare.join(', ').slice(0, 500) }),
+          duration: Math.round(durata),
+        };
+        return text(await suno(modello, request, salva));
+      } catch (error) {
+        return failure(error);
+      }
+    },
+    PARALLEL,
+  );
+
+  const song = tool(
+    'genera_canzone',
+    'Compone con Suno una canzone cantata, un jingle o una sigla, e la salva. Ne fa 2 versioni, da ascoltare e scegliere. ' +
+      'Con il testo si canta quello, con [Verse], [Chorus], [Bridge] sulle loro righe; senza, lo scrive Suno dalla descrizione. ' +
+      'Se l’utente non chiede altro, il testo è di tendenza, come le canzoni che girano sui social, e non parla di quello che fa il brand.',
+    {
+      descrizione: z.string().min(1).describe('La musica: genere, umore, strumenti, tempo, tipo di voce, es. «pop italiano solare, chitarra acustica, 110 bpm»'),
+      testo: z.string().optional().describe('Le parole da cantare, una riga per verso'),
+      titolo: z.string().optional(),
+      voce: z.enum(['maschile', 'femminile']).optional(),
+      durata: z.number().min(10).max(360).optional().describe('In secondi; vale solo se c’è il testo'),
+      stili_da_evitare: z.array(z.string()).optional(),
+      modello: SUNO_MODELS.optional().describe(`Di default ${SUNO}`),
+      salva: savePath,
+    },
+    async ({ descrizione, testo, titolo, voce, durata, stili_da_evitare = [], modello = SUNO, salva }) => {
+      try {
+        inside(salva);
+        const gender = voce && { vocal_gender: voce === 'maschile' ? 'Male' : 'Female' };
+        const request = testo
           ? {
-              composition_plan: {
-                positive_global_styles: stili,
-                negative_global_styles: stili_da_evitare,
-                sections: sezioni.map((section) => ({
-                  section_name: section.nome,
-                  positive_local_styles: section.stili,
-                  negative_local_styles: section.stili_da_evitare ?? [],
-                  duration_ms: Math.round(section.durata * 1000),
-                  lines: strumentale ? [] : (section.testo ?? []),
-                })),
-              },
-              respect_sections_durations: true,
+              custom: true,
+              prompt: testo.slice(0, 3000),
+              style: descrizione.slice(0, 500),
+              ...(titolo && { title: titolo.slice(0, 200) }),
+              ...(stili_da_evitare.length > 0 && { negative_tags: stili_da_evitare.join(', ').slice(0, 500) }),
+              ...(durata && { duration: Math.round(durata) }),
+              ...gender,
             }
-          : { prompt, music_length_ms: Math.round(durata * 1000), force_instrumental: strumentale };
-        const seconds = sezioni?.length ? sezioni.reduce((sum, section) => sum + section.durata, 0) : durata;
-        await measured(
-          { task: 'music', model: modello ?? 'music' },
-          async () => saveAudio(salva, await request(`/v1/music?output_format=${OUTPUT}`, { json: { ...body, ...(modello && { model_id: modello }) } })),
-          () => ({ units: seconds, unit: 'secondi', costUsd: (seconds / 60) * ELEVENLABS.musicPerMinute }),
-        );
-        return text(`Salvata in ${salva}, ${seconds.toFixed(0)} s.`);
+          : { custom: false, prompt: descrizione.slice(0, 3000), ...gender };
+        return text(await suno(modello, request, salva));
       } catch (error) {
         return failure(error);
       }
@@ -219,5 +251,6 @@ export function audioServer(brandDir: string, apiKey: string) {
     PARALLEL,
   );
 
-  return createSdkMcpServer({ name: 'audio', tools: [music, voices, voice, effect, transcribe] });
+  const tools = [...(atlas || keys.elevenlabs ? [music] : []), ...(atlas ? [song] : []), ...(keys.elevenlabs ? [voices, voice, effect, transcribe] : [])];
+  return createSdkMcpServer({ name: 'audio', tools });
 }

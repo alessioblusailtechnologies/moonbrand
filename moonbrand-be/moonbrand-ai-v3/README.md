@@ -159,7 +159,7 @@ Un tool per mestiere, con i campi in italiano e il modello facoltativo. Le chiav
   - `attendi`: aspetta clip e miglioramenti, tutti insieme.
   - `modelli`: il catalogo di Atlas con i prezzi; con `modello` i suoi parametri.
 - **`guarda`**: `guarda_file`, fino a 10 file (video, audio, immagini, PDF) e una domanda; di default `gemini-3.8-flash`. Oltre i 15 MB il file passa dalla Files API.
-- **`audio`** (ElevenLabs): `genera_musica` (prompt, oppure sezioni con la loro durata per seguire i tagli), `cerca_voci` (dell'account e condivise), `genera_voce` (di default `eleven_v3`), `genera_effetto`, `trascrivi` (il JSON delle parole con i tempi va in un file, a Claude torna il testo).
+- **`audio`**: `genera_musica` (strumentale, con la durata) e `genera_canzone` (canzoni e jingle cantati, con il nostro testo o scritto da Suno), sempre con Suno (`suno/chirp-v6` su Atlas, varianti `-wild` e `-mini`): 2 versioni a generazione per 0,132 $. Il testo, se l'utente non chiede altro, è di tendenza e non parla di quello che fa il brand (lo dice la descrizione del tool). Poi, con ElevenLabs, `cerca_voci` (dell'account e condivise), `genera_voce` (di default `eleven_v3`), `genera_effetto`, `trascrivi` (il JSON delle parole con i tempi va in un file, a Claude torna il testo).
 
 Ogni modello di Atlas chiama gli stessi parametri in modi diversi (`aspect_ratio` o `ratio`, `end_image` o `last_image`, `sound` o `generate_audio`): `atlas.ts` legge lo schema del modello e mette ogni campo nel nome giusto. Un campo che il modello non prende, o un valore fuori dal suo elenco, si scarta e il tool lo dice. I parametri propri di un modello passano in `parametri`.
 
@@ -170,7 +170,9 @@ I costi: ogni chiamata manda al worker una riga `moonbrand_usage` sullo stdout, 
 - Atlas: il prezzo misurato di `prices.ts` o, se non c'è, il prezzo base del catalogo, per i secondi chiesti (i video) o a pezzo. Per gli upscaler video i secondi si leggono dall'MP4. Si paga quando la generazione è pronta. Quelle che Claude non ha aspettato si controllano a fine chat e, se non sono fallite, si pagano.
 - ElevenLabs: caratteri per la voce, secondi per musica ed effetti, durata dell'audio per la trascrizione.
 
-Formati: musica ed effetti in MP3 a 192 kbps; la voce a 128 kbps, perché a 192 vuole il piano Creator di ElevenLabs.
+Suno su Atlas passa da APIMart, un rivenditore non ufficiale: Suno non ha un'API pubblica. Può smettere di funzionare, e i diritti d'uso commerciale sono da chiarire. Il 26/10 MiniMax Music 3.0 ed ElevenLabs Music sono stati provati sullo stesso brief e scartati. Con Suno una generazione dura circa 25-35 s.
+
+Formati: gli effetti in MP3 a 192 kbps; la voce a 128 kbps, perché a 192 vuole il piano Creator di ElevenLabs.
 
 Prova del 26/10, con una chat lanciata a mano su una cartella di prova: tutti e dieci i tool funzionano. Immagine, upscaler, clip di 5 s, musica, effetto, voci, voce, trascrizione, attendi e guarda_file costano 0,81 $ in tutto, di cui 0,65 $ la clip, più 0,57 $ di Opus.
 
