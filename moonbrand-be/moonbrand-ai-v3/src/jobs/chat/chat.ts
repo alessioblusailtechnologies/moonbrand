@@ -144,6 +144,8 @@ try {
       env: { ...withFfmpeg(env), CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1' },
       // Solo le impostazioni della cartella, che portano il CLAUDE.md del brand: niente di quelle dell'utente della macchina.
       settingSources: ['project'],
+      // L'effort fissato qui, uguale su collaudo e produzione, invece del default di Claude Code che cambia con la versione.
+      effort: 'high',
       systemPrompt: { type: 'preset', preset: 'claude_code', append: [STRUMENTI, category].filter(Boolean).join('\n') },
       // L'export dei video nel cloud c'è solo con le chiavi di Lambda; senza, Claude esporta in locale.
       mcpServers: {
