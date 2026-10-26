@@ -17,6 +17,7 @@ import { guardaServer } from './guarda';
 import { lambdaKeys, lambdaServer } from './lambda';
 import { mediaServer } from './media';
 import { moonbrandServer } from './moonbrand';
+import { handover } from './passaggio';
 
 // La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Immagini, clip, musica, voce e
 // gli occhi su video e audio sono tool (media, audio, guarda): le chiavi restano in questo processo e ogni generazione
@@ -113,7 +114,16 @@ const ideaBlock =
     .filter(Boolean)
     .join('\n');
 
-const prompt = [message, slotBlock, ideaBlock, attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`].filter(Boolean).join('\n\n');
+const turn = [message, slotBlock, ideaBlock, attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`].filter(Boolean).join('\n\n');
+
+// Con un contesto grande o dopo una pausa lunga la conversazione non riprende la sessione: ne apre una nuova con il
+// dialogo fin qui (passaggio.ts).
+const passing = sessionId ? await handover(brandDir, sessionId) : null;
+if (passing) console.error(`[chat] sessione nuova invece di ${sessionId}: ${passing.reason}`);
+const resume = passing ? undefined : sessionId;
+const prompt = passing ? `${passing.prompt}
+
+${turn}` : turn;
 
 const lambda = lambdaKeys();
 const media = mediaServer(brandDir, { gemini: MOONBRAND_GEMINI_KEY, atlas: MOONBRAND_ATLAS_KEY });
@@ -159,7 +169,7 @@ try {
       abortController: abort,
       permissionMode: 'bypassPermissions',
       allowDangerouslySkipPermissions: true,
-      ...(sessionId && { resume: sessionId }),
+      ...(resume && { resume }),
     },
   })) {
     console.log(JSON.stringify(item));

@@ -122,6 +122,17 @@ In più, al prompt di Claude Code si aggiungono poche righe (`STRUMENTI` in `cha
 
 Le righe stanno in `chat.ts` e non nel `CLAUDE.md`, così si cambiano senza riscrivere le cartelle dei brand.
 
+#### Il passaggio a una sessione nuova (`passaggio.ts`)
+
+Riprendere la sessione costa sempre di più: ogni chiamata di Opus rilegge tutto il contesto, e dopo un'ora di pausa la cache è scaduta e il resume lo riscrive per intero. Per questo, prima di riprendere, `chat.ts` legge il JSONL della sessione. Se all'ultima chiamata il contesto superava i 100K (`MOONBRAND_CHAT_MAX_CONTEXT`), o se dall'ultimo turno sono passati più di 55 minuti, apre una sessione nuova.
+
+Alla sessione nuova arriva il dialogo fin qui, preso dal JSONL con il codice e non riassunto da un modello: i messaggi dell'utente parola per parola e la risposta finale di Claude a ogni turno, fino a 60.000 caratteri, con i più recenti per primi. Non arrivano i passaggi intermedi né i risultati dei tool. Il lavoro sta nella cartella del brand e i contenuti si leggono con i tool. Nello studio la conversazione resta una sola. Con `MOONBRAND_CHAT_HANDOVER=off` si riprende sempre la sessione, come nel v2.
+
+Prova del 26/10 sulla chat di Velia (reel, 10 turni, 149K di contesto, ripresa dopo ore), con la domanda «ricordami cosa abbiamo deciso per voce e musica»:
+- con la sessione nuova il dialogo passato era di circa 4K token: una chiamata a 44K, 0,19 $, 8 s;
+- con il resume si riscrive tutto in cache: una chiamata a 160K, 6,00 $ (il costo dell'SDK), 11 s;
+- la risposta ha lo stesso contenuto: le voci provate, le due musiche scartate, il punto da riascoltare al 13° secondo.
+
 #### I tool di moonbrand (`moonbrand.ts`)
 
 Le stesse rotte `/v1/agent/*` della v1, con il token del job e descrizioni di una frase: `contenuti_elenca`, `contenuto_leggi`, `contenuto_approva` (solo se lo chiede l'utente), `contenuto_riapri`, `pubblicazione_proponi` (il pulsante «Pubblica ora», non pubblica), `piano_leggi`, `piano_proponi`, `uscite_crea`, `uscita_cambia`, `uscita_togli`, `idee_elenca`, `idea_salva`. Le regole del piano (ritmo, orari, temi) le applica l'API in `piano_proponi`.
