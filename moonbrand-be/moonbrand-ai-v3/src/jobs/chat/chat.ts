@@ -18,6 +18,7 @@ import { lambdaKeys, lambdaServer } from './lambda';
 import { mediaServer } from './media';
 import { moonbrandServer } from './moonbrand';
 import { handover } from './passaggio';
+import { videoServer } from './video';
 
 // La chat: Claude Code nella cartella del brand, che si presenta da sé con il CLAUDE.md. Immagini, clip, musica, voce e
 // gli occhi su video e audio sono tool (media, audio, guarda): le chiavi restano in questo processo e ogni generazione
@@ -27,7 +28,7 @@ import { handover } from './passaggio';
 const { carousel, video } = estimatesFromEnv(process.env);
 const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
 
-const STRUMENTI = `Immagini, clip, musica, canzoni, voce ed effetti li fai con i tool media e audio; video e audio li guardi con guarda_file, che vede movimento e suono. ffmpeg è nel PATH.
+const STRUMENTI = `Immagini, clip, musica, canzoni, voce ed effetti li fai con i tool media e audio; video e audio li guardi con guarda_file, che vede movimento e suono. I video li monti in Remotion: prepara_video mette in piedi il progetto, controlla_video controlla tipi e fotogrammi. ffmpeg è nel PATH.
 Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).
 La copertina di un video è un contenuto a sé, quello che si vede nella griglia e fa fermare chi scorre: non un fotogramma preso dal video, ma un'immagine pensata, con il momento più forte reso nitido, un titolo che si legge da piccolo e lo stile del brand.
 Un video per TikTok ha le scritte a schermo nello stile di TikTok, copertina compresa, nei colori e nei caratteri del brand: salvalo con canale tiktok accanto alla versione per gli altri canali.
@@ -153,6 +154,7 @@ try {
         media: media.server,
         ...(MOONBRAND_GEMINI_KEY && { guarda: guardaServer(brandDir, MOONBRAND_GEMINI_KEY) }),
         ...((MOONBRAND_ELEVENLABS_KEY || MOONBRAND_ATLAS_KEY) && { audio: audioServer(brandDir, { elevenlabs: MOONBRAND_ELEVENLABS_KEY, atlas: MOONBRAND_ATLAS_KEY }) }),
+        video: videoServer(brandDir, MOONBRAND_GEMINI_KEY),
         ...(lambda && { lambda: lambdaServer(brandDir, lambda) }),
       },
       // Con BASH_SANDBOX=on Bash gira nel sandbox: scrive solo nella cartella del brand e non legge il repo né la home,
