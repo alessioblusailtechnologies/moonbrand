@@ -13,7 +13,19 @@ import { brandFolder, credits, download, failure, PARALLEL, SAVE_PATH, text, typ
 // hanno nel modello lo trova atlas.ts.
 
 const DEFAULT_IMAGE = 'gemini-3-pro-image';
-const DEFAULT_CLIP = { fromImage: 'google/gemini-omni-flash/image-to-video', fromText: 'google/gemini-omni-1.1-flash/text-to-video' };
+// Il modello delle clip per tipo di scena, scelto il 27/10 guardando le stesse richieste sui cinque modelli migliori di
+// Atlas (prova-modelli-video): Kling 4.0 per le persone, Omni 1.1 Flash per tutto il resto.
+const OMNI = { fromImage: 'google/gemini-omni-1.1-flash/image-to-video', fromText: 'google/gemini-omni-1.1-flash/text-to-video' };
+const CLIP_MODELS = {
+  persone: { fromImage: 'kwaivgi/kling-v4.0/image-to-video', fromText: 'kwaivgi/kling-v4.0/text-to-video' },
+  prodotto: OMNI,
+  luoghi: OMNI,
+  mani: OMNI,
+  parlato: OMNI,
+  altro: OMNI,
+};
+const CLIP_TYPES = Object.keys(CLIP_MODELS) as [keyof typeof CLIP_MODELS, ...(keyof typeof CLIP_MODELS)[]];
+const CLIP_RESOLUTION = '1080p';
 const UPSCALER = { image: 'atlascloud/image-upscaler', video: 'atlascloud/video-upscaler' };
 
 const ASPECTS = ['1:1', '4:5', '3:4', '2:3', '9:16', '16:9', '4:3', '3:2', '21:9'] as const;
@@ -146,10 +158,13 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
   const generateClip = tool(
     'genera_clip',
     'Avvia una clip video, da un’immagine della cartella del brand o solo dal testo, e risponde subito: poi attendi. Più clip si avviano insieme. ' +
-      `Di default ${DEFAULT_CLIP.fromImage} (da immagine) e ${DEFAULT_CLIP.fromText} (da testo); gli altri modelli con prezzi e parametri sono in modelli. ` +
+      'Il modello lo sceglie il tool dal tipo di scena, a 1080p se il modello lo fa; modello serve solo per forzarne un altro (modelli). ' +
       'Un campo che il modello non prende si ignora e te lo dice.',
     {
       prompt: z.string().min(1),
+      tipo: z
+        .enum(CLIP_TYPES)
+        .describe('Cosa si vede: persone (una persona vera, volto e corpo, anche da una sua foto), prodotto, luoghi, mani (gesti di mestiere), parlato (qualcuno che parla in camera con la voce), altro'),
       immagine: z.string().optional().describe('Il primo fotogramma, dalla cartella del brand'),
       immagine_finale: z.string().optional().describe('L’ultimo fotogramma, se il modello lo prende'),
       durata: z.number().int().positive().describe('In secondi'),
@@ -160,11 +175,12 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
       parametri: extraParameters,
       salva: savePath.describe('Dove salvarla, es. lavoro/clip/1.mp4'),
     },
-    async ({ prompt, immagine, immagine_finale, durata, proporzione, risoluzione, audio, modello, parametri, salva }) => {
+    async ({ prompt, tipo, immagine, immagine_finale, durata, proporzione, risoluzione = CLIP_RESOLUTION, audio, modello, parametri, salva }) => {
       try {
         inside(salva);
         const client = needAtlas();
-        const found = await client.find(modello ?? (immagine ? DEFAULT_CLIP.fromImage : DEFAULT_CLIP.fromText));
+        const byType = CLIP_MODELS[tipo];
+        const found = await client.find(modello ?? (immagine ? byType.fromImage : byType.fromText));
         const { request, notes } = await client.body(
           found,
           { prompt, image: immagine, endImage: immagine_finale, duration: durata, aspect: proporzione, resolution: risoluzione, audio },

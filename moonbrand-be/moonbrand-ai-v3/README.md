@@ -166,7 +166,7 @@ Un tool per mestiere, con i campi in italiano e il modello facoltativo. Le chiav
 
 - **`media`**
   - `genera_immagine`: prompt, riferimenti, proporzione, dimensione; di default `gemini-3-pro-image`, oppure un modello di Atlas col suo nome. Aspetta il risultato.
-  - `genera_clip`: prompt, immagine iniziale e finale, durata, proporzione, risoluzione, audio; di default Gemini Omni Flash (da immagine) e Omni 1.1 Flash (da testo). Risponde subito.
+  - `genera_clip`: prompt, tipo di scena, immagine iniziale e finale, durata, proporzione, risoluzione, audio. Il modello lo sceglie il tool dal tipo: Kling 4.0 per le persone, Omni 1.1 Flash per prodotto, luoghi, mani, parlato e altro, a 1080p di default (prova del 27/10 in `prova-modelli-video`). Risponde subito.
   - `migliora`: upscaler di Atlas per foto e video. Risponde subito.
   - `attendi`: aspetta clip e miglioramenti, tutti insieme.
   - `modelli`: il catalogo di Atlas con i prezzi; con `modello` i suoi parametri.
@@ -264,7 +264,7 @@ Rispetto a moonbrand-ai, in ordine di priorità. Fatti il 18/10: costi dei servi
 Tecniche:
 
 - **Sandbox su Linux.** Provato il 18/10 sul server: bubblewrap, socat e ffmpeg ci sono, ma AppArmor blocca il namespace annidato. Spento finché non si fa il profilo (`SANDBOX-BASH.md`).
-- **Scelta del modello delle clip.** Conta la qualità, non il prezzo: Gemini Omni Flash (0,13 $/s) era stato scelto il 2/10 dopo una prova sulle stesse foto perché è quello che segue meglio il prompt. Su Atlas c’è anche `google/gemini-omni-1.1-flash` a 0,039 $/s: va provato sulle stesse foto prima di preferirlo. Ora che il repo è chiuso, la chat sceglie dal catalogo (GET /api/v1/models, citato nel prompt solo come elenco dei modelli).
+- **Scelta del modello delle clip.** Fatta il 27/10 per tipo di scena: Omni Flash, Omni 1.1 Flash, Veo 3.1, Kling 4.0 e Seedance 2.5 sulle stesse richieste (persone e prodotto da foto vere, luoghi, mani, parlato), guardate dall'utente. Kling 4.0 è il migliore sulle persone; sul resto le due Omni vanno bene e si tiene la 1.1, che costa circa un terzo e fa il 1080p nativo. Kling 4.0 da foto tiene le proporzioni della foto. Da rifare quando escono modelli nuovi.
 
 Rimandati dall'utente:
 
