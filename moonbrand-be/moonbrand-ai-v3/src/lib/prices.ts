@@ -66,10 +66,11 @@ export function atlasMeasured(model: string, resolution?: string): number | unde
 }
 
 // Il listino in crediti che la chat usa per le stime: 1 credito è 1 centesimo di dollaro di costo vero. Un'immagine
-// di Gemini 3 Pro a 2K sono 1120 token; la clip è Gemini Omni Flash su Atlas, da foto.
+// di Gemini 3 Pro a 2K sono 1120 token; le clip sono Gemini Omni 1.1 Flash e, con le persone, Kling 4.0 su Atlas, al
+// prezzo base del catalogo (0,039 e 0,11 $ al secondo il 27/10): il 1080p di default può costare di più.
 const credits = (usd: number) => Math.round(usd * 100);
 
 export const LISTINO =
   `un'immagine di Gemini 3 Pro ${credits((1120 * GEMINI_PER_MILLION['gemini-3-pro-image']!.image!) / 1_000_000)}, ` +
-  `una clip circa 13 al secondo, una musica o una canzone di Suno 13 (con 2 versioni), ` +
+  `una clip almeno 4 al secondo, 11 con le persone, una musica o una canzone di Suno 13 (con 2 versioni), ` +
   `la voce ${credits(ELEVENLABS.voicePerThousandCharacters)} ogni 1000 caratteri`;

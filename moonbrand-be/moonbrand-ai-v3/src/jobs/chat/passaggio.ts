@@ -22,6 +22,15 @@ const MAX_FOLDERS = 12;
 const CONTENT_ID = /"id"\s*:\s*"([0-9a-f-]{36})"/;
 const WORK_PATH = /lavoro\/[A-Za-z0-9._-]+\/?/g;
 
+// Le parti del prompt di passaggio (dialogue): se la sessione è già nata da un passaggio, il suo primo messaggio si
+// srotola invece di finire, intero, dentro il prompt nuovo.
+const HEADER = 'Questa conversazione con l’utente continua da una sessione precedente.';
+const SEPARATOR = '\n\n---\n\n';
+const WORK_MARK = '--- Fine del dialogo. Cosa c’è già:';
+const NEW_MARK = '--- Il nuovo messaggio dell’utente:';
+const OMITTED = /^\((\d+) turni più vecchi omessi\.\)$/;
+const SAVED_LINE = /, id ([0-9a-f-]{36}): /;
+
 interface Block {
   type: string;
   text?: string;
@@ -87,7 +96,8 @@ export async function handover(brandDir: string, sessionId: string, now = Date.n
 
   let context = 0;
   let last = 0;
-  const turns: Turn[] = [];
+  let turns: Turn[] = [];
+  let omitted = 0;
   const work = new Work(brandDir);
   for (const entry of entries) {
     if (entry.isSidechain || entry.isMeta) continue;
@@ -98,7 +108,12 @@ export async function handover(brandDir: string, sessionId: string, now = Date.n
     if (entry.type === 'user') {
       // I risultati dei tool arrivano come messaggi dell'utente senza testo: non sono un turno.
       const text = textOf(content).trim();
-      if (text) turns.push({ user: text, reply: '' });
+      const previous = turns.length === 0 && text.startsWith(HEADER) ? unroll(text) : null;
+      if (previous) {
+        turns = previous.turns;
+        omitted = previous.omitted;
+        work.inherit(previous.work);
+      } else if (text) turns.push({ user: text, reply: '' });
       for (const block of blocks) if (block.type === 'tool_result') work.result(block);
     } else if (entry.type === 'assistant') {
       const usage = entry.message?.usage;
@@ -114,7 +129,50 @@ export async function handover(brandDir: string, sessionId: string, now = Date.n
   const pause = last ? now - last : 0;
   const reason = context > MAX_CONTEXT ? `contesto di ${Math.round(context / 1000)}K` : pause > MAX_PAUSE_MS ? `pausa di ${Math.round(pause / 60_000)} minuti` : null;
   if (!reason || turns.length === 0) return null;
-  return { reason, context, prompt: dialogue(turns, work.summary()) };
+  return { reason, context, prompt: dialogue(turns, work.summary(), omitted) };
+}
+
+// Il primo messaggio di una sessione nata da un passaggio: i turni delle sessioni prima, cosa c'era già e il messaggio
+// dell'utente che l'ha aperta, che diventa l'ultimo turno. Le sessioni passate prima del 27/10 hanno, come primo turno,
+// il prompt di un passaggio precedente intero: si srotola anche quello.
+function unroll(text: string): { turns: Turn[]; omitted: number; work: string } | null {
+  const newAt = text.lastIndexOf(`\n\n${NEW_MARK}\n\n`);
+  if (newAt < 0) return null;
+  const message = text.slice(newAt + NEW_MARK.length + 4).trim();
+  let body = text.slice(0, newAt);
+  let work = '';
+  const workAt = body.lastIndexOf(`\n\n${WORK_MARK}\n\n`);
+  if (workAt >= 0) {
+    work = body.slice(workAt + WORK_MARK.length + 4);
+    body = body.slice(0, workAt);
+  }
+  // Dopo l'intestazione: la riga dei turni omessi, se c'è, poi i turni separati da ---.
+  const parts = body.split('\n\n');
+  parts.shift();
+  let omitted = Number(OMITTED.exec(parts[0] ?? '')?.[1] ?? 0);
+  if (omitted > 0) parts.shift();
+  let rest = parts.join('\n\n');
+  const turns: Turn[] = [];
+  if (rest.startsWith(`Utente:\n${HEADER}`)) {
+    // Il prompt annidato finisce con il suo messaggio nuovo, seguito dalla risposta e dagli altri turni.
+    const innerAt = rest.lastIndexOf(`\n\n${NEW_MARK}\n\n`);
+    const replyAt = innerAt < 0 ? -1 : rest.indexOf('\n\nTu:\n', innerAt);
+    const end = replyAt < 0 ? -1 : rest.indexOf(SEPARATOR, replyAt);
+    const inner = unroll(rest.slice('Utente:\n'.length, replyAt < 0 ? undefined : replyAt));
+    if (inner) {
+      turns.push(...inner.turns);
+      if (replyAt >= 0) turns.at(-1)!.reply = rest.slice(replyAt + '\n\nTu:\n'.length, end < 0 ? undefined : end);
+      omitted += inner.omitted;
+      work = `${inner.work}\n${work}`;
+      rest = end < 0 ? '' : rest.slice(end + SEPARATOR.length);
+    }
+  }
+  for (const block of rest ? rest.split(SEPARATOR) : []) {
+    const match = /^Utente:\n([\s\S]*?)(?:\n\nTu:\n([\s\S]*))?$/.exec(block);
+    if (match) turns.push({ user: match[1]!, reply: match[2] ?? '' });
+  }
+  if (message) turns.push({ user: message, reply: '' });
+  return { turns, omitted, work };
 }
 
 // Quello che la conversazione ha fatto, dalle chiamate ai tool: i contenuti salvati e le cartelle di lavoro toccate.
@@ -122,6 +180,8 @@ class Work {
   private readonly root: string;
   private readonly pending = new Map<string, Saved>();
   private readonly saved = new Map<string, Saved>();
+  // I contenuti delle sessioni prima, come righe già scritte: un salvataggio nuovo con lo stesso id le sostituisce.
+  private readonly inherited = new Map<string, string>();
   private readonly folders = new Map<string, { uses: number; inside: boolean }>();
 
   constructor(brandDir: string) {
@@ -145,6 +205,15 @@ class Work {
     const paths: unknown[] = [input.file_path, input.progetto, ...(Array.isArray(input.salva) ? input.salva : [input.salva])];
     if (name === 'Bash' && typeof input.command === 'string') paths.push(...(input.command.match(WORK_PATH) ?? []));
     for (const value of paths) if (typeof value === 'string') this.folder(value);
+  }
+
+  // Cosa c'era già nelle sessioni prima, dal prompt di passaggio.
+  inherit(text: string) {
+    for (const line of text.split('\n')) {
+      const id = SAVED_LINE.exec(line)?.[1];
+      if (id) this.inherited.set(id, line);
+      else if (/^- lavoro\/[^/]+\/$/.test(line)) this.folders.set(line.slice(2), { uses: 0, inside: true });
+    }
   }
 
   // L'id di un contenuto nuovo arriva nella risposta del tool; se il salvataggio non è riuscito, non c'è.
@@ -171,9 +240,12 @@ class Work {
   }
 
   summary(): string {
-    const contents = [...this.saved.values()].map(
-      ({ id, title, format, channels, files }) => `- «${title}» (${format}${channels.length > 0 ? `, ${channels.join(', ')}` : ''}), id ${id}: ${files.join(', ')}`,
-    );
+    const contents = [
+      ...[...this.inherited.entries()].filter(([id]) => !this.saved.has(id)).map(([, line]) => line),
+      ...[...this.saved.values()].map(
+        ({ id, title, format, channels, files }) => `- «${title}» (${format}${channels.length > 0 ? `, ${channels.join(', ')}` : ''}), id ${id}: ${files.join(', ')}`,
+      ),
+    ];
     const folders = [...this.folders.entries()]
       .filter(([, folder]) => folder.inside)
       .sort((a, b) => b[1].uses - a[1].uses)
@@ -188,9 +260,9 @@ class Work {
   }
 }
 
-function dialogue(turns: Turn[], work: string): string {
+function dialogue(turns: Turn[], work: string, omittedBefore = 0): string {
   const blocks = turns.map(({ user, reply }) => [`Utente:\n${user}`, reply && `Tu:\n${reply}`].filter(Boolean).join('\n\n'));
-  // Si tengono i turni più recenti che stanno nel limite; il primo, se c'è, porta già il dialogo delle sessioni prima.
+  // Si tengono i turni più recenti che stanno nel limite.
   const kept: string[] = [];
   let size = 0;
   for (const block of [...blocks].reverse()) {
@@ -198,14 +270,14 @@ function dialogue(turns: Turn[], work: string): string {
     kept.unshift(block);
     size += block.length;
   }
-  const omitted = blocks.length - kept.length;
+  const omitted = omittedBefore + blocks.length - kept.length;
   return [
     'Questa conversazione con l’utente continua da una sessione precedente. Ecco il dialogo fin qui: i messaggi dell’utente e le tue risposte, senza i passaggi intermedi. ' +
       'Il lavoro fatto è nella cartella del brand e i contenuti salvati li leggi con i tool di moonbrand: riguarda quello che serve prima di cambiarlo.',
     omitted > 0 && `(${omitted} turni più vecchi omessi.)`,
-    kept.join('\n\n---\n\n'),
-    work && `--- Fine del dialogo. Cosa c’è già:\n\n${work}`,
-    '--- Il nuovo messaggio dell’utente:',
+    kept.join(SEPARATOR),
+    work && `${WORK_MARK}\n\n${work}`,
+    NEW_MARK,
   ]
     .filter(Boolean)
     .join('\n\n');
