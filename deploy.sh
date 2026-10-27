@@ -24,6 +24,11 @@ cd ~/moonbrand/moonbrand-be/moonbrand-ai-v2
 npm ci --no-audit --no-fund >/tmp/ai-v2-ci.log 2>&1
 echo "worker v2 ok"
 
+# Il motore v3 (PRODUZIONE.md, «Motore v3»): dal 27/10 il servizio moonbrand-worker lancia questo; il v2 resta per tornare indietro.
+cd ~/moonbrand/moonbrand-be/moonbrand-ai-v3
+npm ci --no-audit --no-fund >/tmp/ai-v3-ci.log 2>&1
+echo "worker v3 ok"
+
 cd ~/moonbrand/moonbrand-studio
 npm ci --no-audit --no-fund >/tmp/st-ci.log 2>&1
 npm run build >/tmp/st-build.log 2>&1

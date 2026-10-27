@@ -1,0 +1,20 @@
+{
+  "curve": {
+    "morbida": { "bezier": [0.45, 0, 0.15, 1], "descrizione": "entra e si posa senza fretta, editoriale" },
+    "snappy": { "bezier": [0.16, 1, 0.3, 1], "descrizione": "parte di scatto e frena lunga, social e moderna" },
+    "decisa": { "bezier": [0.83, 0, 0.17, 1], "descrizione": "accelera e frena forte, grafica e netta" },
+    "elastica": { "bezier": [0.2, 0.9, 0.25, 1], "overshoot": 0.12, "descrizione": "scatto con un piccolo rimbalzo, giocosa" }
+  },
+  "energia": {
+    "bassa": { "durata": 1.3, "distanza": 0.7, "stagger": 1.3 },
+    "media": { "durata": 1, "distanza": 1, "stagger": 1 },
+    "alta": { "durata": 0.75, "distanza": 1.3, "stagger": 0.7 }
+  },
+  "formati": {
+    "9:16": { "W": 1080, "H": 1920, "safe": { "alto": 250, "basso": 1450, "sinistra": 80, "destra": 940 } },
+    "4:5": { "W": 1080, "H": 1350, "safe": { "alto": 90, "basso": 1260, "sinistra": 80, "destra": 1000 } },
+    "1:1": { "W": 1080, "H": 1080, "safe": { "alto": 80, "basso": 1000, "sinistra": 80, "destra": 1000 } }
+  },
+  "focali": { "alto": 0.16, "terzo_alto": 0.31, "centro": 0.5, "terzo_basso": 0.66, "basso": 0.78 },
+  "scala_tipografica": { "xs": 40, "s": 50, "m": 76, "l": 112, "xl": 150, "xxl": 280 }
+}
