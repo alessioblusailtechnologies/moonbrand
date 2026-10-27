@@ -49,6 +49,7 @@ export const PAGES = {
   privacy: { it: 'privacy', en: 'privacy', fr: 'confidentialite' },
   terms: { it: 'termini', en: 'terms', fr: 'conditions' },
   refunds: { it: 'rimborsi', en: 'refunds', fr: 'remboursements' },
+  dpa: { it: 'dpa', en: 'dpa', fr: 'dpa' },
   // Le pagine indice del menù: funzionalità, social, per chi. I testi in copy.hubs.
   features: { it: 'funzionalita', en: 'features', fr: 'fonctionnalites' },
   social: SOCIAL,

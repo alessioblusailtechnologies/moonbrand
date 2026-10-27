@@ -1,0 +1,48 @@
+---
+// L'accordo sul trattamento dei dati (DPA, art. 28 GDPR): è nostro, non su iubenda, perché iubenda non ha un modello
+// per i dati che i clienti caricano nei loro contenuti. I Termini e la privacy lo richiamano; i testi in copy.dpa.
+import { getCopy, pagePath, type Lang } from '../i18n';
+import PageShell from './PageShell.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { dpa } = getCopy(lang);
+const PEC = 'blusailtechnologies@pec.it';
+// Un indirizzo del sito scritto come nel testo: moonbrand.app/privacy, moonbrand.app/en/privacy.
+const siteLink = (page: 'privacy' | 'terms') => {
+  const path = pagePath(lang, page);
+  return `<a href="${path}">moonbrand.app${path.replace(/\/$/, '')}</a>`;
+};
+// I testi sono nostri, senza HTML: diventano HTML solo il grassetto (**...**) e i segnaposto dei link.
+const linked = (text: string) =>
+  text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replaceAll('{privacy}', siteLink('privacy'))
+    .replaceAll('{pec}', `<a href="mailto:${PEC}">${PEC}</a>`);
+---
+
+<PageShell lang={lang} page="dpa" title={dpa.title} description={dpa.description} heading={dpa.heading} lead={dpa.updated}>
+  <div class="sections">
+    {dpa.sections.map(({ title, blocks }) => (
+      <section>
+        <h2>{title}</h2>
+        {blocks.map((block) =>
+          typeof block === 'string' ? <p set:html={linked(block)} /> : <ul>{block.map((item) => <li set:html={linked(item)} />)}</ul>,
+        )}
+      </section>
+    ))}
+  </div>
+</PageShell>
+
+<style>
+  .sections { display: flex; flex-direction: column; gap: 36px; }
+  h2 { margin: 0 0 10px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  p { margin: 0 0 12px; font-size: 16.5px; line-height: 1.65; color: var(--text); }
+  ul { margin: 0 0 12px; padding-left: 20px; font-size: 16.5px; line-height: 1.65; color: var(--text); }
+  li { margin: 4px 0; }
+  p :global(strong), li :global(strong) { color: var(--ink); font-weight: 600; }
+  p :global(a), li :global(a) { color: var(--accent-dark); text-decoration: underline; text-underline-offset: 2px; }
+</style>

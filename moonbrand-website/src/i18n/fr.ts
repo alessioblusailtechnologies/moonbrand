@@ -269,6 +269,7 @@ export const fr: Copy = {
     privacy: 'Confidentialité',
     terms: 'Conditions',
     refunds: 'Remboursements',
+    dpa: 'Traitement des données (DPA)',
     contact: 'Contact',
     payments: 'Les paiements sont gérés par Dodo Payments, notre revendeur agréé.',
   },
@@ -662,6 +663,13 @@ export const fr: Copy = {
     termsHeading: 'Conditions générales',
     open: 'Lire le document',
     soon: 'Ce document est en cours de préparation. Pour toute question, écrivez-nous à',
+    // Les nôtres, autour du texte d'iubenda (qui n'admet pas de clauses libres) : au-dessus de la politique de
+    // confidentialité les rôles, sous les conditions le renvoi au DPA. {dpa} devient le lien vers /fr/dpa/.
+    roles: 'La présente politique concerne les données dont Blusail Technologies est responsable du traitement : données de compte, de facturation, de navigation et de sécurité. Pour les données personnelles de tiers que les Utilisateurs professionnels chargent dans leurs contenus (par exemple les personnes représentées sur des photos et des vidéos), Blusail Technologies agit en qualité de sous-traitant pour le compte de l’Utilisateur professionnel, qui en est responsable du traitement, conformément à l’Accord de traitement des données personnelles (DPA) disponible à l’adresse {dpa}.',
+    dataProcessing: {
+      title: 'Traitement des données pour le compte de l’Utilisateur professionnel',
+      text: 'Lorsque l’Utilisateur professionnel charge dans le Service des données personnelles de tiers, ou connecte des comptes de réseaux sociaux qui en contiennent, Blusail Technologies les traite en qualité de sous-traitant pour le compte de l’Utilisateur professionnel, conformément à l’Accord de traitement des données personnelles (DPA) disponible à l’adresse {dpa}. Le DPA fait partie intégrante des présentes Conditions : en acceptant les Conditions, l’Utilisateur professionnel accepte également le DPA.',
+    },
   },
   refunds: {
     title: 'Remboursements · Moonbrand',
@@ -709,6 +717,81 @@ export const fr: Copy = {
         'Toute personne estimant qu’un contenu porte atteinte à ses droits peut le signaler à {email} en indiquant le contenu et le droit concerné : le contenu est examiné et, si le signalement est fondé, retiré ; en cas de violations répétées, le compte est fermé.',
       ] },
     ],
+  },
+  // L'accord sur le traitement des données (DPA) sur /fr/dpa/, traduit de l'italien : les Conditions et la politique
+  // de confidentialité y renvoient. **...** est en gras, {privacy} et {pec} deviennent des liens ; une liste est un tableau.
+  dpa: {
+    title: 'Accord de traitement des données (DPA) · Moonbrand',
+    description: 'L’accord de traitement des données personnelles (art. 28 RGPD) pour les données que les clients professionnels chargent dans Moonbrand.',
+    heading: 'Accord de traitement des données personnelles (DPA)',
+    updated: 'Dernière mise à jour : 27 octobre 2026',
+    sections: [
+      { title: '1. Champ d’application', blocks: [
+        'Le présent accord (« DPA ») complète les Conditions générales de moonbrand et en fait partie intégrante. Il s’applique lorsqu’un Utilisateur professionnel (client professionnel, y compris les agences et les partenaires) charge dans le Service des données personnelles de tiers, ou connecte des comptes de réseaux sociaux qui en contiennent.',
+        'Pour ces données, Blusail Technologies S.r.l.s., Via Atlantico 43/B, 74122 Tarente (Italie), n° TVA 03419820737 (le « Fournisseur »), agit en qualité de sous-traitant au sens de l’article 28 du Règlement (UE) 2016/679 (« RGPD »), pour le compte de l’Utilisateur professionnel, qui agit en qualité de responsable du traitement.',
+        'Si l’Utilisateur professionnel traite les données pour le compte de ses propres clients (par exemple en tant qu’agence), il agit en qualité de sous-traitant et le Fournisseur en qualité de sous-traitant ultérieur. Dans ce cas, l’Utilisateur professionnel garantit avoir été autorisé par son client à recourir au Fournisseur aux conditions du présent DPA.',
+        'L’acceptation des Conditions emporte l’acceptation du présent DPA. Pour les données de compte, de facturation, de navigation et de sécurité, le Fournisseur agit en qualité de responsable du traitement autonome, comme indiqué dans la Politique de confidentialité. En matière de données personnelles, en cas de contradiction avec les Conditions, le présent DPA prévaut.',
+      ] },
+      { title: '2. Objet du traitement', blocks: [
+        [
+          '**Nature et finalité :** exclusivement la fourniture du Service (génération, modification, planification, publication et conservation des contenus), la sécurité et l’assistance.',
+          '**Catégories de personnes concernées :** personnes représentées ou mentionnées dans les contenus ; personnel et clients de l’Utilisateur professionnel ; utilisateurs qui interagissent avec les comptes de réseaux sociaux connectés.',
+          '**Catégories de données :** données d’identification et de contact ; images et voix ; textes, contenus et métadonnées associées ; données statistiques des comptes de réseaux sociaux connectés.',
+          '**Données sensibles et judiciaires :** elles ne sont pas nécessaires à l’utilisation du Service et ne doivent pas être chargées.',
+          '**Durée :** pendant toute la durée de l’abonnement, plus la période de suppression indiquée au point 8.',
+        ],
+      ] },
+      { title: '3. Obligations de l’Utilisateur professionnel', blocks: [
+        'L’Utilisateur professionnel :',
+        [
+          'est seul responsable de la licéité du traitement, y compris la base juridique, l’information des personnes concernées, les consentements à l’utilisation de l’image et de la voix des personnes représentées et les autorisations de gérer les comptes de réseaux sociaux connectés ;',
+          'donne ses instructions par l’utilisation du Service et l’acceptation des Conditions ; toute instruction supplémentaire doit être convenue par écrit et peut entraîner des coûts supplémentaires ;',
+          'ne charge pas de données sensibles (art. 9 RGPD), de données judiciaires (art. 10 RGPD) ni de données de mineurs sans les autorisations nécessaires ;',
+          'garantit le Fournisseur contre toute réclamation découlant de la violation des présentes obligations.',
+        ],
+      ] },
+      { title: '4. Obligations du Fournisseur', blocks: [
+        'Le Fournisseur :',
+        [
+          'ne traite les données que sur instruction documentée de l’Utilisateur professionnel, constituée par les Conditions, le présent DPA et l’utilisation du Service, sauf obligation légale ; informe l’Utilisateur professionnel s’il estime qu’une instruction enfreint la réglementation ;',
+          'soumet à une obligation de confidentialité les personnes autorisées à traiter les données ;',
+          'met en œuvre des mesures techniques et organisationnelles appropriées au sens de l’art. 32 RGPD, décrites au point 7 ;',
+          'aide l’Utilisateur professionnel, compte tenu de la nature du traitement et dans les limites des fonctionnalités du Service, à donner suite aux demandes des personnes concernées et à respecter les obligations des articles 32 à 36 RGPD ; l’assistance qui dépasse les fonctionnalités standard peut être facturée ;',
+          'notifie à l’Utilisateur professionnel les violations de données personnelles dans les meilleurs délais après en avoir pris connaissance ;',
+          'à la cessation du Service, supprime les données conformément au point 8 ;',
+          'met à disposition, sur demande écrite, les informations nécessaires pour démontrer le respect de l’art. 28 RGPD. Les audits se déroulent normalement au moyen de documents et de questionnaires ; les inspections ne sont admises que si elles sont demandées par une autorité de contrôle ou en cas de violation avérée, avec un préavis raisonnable et aux frais de l’Utilisateur professionnel.',
+        ],
+      ] },
+      { title: '5. Sous-traitants ultérieurs', blocks: [
+        'L’Utilisateur professionnel accorde au Fournisseur une autorisation générale de recourir à des sous-traitants ultérieurs. La liste à jour figure dans la Politique de confidentialité ({privacy}).',
+        'Le Fournisseur communique les ajouts ou remplacements de sous-traitants ultérieurs en mettant à jour la liste au moins 15 jours à l’avance. Dans ce délai, l’Utilisateur professionnel peut s’y opposer pour des motifs raisonnables ; si les parties ne trouvent pas de solution, le seul recours de l’Utilisateur professionnel est la résiliation de l’abonnement sans pénalité.',
+        'Le Fournisseur impose aux sous-traitants ultérieurs des obligations de protection des données équivalentes à celles du présent DPA.',
+      ] },
+      { title: '6. Transferts hors de l’Espace économique européen', blocks: [
+        'Certains sous-traitants ultérieurs sont établis hors de l’EEE. Les transferts reposent sur une décision d’adéquation de la Commission européenne (y compris le cadre de protection des données UE-États-Unis pour les fournisseurs certifiés) ou sur des Clauses contractuelles types, comme indiqué pour chaque fournisseur dans la Politique de confidentialité.',
+      ] },
+      { title: '7. Mesures de sécurité', blocks: [
+        [
+          'Accès aux systèmes par authentification, avec le principe du moindre privilège et des accès administrateurs limités au personnel autorisé.',
+          'Séparation logique des données entre comptes et Marques.',
+          'Journalisation des accès et surveillance des systèmes.',
+          'Recours à des fournisseurs d’infrastructure disposant de certifications de sécurité reconnues.',
+        ],
+      ] },
+      { title: '8. Suppression des données', blocks: [
+        'Sur demande écrite de l’Utilisateur professionnel, adressée à l’adresse indiquée au point 11, le Fournisseur supprime les données personnelles traitées pour son compte dans un délai de 30 jours à compter de la réception de la demande et le confirme par écrit, sauf obligation légale de conservation.',
+        'En l’absence de demande, les données sont supprimées dans un délai de 12 mois à compter de la cessation de l’abonnement.',
+      ] },
+      { title: '9. Responsabilité', blocks: [
+        'La responsabilité du Fournisseur découlant du présent DPA est soumise aux limites prévues par les Conditions, sauf disposition légale impérative.',
+      ] },
+      { title: '10. Modifications', blocks: [
+        'Le Fournisseur peut mettre à jour le présent DPA pour tenir compte d’évolutions réglementaires ou du Service, en publiant la nouvelle version avec sa date de mise à jour. Les modifications substantielles sont communiquées aux Utilisateurs professionnels avec un préavis d’au moins 15 jours.',
+      ] },
+      { title: '11. Contact', blocks: [
+        'Pour toute demande relative au traitement des données : {pec}',
+      ] },
+    ] as { title: string; blocks: (string | string[])[] }[],
   },
   notFound: {
     title: 'Page introuvable · Moonbrand',
