@@ -10,7 +10,7 @@ import { isEngineV2 } from '../ai/engine';
 import { isFreeUltra } from '../billing/free-plan';
 import type { Mailer } from '../email/mailer';
 import { confirmEmail as confirmTemplate, resetEmail, welcomeEmail } from '../email/templates';
-import { accountEmail, claimEmail, confirmEmail, createAccount, findAccount, findAccountIdByEmail, recordSignIn, setLocale } from './accounts';
+import { accountEmail, claimEmail, confirmEmail, createAccount, findAccount, findAccountIdByEmail, recordSignIn, setLocale, setNewsSeen } from './accounts';
 import type { EmailLinks } from './email-links';
 import type { AuthGateway, Tokens } from './gateway';
 
@@ -27,12 +27,13 @@ export interface AuthMail {
 
 // freePlan: l'utenza con il piano Ultra in omaggio (free-plan.ts), per cui lo studio non propone pagamenti.
 // aiEngine: il motore v2 (ai/engine.ts), per cui lo studio accorcia l'onboarding.
-const publicAccount = ({ id, email, name, locale, emailConfirmed }: Account): Account => ({
+const publicAccount = ({ id, email, name, locale, emailConfirmed, newsSeen }: Account): Account => ({
   id,
   email,
   name,
   locale,
   emailConfirmed,
+  newsSeen,
   freePlan: isFreeUltra(email),
   ...(isEngineV2() && { aiEngine: 'v2' as const }),
 });
@@ -87,6 +88,12 @@ export async function me(pool: pg.Pool, identity: Identity): Promise<Omit<Me, 'a
 
 export async function updateMe(pool: pg.Pool, identity: Identity, input: UpdateMeRequest): Promise<Omit<Me, 'admin'>> {
   await withIdentity(pool, identity, (db) => setLocale(db, identity.accountId, input.locale));
+  return me(pool, identity);
+}
+
+// La modale delle novità chiusa: non torna fino all'annuncio successivo.
+export async function markNewsSeen(pool: pg.Pool, identity: Identity): Promise<Omit<Me, 'admin'>> {
+  await withIdentity(pool, identity, (db) => setNewsSeen(db, identity.accountId));
   return me(pool, identity);
 }
 

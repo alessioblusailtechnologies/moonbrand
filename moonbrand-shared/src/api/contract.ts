@@ -19,7 +19,13 @@ export interface Account {
   freePlan?: boolean;
   // Il motore dei job (AI_ENGINE dell'API), solo se non è quello di sempre: con v2 l'onboarding è più corto.
   aiEngine?: 'v2';
+  // false finché l'account non ha chiuso l'annuncio delle novità di LATEST_NEWS: lo studio glielo mostra una volta.
+  newsSeen?: boolean;
 }
+
+// L'annuncio delle novità del momento, nella modale dello studio (features/shell/news-modal.ts). Per un rilascio nuovo
+// si cambia il codice e i testi in i18n/messages/news.ts: lo rivedono tutti gli account nati prima.
+export const LATEST_NEWS = '2026-10-v3';
 
 // locale: la lingua del browser al momento della registrazione, se è tra le nostre.
 export interface SignUpRequest {

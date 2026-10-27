@@ -10,6 +10,7 @@ import { email } from './email';
 import { errors } from './errors';
 import { ideas } from './ideas';
 import { language } from './language';
+import { news } from './news';
 import { onboarding } from './onboarding';
 import { plan } from './plan';
 import { plans } from './plans';
@@ -34,6 +35,7 @@ export const NAMESPACES = {
   errors,
   ideas,
   language,
+  news,
   onboarding,
   plan,
   plans,

@@ -1,4 +1,4 @@
-import type { Account } from '@moonbrand/shared/api/contract';
+import { LATEST_NEWS, type Account } from '@moonbrand/shared/api/contract';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 
 import type { Queryable } from '../../db/pool';
@@ -10,16 +10,25 @@ interface AccountRow {
   locale: Locale;
   active_brand_id: string | null;
   email_confirmed_at: Date | null;
+  news_seen: string | null;
 }
 
 export async function findAccount(db: Queryable, accountId: string): Promise<(Account & { activeBrandId: string | null }) | null> {
   const { rows } = await db.query<AccountRow>(
-    'select id, email, name, locale, active_brand_id, email_confirmed_at from presenza.accounts where id = $1',
+    'select id, email, name, locale, active_brand_id, email_confirmed_at, news_seen from presenza.accounts where id = $1',
     [accountId],
   );
   const row = rows[0];
   return row
-    ? { id: row.id, email: row.email, name: row.name, locale: row.locale, emailConfirmed: row.email_confirmed_at !== null, activeBrandId: row.active_brand_id }
+    ? {
+        id: row.id,
+        email: row.email,
+        name: row.name,
+        locale: row.locale,
+        emailConfirmed: row.email_confirmed_at !== null,
+        newsSeen: row.news_seen === LATEST_NEWS,
+        activeBrandId: row.active_brand_id,
+      }
     : null;
 }
 
@@ -61,12 +70,14 @@ export async function accountExists(db: Queryable, accountId: string): Promise<b
   return (rowCount ?? 0) > 0;
 }
 
-export async function createAccount(db: Queryable, account: Omit<Account, 'emailConfirmed'>): Promise<void> {
-  await db.query('insert into presenza.accounts (id, email, name, locale) values ($1, $2, $3, $4) on conflict (id) do nothing', [
+// Chi si registra adesso non ha novità da scoprire: l'annuncio del momento è già visto.
+export async function createAccount(db: Queryable, account: Omit<Account, 'emailConfirmed' | 'newsSeen'>): Promise<void> {
+  await db.query('insert into presenza.accounts (id, email, name, locale, news_seen) values ($1, $2, $3, $4, $5) on conflict (id) do nothing', [
     account.id,
     account.email,
     account.name,
     account.locale,
+    LATEST_NEWS,
   ]);
 }
 
@@ -80,4 +91,8 @@ export async function setActiveBrand(db: Queryable, accountId: string, brandId: 
 
 export async function setLocale(db: Queryable, accountId: string, locale: Locale): Promise<void> {
   await db.query('update presenza.accounts set locale = $2 where id = $1', [accountId, locale]);
+}
+
+export async function setNewsSeen(db: Queryable, accountId: string): Promise<void> {
+  await db.query('update presenza.accounts set news_seen = $2 where id = $1', [accountId, LATEST_NEWS]);
 }

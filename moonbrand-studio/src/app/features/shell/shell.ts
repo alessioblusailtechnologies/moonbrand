@@ -25,6 +25,7 @@ import { Logo } from '../../ui/logo';
 import { ToastService } from '../../ui/toast';
 import { BrandPicker, BrandPickerService } from './brand-picker';
 import { BrandSwitcher } from './brand-switcher';
+import { NewsModal } from './news-modal';
 
 // Le sezioni dell'app, nell'ordine della sidebar; le impostazioni stanno in fondo, sopra l'account.
 // Sotto le sezioni, le ultime conversazioni divise per giorno; le altre in /conversazioni.
@@ -41,7 +42,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
 @Component({
   selector: 'mb-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, PaymentModal, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, BrandSwitcher, BrandPicker, PaymentModal, NewsModal, TranslatePipe],
   // L'altezza vera della barra in alto, per le pagine che occupano lo schermo (la chat): sul telefono va su due righe.
   host: {
     '[style.--topbar-height.px]': 'topbarHeight()',
@@ -229,6 +230,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
     </div>
     <mb-brand-picker />
     <mb-payment-modal />
+    <mb-news-modal />
   `,
   styles: `
     // La sidebar fa da cornice blu notte: la pagina è un pannello chiaro staccato di --frame dai bordi,
