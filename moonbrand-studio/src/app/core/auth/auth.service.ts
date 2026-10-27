@@ -95,6 +95,13 @@ export class AuthService {
     return this.account();
   }
 
+  // La modale delle novità chiusa: sparisce subito; se il salvataggio non riesce torna al prossimo accesso.
+  async markNewsSeen(): Promise<void> {
+    const account = this.account();
+    if (account) this.account.set({ ...account, newsSeen: true });
+    await firstValueFrom(this.http.post<Me>('/v1/me/news-seen', null)).catch(() => undefined);
+  }
+
   async resendConfirmation(): Promise<void> {
     await firstValueFrom(this.http.post('/v1/auth/email/resend', null));
   }

@@ -15,6 +15,7 @@ import type { AuthGateway } from './gateway';
 import {
   confirmAccountEmail,
   forgotPassword,
+  markNewsSeen,
   me,
   resendConfirmation,
   resetPassword,
@@ -128,4 +129,6 @@ export function registerAuthRoutes(
   app.get('/v1/me', async (request) => withAdmin(await me(pool, request.identity)));
 
   app.patch('/v1/me', async (request) => withAdmin(await updateMe(pool, request.identity, updateMeSchema.parse(request.body))));
+
+  app.post('/v1/me/news-seen', async (request) => withAdmin(await markNewsSeen(pool, request.identity)));
 }
