@@ -276,6 +276,7 @@ export const it = {
     privacy: 'Privacy',
     terms: 'Termini',
     refunds: 'Rimborsi',
+    dpa: 'Trattamento dati (DPA)',
     contact: 'Contatti',
     payments: 'I pagamenti sono gestiti da Dodo Payments, nostro rivenditore autorizzato.',
   },
@@ -673,6 +674,13 @@ export const it = {
     termsHeading: 'Termini e condizioni',
     open: 'Leggi il documento',
     soon: 'Il documento è in preparazione. Per qualsiasi domanda scrivici a',
+    // Nostri, intorno al testo di iubenda (che non ammette clausole libere): sopra la privacy i ruoli, sotto i termini il
+    // richiamo del DPA. {dpa} diventa il link a /dpa/.
+    roles: 'La presente informativa riguarda i dati di cui Blusail Technologies è titolare: dati di account, fatturazione, navigazione e sicurezza. Per i dati personali di terzi che gli Utenti Commerciali caricano nei propri contenuti (ad esempio le persone ritratte in foto e video), Blusail Technologies agisce in qualità di responsabile del trattamento per conto dell’Utente Commerciale, che ne è titolare, secondo l’Accordo sul trattamento dei dati personali (DPA) disponibile all’indirizzo {dpa}.',
+    dataProcessing: {
+      title: 'Trattamento dei dati per conto dell’Utente Commerciale',
+      text: 'Quando l’Utente Commerciale carica nel Servizio dati personali di terzi, o collega account social che li contengono, Blusail Technologies li tratta in qualità di responsabile del trattamento per conto dell’Utente Commerciale, secondo l’Accordo sul trattamento dei dati personali (DPA) disponibile all’indirizzo {dpa}. Il DPA costituisce parte integrante dei presenti Termini: accettando i Termini, l’Utente Commerciale accetta anche il DPA.',
+    },
   },
   refunds: {
     title: 'Rimborsi · Moonbrand',
@@ -722,6 +730,81 @@ export const it = {
         'Il Servizio crea contenuti solo per il brand dell’Utente o per i brand dei clienti che lo hanno incaricato. È vietato usarlo per impersonare persone, aziende o marchi altrui, per creare deepfake di persone reali e per spam o interazioni false (follower, like, commenti o recensioni). I contenuti si pubblicano solo sugli account social che l’Utente ha collegato e di cui ha il diritto di disporre.',
         'Nei limiti della legge e dei termini dei fornitori dei modelli, i contenuti generati per l’Utente appartengono all’Utente, che può usarli anche a fini commerciali; Blusail Technologies S.r.l.s. li tratta solo per fornire il Servizio. Il Titolare può rimuovere contenuti o sospendere l’account in caso di violazione.',
         'Chi ritiene che un contenuto violi i propri diritti può segnalarlo a {email} indicando il contenuto e il diritto violato: il contenuto viene esaminato e, se la segnalazione è fondata, rimosso; in caso di violazioni ripetute l’account viene chiuso.',
+      ] },
+    ] as { title: string; blocks: (string | string[])[] }[],
+  },
+  // L'accordo sul trattamento dei dati (DPA) su /dpa/: i Termini e la privacy lo richiamano. **...** è grassetto,
+  // {privacy} e {pec} diventano link; un elenco è un array.
+  dpa: {
+    title: 'Accordo sul trattamento dei dati (DPA) · Moonbrand',
+    description: 'L’accordo sul trattamento dei dati personali (art. 28 GDPR) per i dati che i clienti business caricano in Moonbrand.',
+    heading: 'Accordo sul trattamento dei dati personali (DPA)',
+    updated: 'Ultimo aggiornamento: 27 ottobre 2026',
+    sections: [
+      { title: '1. Ambito', blocks: [
+        'Il presente accordo ("DPA") integra i Termini e condizioni di moonbrand e ne costituisce parte integrante. Si applica quando un Utente Commerciale (cliente business, incluse agenzie e partner) carica nel Servizio dati personali di terzi, o collega account social che li contengono.',
+        'Per tali dati Blusail Technologies S.r.l.s., Via Atlantico 43/B, 74122 Taranto, P.IVA 03419820737 (il "Fornitore"), agisce quale responsabile del trattamento ai sensi dell’art. 28 del Regolamento (UE) 2016/679 ("GDPR"), per conto dell’Utente Commerciale, che agisce quale titolare.',
+        'Se l’Utente Commerciale tratta i dati per conto di propri clienti (ad esempio come agenzia), agisce quale responsabile e il Fornitore quale sub-responsabile. In questo caso l’Utente Commerciale garantisce di essere stato autorizzato dal proprio cliente a ricorrere al Fornitore alle condizioni del presente DPA.',
+        'L’accettazione dei Termini comporta l’accettazione del presente DPA. Per i dati di account, fatturazione, navigazione e sicurezza il Fornitore agisce quale titolare autonomo, come indicato nell’Informativa privacy. In materia di dati personali, in caso di contrasto con i Termini prevale il presente DPA.',
+      ] },
+      { title: '2. Oggetto del trattamento', blocks: [
+        [
+          '**Natura e finalità:** esclusivamente l’erogazione del Servizio (generazione, modifica, pianificazione, pubblicazione e conservazione dei contenuti), la sicurezza e l’assistenza.',
+          '**Categorie di interessati:** persone ritratte o menzionate nei contenuti; personale e clienti dell’Utente Commerciale; utenti che interagiscono con i canali social collegati.',
+          '**Categorie di dati:** dati identificativi e di contatto; immagini e voce; testi, contenuti e relativi metadati; dati statistici dei canali social collegati.',
+          '**Dati particolari e giudiziari:** non sono richiesti per l’uso del Servizio e non devono essere caricati.',
+          '**Durata:** per tutta la durata dell’abbonamento, più il periodo di cancellazione indicato al punto 8.',
+        ],
+      ] },
+      { title: '3. Obblighi dell’Utente Commerciale', blocks: [
+        'L’Utente Commerciale:',
+        [
+          'è l’unico responsabile della liceità del trattamento, inclusi la base giuridica, le informative agli interessati, i consensi all’uso dell’immagine e della voce delle persone ritratte e le autorizzazioni a gestire gli account social collegati;',
+          'impartisce le proprie istruzioni attraverso l’uso del Servizio e l’accettazione dei Termini; istruzioni ulteriori devono essere concordate per iscritto e possono comportare costi aggiuntivi;',
+          'non carica dati particolari (art. 9 GDPR), dati giudiziari (art. 10 GDPR) o dati di minori privi delle necessarie autorizzazioni;',
+          'tiene indenne il Fornitore da qualsiasi pretesa derivante dalla violazione dei presenti obblighi.',
+        ],
+      ] },
+      { title: '4. Obblighi del Fornitore', blocks: [
+        'Il Fornitore:',
+        [
+          'tratta i dati solo su istruzione documentata dell’Utente Commerciale, costituita dai Termini, dal presente DPA e dall’uso del Servizio, salvo obblighi di legge; informa l’Utente Commerciale se ritiene che un’istruzione violi la normativa;',
+          'vincola alla riservatezza le persone autorizzate al trattamento;',
+          'adotta misure tecniche e organizzative adeguate ai sensi dell’art. 32 GDPR, descritte al punto 7;',
+          'assiste l’Utente Commerciale, tenuto conto della natura del trattamento e nei limiti delle funzionalità del Servizio, nel dare seguito alle richieste degli interessati e negli adempimenti degli artt. 32–36 GDPR; l’assistenza che eccede le funzionalità standard può essere addebitata;',
+          'notifica all’Utente Commerciale le violazioni dei dati personali senza ingiustificato ritardo dopo esserne venuto a conoscenza;',
+          'alla cessazione del Servizio cancella i dati secondo il punto 8;',
+          'mette a disposizione, su richiesta scritta, le informazioni necessarie a dimostrare il rispetto dell’art. 28 GDPR. Le verifiche si svolgono di norma tramite documentazione e questionari; ispezioni sono ammesse solo se richieste da un’autorità di controllo o in caso di violazione accertata, con preavviso ragionevole e a spese dell’Utente Commerciale.',
+        ],
+      ] },
+      { title: '5. Sub-responsabili', blocks: [
+        'L’Utente Commerciale concede al Fornitore un’autorizzazione generale a ricorrere a sub-responsabili. L’elenco aggiornato è riportato nell’Informativa privacy ({privacy}).',
+        'Il Fornitore comunica le aggiunte o sostituzioni di sub-responsabili aggiornando l’elenco con almeno 15 giorni di anticipo. Entro tale termine l’Utente Commerciale può opporsi per motivi ragionevoli; se le parti non trovano una soluzione, l’unico rimedio dell’Utente Commerciale è la disdetta dell’abbonamento senza penali.',
+        'Il Fornitore impone ai sub-responsabili obblighi di protezione dei dati equivalenti a quelli del presente DPA.',
+      ] },
+      { title: '6. Trasferimenti fuori dallo Spazio economico europeo', blocks: [
+        'Alcuni sub-responsabili sono stabiliti fuori dal SEE. I trasferimenti avvengono sulla base di una decisione di adeguatezza della Commissione europea (incluso l’EU-US Data Privacy Framework per i fornitori certificati) o di Clausole Contrattuali Standard, come indicato per ciascun fornitore nell’Informativa privacy.',
+      ] },
+      { title: '7. Misure di sicurezza', blocks: [
+        [
+          'Accesso ai sistemi tramite autenticazione, con privilegi minimi e accessi amministrativi limitati al personale autorizzato.',
+          'Separazione logica dei dati tra account e Brand.',
+          'Registrazione degli accessi e monitoraggio dei sistemi.',
+          'Utilizzo di fornitori di infrastruttura dotati di certificazioni di sicurezza riconosciute.',
+        ],
+      ] },
+      { title: '8. Cancellazione dei dati', blocks: [
+        'Su richiesta scritta dell’Utente Commerciale, inviata all’indirizzo indicato al punto 11, il Fornitore cancella i dati personali trattati per suo conto entro 30 giorni dal ricevimento della richiesta e ne dà conferma per iscritto, salvo obblighi di conservazione previsti dalla legge.',
+        'In assenza di richiesta, i dati sono cancellati entro 12 mesi dalla cessazione dell’abbonamento.',
+      ] },
+      { title: '9. Responsabilità', blocks: [
+        'La responsabilità del Fornitore derivante dal presente DPA è soggetta ai limiti previsti dai Termini, salvo quanto inderogabilmente previsto dalla legge.',
+      ] },
+      { title: '10. Modifiche', blocks: [
+        'Il Fornitore può aggiornare il presente DPA per adeguamenti normativi o del Servizio, pubblicandone la nuova versione con la data di aggiornamento. Le modifiche sostanziali sono comunicate agli Utenti Commerciali con almeno 15 giorni di preavviso.',
+      ] },
+      { title: '11. Contatti', blocks: [
+        'Per richieste relative al trattamento dei dati: {pec}',
       ] },
     ] as { title: string; blocks: (string | string[])[] }[],
   },

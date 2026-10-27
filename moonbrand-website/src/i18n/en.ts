@@ -269,6 +269,7 @@ export const en: Copy = {
     privacy: 'Privacy',
     terms: 'Terms',
     refunds: 'Refunds',
+    dpa: 'Data processing (DPA)',
     contact: 'Contact',
     payments: 'Payments are handled by Dodo Payments, our authorised reseller.',
   },
@@ -662,6 +663,13 @@ export const en: Copy = {
     termsHeading: 'Terms and conditions',
     open: 'Read the document',
     soon: 'This document is being prepared. For any question, email us at',
+    // Ours, around the iubenda text (which allows no free clauses): the roles above the privacy policy, the reference
+    // to the DPA below the terms. {dpa} becomes the link to /en/dpa/.
+    roles: 'This privacy policy covers the data for which Blusail Technologies is the controller: account, billing, browsing and security data. For personal data of third parties that Business Users upload in their content (for example people depicted in photos and videos), Blusail Technologies acts as processor on behalf of the Business User, who is the controller, under the Data Processing Agreement (DPA) available at {dpa}.',
+    dataProcessing: {
+      title: 'Processing of data on behalf of the Business User',
+      text: 'When the Business User uploads personal data of third parties to the Service, or connects social accounts that contain such data, Blusail Technologies processes them as processor on behalf of the Business User, under the Data Processing Agreement (DPA) available at {dpa}. The DPA forms an integral part of these Terms: by accepting the Terms, the Business User also accepts the DPA.',
+    },
   },
   refunds: {
     title: 'Refunds · Moonbrand',
@@ -709,6 +717,81 @@ export const en: Copy = {
         'Anyone who believes content infringes their rights can report it to {email}, identifying the content and the right infringed: the content is reviewed and, if the report is well founded, removed; repeated infringements lead to the account being closed.',
       ] },
     ],
+  },
+  // The data processing agreement (DPA) on /en/dpa/, translated from the Italian: the Terms and the privacy policy
+  // refer to it. **...** is bold, {privacy} and {pec} become links; a list is an array.
+  dpa: {
+    title: 'Data Processing Agreement (DPA) · Moonbrand',
+    description: 'The personal data processing agreement (Art. 28 GDPR) for the data that business customers upload to Moonbrand.',
+    heading: 'Data Processing Agreement (DPA)',
+    updated: 'Last updated: 27 October 2026',
+    sections: [
+      { title: '1. Scope', blocks: [
+        'This agreement ("DPA") supplements the moonbrand Terms and Conditions and forms an integral part of them. It applies when a Business User (business customer, including agencies and partners) uploads personal data of third parties to the Service, or connects social accounts that contain such data.',
+        'For such data Blusail Technologies S.r.l.s., Via Atlantico 43/B, 74122 Taranto, Italy, VAT no. 03419820737 (the "Provider"), acts as processor within the meaning of Article 28 of Regulation (EU) 2016/679 ("GDPR"), on behalf of the Business User, who acts as controller.',
+        'Where the Business User processes the data on behalf of its own clients (for example as an agency), it acts as processor and the Provider as sub-processor. In this case the Business User warrants that it has been authorised by its client to engage the Provider under the terms of this DPA.',
+        'Acceptance of the Terms entails acceptance of this DPA. For account, billing, browsing and security data the Provider acts as independent controller, as set out in the Privacy Policy. As regards personal data, in the event of conflict with the Terms this DPA prevails.',
+      ] },
+      { title: '2. Subject matter of the processing', blocks: [
+        [
+          '**Nature and purpose:** solely the provision of the Service (generation, editing, scheduling, publishing and storage of content), security and support.',
+          '**Categories of data subjects:** people depicted or mentioned in the content; staff and customers of the Business User; users who interact with the connected social channels.',
+          '**Categories of data:** identification and contact data; images and voice; texts, content and related metadata; statistics of the connected social channels.',
+          '**Special categories and criminal data:** not required to use the Service and must not be uploaded.',
+          '**Duration:** for the whole term of the subscription, plus the deletion period set out in section 8.',
+        ],
+      ] },
+      { title: '3. Obligations of the Business User', blocks: [
+        'The Business User:',
+        [
+          'is solely responsible for the lawfulness of the processing, including the legal basis, the information notices to data subjects, the consents to the use of the image and voice of the people depicted and the authorisations to manage the connected social accounts;',
+          'gives its instructions through the use of the Service and the acceptance of the Terms; further instructions must be agreed in writing and may involve additional costs;',
+          'does not upload special categories of data (Art. 9 GDPR), criminal data (Art. 10 GDPR) or data of minors without the necessary authorisations;',
+          'indemnifies the Provider against any claim arising from a breach of these obligations.',
+        ],
+      ] },
+      { title: '4. Obligations of the Provider', blocks: [
+        'The Provider:',
+        [
+          'processes the data only on documented instructions from the Business User, consisting of the Terms, this DPA and the use of the Service, unless required by law; informs the Business User if it considers that an instruction infringes data protection law;',
+          'binds the persons authorised to process the data to confidentiality;',
+          'implements appropriate technical and organisational measures pursuant to Art. 32 GDPR, described in section 7;',
+          'assists the Business User, taking into account the nature of the processing and within the limits of the Service’s features, in responding to data subject requests and in complying with Articles 32–36 GDPR; assistance beyond the standard features may be charged;',
+          'notifies the Business User of personal data breaches without undue delay after becoming aware of them;',
+          'deletes the data upon termination of the Service in accordance with section 8;',
+          'makes available, upon written request, the information necessary to demonstrate compliance with Art. 28 GDPR. Audits are normally carried out through documentation and questionnaires; inspections are allowed only if requested by a supervisory authority or in the event of an established breach, with reasonable notice and at the Business User’s expense.',
+        ],
+      ] },
+      { title: '5. Sub-processors', blocks: [
+        'The Business User grants the Provider a general authorisation to engage sub-processors. The up-to-date list is set out in the Privacy Policy ({privacy}).',
+        'The Provider gives notice of additions or replacements of sub-processors by updating the list at least 15 days in advance. Within that period the Business User may object on reasonable grounds; if the parties cannot find a solution, the Business User’s sole remedy is to cancel the subscription without penalty.',
+        'The Provider imposes on sub-processors data protection obligations equivalent to those of this DPA.',
+      ] },
+      { title: '6. Transfers outside the European Economic Area', blocks: [
+        'Some sub-processors are established outside the EEA. Transfers take place on the basis of an adequacy decision of the European Commission (including the EU-US Data Privacy Framework for certified providers) or of Standard Contractual Clauses, as indicated for each provider in the Privacy Policy.',
+      ] },
+      { title: '7. Security measures', blocks: [
+        [
+          'Access to systems through authentication, with least privilege and administrative access limited to authorised staff.',
+          'Logical separation of data between accounts and Brands.',
+          'Access logging and system monitoring.',
+          'Use of infrastructure providers holding recognised security certifications.',
+        ],
+      ] },
+      { title: '8. Deletion of data', blocks: [
+        'Upon written request of the Business User, sent to the address indicated in section 11, the Provider deletes the personal data processed on its behalf within 30 days of receiving the request and confirms the deletion in writing, unless retention is required by law.',
+        'In the absence of a request, the data are deleted within 12 months of the termination of the subscription.',
+      ] },
+      { title: '9. Liability', blocks: [
+        'The Provider’s liability arising from this DPA is subject to the limits set out in the Terms, except as mandatorily provided by law.',
+      ] },
+      { title: '10. Changes', blocks: [
+        'The Provider may update this DPA to reflect changes in the law or in the Service, by publishing the new version with its update date. Material changes are notified to Business Users at least 15 days in advance.',
+      ] },
+      { title: '11. Contact', blocks: [
+        'For requests relating to the processing of data: {pec}',
+      ] },
+    ] as { title: string; blocks: (string | string[])[] }[],
   },
   notFound: {
     title: 'Page not found · Moonbrand',

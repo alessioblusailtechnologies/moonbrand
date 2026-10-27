@@ -2,6 +2,7 @@
 // Privacy e termini: il testo arriva da iubenda alla build ed è impaginato come il resto del sito.
 // Se l'API non risponde, resta il link al documento su iubenda.
 // Sotto i termini, le condizioni di vendita nostre (Dodo Payments, crediti, AI): iubenda le richiama per rinvio.
+// Nostri anche i rinvii al DPA (/dpa/): sopra la privacy i ruoli, sotto i termini il trattamento per conto del cliente.
 import { iubendaId, iubendaText, iubendaUrl, type LegalKind } from '../data/iubenda';
 import { CONTACT_EMAIL, getCopy, pagePath, type Lang } from '../i18n';
 import PageShell from './PageShell.astro';
@@ -23,6 +24,8 @@ const linked = (block: string) =>
     .replace('{portal}', '<a href="https://customer.dodopayments.com" rel="noopener">customer.dodopayments.com</a>')
     .replace('{refunds}', `<a href="${pagePath(lang, 'refunds')}">${refunds.link}</a>`)
     .replace('{email}', `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
+const dpaPath = pagePath(lang, 'dpa');
+const dpaLink = (text: string) => text.replace('{dpa}', `<a href="${dpaPath}">moonbrand.app${dpaPath.replace(/\/$/, '')}</a>`);
 ---
 
 <PageShell
@@ -33,12 +36,19 @@ const linked = (block: string) =>
   heading={privacy ? legal.privacyHeading : legal.termsHeading}
   noindex={!id}
 >
+  {privacy && <p class="roles" set:html={dpaLink(legal.roles)} />}
   {text ? (
     <div class="legal-doc" set:html={text} />
   ) : id ? (
     <p class="soon"><a href={iubendaUrl(kind, id)}>{legal.open}</a></p>
   ) : (
     <p class="soon">{legal.soon} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+  )}
+  {!privacy && (
+    <section id="dpa" class="legal-doc data-processing">
+      <h2>{legal.dataProcessing.title}</h2>
+      <p set:html={dpaLink(legal.dataProcessing.text)} />
+    </section>
   )}
   {!privacy && (
     <section id="vendita" class="legal-doc sale">
@@ -59,6 +69,9 @@ const linked = (block: string) =>
 <style>
   .soon { margin: 0; font-size: 17px; line-height: 1.55; color: var(--text); }
   .soon a { color: var(--accent-dark); text-decoration: underline; }
+  .roles { margin: 0 0 40px; padding: 20px 24px; border: 1px solid var(--line); border-radius: 16px; background: #FAFAF8; font-size: 16px; line-height: 1.65; color: var(--text); }
+  .roles :global(a) { color: var(--accent-dark); text-decoration: underline; text-underline-offset: 2px; }
+  .data-processing,
   .sale { margin-top: 72px; padding-top: 8px; border-top: 1px solid var(--line); }
 
   /* Il testo di iubenda: HTML semplice (titoli, paragrafi, elenchi, sezioni a scomparsa), con la tipografia del sito. */
