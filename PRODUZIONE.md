@@ -431,3 +431,19 @@ tolto e quello che c'è in `v1/` rimesso fuori.
   aprirla. Provato in produzione a 816 px.
 - Da riprendere: il sandbox di Bash (`SANDBOX-BASH.md`), le copie `.prima-v2` da togliere dopo qualche giorno, i
   doppioni in `file-riferimento/`.
+
+## 15. Motore v3
+
+Fatto il 27/10 sera. Il v3 (`moonbrand-be/moonbrand-ai-v3`) prende gli stessi job dalla stessa coda del v2: niente
+migration, l'API non cambia, `AI_ENGINE` resta `v2`.
+
+1. `deploy.sh` fa `npm ci` anche in `moonbrand-ai-v3`.
+2. Sul server `moonbrand-ai-v3/.env` e `.env.lambda` copiati da quelli del v2 (stesse chiavi, proprietario `moonbrand`).
+3. In `/etc/systemd/system/moonbrand-worker.service` `WorkingDirectory=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v3`,
+   `systemctl daemon-reload`, poi `bash deploy.sh` (che riavvia il worker). Nel log: «worker v3 worker-1 pronto».
+4. Prova della chat su una copia di un brand, come in §14, ma l'input vuole anche `brand` (in produzione lo aggiunge il
+   worker dal DB): `'{"sessionId":null,"message":"...","attachments":[],"brand":{"identity":{}}}'`. Il 27/10 ffmpeg e
+   `lavoro/` ok, 0,13 $.
+
+**Per tornare indietro**: `sed -i 's#moonbrand-ai-v3$#moonbrand-ai-v2#' /etc/systemd/system/moonbrand-worker.service &&
+systemctl daemon-reload && systemctl restart moonbrand-worker`. Il v2 resta installato e il deploy lo aggiorna.
