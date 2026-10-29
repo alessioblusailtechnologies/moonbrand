@@ -10,6 +10,8 @@ import { atlasMeasured } from '../../lib/prices';
 const API = 'https://api.atlascloud.ai/api/v1';
 const POLL_MS = 5_000;
 const MAX_WAIT_MS = 15 * 60_000;
+const PRICE_POLL_MS = 3_000;
+const PRICE_ATTEMPTS = 10;
 
 export interface AtlasModel {
   model: string;
@@ -166,6 +168,15 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
 
   const status = (id: string) => call<Prediction>(`${API}/model/prediction/${id}`);
 
+  // Il prezzo arriva qualche secondo dopo lo stato «completed»: lo si aspetta un poco, poi resta la stima.
+  const settledPrice = async (id: string, prediction: Prediction) => {
+    for (let attempt = 0; charged(prediction) === undefined && attempt < PRICE_ATTEMPTS; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, PRICE_POLL_MS));
+      prediction = (await status(id).catch(() => null)) ?? prediction;
+    }
+    return charged(prediction);
+  };
+
   // Aspetta il risultato e restituisce gli indirizzi dei file e quanto è costato davvero.
   const result = async (id: string): Promise<{ urls: string[]; priceUsd?: number }> => {
     const started = Date.now();
@@ -173,7 +184,7 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       const prediction = await status(id).catch(() => null);
       if (prediction?.status === 'failed' || prediction?.status === 'error') throw new Error(prediction.error || 'generazione non riuscita');
-      if ((prediction?.status === 'completed' || prediction?.status === 'succeeded') && prediction.outputs?.length) return { urls: prediction.outputs, priceUsd: charged(prediction) };
+      if ((prediction?.status === 'completed' || prediction?.status === 'succeeded') && prediction.outputs?.length) return { urls: prediction.outputs, priceUsd: await settledPrice(id, prediction) };
       if (Date.now() - started > MAX_WAIT_MS) throw new Error('nessun risultato entro 15 minuti');
     }
   };
