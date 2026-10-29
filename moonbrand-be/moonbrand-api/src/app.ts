@@ -67,6 +67,7 @@ export interface AppOptions {
     | 'FREE_ULTRA_EMAILS'
     | 'AI_DIR'
     | 'AI_ENGINE'
+    | 'AI_WORKER_DIR'
   >;
 }
 

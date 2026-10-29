@@ -447,3 +447,5 @@ migration, l'API non cambia, `AI_ENGINE` resta `v2`.
 
 **Per tornare indietro**: `sed -i 's#moonbrand-ai-v3$#moonbrand-ai-v2#' /etc/systemd/system/moonbrand-worker.service &&
 systemctl daemon-reload && systemctl restart moonbrand-worker`. Il v2 resta installato e il deploy lo aggiorna.
+Nell'`.env` dell'API `AI_WORKER_DIR=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v3` (29/10) fa vedere nello studio la
+versione del v3; tornando al v2 va tolta.

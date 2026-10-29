@@ -1042,6 +1042,6 @@ export const VIEW_AS_HEADER = 'x-moonbrand-view-as';
 // Le versioni in fondo alle impostazioni: API e motore AI che stanno girando, e il commit del repo. null se non si leggono.
 export interface VersionResponse {
   api: string | null;
-  engine: { name: 'v1' | 'v2'; version: string | null };
+  engine: { name: string; version: string | null };
   commit: string | null;
 }
