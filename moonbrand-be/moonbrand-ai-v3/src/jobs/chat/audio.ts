@@ -31,10 +31,10 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
     if (!atlas) throw new Error('Atlas non è configurato');
     const found = await atlas.find(model);
     const costUsd = atlas.cost(found, request, 1);
-    const urls = await measured(
+    const { urls } = await measured(
       { task: 'music', model },
       async () => atlas.result(await atlas.start('generateAudio', { ...request, model })),
-      () => ({ costUsd, units: 1, unit: 'generazioni' }),
+      ({ priceUsd }) => ({ costUsd: priceUsd ?? costUsd, units: 1, unit: 'generazioni' }),
     );
     const numbered = (index: number) => target.replace(/(\.[a-z0-9]+)?$/i, (extension) => `-${index + 1}${extension || '.mp3'}`);
     const targets = urls.length === 1 ? [target] : urls.map((_, index) => numbered(index));

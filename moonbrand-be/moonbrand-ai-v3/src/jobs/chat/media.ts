@@ -4,7 +4,7 @@ import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
 import { reportUsage } from '../../lib/usage';
-import { atlasClient, mp4Seconds, type AtlasModel, type Fields } from './atlas';
+import { atlasClient, charged, mp4Seconds, type AtlasModel, type Fields } from './atlas';
 import { geminiClient } from './gemini';
 import { brandFolder, credits, download, failure, PARALLEL, SAVE_PATH, text, type ServiceKeys } from './servizi';
 
@@ -62,7 +62,8 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
     return atlas;
   };
 
-  const settle = (job: Pending, outcome: 'ok' | 'error', error?: string) => {
+  // Si paga quanto Atlas ha addebitato; la stima della partenza solo se non lo dice.
+  const settle = (job: Pending, outcome: 'ok' | 'error', detail?: { error?: string; priceUsd?: number }) => {
     if (job.settled) return;
     job.settled = true;
     reportUsage({
@@ -70,7 +71,7 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
       model: job.model,
       outcome,
       durationMs: Date.now() - job.startedAt,
-      ...(outcome === 'ok' ? { costUsd: job.costUsd, units: job.units, unit: job.unit } : { error }),
+      ...(outcome === 'ok' ? { costUsd: detail?.priceUsd ?? job.costUsd, units: job.units, unit: job.unit } : { error: detail?.error }),
     });
   };
 
@@ -92,14 +93,14 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
     };
     job.outcome = client
       .result(id)
-      .then(async ([url]) => {
-        settle(job, 'ok');
+      .then(async ({ urls: [url], priceUsd }) => {
+        settle(job, 'ok', { priceUsd });
         await save(target, await download(url!));
         return `salvato in ${target}`;
       })
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : String(error);
-        settle(job, 'error', message);
+        settle(job, 'error', { error: message });
         return `non riuscito: ${message}`;
       });
     pending.set(target, job);
@@ -292,8 +293,8 @@ export function mediaServer(brandDir: string, keys: ServiceKeys) {
           .filter((job) => !job.settled)
           .map(async (job) => {
             const prediction = await atlas.status(job.id).catch(() => null);
-            if (prediction?.status === 'failed' || prediction?.status === 'error') settle(job, 'error', prediction.error || 'failed');
-            else settle(job, 'ok');
+            if (prediction?.status === 'failed' || prediction?.status === 'error') settle(job, 'error', { error: prediction.error || 'failed' });
+            else settle(job, 'ok', { priceUsd: charged(prediction) });
           }),
       );
     },

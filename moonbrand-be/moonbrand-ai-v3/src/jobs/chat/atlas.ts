@@ -33,6 +33,14 @@ interface Prediction {
   status?: string;
   outputs?: string[];
   error?: string | null;
+  // Quanto Atlas ha addebitato, in dollari: c'è solo a lavoro finito.
+  price?: string;
+}
+
+// Il prezzo vero di un lavoro finito; il catalogo per molti modelli è solo indicativo.
+export function charged(prediction: Prediction | null | undefined): number | undefined {
+  const price = Number(prediction?.price);
+  return prediction?.price !== undefined && Number.isFinite(price) ? price : undefined;
 }
 
 // I campi di moonbrand e i nomi che hanno nei modelli, nell'ordine in cui si cercano.
@@ -158,14 +166,14 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
 
   const status = (id: string) => call<Prediction>(`${API}/model/prediction/${id}`);
 
-  // Aspetta il risultato e restituisce gli indirizzi dei file.
-  const result = async (id: string): Promise<string[]> => {
+  // Aspetta il risultato e restituisce gli indirizzi dei file e quanto è costato davvero.
+  const result = async (id: string): Promise<{ urls: string[]; priceUsd?: number }> => {
     const started = Date.now();
     for (;;) {
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       const prediction = await status(id).catch(() => null);
       if (prediction?.status === 'failed' || prediction?.status === 'error') throw new Error(prediction.error || 'generazione non riuscita');
-      if ((prediction?.status === 'completed' || prediction?.status === 'succeeded') && prediction.outputs?.length) return prediction.outputs;
+      if ((prediction?.status === 'completed' || prediction?.status === 'succeeded') && prediction.outputs?.length) return { urls: prediction.outputs, priceUsd: charged(prediction) };
       if (Date.now() - started > MAX_WAIT_MS) throw new Error('nessun risultato entro 15 minuti');
     }
   };
