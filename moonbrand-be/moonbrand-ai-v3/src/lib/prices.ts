@@ -49,13 +49,16 @@ export const ELEVENLABS = {
 // Atlas: il prezzo base di ogni modello viene dal suo catalogo (jobs/chat/atlas.ts), al secondo per i video e a pezzo
 // per il resto.
 
-// I prezzi al secondo misurati dal saldo di Atlas, che vincono sul catalogo: per alcuni modelli il catalogo dà solo il
-// prezzo «a partire da». Si riconoscono dall'inizio del nome, perché il catalogo ha un modello per modo (image-to-video,
+// I prezzi al secondo misurati dal saldo di Atlas, che vincono sul catalogo per la stima detta prima di partire: per molti
+// modelli il catalogo dà solo il prezzo «a partire da». A lavoro finito si conta il prezzo che Atlas restituisce. Si riconoscono dall'inizio del nome, perché il catalogo ha un modello per modo (image-to-video,
 // text-to-video...). Grok 1.5 misurato il 2 ottobre 2026 (il 1080p è approssimato); Kling 3.0 Pro, sempre in 1080p con l'audio, il 9
-// ottobre. Senza risoluzione nella richiesta si conta la più cara. Gemini Omni Flash segue il catalogo, verificato.
+// ottobre. Kling 4.0 e Omni 1.1 Flash dalla fatturazione di Atlas del 27 ottobre (il 1080p ricavato per differenza). Senza
+// risoluzione nella richiesta si conta la più cara. Gemini Omni Flash segue il catalogo, verificato.
 const ATLAS_MEASURED: Record<string, Record<string, number>> = {
   'xai/grok-imagine-video-v1.5/': { '720p': 0.145, '1080p': 0.25 },
   'kwaivgi/kling-v3.0-pro/': { '1080p': 0.143 },
+  'kwaivgi/kling-v4.0/': { '720p': 0.143, '1080p': 0.215 },
+  'google/gemini-omni-1.1-flash/': { '720p': 0.1, '1080p': 0.145 },
 };
 
 export function atlasMeasured(model: string, resolution?: string): number | undefined {
@@ -67,10 +70,10 @@ export function atlasMeasured(model: string, resolution?: string): number | unde
 
 // Il listino in crediti che la chat usa per le stime: 1 credito è 1 centesimo di dollaro di costo vero. Un'immagine
 // di Gemini 3 Pro a 2K sono 1120 token; le clip sono Gemini Omni 1.1 Flash e, con le persone, Kling 4.0 su Atlas, al
-// prezzo base del catalogo (0,039 e 0,11 $ al secondo il 27/10): il 1080p di default può costare di più.
+// prezzo misurato del 1080p di default (ATLAS_MEASURED).
 const credits = (usd: number) => Math.round(usd * 100);
 
 export const LISTINO =
   `un'immagine di Gemini 3 Pro ${credits((1120 * GEMINI_PER_MILLION['gemini-3-pro-image']!.image!) / 1_000_000)}, ` +
-  `una clip almeno 4 al secondo, 11 con le persone, una musica o una canzone di Suno 13 (con 2 versioni), ` +
+  `una clip circa 15 al secondo, 22 con le persone, una musica o una canzone di Suno 13 (con 2 versioni), ` +
   `la voce ${credits(ELEVENLABS.voicePerThousandCharacters)} ogni 1000 caratteri`;
