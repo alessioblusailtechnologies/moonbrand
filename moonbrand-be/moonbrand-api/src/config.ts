@@ -68,6 +68,9 @@ const schema = z.object({
   AI_DIR: optional,
   // Il motore che prende i job: v2 (moonbrand-ai-v2) ha un onboarding senza template, font, esempi e progetto video.
   AI_ENGINE: z.enum(['v1', 'v2']).default('v1'),
+  // La cartella del worker che gira davvero, se non è quella di AI_ENGINE (il v3 prende i job del v2), per la versione
+  // mostrata nello studio; vuoto: quella di AI_ENGINE.
+  AI_WORKER_DIR: optional,
 });
 
 export type Config = z.infer<typeof schema>;

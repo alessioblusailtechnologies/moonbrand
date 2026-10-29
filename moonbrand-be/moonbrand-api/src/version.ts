@@ -28,8 +28,9 @@ function commit(): string | null {
   }
 }
 
-export function readVersions(settings: Pick<Config, 'AI_ENGINE' | 'AI_DIR'>): VersionResponse {
+export function readVersions(settings: Pick<Config, 'AI_ENGINE' | 'AI_DIR' | 'AI_WORKER_DIR'>): VersionResponse {
   const v2 = settings.AI_ENGINE === 'v2';
-  const engineDir = v2 ? path.join(ROOT, '../moonbrand-ai-v2') : aiDir(settings);
-  return { api: packageVersion(ROOT), engine: { name: v2 ? 'v2' : 'v1', version: packageVersion(engineDir) }, commit: commit() };
+  const engineDir = settings.AI_WORKER_DIR ? path.resolve(settings.AI_WORKER_DIR) : v2 ? path.join(ROOT, '../moonbrand-ai-v2') : aiDir(settings);
+  const name = /moonbrand-ai-(vd+)$/.exec(engineDir)?.[1] ?? (v2 ? 'v2' : 'v1');
+  return { api: packageVersion(ROOT), engine: { name, version: packageVersion(engineDir) }, commit: commit() };
 }
