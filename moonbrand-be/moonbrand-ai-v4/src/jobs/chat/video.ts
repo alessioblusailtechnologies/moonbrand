@@ -11,6 +11,7 @@ import { bundle } from '@remotion/bundler';
 import { openBrowser, renderStill, selectComposition } from '@remotion/renderer';
 import { z } from 'zod';
 
+import { toolModel, toolThinking } from '../../lib/settings';
 import { geminiClient } from './gemini';
 import { brandFolder, failure, SAVE_PATH, text } from './servizi';
 
@@ -23,7 +24,8 @@ const KIT = fileURLToPath(new URL('../../../video-kit', import.meta.url));
 const VERSION = (createRequire(import.meta.url)('@remotion/renderer/package.json') as { version: string }).version;
 const DEFAULT_PROJECT = 'lavoro/video';
 const CHECKS_DIR = 'lavoro/controlli';
-const DEFAULT_LOOKER = 'gemini-3.8-flash';
+// Il modello della vista dalla sezione Modelli dell'admin (lib/settings.ts).
+const DEFAULT_LOOKER = toolModel('vista');
 
 const run = promisify(execFile);
 const exists = (file: string) =>
@@ -149,7 +151,7 @@ export function videoServer(brandDir: string, geminiKey?: string) {
           if (!looker) {
             lines.push('Gemini non è configurato: i fotogrammi guardali tu con Read.');
           } else {
-            const response = await looker.generate('vision', DEFAULT_LOOKER, saved, `I file, nell’ordine: ${saved.join(', ')}.\n\n${domanda}`);
+            const response = await looker.generate('vision', DEFAULT_LOOKER, saved, `I file, nell’ordine: ${saved.join(', ')}.\n\n${domanda}`, undefined, toolThinking('vista'));
             const answer = (response.candidates?.[0]?.content?.parts ?? [])
               .filter((part) => part.text && !part.thought)
               .map((part) => part.text)

@@ -21,6 +21,7 @@ import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
 import { estimatesEnv, measureEstimates, measurePrices } from './lib/estimate';
 import { measuredPricesEnv } from './lib/prices';
+import { modelSettingsEnv, readModelSettings } from './lib/settings';
 import { createStepReader } from './lib/step-reader';
 import { chatTitle } from './lib/title';
 import { USAGE_MESSAGE, type Usage } from './lib/usage';
@@ -110,7 +111,14 @@ const JOBS: Record<string, JobKind> = {
       return {
         script: 'src/jobs/chat/chat.ts',
         args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)],
-        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '', ...SERVICE_KEYS, ...estimatesEnv(await measureEstimates(pool)), ...measuredPricesEnv(await measurePrices(pool)) },
+        env: {
+          MOONBRAND_AGENT_TOKEN: job.agent_token ?? '',
+          ...SERVICE_KEYS,
+          ...estimatesEnv(await measureEstimates(pool)),
+          ...measuredPricesEnv(await measurePrices(pool)),
+          // I modelli scelti dall'admin, per la chat e i tool.
+          ...modelSettingsEnv(await readModelSettings(pool)),
+        },
       };
     },
     // Al primo turno la conversazione prende il titolo che scrive Sonnet; intanto il job è già finito.

@@ -1,13 +1,15 @@
 import { createSdkMcpServer, tool } from './sdk';
 import { z } from 'zod';
 
+import { toolModel, toolThinking } from '../../lib/settings';
 import { geminiClient } from './gemini';
 import { brandFolder, failure, PARALLEL, text } from './servizi';
 
 // Gli occhi della chat sui file che non legge da sé: Gemini guarda video (movimento e audio), audio, immagini e PDF e
 // risponde alla domanda.
 
-const DEFAULT_MODEL = 'gemini-3.8-flash';
+// Il modello della vista dalla sezione Modelli dell'admin (lib/settings.ts).
+const DEFAULT_MODEL = toolModel('vista');
 
 export function guardaServer(brandDir: string, apiKey: string) {
   const { inside } = brandFolder(brandDir);
@@ -24,7 +26,7 @@ export function guardaServer(brandDir: string, apiKey: string) {
     },
     async ({ file, domanda, modello = DEFAULT_MODEL }) => {
       try {
-        const response = await gemini.generate('vision', modello, file, domanda);
+        const response = await gemini.generate('vision', modello, file, domanda, undefined, toolThinking('vista'));
         const answer = (response.candidates?.[0]?.content?.parts ?? [])
           .filter((part) => part.text && !part.thought)
           .map((part) => part.text)

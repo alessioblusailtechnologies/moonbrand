@@ -70,6 +70,7 @@ export const STATUS_LABELS: Record<AdminJob['status'], string> = {
       <a routerLink="/admin/gratuiti" routerLinkActive="on">Gratuiti</a>
       <a routerLink="/admin/salute" routerLinkActive="on">Salute</a>
       <a routerLink="/admin/prompt" routerLinkActive="on">Prompt</a>
+      <a routerLink="/admin/modelli" routerLinkActive="on">Modelli</a>
     </nav>
   `,
   styles: `

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { createSdkMcpServer, tool } from './sdk';
 import { z } from 'zod';
 
+import { toolModel } from '../../lib/settings';
 import { atlasClient } from './atlas';
 import { brandFolder, credits, download, failure, measured, PARALLEL, SAVE_PATH, text, type ServiceKeys } from './servizi';
 
@@ -14,8 +15,9 @@ const API = 'https://api.elevenlabs.io';
 const OUTPUT = 'mp3_44100_192';
 // La voce a 192 kbps vuole il piano Creator di ElevenLabs.
 const VOICE_OUTPUT = 'mp3_44100_128';
-const DEFAULT_VOICE_MODEL = 'eleven_v3';
-const SUNO = 'suno/chirp-v6';
+// I modelli della voce e di Suno dalla sezione Modelli dell'admin (lib/settings.ts).
+const DEFAULT_VOICE_MODEL = toolModel('voce');
+const SUNO = toolModel('musica');
 const SUNO_MODELS = z.enum(['suno/chirp-v6', 'suno/chirp-v6-wild', 'suno/chirp-v6-mini']);
 
 const savePath = z.string().regex(SAVE_PATH).describe('Dove salvare l’MP3, es. lavoro/musica.mp3');

@@ -11,17 +11,19 @@ import { matchLocale } from '@moonbrand/shared/i18n/locales';
 import { estimatesFromEnv } from '../../lib/estimate';
 import { languageName, uiLocale } from '../../lib/language';
 import { measuredPrices } from '../../lib/prices';
+import { modelSettings } from '../../lib/settings';
 import { USAGE_MESSAGE } from '../../lib/usage';
 import { MOONBRAND } from '../cartella/moonbrand';
 import { handover } from './passaggio';
 import { brandMemory, MEMORY_FILE } from './web';
 
-// La chat del motore v4: Pi nella cartella del brand, con Opus e ragionamento alto, i tool del v3 (estensione
-// pi/moonbrand.ts) e una sola istruzione nostra, come parlare all'utente. Il CLAUDE.md del brand Pi lo legge da sé.
-// Il worker è quello del v3 e legge i messaggi dell'Agent SDK: qui gli eventi di Pi diventano messaggi di quella forma.
+// La chat del motore v4: Pi nella cartella del brand, con il modello e il ragionamento scelti dall'admin (di default Opus
+// e ragionamento alto), i tool del v3 (estensione pi/moonbrand.ts) e una sola istruzione nostra, come parlare all'utente.
+// Il CLAUDE.md del brand Pi lo legge da sé. Il worker è quello del v3 e legge i messaggi dell'Agent SDK: qui gli eventi
+// di Pi diventano messaggi di quella forma.
 
-const PI_MODEL = process.env.PI_MODEL || 'anthropic/claude-opus-5-5';
-const PI_THINKING = process.env.PI_THINKING || 'high';
+// Dalla sezione Modelli dell'admin (lib/settings.ts, dal worker in MOONBRAND_MODELLI); a mano PI_MODEL e PI_THINKING.
+const { model: PI_MODEL, thinking: PI_THINKING } = modelSettings().chat;
 const EXTENSION = fileURLToPath(new URL('../../../pi/moonbrand.ts', import.meta.url));
 const PI_CLI = process.env.PI_CLI || path.join(process.env.APPDATA ?? '', 'npm/node_modules/@earendil-works/pi-coding-agent/dist/cli.js');
 

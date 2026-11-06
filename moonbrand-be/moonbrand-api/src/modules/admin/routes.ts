@@ -13,6 +13,7 @@ import type { AuthGateway } from '../auth/gateway';
 import { registerAdminActions } from './actions';
 import { registerAdminInsights } from './insights';
 import { registerAdminPrompts } from './prompts';
+import { registerAdminSettings } from './settings';
 import { registerAdminSpending } from './spending';
 import {
   ACCOUNT_SELECT,
@@ -204,5 +205,6 @@ export function registerAdminRoutes(
     registerAdminSpending(scope, pool);
     registerAdminActions(scope, pool, gateway);
     registerAdminPrompts(scope, pool, files, settings);
+    registerAdminSettings(scope, pool);
   });
 }

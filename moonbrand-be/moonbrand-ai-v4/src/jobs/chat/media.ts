@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { createSdkMcpServer, tool } from './sdk';
 import { z } from 'zod';
 
+import { toolModel } from '../../lib/settings';
 import { reportUsage } from '../../lib/usage';
 import { atlasClient, charged, mp4Seconds, type AtlasModel, type Fields } from './atlas';
 import { geminiClient } from './gemini';
@@ -12,7 +13,8 @@ import { brandFolder, credits, download, failure, PARALLEL, SAVE_PATH, text, typ
 // il loro risultato: Pi esegue insieme i tool chiesti nello stesso messaggio, così più clip girano insieme. Claude passa sempre gli stessi campi; il nome che
 // hanno nel modello lo trova atlas.ts.
 
-const DEFAULT_IMAGE = 'gemini-3-pro-image';
+// Il modello delle immagini dalla sezione Modelli dell'admin (lib/settings.ts): Gemini, o un modello di Atlas.
+const DEFAULT_IMAGE = toolModel('immagini');
 // Il modello delle clip per tipo di scena, scelto il 27/10 guardando le stesse richieste sui cinque modelli migliori di
 // Atlas (prova-modelli-video): Kling 4.0 per le persone, Omni 1.1 Flash per tutto il resto.
 const OMNI = { fromImage: 'google/gemini-omni-1.1-flash/image-to-video', fromText: 'google/gemini-omni-1.1-flash/text-to-video' };

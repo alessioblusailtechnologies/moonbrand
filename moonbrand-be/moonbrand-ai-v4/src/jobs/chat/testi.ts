@@ -3,15 +3,17 @@ import path from 'node:path';
 
 import { z } from 'zod';
 
+import { toolModel, toolThinking } from '../../lib/settings';
 import { geminiClient } from './gemini';
 import { createSdkMcpServer, tool } from './sdk';
 import { brandFolder, failure, PARALLEL, text } from './servizi';
 import { brandMemory } from './web';
 
-// I testi li scrive un altro modello, non quello della chat: Gemini 4 Argon. Un tool per tipo di testo, ognuno con la
-// sua richiesta; il CLAUDE.md e la memoria del brand li aggiunge il tool, così il modello conosce voce e pubblico.
+// I testi li scrive un altro modello, non quello della chat: di default Gemini 4 Argon, dalla sezione Modelli dell'admin
+// (lib/settings.ts). Un tool per tipo di testo, ognuno con la sua richiesta; il CLAUDE.md e la memoria del brand li
+// aggiunge il tool, così il modello conosce voce e pubblico.
 
-const MODEL = process.env.TESTI_MODEL || 'gemini-4-argon';
+const MODEL = toolModel('testi');
 
 const common = {
   richiesta: z.string().min(1).describe('Cosa scrivere e il contesto che conta: idea, cosa ha chiesto l’utente, cosa si vede nel contenuto.'),
@@ -44,7 +46,7 @@ export function testiServer(brandDir: string, apiKey: string) {
       ]
         .filter(Boolean)
         .join('\n\n');
-      const response = await gemini.generate(task, MODEL, args.file ?? [], prompt);
+      const response = await gemini.generate(task, MODEL, args.file ?? [], prompt, undefined, toolThinking('testi'));
       const result = response.text?.trim();
       if (!result) throw new Error(`nessun testo (${response.candidates?.[0]?.finishReason ?? response.promptFeedback?.blockReason ?? 'motivo non noto'})`);
       return text(result);
@@ -59,7 +61,7 @@ export function testiServer(brandDir: string, apiKey: string) {
     tools: [
       tool(
         'scrivi_copy',
-        'Scrive i testi di un post o di un contenuto: le scritte che vanno nella grafica e la caption per il canale. Li scrive Gemini 4 Argon.',
+        'Scrive i testi di un post o di un contenuto: le scritte che vanno nella grafica e la caption per il canale.',
         { ...common, canale: z.string().min(1).describe('instagram, tiktok, facebook, linkedin...'), scritte: z.boolean().default(true).describe('false se servono solo la caption e non le scritte nella grafica.') },
         (args) =>
           write('copy', 'Sei il copywriter del brand. Scrivi i testi di un contenuto social.', args, [
@@ -70,7 +72,7 @@ export function testiServer(brandDir: string, apiKey: string) {
       ),
       tool(
         'scrivi_brief_carosello',
-        'Scrive il brief di un carosello slide per slide: titolo, testo e cosa si vede in ognuna. Lo scrive Gemini 4 Argon.',
+        'Scrive il brief di un carosello slide per slide: titolo, testo e cosa si vede in ognuna.',
         { ...common, slide: z.number().int().min(2).max(20).optional().describe('Quante slide, se è già deciso.') },
         (args) =>
           write('brief carosello', 'Sei il copywriter e art director del brand. Scrivi il brief di un carosello social, slide per slide: titolo, testo e cosa si vede.', args, [
@@ -80,7 +82,7 @@ export function testiServer(brandDir: string, apiKey: string) {
       ),
       tool(
         'scrivi_brief_video',
-        'Scrive il brief di un video scena per scena: durata, cosa si vede, testo a schermo, voce o parlato, musica e ritmo, e il titolo della copertina. Lo scrive Gemini 4 Argon.',
+        'Scrive il brief di un video scena per scena: durata, cosa si vede, testo a schermo, voce o parlato, musica e ritmo, e il titolo della copertina.',
         { ...common, canale: z.string().min(1).describe('reel, tiktok, youtube shorts...'), durata: z.number().positive().optional().describe('Secondi, se è già decisa.') },
         (args) =>
           write('brief video', 'Sei il copywriter e regista del brand. Scrivi il brief di un video social, scena per scena: durata, cosa si vede, testo a schermo, voce o parlato, musica e ritmo. Alla fine il titolo della copertina.', args, [
@@ -91,7 +93,7 @@ export function testiServer(brandDir: string, apiKey: string) {
       ),
       tool(
         'scrivi_parlato',
-        'Scrive il testo da dire in un video: voce fuori campo o persona che parla in camera. Lo scrive Gemini 4 Argon.',
+        'Scrive il testo da dire in un video: voce fuori campo o persona che parla in camera.',
         { ...common, chi: z.enum(['voce fuori campo', 'persona in camera']), durata: z.number().positive().optional().describe('Secondi, se è già decisa.') },
         (args) =>
           write('parlato', 'Sei il copywriter del brand. Scrivi il testo parlato di un video social, da dire ad alta voce.', args, [
@@ -102,7 +104,7 @@ export function testiServer(brandDir: string, apiKey: string) {
       ),
       tool(
         'scrivi_testo_canzone',
-        'Scrive il testo di una canzone, un jingle o una sigla, da passare a genera_canzone. Se l’utente non chiede altro, è un testo che può diventare di tendenza, non una canzone su quello che fa il brand. Lo scrive Gemini 4 Argon.',
+        'Scrive il testo di una canzone, un jingle o una sigla, da passare a genera_canzone. Se l’utente non chiede altro, è un testo che può diventare di tendenza, non una canzone su quello che fa il brand.',
         { ...common, durata: z.number().positive().optional().describe('Secondi, se è già decisa.'), sul_brand: z.boolean().default(false).describe('true solo se l’utente chiede una canzone sul brand.') },
         (args) =>
           write('testo canzone', 'Sei un autore di canzoni per i social.', args, [

@@ -8,6 +8,8 @@ import type { Browser } from 'puppeteer-core';
 import { z } from 'zod';
 
 import { geminiCost, modelPrice } from '../../lib/prices';
+import { toolModel, toolThinking } from '../../lib/settings';
+import { thinkingConfig } from './gemini';
 import { launchChrome } from './grafica';
 import { createSdkMcpServer, tool } from './sdk';
 import { failure, measured, text } from './servizi';
@@ -36,7 +38,8 @@ const STYLE_PROBE = readFileSync(new URL('./web-stile.js', import.meta.url), 'ut
 // Quello che nel v3 dava Claude Code e Pi non ha: la ricerca sul web (Gemini con la ricerca Google), la lettura di una
 // pagina e la memoria del brand, un file nella cartella del brand che chat.ts mette nel prompt di ogni chat.
 
-const SEARCH_MODEL = 'gemini-3.8-flash';
+// Il modello della ricerca dalla sezione Modelli dell'admin (lib/settings.ts).
+const SEARCH_MODEL = toolModel('ricerca');
 const PAGE_TIMEOUT_MS = 30_000;
 const PAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PAGE_CHARS = 20_000;
@@ -110,7 +113,12 @@ export function webServer(brandDir: string, geminiKey?: string) {
         if (!ai) throw new Error('Gemini non è configurato');
         const response = await measured(
           { task: 'web-search', model: SEARCH_MODEL },
-          () => ai.models.generateContent({ model: SEARCH_MODEL, contents: [{ role: 'user', parts: [{ text: domanda }] }], config: { tools: [{ googleSearch: {} }] } }),
+          () =>
+            ai.models.generateContent({
+              model: SEARCH_MODEL,
+              contents: [{ role: 'user', parts: [{ text: domanda }] }],
+              config: { tools: [{ googleSearch: {} }], ...thinkingConfig(toolThinking('ricerca')) },
+            }),
           // La ricerca Google si paga a query oltre ai token: il prezzo a query sta nel listino del modello (lib/prices.ts).
           async (result) => {
             const usage = result.usageMetadata;

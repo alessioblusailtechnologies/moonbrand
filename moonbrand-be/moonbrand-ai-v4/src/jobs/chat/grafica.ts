@@ -8,6 +8,7 @@ import { ensureBrowser } from '@remotion/renderer';
 import puppeteer, { type Browser } from 'puppeteer-core';
 import { z } from 'zod';
 
+import { toolModel, toolThinking } from '../../lib/settings';
 import { geminiClient } from './gemini';
 import { brandFolder, PARALLEL } from './servizi';
 
@@ -30,7 +31,8 @@ type Aspect = keyof typeof SIZES;
 const LOAD_TIMEOUT_MS = 30_000;
 const ASSETS_TIMEOUT_MS = 10_000;
 const PROTOCOL_TIMEOUT_MS = 45_000;
-const DEFAULT_LOOKER = 'gemini-3.8-flash';
+// Il modello della vista dalla sezione Modelli dell'admin (lib/settings.ts).
+const DEFAULT_LOOKER = toolModel('vista');
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
 
 const secondsOf = (ms: number) => `${(ms / 1000).toFixed(1).replace('.', ',')} s`;
@@ -140,7 +142,7 @@ export function graficaServer(brandDir: string, geminiKey?: string) {
           lines.push('Gemini non è configurato: guardale tu con Read.');
         } else {
           try {
-            const response = await looker.generate('vision', DEFAULT_LOOKER, done, `I file, nell’ordine: ${done.join(', ')}.\n\n${domanda}`);
+            const response = await looker.generate('vision', DEFAULT_LOOKER, done, `I file, nell’ordine: ${done.join(', ')}.\n\n${domanda}`, undefined, toolThinking('vista'));
             const answer = (response.candidates?.[0]?.content?.parts ?? [])
               .filter((part) => part.text && !part.thought)
               .map((part) => part.text)
