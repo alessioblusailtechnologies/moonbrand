@@ -1,0 +1,8 @@
+# Le impostazioni di pnpm per il progetto video del brand. Da pnpm 11 si leggono da qui e non più da .npmrc (che resta
+# per pnpm 9); packages serve a pnpm 9, che senza rifiuta il file. Lo script di esbuild va approvato: altrimenti pnpm 12
+# installa tutto ma esce con ERR_PNPM_IGNORED_BUILDS e il video-setup risulta fallito.
+packages:
+  - .
+nodeLinker: hoisted
+allowBuilds:
+  esbuild: true

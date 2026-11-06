@@ -1,0 +1,18 @@
+# moonbrand-ai-v4
+
+Il motore v4 (PIANO-MOTORE-V4.md): il worker del v3, con la chat fatta da **Pi** (`@earendil-works/pi-coding-agent`, il pi globale della macchina) al posto di Claude Code.
+
+- `src/jobs/chat/chat.ts` lancia Pi in `--mode json` nella cartella del brand, con `PI_MODEL` (di default `anthropic/claude-opus-5-5`) e `--thinking high` (`PI_THINKING`). L'unica istruzione nostra è il blocco «Come parli all'utente» (`--append-system-prompt`). Niente estensioni, skill, template e MCP della macchina.
+- `pi/moonbrand.ts` è l'estensione di Pi: registra i 28 tool del v3 (tutti tranne `attendi`) da `src/jobs/chat/*.ts`, che sono i file del v3 con `sdk.ts` al posto dell'Agent SDK. Toglie le chiavi all'ambiente di bash, blocca read/write/edit fuori dalla cartella del brand, su `.env` e su `v1/`, e spegne la compattazione automatica.
+- `genera_clip` e `migliora` aspettano da soli il risultato: Pi esegue in parallelo i tool chiesti insieme.
+- I costi delle generazioni vanno nei `details` del risultato (`lib/usage.ts`, AsyncLocalStorage) e chat.ts li manda al worker.
+- Passaggio di sessione come nel v3 (`passaggio.ts`, sul JSONL di `<brand>/.pi-sessioni`): oltre 100K o dopo 55 minuti si apre una sessione nuova con il dialogo. `MOONBRAND_CHAT_MAX_CONTEXT`, `MOONBRAND_CHAT_HANDOVER=off`.
+
+Collaudo: riga `worker` di `collaudo-servizio/processi.conf` su questa cartella, poi `Restart-Service MoonbrandCollaudo`. Rollback: `moonbrand-ai-v3`.
+
+Strumenti in più rispetto al v3 (`src/jobs/chat/web.ts`), perché Pi non ha ricerca web né memoria:
+- `cerca_web`: Gemini 3.8 Flash con la ricerca Google, risposta con le fonti; costo = token + 0,014 $ a query.
+- `leggi_pagina`: il testo di una pagina web (niente indirizzi locali o interni), 20.000 caratteri di default; con `modo: grafica` la apre in Chrome headless e dà screenshot (salvato in lavoro/pagine/), colori e font calcolati, possibili loghi e testo (funzione nella pagina in web-stile.js).
+- `ricorda`: aggiunge una riga a `memoria.md` nella cartella del brand, anche di sua iniziativa; chat.ts la mette nel prompt di sistema di ogni chat (le ultime 8.000 battute).
+
+Data: Pi non la dice al modello, quindi chat.ts apre ogni turno con «(Adesso è …, ora di Roma.)». Serve anche perché 26 CLAUDE.md di brand hanno ancora la sezione «Il piano» con la data del giorno in cui sono stati scritti.
