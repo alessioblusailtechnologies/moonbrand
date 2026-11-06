@@ -11,7 +11,10 @@ import { measured, MIME_TYPES } from './servizi';
 
 const INLINE_BYTES = 15 * 1024 * 1024;
 
-export function geminiClient(apiKey: string, inside: (relative: string) => string) {
+// Il prezzo per milione di token, quando lo dà qualcun altro (il listino di Pi, per i modelli di testo): senza, prices.ts.
+export type TextPrice = (model: string) => { input: number; output: number; cacheRead?: number } | undefined;
+
+export function geminiClient(apiKey: string, inside: (relative: string) => string, priceOf?: TextPrice) {
   const ai = new GoogleGenAI({ apiKey });
 
   const part = async (relative: string): Promise<Part> => {
@@ -40,7 +43,11 @@ export function geminiClient(apiKey: string, inside: (relative: string) => strin
         const output = (usage?.candidatesTokenCount ?? 0) - image + (usage?.thoughtsTokenCount ?? 0);
         const input = usage?.promptTokenCount ?? 0;
         const images = (response.candidates?.[0]?.content?.parts ?? []).filter((item) => item.inlineData?.mimeType?.startsWith('image/')).length;
-        const costUsd = geminiCost(model, { input, output, image });
+        const price = priceOf?.(model);
+        const cached = usage?.cachedContentTokenCount ?? 0;
+        const costUsd = price
+          ? ((input - cached) * price.input + cached * (price.cacheRead ?? price.input) + output * price.output) / 1_000_000
+          : geminiCost(model, { input, output, image });
         if (costUsd === undefined) console.warn(`[gemini] ${model} non è nel listino (prices.ts)`);
         return { costUsd, inputTokens: input, outputTokens: output + image, ...(images > 0 && { units: images, unit: 'immagini' }) };
       },

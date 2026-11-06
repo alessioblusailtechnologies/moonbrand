@@ -21,8 +21,6 @@ const GEMINI_PER_MILLION: Record<string, GeminiPrice> = {
   'gemini-3.5-flash-lite': { input: 0.3, output: 2.5 },
   'gemini-3.5-flash': { input: 1.5, output: 9 },
   'gemini-3.1-pro': { input: 2, output: 12 },
-  // Argon: prezzo di lancio da fonti terze (30/10/2026), raddoppia dal 1/12. Da ricontrollare sul listino.
-  'gemini-4-argon': { input: 2, output: 10 },
   'gemini-3.1-flash-lite': { input: 0.25, output: 1.5 },
   'gemini-3-flash': { input: 0.5, output: 3 },
 };

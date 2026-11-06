@@ -4,6 +4,7 @@
 // sessione di chat.ts). La logica dei tool è quella del v3, nei file di src/jobs/chat: qui c'è solo l'adattatore.
 import path from 'node:path';
 
+import { getModel } from '@earendil-works/pi-ai';
 import { createBashTool, withFileMutationQueue, type ExtensionAPI } from '@earendil-works/pi-coding-agent';
 import { z } from 'zod';
 
@@ -44,7 +45,7 @@ export default function (pi: ExtensionAPI) {
     moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir),
     media.server,
     grafica.server,
-    ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini)] : []),
+    ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini, (model) => (getModel as (provider: string, id: string) => { cost?: { input: number; output: number; cacheRead?: number } } | undefined)('google', model)?.cost)] : []),
     ...(elevenlabs || atlas ? [audioServer(brandDir, { elevenlabs, atlas })] : []),
     videoServer(brandDir, gemini),
     ...(lambda ? [lambdaServer(brandDir, lambda)] : []),
