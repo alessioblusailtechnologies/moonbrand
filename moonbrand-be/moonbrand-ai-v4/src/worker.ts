@@ -19,7 +19,8 @@ import { saveIdeas } from './jobs/ideas/save';
 import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
-import { estimatesEnv, measureEstimates } from './lib/estimate';
+import { estimatesEnv, measureEstimates, measurePrices } from './lib/estimate';
+import { measuredPricesEnv } from './lib/prices';
 import { createStepReader } from './lib/step-reader';
 import { chatTitle } from './lib/title';
 import { USAGE_MESSAGE, type Usage } from './lib/usage';
@@ -109,7 +110,7 @@ const JOBS: Record<string, JobKind> = {
       return {
         script: 'src/jobs/chat/chat.ts',
         args: [path.join(BRANDS_DIR, brandId), JSON.stringify(rest)],
-        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '', ...SERVICE_KEYS, ...estimatesEnv(await measureEstimates(pool)) },
+        env: { MOONBRAND_AGENT_TOKEN: job.agent_token ?? '', ...SERVICE_KEYS, ...estimatesEnv(await measureEstimates(pool)), ...measuredPricesEnv(await measurePrices(pool)) },
       };
     },
     // Al primo turno la conversazione prende il titolo che scrive Sonnet; intanto il job è già finito.

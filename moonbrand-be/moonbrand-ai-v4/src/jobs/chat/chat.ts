@@ -10,7 +10,7 @@ import { matchLocale } from '@moonbrand/shared/i18n/locales';
 
 import { estimatesFromEnv } from '../../lib/estimate';
 import { languageName, uiLocale } from '../../lib/language';
-import { LISTINO } from '../../lib/prices';
+import { measuredPrices } from '../../lib/prices';
 import { USAGE_MESSAGE } from '../../lib/usage';
 import { MOONBRAND } from '../cartella/moonbrand';
 import { handover } from './passaggio';
@@ -90,7 +90,24 @@ const FOLDERS = 'Lavora in lavoro/; i file finiti vanno in contenuti/. Quando un
 // misura il worker sui contenuti degli ultimi 30 giorni (lib/estimate.ts) e arrivano in MOONBRAND_STIME.
 const { carousel, video } = estimatesFromEnv(process.env);
 const range = ({ typical, high }: { typical: number; high: number }) => `${typical}-${high}`;
-const CREDITS = `Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni (${LISTINO}).`;
+// I crediti delle generazioni: misurati sugli ultimi lavori (ai_usage, dal worker in MOONBRAND_PREZZI), non da un listino.
+// Un lavoro entra nella riga quando ha delle misure; prima la chat si affida a quanto i tool dicono nei loro risultati.
+const GENERATIONS: Record<string, { label: string; per: number }> = {
+  image: { label: 'un’immagine', per: 1 },
+  clip: { label: 'un secondo di clip', per: 1 },
+  upscale: { label: 'un secondo di upscale', per: 1 },
+  music: { label: 'una musica o una canzone', per: 1 },
+  voice: { label: 'la voce ogni 1000 caratteri', per: 1000 },
+  effect: { label: 'un secondo di effetto sonoro', per: 1 },
+  'word-timing': { label: 'un minuto di trascrizione', per: 60 },
+  'web-search': { label: 'una ricerca web', per: 1 },
+  'video-export': { label: 'un export video nel cloud', per: 1 },
+};
+const measured = measuredPrices().tasks;
+const listino = Object.entries(GENERATIONS)
+  .flatMap(([task, { label, per }]) => (measured[task] ? [`${label} ${Math.max(1, Math.round(measured[task].usdPerUnit * per * 100))}`] : []))
+  .join(', ');
+const CREDITS = `Prima di fare un carosello o un video, di' all'utente cosa farai e quanti crediti consumerà, e aspetta il suo ok. Di solito un carosello nuovo consuma ${range(carousel)} crediti e un video nuovo ${range(video)}. Per le modifiche stima tu: conta il tuo lavoro, che è spesso la parte più grande, e le generazioni${listino ? ` (in crediti, misurati sugli ultimi lavori: ${listino})` : ' (ogni tool dice quanto costa nel suo risultato)'}.`;
 
 // La memoria del brand (tool ricorda), nel prompt di sistema dopo l'istruzione.
 const memory = await brandMemory(brandDir);

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { atlasMeasured } from '../../lib/prices';
+import { measuredPrice } from '../../lib/prices';
 
 // Atlas Cloud per i tool della chat: clip, immagini, upscaler e musica (Suno, MiniMax). Ogni modello ha i suoi nomi per gli stessi parametri
 // (aspect_ratio o ratio, end_image o last_image, sound o generate_audio): li legge dallo schema del modello, così Claude
@@ -151,11 +151,11 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
     return { request: { ...request, ...extra }, notes };
   };
 
-  // Il prezzo: quello misurato vince sul catalogo, che per alcuni modelli dà solo il «a partire da». I video si pagano al
-  // secondo, il resto a pezzo.
-  const cost = (found: AtlasModel, request: Record<string, unknown>, seconds: number) => {
-    const measuredPrice = found.type === 'Video' ? atlasMeasured(found.model, typeof request.resolution === 'string' ? request.resolution : undefined) : undefined;
-    const base = measuredPrice ?? (Number(found.price?.actual?.base_price) || undefined);
+  // La stima prima di partire (a lavoro finito si conta quanto Atlas addebita, charged): quanto è costato davvero per
+  // unità lo stesso modello negli ultimi lavori (lib/prices.ts, misure del worker), altrimenti il prezzo base del
+  // catalogo, che per alcuni modelli è solo il «a partire da». I video si pagano al secondo, il resto a pezzo.
+  const cost = (found: AtlasModel, _request: Record<string, unknown>, seconds: number) => {
+    const base = measuredPrice(found.model)?.usdPerUnit ?? (Number(found.price?.actual?.base_price) || undefined);
     if (base === undefined) console.warn(`[atlas] ${found.model} senza prezzo nel catalogo`);
     return base === undefined ? undefined : base * (found.type === 'Video' ? seconds : 1);
   };

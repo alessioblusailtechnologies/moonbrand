@@ -29,7 +29,7 @@ const BASH_DENY = /(^|[^\w])\.env\b|\/environ\b|[\\/]\.pi[\\/]|[\\/]\.claude[\\/
 const ARCHIVE = 'v1';
 
 export default function (pi: ExtensionAPI) {
-  // I prezzi dei modelli di testo di Gemini dal listino di Pi: i costi dei tool si contano con quelli.
+  // Il listino di Pi come riserva per i prezzi dei modelli di testo, quando il listino di OpenRouter non si raggiunge (lib/prices.ts).
   useTextPrices((model) => (getModel as (provider: string, id: string) => { cost?: TextPrice } | undefined)('google', model)?.cost);
   const brandDir = path.resolve(process.cwd());
   const {

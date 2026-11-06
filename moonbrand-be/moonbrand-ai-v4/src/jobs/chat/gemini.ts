@@ -28,20 +28,19 @@ export function geminiClient(apiKey: string, inside: (relative: string) => strin
     return { fileData: { mimeType, fileUri: file.uri } };
   };
 
-  // Il costo dai token della risposta, anche quelli delle immagini, che costano più del testo.
+  // Il costo dai token della risposta, anche quelli delle immagini, che costano più del testo; i prezzi a runtime (lib/prices.ts).
   const generate = async (task: string, model: string, files: string[], prompt: string, config?: GenerateContentConfig): Promise<GenerateContentResponse> => {
     const parts = [...(await Promise.all(files.map(part))), { text: prompt }];
     return measured(
       { task, model },
       () => ai.models.generateContent({ model, contents: [{ role: 'user', parts }], ...(config && { config }) }),
-      (response) => {
+      async (response) => {
         const usage = response.usageMetadata;
         const image = usage?.candidatesTokensDetails?.find((detail) => detail.modality === 'IMAGE')?.tokenCount ?? 0;
         const output = (usage?.candidatesTokenCount ?? 0) - image + (usage?.thoughtsTokenCount ?? 0);
         const input = usage?.promptTokenCount ?? 0;
         const images = (response.candidates?.[0]?.content?.parts ?? []).filter((item) => item.inlineData?.mimeType?.startsWith('image/')).length;
-        const costUsd = geminiCost(model, { input, output, image, cached: usage?.cachedContentTokenCount ?? 0 });
-        if (costUsd === undefined) console.warn(`[gemini] ${model} non è nel listino (prices.ts)`);
+        const costUsd = await geminiCost(model, { input, output, image, cached: usage?.cachedContentTokenCount ?? 0 });
         return { costUsd, inputTokens: input, outputTokens: output + image, ...(images > 0 && { units: images, unit: 'immagini' }) };
       },
     );

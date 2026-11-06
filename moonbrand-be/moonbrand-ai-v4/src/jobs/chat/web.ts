@@ -7,7 +7,7 @@ import { GoogleGenAI } from '@google/genai';
 import type { Browser } from 'puppeteer-core';
 import { z } from 'zod';
 
-import { geminiCost } from '../../lib/prices';
+import { geminiCost, modelPrice } from '../../lib/prices';
 import { launchChrome } from './grafica';
 import { createSdkMcpServer, tool } from './sdk';
 import { failure, measured, text } from './servizi';
@@ -37,8 +37,6 @@ const STYLE_PROBE = readFileSync(new URL('./web-stile.js', import.meta.url), 'ut
 // pagina e la memoria del brand, un file nella cartella del brand che chat.ts mette nel prompt di ogni chat.
 
 const SEARCH_MODEL = 'gemini-3.8-flash';
-// La ricerca Google di Gemini si paga a query, oltre ai token: 14 $ ogni 1000 (listino Gemini API).
-const SEARCH_QUERY_USD = 0.014;
 const PAGE_TIMEOUT_MS = 30_000;
 const PAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PAGE_CHARS = 20_000;
@@ -113,13 +111,17 @@ export function webServer(brandDir: string, geminiKey?: string) {
         const response = await measured(
           { task: 'web-search', model: SEARCH_MODEL },
           () => ai.models.generateContent({ model: SEARCH_MODEL, contents: [{ role: 'user', parts: [{ text: domanda }] }], config: { tools: [{ googleSearch: {} }] } }),
-          (result) => {
+          // La ricerca Google si paga a query oltre ai token: il prezzo a query sta nel listino del modello (lib/prices.ts).
+          async (result) => {
             const usage = result.usageMetadata;
             const input = usage?.promptTokenCount ?? 0;
             const output = (usage?.candidatesTokenCount ?? 0) + (usage?.thoughtsTokenCount ?? 0);
             const queries = result.candidates?.[0]?.groundingMetadata?.webSearchQueries?.length ?? 0;
-            const tokens = geminiCost(SEARCH_MODEL, { input, output, image: 0 });
-            return { costUsd: tokens === undefined ? undefined : tokens + queries * SEARCH_QUERY_USD, inputTokens: input, outputTokens: output, units: queries, unit: 'ricerche' };
+            const tokens = await geminiCost(SEARCH_MODEL, { input, output, image: 0 });
+            const perQuery = (await modelPrice(SEARCH_MODEL))?.webSearch;
+            if (queries > 0 && perQuery === undefined) console.warn(`[prezzi] ${SEARCH_MODEL} senza prezzo della ricerca: il costo resta non noto`);
+            const costUsd = tokens === undefined || (queries > 0 && perQuery === undefined) ? undefined : tokens + queries * (perQuery ?? 0);
+            return { costUsd, inputTokens: input, outputTokens: output, units: queries, unit: 'ricerche' };
           },
         );
         const candidate = response.candidates?.[0];

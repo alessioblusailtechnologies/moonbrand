@@ -4,7 +4,6 @@ import path from 'node:path';
 import { createSdkMcpServer, tool } from './sdk';
 import { z } from 'zod';
 
-import { ELEVENLABS } from '../../lib/prices';
 import { atlasClient } from './atlas';
 import { brandFolder, credits, download, failure, measured, PARALLEL, SAVE_PATH, text, type ServiceKeys } from './servizi';
 
@@ -55,7 +54,40 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
 
   const saveAudio = async (target: string, response: Response) => {
     await save(target, Buffer.from(await response.arrayBuffer()));
-    return target;
+    return response;
+  };
+
+  // ElevenLabs addebita crediti, detti nell'header character-cost di ogni risposta. Quanto vale un credito lo dice l'uso
+  // fatturato dell'account (endpoint usage: centesimi spesi e crediti usati negli ultimi 60 giorni): è il prezzo pagato
+  // davvero, qualunque sia il piano, senza listini nostri. Una lettura per processo.
+  let creditRate: Promise<number | undefined> | undefined;
+  const usdPerCredit = () =>
+    (creditRate ??= (async () => {
+      try {
+        const end = Date.now();
+        const start = end - 60 * 86_400_000;
+        const metric = async (name: string) => {
+          const response = await request(`/v1/usage/character-stats?start_unix=${start}&end_unix=${end}&aggregation_interval=cumulative&metric=${name}&breakdown_type=none`);
+          const { usage } = (await response.json()) as { usage?: Record<string, number[]> };
+          return Object.values(usage ?? {})
+            .flat()
+            .reduce((sum, value) => sum + value, 0);
+        };
+        const [cents, credits] = await Promise.all([metric('fiat_units_spent'), metric('credits')]);
+        if (!(credits > 0) || !(cents > 0)) throw new Error('nessun uso fatturato negli ultimi 60 giorni');
+        return cents / 100 / credits;
+      } catch (error) {
+        console.warn(`[prezzi] ElevenLabs senza prezzo del credito (${error instanceof Error ? error.message : String(error)}): il costo resta non noto`);
+        return undefined;
+      }
+    })());
+
+  // Il costo di una risposta di ElevenLabs: i crediti addebitati per il prezzo del credito; non noto se manca uno dei due.
+  const billed = async (response: Response): Promise<number | undefined> => {
+    const header = response.headers.get('character-cost');
+    const credits = header === null ? NaN : Number(header);
+    const rate = await usdPerCredit();
+    return Number.isFinite(credits) && rate !== undefined ? credits * rate : undefined;
   };
 
   const music = tool(
@@ -176,7 +208,7 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
         await measured(
           { task: 'voice', model: modello },
           async () => saveAudio(salva, await request(`/v1/text-to-speech/${encodeURIComponent(voce)}?output_format=${VOICE_OUTPUT}`, { json: body })),
-          () => ({ units: testo.length, unit: 'caratteri', costUsd: (testo.length / 1000) * ELEVENLABS.voicePerThousandCharacters }),
+          async (response) => ({ units: testo.length, unit: 'caratteri', costUsd: await billed(response) }),
         );
         return text(`Salvata in ${salva}. Per i tempi delle parole usa trascrivi.`);
       } catch (error) {
@@ -206,7 +238,7 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
               salva,
               await request(`/v1/sound-generation?output_format=${OUTPUT}`, { json: { text: descrizione, ...(durata && { duration_seconds: durata }), ...(loop && { loop }) } }),
             ),
-          () => ({ units: seconds, unit: 'secondi', costUsd: (seconds / 60) * ELEVENLABS.effectPerMinute }),
+          async (response) => ({ units: seconds, unit: 'secondi', costUsd: await billed(response) }),
         );
         return text(`Salvato in ${salva}.`);
       } catch (error) {
@@ -233,13 +265,13 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
         form.append('timestamps_granularity', 'word');
         if (lingua) form.append('language_code', lingua);
         form.append('file', new Blob([await readFile(inside(file))]), path.basename(file));
-        const result = await measured(
+        const { result } = await measured(
           { task: 'word-timing', model: 'scribe_v1' },
-          async () => (await request('/v1/speech-to-text', { form })).json() as Promise<{ text?: string; words?: { text: string; start: number; end: number; type?: string }[] }>,
-          (response) => {
-            const seconds = response.words?.at(-1)?.end ?? 0;
-            return { units: seconds, unit: 'secondi audio', costUsd: (seconds / 3600) * ELEVENLABS.transcriptionPerHour };
+          async () => {
+            const response = await request('/v1/speech-to-text', { form });
+            return { response, result: (await response.json()) as { text?: string; words?: { text: string; start: number; end: number; type?: string }[] } };
           },
+          async ({ response, result }) => ({ units: result.words?.at(-1)?.end ?? 0, unit: 'secondi audio', costUsd: await billed(response) }),
         );
         const words = (result.words ?? []).filter((word) => word.type !== 'spacing').map(({ text: word, start, end }) => ({ text: word, start, end }));
         await save(salva, Buffer.from(JSON.stringify({ text: result.text ?? '', words }, null, 1)));

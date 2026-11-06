@@ -58,12 +58,14 @@ export const failure = (error: unknown) => ({
 
 export const credits = (usd: number | undefined) => (usd === undefined ? 'costo non noto' : `${Math.max(1, Math.round(usd * 100))} crediti`);
 
-// Una generazione con il suo costo, anche quando non riesce: il costo lo calcola chi conosce la risposta.
-export async function measured<T>(base: Pick<Usage, 'task' | 'model'>, run: () => Promise<T>, cost: (result: T) => Omit<Usage, 'task' | 'model' | 'outcome' | 'durationMs'>): Promise<T> {
+// Una generazione con il suo costo, anche quando non riesce: il costo lo calcola chi conosce la risposta, con i prezzi
+// presi a runtime (lib/prices.ts), quindi anche in modo asincrono.
+type Cost = Omit<Usage, 'task' | 'model' | 'outcome' | 'durationMs'>;
+export async function measured<T>(base: Pick<Usage, 'task' | 'model'>, run: () => Promise<T>, cost: (result: T) => Cost | Promise<Cost>): Promise<T> {
   const started = Date.now();
   try {
     const result = await run();
-    reportUsage({ ...base, outcome: 'ok', durationMs: Date.now() - started, ...cost(result) });
+    reportUsage({ ...base, outcome: 'ok', durationMs: Date.now() - started, ...(await cost(result)) });
     return result;
   } catch (error) {
     reportUsage({ ...base, outcome: 'error', error: (error instanceof Error ? error.message : String(error)).slice(0, 300), durationMs: Date.now() - started });
