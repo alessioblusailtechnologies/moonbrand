@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { z } from 'zod';
 
-import { geminiClient, type TextPrice } from './gemini';
+import { geminiClient } from './gemini';
 import { createSdkMcpServer, tool } from './sdk';
 import { brandFolder, failure, PARALLEL, text } from './servizi';
 import { brandMemory } from './web';
@@ -23,10 +23,9 @@ const common = {
 
 type Common = { richiesta: string; lingua: string; file?: string[]; testo_precedente?: string; modifica?: string };
 
-// Il prezzo di Argon lo dà il listino di Pi (pi/moonbrand.ts), che si aggiorna con Pi: niente prezzi nostri da seguire.
-export function testiServer(brandDir: string, apiKey: string, priceOf?: TextPrice) {
+export function testiServer(brandDir: string, apiKey: string) {
   const { inside } = brandFolder(brandDir);
-  const gemini = geminiClient(apiKey, inside, priceOf);
+  const gemini = geminiClient(apiKey, inside);
 
   const write = async (task: string, compito: string, args: Common, extra: (string | number | false | undefined)[]) => {
     try {

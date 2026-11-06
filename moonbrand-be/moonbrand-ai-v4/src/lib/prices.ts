@@ -1,42 +1,39 @@
-// I prezzi dei servizi che la chat usa con i suoi tool (jobs/chat), in dollari: nessuno dei tre dice nella
-// risposta quanto è costata una chiamata. Gemini ed ElevenLabs da listino, verificati il 17 ottobre 2026; Atlas dal suo
-// catalogo, letto all'ora.
+// I prezzi dei servizi che la chat usa con i suoi tool (jobs/chat), in dollari: nessuno dice nella risposta quanto è
+// costata una chiamata. I modelli di testo di Gemini li prezza il listino di Pi, che si aggiorna con Pi: qui resta solo
+// quello che Pi non ha (i token delle immagini generate, ElevenLabs, i prezzi misurati di Atlas).
 
-// Gemini, per milione di token (ai.google.dev/gemini-api/docs/pricing). image: i token delle immagini generate, che
-// costano più del testo; il ragionamento si paga come il testo in uscita. Le 3.6 e 3.8 Flash hanno il prezzo di lancio
-// fino al 31 dicembre 2026, poi raddoppiano.
-interface GeminiPrice {
-  input: number;
-  output: number;
-  image?: number;
+// Il listino di Pi per milione di token, registrato dall'estensione (pi/moonbrand.ts) quando Pi la carica.
+export type TextPrice = { input: number; output: number; cacheRead?: number };
+let textPrice: (model: string) => TextPrice | undefined = () => undefined;
+export function useTextPrices(lookup: (model: string) => TextPrice | undefined) {
+  textPrice = lookup;
 }
 
-const GEMINI_PER_MILLION: Record<string, GeminiPrice> = {
+// Le immagini di Gemini, per milione di token (ai.google.dev/gemini-api/docs/pricing): Pi le ha solo come testo, senza
+// il prezzo dei token delle immagini generate, che costano molto di più. Verificati il 17 ottobre 2026.
+const GEMINI_IMAGE: Record<string, TextPrice & { image: number }> = {
   'gemini-3-pro-image': { input: 2, output: 12, image: 120 },
   'gemini-3.1-flash-image': { input: 0.5, output: 3, image: 60 },
   'gemini-3.1-flash-lite-image': { input: 0.25, output: 1.5, image: 30 },
   'gemini-nano-banana-2.1': { input: 1.5, output: 7.5, image: 30 },
-  'gemini-3.8-flash': { input: 0.75, output: 3.75 },
-  'gemini-3.6-flash': { input: 0.75, output: 3.75 },
-  'gemini-3.5-flash-lite': { input: 0.3, output: 2.5 },
-  'gemini-3.5-flash': { input: 1.5, output: 9 },
-  'gemini-3.1-pro': { input: 2, output: 12 },
-  'gemini-3.1-flash-lite': { input: 0.25, output: 1.5 },
-  'gemini-3-flash': { input: 0.5, output: 3 },
 };
 
-// Il modello si riconosce dal nome più lungo che combacia: gemini-3-pro-image-preview è gemini-3-pro-image.
-function geminiPrice(model: string): GeminiPrice | undefined {
-  const name = Object.keys(GEMINI_PER_MILLION)
+// Il modello immagine si riconosce dal nome più lungo che combacia: gemini-3-pro-image-preview è gemini-3-pro-image.
+function imagePrice(model: string) {
+  const name = Object.keys(GEMINI_IMAGE)
     .filter((key) => model.startsWith(key))
     .sort((a, b) => b.length - a.length)[0];
-  return name ? GEMINI_PER_MILLION[name] : undefined;
+  return name ? GEMINI_IMAGE[name] : undefined;
 }
 
-export function geminiCost(model: string, tokens: { input: number; output: number; image: number }): number | undefined {
-  const price = geminiPrice(model);
+// Il ragionamento si paga come il testo in uscita; i token letti dalla cache al prezzo della cache, se Pi lo dà.
+export function geminiCost(model: string, tokens: { input: number; output: number; image: number; cached?: number }): number | undefined {
+  const cached = tokens.cached ?? 0;
+  const image = imagePrice(model);
+  if (image) return (tokens.input * image.input + tokens.output * image.output + tokens.image * image.image) / 1_000_000;
+  const price = textPrice(model);
   if (!price) return undefined;
-  return (tokens.input * price.input + tokens.output * price.output + tokens.image * (price.image ?? price.output)) / 1_000_000;
+  return ((tokens.input - cached) * price.input + cached * (price.cacheRead ?? price.input) + tokens.output * price.output) / 1_000_000;
 }
 
 // ElevenLabs a consumo (elevenlabs.io/pricing/api). L'allineamento delle parole non è in listino: si conta come la trascrizione.
@@ -74,6 +71,6 @@ export function atlasMeasured(model: string, resolution?: string): number | unde
 const credits = (usd: number) => Math.round(usd * 100);
 
 export const LISTINO =
-  `un'immagine di Gemini 3 Pro ${credits((1120 * GEMINI_PER_MILLION['gemini-3-pro-image']!.image!) / 1_000_000)}, ` +
+  `un'immagine di Gemini 3 Pro ${credits((1120 * GEMINI_IMAGE['gemini-3-pro-image']!.image) / 1_000_000)}, ` +
   `una clip circa 15 al secondo, 22 con le persone, una musica o una canzone di Suno 13 (con 2 versioni), ` +
   `la voce ${credits(ELEVENLABS.voicePerThousandCharacters)} ogni 1000 caratteri`;

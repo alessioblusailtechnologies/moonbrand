@@ -18,6 +18,7 @@ import { testiServer } from '../src/jobs/chat/testi';
 import type { ToolDefinition, ToolGroup } from '../src/jobs/chat/sdk';
 import { videoServer } from '../src/jobs/chat/video';
 import { webServer } from '../src/jobs/chat/web';
+import { useTextPrices, type TextPrice } from '../src/lib/prices';
 import { usageSink, type Usage } from '../src/lib/usage';
 
 // Le variabili che i comandi di bash non vedono: chiavi dei servizi, token del job, storage, Lambda, Anthropic.
@@ -28,6 +29,8 @@ const BASH_DENY = /(^|[^\w])\.env\b|\/environ\b|[\\/]\.pi[\\/]|[\\/]\.claude[\\/
 const ARCHIVE = 'v1';
 
 export default function (pi: ExtensionAPI) {
+  // I prezzi dei modelli di testo di Gemini dal listino di Pi: i costi dei tool si contano con quelli.
+  useTextPrices((model) => (getModel as (provider: string, id: string) => { cost?: TextPrice } | undefined)('google', model)?.cost);
   const brandDir = path.resolve(process.cwd());
   const {
     MOONBRAND_AGENT_TOKEN = '',
@@ -45,7 +48,7 @@ export default function (pi: ExtensionAPI) {
     moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir),
     media.server,
     grafica.server,
-    ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini, (model) => (getModel as (provider: string, id: string) => { cost?: { input: number; output: number; cacheRead?: number } } | undefined)('google', model)?.cost)] : []),
+    ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini)] : []),
     ...(elevenlabs || atlas ? [audioServer(brandDir, { elevenlabs, atlas })] : []),
     videoServer(brandDir, gemini),
     ...(lambda ? [lambdaServer(brandDir, lambda)] : []),
