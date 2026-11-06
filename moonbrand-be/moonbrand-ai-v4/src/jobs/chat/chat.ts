@@ -94,7 +94,10 @@ const CREDITS = `Prima di fare un carosello o un video, di' all'utente cosa fara
 
 // La memoria del brand (tool ricorda), nel prompt di sistema dopo l'istruzione.
 const memory = await brandMemory(brandDir);
-const SYSTEM = [VOICE, FOLDERS, CREDITS, memory &&`## Cosa ricordi di questo brand\n\nCose imparate nelle conversazioni passate (${MEMORY_FILE}):\n\n${memory}`].filter(Boolean).join('\n\n');
+// Com'è la grafica: l'HTML è il mezzo, non deve vedersi.
+const GRAPHICS = 'Post, caroselli, foto e video devono sembrare fatti da un grafico e un montatore professionisti, senza l'aspetto di una pagina HTML/CSS: niente card, box arrotondati, ombre, gradienti, badge e gli altri cliché da grafica AI.';
+
+const SYSTEM = [VOICE, FOLDERS, GRAPHICS, CREDITS, memory &&`## Cosa ricordi di questo brand\n\nCose imparate nelle conversazioni passate (${MEMORY_FILE}):\n\n${memory}`].filter(Boolean).join('\n\n');
 
 // Le sessioni stanno nella cartella del brand, così tornano sullo storage con lei.
 // Pi dà un costo per risposta: il totale della sessione, che il worker si aspetta, si tiene in un file accanto.
