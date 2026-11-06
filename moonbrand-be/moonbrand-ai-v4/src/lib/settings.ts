@@ -1,6 +1,8 @@
 import type { Pool } from 'pg';
 
-import { mergeModelSettings, type ModelSettings, type ModelSettingsPatch, type ModelTool, type ThinkingLevel } from '@moonbrand/shared/domain/models';
+// Percorso relativo e non @moonbrand/shared: questo file lo carica anche l'estensione di Pi (pi/moonbrand.ts), e il loader
+// di Pi non legge i paths del tsconfig. Con l'alias Pi usciva con codice 1 senza nemmeno partire.
+import { mergeModelSettings, type ModelSettings, type ModelSettingsPatch, type ModelTool, type ThinkingLevel } from '../../../../moonbrand-shared/src/domain/models';
 
 // I modelli e il ragionamento della chat e degli strumenti, scelti dall'admin (sezione Modelli dello studio, tabella
 // presenza.settings). Il worker li legge a ogni lavoro e li passa alla chat per variabile d'ambiente; chat.ts e i tool,

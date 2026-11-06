@@ -3,7 +3,8 @@ import path from 'node:path';
 
 import { GoogleGenAI, ThinkingLevel as GeminiLevel, type GenerateContentConfig, type GenerateContentResponse, type Part } from '@google/genai';
 
-import type { ThinkingLevel } from '@moonbrand/shared/domain/models';
+// Relativo come in lib/settings.ts: il loader di Pi non conosce l'alias @moonbrand/shared.
+import type { ThinkingLevel } from '../../../../../moonbrand-shared/src/domain/models';
 
 import { geminiCost } from '../../lib/prices';
 import { measured, MIME_TYPES } from './servizi';
