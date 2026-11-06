@@ -29,7 +29,7 @@ export function geminiClient(apiKey: string, inside: (relative: string) => strin
   };
 
   // Il costo dai token della risposta, anche quelli delle immagini, che costano più del testo.
-  const generate = async (task: 'image' | 'vision', model: string, files: string[], prompt: string, config?: GenerateContentConfig): Promise<GenerateContentResponse> => {
+  const generate = async (task: string, model: string, files: string[], prompt: string, config?: GenerateContentConfig): Promise<GenerateContentResponse> => {
     const parts = [...(await Promise.all(files.map(part))), { text: prompt }];
     return measured(
       { task, model },

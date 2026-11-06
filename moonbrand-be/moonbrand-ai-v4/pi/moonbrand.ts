@@ -13,6 +13,7 @@ import { guardaServer } from '../src/jobs/chat/guarda';
 import { lambdaKeys, lambdaServer } from '../src/jobs/chat/lambda';
 import { mediaServer } from '../src/jobs/chat/media';
 import { moonbrandServer } from '../src/jobs/chat/moonbrand';
+import { testiServer } from '../src/jobs/chat/testi';
 import type { ToolDefinition, ToolGroup } from '../src/jobs/chat/sdk';
 import { videoServer } from '../src/jobs/chat/video';
 import { webServer } from '../src/jobs/chat/web';
@@ -43,7 +44,7 @@ export default function (pi: ExtensionAPI) {
     moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir),
     media.server,
     grafica.server,
-    ...(gemini ? [guardaServer(brandDir, gemini)] : []),
+    ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini)] : []),
     ...(elevenlabs || atlas ? [audioServer(brandDir, { elevenlabs, atlas })] : []),
     videoServer(brandDir, gemini),
     ...(lambda ? [lambdaServer(brandDir, lambda)] : []),
