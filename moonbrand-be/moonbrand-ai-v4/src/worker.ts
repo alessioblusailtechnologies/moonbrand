@@ -19,6 +19,7 @@ import { saveIdeas } from './jobs/ideas/save';
 import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
 import { pullBrand, pushBrand } from './lib/brand-sync';
+import { CATALOG_MS, refreshCatalog } from './lib/catalog';
 import { estimatesEnv, measureEstimates, measurePrices } from './lib/estimate';
 import { measuredPricesEnv } from './lib/prices';
 import { modelSettingsEnv, readModelSettings } from './lib/settings';
@@ -547,6 +548,7 @@ const shutdown = async () => {
   stopping = true;
   clearInterval(poller);
   clearInterval(canceller);
+  clearInterval(cataloguer);
   const interrupted = [...running.keys()];
   for (const child of running.values()) child.kill();
   if (interrupted.length > 0) {
@@ -560,5 +562,9 @@ process.on('SIGTERM', shutdown);
 
 const poller = setInterval(() => void tick(), POLL_MS);
 const canceller = setInterval(() => void watchCancellations().catch(() => undefined), CANCEL_POLL_MS);
+// Il catalogo dei modelli per la sezione Modelli dell'admin (lib/catalog.ts): all'avvio e poi ogni ora.
+const CATALOG_KEYS = { gemini: GEMINI_API_KEY, atlas: ATLASCLOUD_API_KEY, elevenlabs: ELEVENLABS_API_KEY };
+const cataloguer = setInterval(() => void refreshCatalog(pool, CATALOG_KEYS), CATALOG_MS);
+void refreshCatalog(pool, CATALOG_KEYS);
 console.log(`worker v4 ${WORKER_ID} pronto: ${CONCURRENCY} lavori in parallelo, tipi: ${Object.keys(JOBS).join(', ')}`);
 void tick();

@@ -52,3 +52,22 @@ export function mergeModelSettings(stored: ModelSettingsPatch | null | undefined
   }
   return { chat: { model: stored?.chat?.model || base.chat.model, thinking: stored?.chat?.thinking || base.chat.thinking }, tools };
 }
+
+// Il catalogo dei modelli tra cui scegliere, per la chat e per ogni strumento. Lo scrive il worker del motore (lib/catalog.ts)
+// in presenza.settings (chiave models.catalog), all'avvio e poi ogni ora, dalle fonti a runtime: la lista di Pi per la chat
+// (i fornitori con una chiave), Google con le modalità di OpenRouter per i tool su Gemini, Atlas per immagini e musica,
+// ElevenLabs per la voce. Nessun elenco nostro: se una fonte non risponde resta l'ultimo catalogo scritto.
+export interface CatalogModel {
+  id: string;
+  // Il nome che gli dà il fornitore, quando dice qualcosa in più dell'id.
+  label?: string;
+  // false: non ragiona, quindi il livello non si sceglie; assente: non si sa.
+  thinking?: boolean;
+  // Da dove viene, per i gruppi della tendina: il fornitore di Pi, Gemini, Atlas o ElevenLabs.
+  source: string;
+}
+
+export interface ModelCatalog {
+  chat: CatalogModel[];
+  tools: Record<ModelTool, CatalogModel[]>;
+}

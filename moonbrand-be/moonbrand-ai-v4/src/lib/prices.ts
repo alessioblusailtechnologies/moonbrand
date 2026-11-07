@@ -33,19 +33,22 @@ export function useTextPrices(lookup: (model: string) => TextPrice | undefined) 
 }
 
 const OPENROUTER = 'https://openrouter.ai/api/v1/models';
-const CACHE_FILE = path.join(os.tmpdir(), 'moonbrand', 'listino-openrouter.json');
+// Il nome della cache cambia quando cambia cosa si tiene di ogni modello (v2: anche le modalità).
+const CACHE_FILE = path.join(os.tmpdir(), 'moonbrand', 'listino-openrouter-v2.json');
 const CACHE_MS = 24 * 60 * 60_000;
 
-interface OpenRouterModel {
+export interface OpenRouterModel {
   id: string;
   pricing?: Record<string, string | undefined>;
+  // Cosa entra e cosa esce (text, image, video, audio, file): dice a cosa serve un modello, per il catalogo (lib/catalog.ts).
+  architecture?: { input_modalities?: string[]; output_modalities?: string[] };
 }
 
 let listing: Promise<OpenRouterModel[] | undefined> | undefined;
 
 // La lista di OpenRouter: dalla cache se è di oggi, altrimenti dalla rete (e si salva); se la rete non risponde, la cache
 // anche vecchia. Una sola lettura per processo.
-function openRouter(): Promise<OpenRouterModel[] | undefined> {
+export function openRouter(): Promise<OpenRouterModel[] | undefined> {
   return (listing ??= (async () => {
     const cached = async () => JSON.parse(await readFile(CACHE_FILE, 'utf8')) as OpenRouterModel[];
     const age = await stat(CACHE_FILE).then((info) => Date.now() - info.mtimeMs).catch(() => Infinity);
@@ -54,7 +57,11 @@ function openRouter(): Promise<OpenRouterModel[] | undefined> {
       const response = await fetch(OPENROUTER, { signal: AbortSignal.timeout(20_000) });
       if (!response.ok) throw new Error(`${response.status}`);
       const { data } = (await response.json()) as { data: OpenRouterModel[] };
-      const models = data.map(({ id, pricing }) => ({ id, pricing }));
+      const models = data.map(({ id, pricing, architecture }) => ({
+        id,
+        pricing,
+        ...(architecture && { architecture: { input_modalities: architecture.input_modalities, output_modalities: architecture.output_modalities } }),
+      }));
       await mkdir(path.dirname(CACHE_FILE), { recursive: true });
       await writeFile(CACHE_FILE, JSON.stringify(models));
       return models;

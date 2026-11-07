@@ -3,7 +3,7 @@ import type pg from 'pg';
 import { z } from 'zod';
 
 import type { AdminModelSettings, AdminModelSettingsRequest } from '@moonbrand/shared/api/contract';
-import { mergeModelSettings, THINKING_LEVELS, type ModelSettingsPatch } from '@moonbrand/shared/domain/models';
+import { mergeModelSettings, THINKING_LEVELS, type ModelCatalog, type ModelSettingsPatch } from '@moonbrand/shared/domain/models';
 
 // La sezione Modelli dell'admin: quale modello e quanto ragionamento usano la chat e gli strumenti del motore. Stanno in
 // presenza.settings (chiave models) sopra i predefiniti condivisi (domain/models); il worker li legge a ogni lavoro, quindi
@@ -11,6 +11,8 @@ import { mergeModelSettings, THINKING_LEVELS, type ModelSettingsPatch } from '@m
 // fallisce e lo dice.
 
 const KEY = 'models';
+// Il catalogo dei modelli tra cui scegliere, scritto dal worker del motore (moonbrand-ai-v4/src/lib/catalog.ts).
+const CATALOG_KEY = 'models.catalog';
 
 const model = z.string().trim().min(1, 'Scrivi il modello.').max(120);
 const thinking = z.enum(THINKING_LEVELS);
@@ -25,20 +27,28 @@ const schema = z.object({
 }) satisfies z.ZodType<AdminModelSettingsRequest>;
 
 interface Row {
-  value: ModelSettingsPatch;
+  key: string;
+  value: unknown;
   updated_at: Date;
   email: string | null;
 }
 
 async function current(pool: pg.Pool): Promise<AdminModelSettings> {
   const { rows } = await pool.query<Row>(
-    `select s.value, s.updated_at, a.email from presenza.settings s
+    `select s.key, s.value, s.updated_at, a.email from presenza.settings s
      left join presenza.accounts a on a.id = s.updated_by
-     where s.key = $1`,
-    [KEY],
+     where s.key = any($1)`,
+    [[KEY, CATALOG_KEY]],
   );
-  const row = rows[0];
-  return { settings: mergeModelSettings(row?.value), updatedAt: row?.updated_at.toISOString() ?? null, updatedBy: row?.email ?? null };
+  const own = rows.find((row) => row.key === KEY);
+  const catalog = rows.find((row) => row.key === CATALOG_KEY);
+  return {
+    settings: mergeModelSettings(own?.value as ModelSettingsPatch | undefined),
+    updatedAt: own?.updated_at.toISOString() ?? null,
+    updatedBy: own?.email ?? null,
+    catalog: (catalog?.value as ModelCatalog | undefined) ?? null,
+    catalogAt: catalog?.updated_at.toISOString() ?? null,
+  };
 }
 
 export function registerAdminSettings(scope: FastifyInstance, pool: pg.Pool): void {

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import type { AdminModelSettings } from '@moonbrand/shared/api/contract';
-import { DEFAULT_MODEL_SETTINGS, MODEL_TOOLS, THINKING_LEVELS, THINKING_TOOLS, type ModelSettings, type ModelTool, type ThinkingLevel } from '@moonbrand/shared/domain/models';
+import { DEFAULT_MODEL_SETTINGS, MODEL_TOOLS, THINKING_LEVELS, THINKING_TOOLS, type CatalogModel, type ModelSettings, type ModelTool, type ThinkingLevel } from '@moonbrand/shared/domain/models';
 
 import { errorMessage } from '../../core/errors';
 import { pageHeader } from '../../core/layout/page-header';
@@ -13,8 +13,11 @@ import { ToastService } from '../../ui/toast';
 import { AdminTabs, when } from './admin-ui';
 
 // Quale modello e quanto ragionamento usano la chat e ogni strumento del motore. Si salvano nel DB e il worker li legge a
-// ogni lavoro: valgono dal turno di chat dopo, senza riavviare niente. Il nome del modello non si controlla qui: se non
-// esiste, il lavoro fallisce e lo dice.
+// ogni lavoro: valgono dal turno di chat dopo, senza riavviare niente. Le tendine vengono dal catalogo che il worker scrive
+// dalle fonti a runtime (Pi, Google, Atlas, ElevenLabs) e rinfresca ogni ora; finché per una riga non c'è catalogo, il nome
+// si scrive a mano.
+
+type Row = 'chat' | ModelTool;
 
 const TOOLS: Record<ModelTool, { label: string; hint: string }> = {
   testi: { label: 'Testi', hint: 'scrivi_copy, i brief, scrivi_parlato e scrivi_testo_canzone · un modello di Gemini' },
@@ -43,8 +46,9 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
       @if (form(); as f) {
         <form class="panel" (submit)="save($event)">
           <p class="caption">
-            Valgono dal turno di chat dopo il salvataggio, senza riavvii. Il nome del modello non si controlla qui: se non esiste, il lavoro fallisce e lo dice.
-            Il ragionamento vale per la chat e per gli strumenti su Gemini; «predefinito» lascia decidere al modello.
+            Valgono dal turno di chat dopo il salvataggio, senza riavvii. Le tendine mostrano i modelli che il motore trova dai fornitori con una chiave
+            configurata; il ragionamento vale per la chat e per gli strumenti su Gemini, «predefinito» lascia decidere al modello, e si spegne se il modello
+            scelto non ragiona. {{ catalogStamp() }}
           </p>
           <div class="scroll">
             <table class="models">
@@ -57,8 +61,14 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
                     <strong>Chat</strong>
                     <div class="caption">Pi: fornitore/modello, es. anthropic/claude-opus-5-5</div>
                   </td>
-                  <td><input type="text" required [value]="f.chat.model" (input)="setChat('model', $any($event.target).value)" /></td>
-                  <td><mb-select [options]="levels" [value]="f.chat.thinking" (changed)="setChat('thinking', $event)" /></td>
+                  <td>
+                    @if (options().chat; as opts) {
+                      <mb-select [options]="opts" [value]="f.chat.model" (changed)="setChat('model', $event)" />
+                    } @else {
+                      <input type="text" required [value]="f.chat.model" (input)="setChat('model', $any($event.target).value)" />
+                    }
+                  </td>
+                  <td><mb-select [options]="levels" [value]="f.chat.thinking" [disabled]="!reasons('chat')" (changed)="setChat('thinking', $event)" /></td>
                 </tr>
                 @for (tool of tools; track tool) {
                   <tr>
@@ -66,10 +76,16 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
                       <strong>{{ labels[tool].label }}</strong>
                       <div class="caption">{{ labels[tool].hint }}</div>
                     </td>
-                    <td><input type="text" required [value]="f.tools[tool].model" (input)="setTool(tool, 'model', $any($event.target).value)" /></td>
+                    <td>
+                      @if (options()[tool]; as opts) {
+                        <mb-select [options]="opts" [value]="f.tools[tool].model" (changed)="setTool(tool, 'model', $event)" />
+                      } @else {
+                        <input type="text" required [value]="f.tools[tool].model" (input)="setTool(tool, 'model', $any($event.target).value)" />
+                      }
+                    </td>
                     <td>
                       @if (thinks(tool)) {
-                        <mb-select [options]="toolLevels" [value]="f.tools[tool].thinking ?? ''" (changed)="setTool(tool, 'thinking', $event)" />
+                        <mb-select [options]="toolLevels" [value]="f.tools[tool].thinking ?? ''" [disabled]="!reasons(tool)" (changed)="setTool(tool, 'thinking', $event)" />
                       } @else {
                         <span class="caption">—</span>
                       }
@@ -99,9 +115,10 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
     .models td {
       vertical-align: top;
     }
-    .models input {
+    .models input,
+    .models td > mb-select {
       width: 100%;
-      min-width: 260px;
+      min-width: 320px;
       box-sizing: border-box;
     }
     .models mb-select {
@@ -131,6 +148,21 @@ export class AdminModelsPage {
   protected readonly levels = LEVELS;
   protected readonly toolLevels: SelectOption[] = [{ value: '', label: 'predefinito' }, ...LEVELS];
 
+  // Le opzioni di ogni riga dal catalogo, a gruppi per fonte; null se per quella riga il catalogo non c'è (si scrive a mano).
+  // Il modello salvato che nel catalogo non c'è più resta scelto, segnato.
+  protected readonly options = computed<Record<Row, SelectOption[] | null>>(() => {
+    const form = this.form();
+    const build = (row: Row): SelectOption[] | null => {
+      const models = this.catalog(row);
+      if (models.length === 0) return null;
+      const current = row === 'chat' ? form?.chat.model : form?.tools[row].model;
+      const list = models.map((model) => ({ value: model.id, label: model.label && model.label !== model.id ? `${model.id} · ${model.label}` : model.id, group: model.source }));
+      if (current && !models.some((model) => model.id === current)) list.unshift({ value: current, label: `${current} (non nel catalogo)`, group: 'Salvato' });
+      return list;
+    };
+    return Object.fromEntries((['chat', ...MODEL_TOOLS] as Row[]).map((row) => [row, build(row)])) as Record<Row, SelectOption[] | null>;
+  });
+
   constructor() {
     pageHeader(() => [{ label: 'Admin', link: '/admin' }, { label: 'Modelli' }]);
     void this.load();
@@ -140,10 +172,23 @@ export class AdminModelsPage {
     return THINKING_TOOLS.includes(tool);
   }
 
+  // Se il modello scelto ragiona: no solo quando il catalogo dice di no.
+  protected reasons(row: Row): boolean {
+    const form = this.form();
+    const current = row === 'chat' ? form?.chat.model : form?.tools[row].model;
+    return this.catalog(row).find((model) => model.id === current)?.thinking !== false;
+  }
+
   protected stamp(): string {
     const current = this.data();
     if (!current?.updatedAt) return 'Valgono i predefiniti del motore.';
     return `Salvati ${when(current.updatedAt)}${current.updatedBy ? ` da ${current.updatedBy}` : ''}.`;
+  }
+
+  protected catalogStamp(): string {
+    const current = this.data();
+    if (!current?.catalog) return 'Il motore non ha ancora scritto il catalogo dei modelli: i nomi si scrivono a mano.';
+    return `Catalogo del motore aggiornato ${when(current.catalogAt)}.`;
   }
 
   protected setChat(key: 'model' | 'thinking', value: string): void {
@@ -154,7 +199,14 @@ export class AdminModelsPage {
     this.form.update((f) => {
       if (!f) return f;
       const { thinking: _thinking, ...rest } = f.tools[tool];
-      const choice = key === 'model' ? { ...f.tools[tool], model: value } : { ...rest, ...(value && { thinking: value as ThinkingLevel }) };
+      let choice: ModelSettings['tools'][ModelTool];
+      if (key === 'model') {
+        // Un modello che non ragiona perde il livello.
+        const reasons = this.catalog(tool).find((model) => model.id === value)?.thinking !== false;
+        choice = reasons ? { ...f.tools[tool], model: value } : { ...rest, model: value };
+      } else {
+        choice = { ...rest, ...(value && { thinking: value as ThinkingLevel }) };
+      }
       return { ...f, tools: { ...f.tools, [tool]: choice } };
     });
   }
@@ -194,5 +246,10 @@ export class AdminModelsPage {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private catalog(row: Row): CatalogModel[] {
+    const catalog = this.data()?.catalog;
+    return (row === 'chat' ? catalog?.chat : catalog?.tools[row]) ?? [];
   }
 }

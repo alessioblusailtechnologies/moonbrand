@@ -2,7 +2,7 @@ import type { AiStep } from '../ai/steps';
 import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
-import type { ModelSettings } from '../domain/models';
+import type { ModelCatalog, ModelSettings } from '../domain/models';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { SubscriptionPlanId } from '../domain/subscription';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
@@ -1043,6 +1043,9 @@ export interface AdminModelSettings {
   settings: ModelSettings;
   updatedAt: string | null;
   updatedBy: string | null;
+  // Il catalogo che il worker scrive (domain/models), con quando l'ha scritto; null finché il worker non è mai partito.
+  catalog: ModelCatalog | null;
+  catalogAt: string | null;
 }
 
 export type AdminModelSettingsRequest = ModelSettings;
