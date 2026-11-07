@@ -15,16 +15,18 @@ import { brandFolder, credits, download, failure, PARALLEL, SAVE_PATH, text, typ
 
 // Il modello delle immagini dalla sezione Modelli dell'admin (lib/settings.ts): Gemini, o un modello di Atlas.
 const DEFAULT_IMAGE = toolModel('immagini');
-// Il modello delle clip per tipo di scena, scelto il 27/10 guardando le stesse richieste sui cinque modelli migliori di
+// I modelli delle clip per tipo di scena dalla sezione Modelli dell'admin (lib/settings.ts): le persone e tutto il resto, da
+// solo testo o da un'immagine. I predefiniti (domain/models) vengono dalla prova del 27/10 sui cinque modelli migliori di
 // Atlas (prova-modelli-video): Kling 4.0 per le persone, Omni 1.1 Flash per tutto il resto.
-const OMNI = { fromImage: 'google/gemini-omni-1.1-flash/image-to-video', fromText: 'google/gemini-omni-1.1-flash/text-to-video' };
+const PEOPLE = { fromImage: toolModel('clip_persone_img'), fromText: toolModel('clip_persone') };
+const OTHER = { fromImage: toolModel('clip_altro_img'), fromText: toolModel('clip_altro') };
 const CLIP_MODELS = {
-  persone: { fromImage: 'kwaivgi/kling-v4.0/image-to-video', fromText: 'kwaivgi/kling-v4.0/text-to-video' },
-  prodotto: OMNI,
-  luoghi: OMNI,
-  mani: OMNI,
-  parlato: OMNI,
-  altro: OMNI,
+  persone: PEOPLE,
+  prodotto: OTHER,
+  luoghi: OTHER,
+  mani: OTHER,
+  parlato: OTHER,
+  altro: OTHER,
 };
 const CLIP_TYPES = Object.keys(CLIP_MODELS) as [keyof typeof CLIP_MODELS, ...(keyof typeof CLIP_MODELS)[]];
 const CLIP_RESOLUTION = '1080p';

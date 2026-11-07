@@ -3,7 +3,7 @@ import type pg from 'pg';
 import { z } from 'zod';
 
 import type { AdminModelSettings, AdminModelSettingsRequest } from '@moonbrand/shared/api/contract';
-import { mergeModelSettings, THINKING_LEVELS, type ModelCatalog, type ModelSettingsPatch } from '@moonbrand/shared/domain/models';
+import { mergeModelSettings, MODEL_TOOLS, THINKING_LEVELS, type ModelCatalog, type ModelSettingsPatch, type ModelTool } from '@moonbrand/shared/domain/models';
 
 // La sezione Modelli dell'admin: quale modello e quanto ragionamento usano la chat e gli strumenti del motore. Stanno in
 // presenza.settings (chiave models) sopra i predefiniti condivisi (domain/models); il worker li legge a ogni lavoro, quindi
@@ -23,7 +23,7 @@ const schema = z.object({
     model: model.regex(/^[\w.-]+\/[\w.:-]+$/, 'Il modello della chat è fornitore/modello, come anthropic/claude-opus-5-5.'),
     thinking,
   }),
-  tools: z.object({ testi: choice, immagini: choice, vista: choice, ricerca: choice, voce: choice, musica: choice }),
+  tools: z.object(Object.fromEntries(MODEL_TOOLS.map((tool) => [tool, choice])) as Record<ModelTool, typeof choice>),
 }) satisfies z.ZodType<AdminModelSettingsRequest>;
 
 interface Row {

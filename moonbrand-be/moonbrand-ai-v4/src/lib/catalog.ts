@@ -15,6 +15,7 @@ import { openRouter } from './prices';
 // - testi, vista, ricerca: i modelli Google che fanno generateContent e che OpenRouter dà con uscita solo testo (la vista
 //   vuole anche le immagini in ingresso); il ragionamento dal flag thinking di Google.
 // - immagini: i modelli Google con uscita immagine, più i modelli Image di Atlas da testo o da immagine.
+// - clip: i modelli Video di Atlas, da testo (TEXT-TO-VIDEO) per le righe da testo e da immagine (IMAGE-TO-VIDEO) per le altre.
 // - voce: i modelli ElevenLabs che fanno text-to-speech.
 // - musica: i modelli Suno di Atlas, perché genera_musica e genera_canzone parlano il formato di Suno.
 // Se una fonte non risponde, per la sua parte resta l'ultimo catalogo scritto.
@@ -104,19 +105,27 @@ async function googleModels(apiKey: string): Promise<GoogleParts> {
   return parts;
 }
 
-async function atlasModels(apiKey: string): Promise<{ image: CatalogModel[]; music: CatalogModel[] }> {
+interface AtlasParts {
+  image: CatalogModel[];
+  clipText: CatalogModel[];
+  clipImage: CatalogModel[];
+  music: CatalogModel[];
+}
+
+async function atlasModels(apiKey: string): Promise<AtlasParts> {
   const parsed = await json<{ data?: AtlasModel[] } | AtlasModel[]>(`${ATLAS_API}/models`, { authorization: `Bearer ${apiKey}`, 'user-agent': 'curl/8.5.0' });
   const models = Array.isArray(parsed) ? parsed : (parsed.data ?? []);
   const item = (model: AtlasModel): CatalogModel => ({ id: model.model, ...(model.displayName && { label: model.displayName }), source: 'Atlas' });
-  const image = models
-    .filter((model) => model.type === 'Image' && (model.categories ?? []).some((category) => category === 'TEXT-TO-IMAGE' || category === 'IMAGE-TO-IMAGE'))
-    .map(item)
-    .sort(byId);
+  const of = (type: string, ...categories: string[]) =>
+    models
+      .filter((model) => model.type === type && (model.categories ?? []).some((category) => categories.includes(category)))
+      .map(item)
+      .sort(byId);
   const music = models
     .filter((model) => model.type === 'Audio' && model.model.startsWith('suno/'))
     .map(item)
     .sort(byId);
-  return { image, music };
+  return { image: of('Image', 'TEXT-TO-IMAGE', 'IMAGE-TO-IMAGE'), clipText: of('Video', 'TEXT-TO-VIDEO'), clipImage: of('Video', 'IMAGE-TO-VIDEO'), music };
 }
 
 async function elevenLabsModels(apiKey: string): Promise<CatalogModel[]> {
@@ -154,6 +163,10 @@ export async function buildCatalog(keys: CatalogKeys, previous?: ModelCatalog | 
       vista: google?.vision ?? keep('vista'),
       ricerca: google?.text ?? keep('ricerca'),
       immagini: [...(google?.image ?? kept('Gemini')), ...(atlas?.image ?? kept('Atlas'))],
+      clip_persone: atlas?.clipText ?? keep('clip_persone'),
+      clip_persone_img: atlas?.clipImage ?? keep('clip_persone_img'),
+      clip_altro: atlas?.clipText ?? keep('clip_altro'),
+      clip_altro_img: atlas?.clipImage ?? keep('clip_altro_img'),
       voce: eleven ?? keep('voce'),
       musica: atlas?.music ?? keep('musica'),
     },

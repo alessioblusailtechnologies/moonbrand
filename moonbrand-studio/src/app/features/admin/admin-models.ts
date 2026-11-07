@@ -22,6 +22,10 @@ type Row = 'chat' | ModelTool;
 const TOOLS: Record<ModelTool, { label: string; hint: string }> = {
   testi: { label: 'Testi', hint: 'scrivi_copy, i brief, scrivi_parlato e scrivi_testo_canzone · un modello di Gemini' },
   immagini: { label: 'Immagini', hint: 'genera_immagine · un modello di Gemini o di Atlas' },
+  clip_persone: { label: 'Clip con persone, da testo', hint: 'genera_clip con tipo persone, senza immagine di partenza · un modello video di Atlas' },
+  clip_persone_img: { label: 'Clip con persone, da immagine', hint: 'genera_clip con tipo persone, da un fotogramma della cartella · un modello video di Atlas' },
+  clip_altro: { label: 'Altre clip, da testo', hint: 'genera_clip per prodotto, luoghi, mani, parlato e altro, senza immagine · un modello video di Atlas' },
+  clip_altro_img: { label: 'Altre clip, da immagine', hint: 'genera_clip per prodotto, luoghi, mani, parlato e altro, da un fotogramma · un modello video di Atlas' },
   vista: { label: 'Vista', hint: 'guarda_file, i controlli di renderizza e controlla_video · un modello di Gemini' },
   ricerca: { label: 'Ricerca web', hint: 'cerca_web con la ricerca Google · un modello di Gemini' },
   voce: { label: 'Voce fuori campo', hint: 'genera_voce · un modello di ElevenLabs' },

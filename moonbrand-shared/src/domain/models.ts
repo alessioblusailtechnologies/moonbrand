@@ -5,9 +5,10 @@
 export const THINKING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const;
 export type ThinkingLevel = (typeof THINKING_LEVELS)[number];
 
-// Gli strumenti con un modello loro. Ragionano solo quelli su Gemini (testi, vista, ricerca): il modello delle immagini,
-// la voce di ElevenLabs e Suno non hanno un livello.
-export const MODEL_TOOLS = ['testi', 'immagini', 'vista', 'ricerca', 'voce', 'musica'] as const;
+// Gli strumenti con un modello loro. Le clip (genera_clip, su Atlas) hanno quattro modelli: per le scene con persone e per
+// tutto il resto, da solo testo o da un'immagine di partenza. Ragionano solo quelli su Gemini (testi, vista, ricerca): il
+// modello delle immagini, le clip, la voce di ElevenLabs e Suno non hanno un livello.
+export const MODEL_TOOLS = ['testi', 'immagini', 'clip_persone', 'clip_persone_img', 'clip_altro', 'clip_altro_img', 'vista', 'ricerca', 'voce', 'musica'] as const;
 export type ModelTool = (typeof MODEL_TOOLS)[number];
 export const THINKING_TOOLS: readonly ModelTool[] = ['testi', 'vista', 'ricerca'];
 
@@ -34,6 +35,11 @@ export const DEFAULT_MODEL_SETTINGS: ModelSettings = {
   tools: {
     testi: { model: 'gemini-4-argon' },
     immagini: { model: 'gemini-3-pro-image' },
+    // Dalla prova del 27/10 sui cinque modelli video migliori di Atlas: Kling 4.0 per le persone, Omni 1.1 Flash per il resto.
+    clip_persone: { model: 'kwaivgi/kling-v4.0/text-to-video' },
+    clip_persone_img: { model: 'kwaivgi/kling-v4.0/image-to-video' },
+    clip_altro: { model: 'google/gemini-omni-1.1-flash/text-to-video' },
+    clip_altro_img: { model: 'google/gemini-omni-1.1-flash/image-to-video' },
     vista: { model: 'gemini-3.8-flash' },
     ricerca: { model: 'gemini-3.8-flash' },
     voce: { model: 'eleven_v3' },
