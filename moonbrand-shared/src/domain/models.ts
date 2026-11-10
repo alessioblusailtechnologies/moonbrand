@@ -2,7 +2,9 @@
 // Modelli) e stanno nel DB (presenza.settings, chiave models). Il worker li legge a ogni lavoro e li passa alla chat, quindi
 // valgono dal turno dopo senza riavviare niente. Qui i predefiniti, gli stessi che il motore aveva nel codice.
 
-export const THINKING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const;
+// I livelli di ragionamento di Pi (MODEL_THINKING_LEVELS di @earendil-works/pi-ai): off, i livelli del ragionamento e max.
+// max è di Pi (la chat), non di Gemini: per i tool su Gemini vale high, come xhigh.
+export const THINKING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] as const;
 export type ThinkingLevel = (typeof THINKING_LEVELS)[number];
 
 // Gli strumenti con un modello loro. Le clip (genera_clip, su Atlas) hanno quattro modelli: per le scene con persone e per
@@ -69,6 +71,9 @@ export interface CatalogModel {
   label?: string;
   // false: non ragiona, quindi il livello non si sceglie; assente: non si sa.
   thinking?: boolean;
+  // I livelli di ragionamento che il modello supporta davvero (da Pi, getSupportedThinkingLevels). Assente: non si sa,
+  // la tendina mostra la lista intera. Un elenco vuoto vale «nessun livello», come thinking false.
+  thinkingLevels?: ThinkingLevel[];
   // Da dove viene, per i gruppi della tendina: il fornitore di Pi, Gemini, Atlas o ElevenLabs.
   source: string;
 }

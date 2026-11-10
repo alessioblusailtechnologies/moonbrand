@@ -1,12 +1,14 @@
 import { spawn } from 'node:child_process';
-import path from 'node:path';
 
 import { GoogleGenAI } from '@google/genai';
+import { getSupportedThinkingLevels, type Api, type Model } from '@earendil-works/pi-ai';
+import { getBuiltinModel } from '@earendil-works/pi-ai/providers/all';
 import type { Pool } from 'pg';
 
 import type { CatalogModel, ModelCatalog, ModelTool } from '@moonbrand/shared/domain/models';
 
 import type { AtlasModel } from '../jobs/chat/atlas';
+import { piCli } from './pi-cli';
 import { openRouter } from './prices';
 
 // Il catalogo dei modelli tra cui l'admin sceglie nella sezione Modelli dello studio (domain/models): lo scrive il worker in
@@ -22,8 +24,6 @@ import { openRouter } from './prices';
 
 const KEY = 'models.catalog';
 export const CATALOG_MS = 60 * 60_000;
-// Il CLI di Pi, come in jobs/chat/chat.ts.
-const PI_CLI = process.env.PI_CLI || path.join(process.env.APPDATA ?? '', 'npm/node_modules/@earendil-works/pi-coding-agent/dist/cli.js');
 const ATLAS_API = 'https://api.atlascloud.ai/api/v1';
 const ELEVENLABS_API = 'https://api.elevenlabs.io/v1';
 const TIMEOUT_MS = 60_000;
@@ -56,14 +56,27 @@ function run(command: string, args: string[]): Promise<string> {
 }
 
 // pi --list-models stampa una tabella: provider, model, context, max-out, thinking (yes/no), images, con le colonne separate da
-// almeno due spazi.
+// almeno due spazi. Non dice quali livelli di ragionamento il modello accetta: quelli vengono dal catalogo statico di Pi
+// (getBuiltinModel + getSupportedThinkingLevels), lo stesso che Pi usa per /thinking. Per i modelli non nel catalogo statico
+// (es. quelli di models.json) restano assenti e la tendina mostra la lista intera.
+const builtinModel = getBuiltinModel as unknown as (provider: string, id: string) => Model<Api> | undefined;
+
 async function piModels(): Promise<CatalogModel[]> {
-  const output = await run(process.execPath, [PI_CLI, '--list-models']);
+  const output = await run(process.execPath, [piCli(), '--list-models']);
   return output
     .split(/\r?\n/)
     .map((line) => line.trim().split(/\s{2,}/))
     .filter((columns) => columns.length >= 5 && columns[0] !== 'provider')
-    .map(([provider, model, , , thinking]) => ({ id: `${provider}/${model}`, thinking: thinking === 'yes', source: provider! }))
+    .map(([provider, model, , , thinking]) => {
+      const builtin = builtinModel(provider!, model!);
+      const thinkingLevels = builtin ? getSupportedThinkingLevels(builtin) : undefined;
+      return {
+        id: `${provider}/${model}`,
+        thinking: thinking === 'yes',
+        ...(thinkingLevels && { thinkingLevels }),
+        source: provider!,
+      };
+    })
     .sort(byId);
 }
 

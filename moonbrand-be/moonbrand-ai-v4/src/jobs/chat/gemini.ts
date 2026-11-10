@@ -15,13 +15,15 @@ import { measured, MIME_TYPES } from './servizi';
 const INLINE_BYTES = 15 * 1024 * 1024;
 
 // Il ragionamento di Gemini dal livello scelto dall'admin (domain/models): Gemini ha minimal, low, medium e high; off è un
-// budget zero (i modelli che non si spengono ragionano al minimo), xhigh vale high. Senza livello, il predefinito del modello.
+// budget zero (i modelli che non si spengono ragionano al minimo), xhigh e max (di Pi, la chat) valgono high. Senza livello,
+// il predefinito del modello.
 const LEVELS: Record<Exclude<ThinkingLevel, 'off'>, GeminiLevel> = {
   minimal: GeminiLevel.MINIMAL,
   low: GeminiLevel.LOW,
   medium: GeminiLevel.MEDIUM,
   high: GeminiLevel.HIGH,
   xhigh: GeminiLevel.HIGH,
+  max: GeminiLevel.HIGH,
 };
 
 export function thinkingConfig(level: ThinkingLevel | undefined): Pick<GenerateContentConfig, 'thinkingConfig'> | undefined {

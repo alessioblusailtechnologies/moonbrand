@@ -32,8 +32,6 @@ const TOOLS: Record<ModelTool, { label: string; hint: string }> = {
   musica: { label: 'Musica e canzoni', hint: 'genera_musica e genera_canzone · un modello Suno su Atlas' },
 };
 
-const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, label: level }));
-
 @Component({
   selector: 'mb-admin-models',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,7 +70,7 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
                       <input type="text" required [value]="f.chat.model" (input)="setChat('model', $any($event.target).value)" />
                     }
                   </td>
-                  <td><mb-select [options]="levels" [value]="f.chat.thinking" [disabled]="!reasons('chat')" (changed)="setChat('thinking', $event)" /></td>
+                  <td><mb-select [options]="levelsFor('chat')" [value]="thinkingValue('chat')" [disabled]="!reasons('chat')" (changed)="setChat('thinking', $event)" /></td>
                 </tr>
                 @for (tool of tools; track tool) {
                   <tr>
@@ -89,7 +87,7 @@ const LEVELS: SelectOption[] = THINKING_LEVELS.map((level) => ({ value: level, l
                     </td>
                     <td>
                       @if (thinks(tool)) {
-                        <mb-select [options]="toolLevels" [value]="f.tools[tool].thinking ?? ''" [disabled]="!reasons(tool)" (changed)="setTool(tool, 'thinking', $event)" />
+                        <mb-select [options]="toolLevelsFor(tool)" [value]="thinkingValue(tool)" [disabled]="!reasons(tool)" (changed)="setTool(tool, 'thinking', $event)" />
                       } @else {
                         <span class="caption">—</span>
                       }
@@ -149,8 +147,6 @@ export class AdminModelsPage {
 
   protected readonly tools = MODEL_TOOLS;
   protected readonly labels = TOOLS;
-  protected readonly levels = LEVELS;
-  protected readonly toolLevels: SelectOption[] = [{ value: '', label: 'predefinito' }, ...LEVELS];
 
   // Le opzioni di ogni riga dal catalogo, a gruppi per fonte; null se per quella riga il catalogo non c'è (si scrive a mano).
   // Il modello salvato che nel catalogo non c'è più resta scelto, segnato.
@@ -178,9 +174,48 @@ export class AdminModelsPage {
 
   // Se il modello scelto ragiona: no solo quando il catalogo dice di no.
   protected reasons(row: Row): boolean {
+    const model = this.catalog(row).find((item) => item.id === this.selectedModel(row));
+    if (!model) return true;
+    if (model.thinking === false) return false;
+    if (model.thinkingLevels && model.thinkingLevels.length === 0) return false;
+    return true;
+  }
+
+  protected selectedModel(row: Row): string | undefined {
     const form = this.form();
-    const current = row === 'chat' ? form?.chat.model : form?.tools[row].model;
-    return this.catalog(row).find((model) => model.id === current)?.thinking !== false;
+    return row === 'chat' ? form?.chat.model : form?.tools[row].model;
+  }
+
+  // I livelli che la tendina mostra per il modello scelto: quelli che il modello supporta davvero (dal catalogo) o, se
+  // non si sanno, l'intera lista.
+  protected levelsFor(row: Row): SelectOption[] {
+    const allowed = this.catalog(row).find((item) => item.id === this.selectedModel(row))?.thinkingLevels;
+    return (allowed ?? THINKING_LEVELS).map((level) => ({ value: level, label: level }));
+  }
+
+  protected toolLevelsFor(tool: ModelTool): SelectOption[] {
+    return [{ value: '', label: 'predefinito' }, ...this.levelsFor(tool)];
+  }
+
+  // Il valore da mostrare nella tendina: quello salvato se è ancora tra i livelli permessi, altrimenti il primo permesso.
+  protected thinkingValue(row: Row): string {
+    const form = this.form();
+    const saved = row === 'chat' ? (form?.chat.thinking ?? '') : (form?.tools[row].thinking ?? '');
+    const options = row === 'chat' ? this.levelsFor(row) : this.toolLevelsFor(row);
+    if (options.some((option) => option.value === saved)) return saved;
+    return options[0]?.value ?? '';
+  }
+
+  // Il livello da tenere quando si sceglie un modello: quello salvato se il modello lo supporta, altrimenti il primo dei
+  // suoi livelli; undefined se non ragiona o non se ne sa niente.
+  private thinkingForModel(row: Row, modelId: string, saved: ThinkingLevel | undefined): ThinkingLevel | undefined {
+    const model = this.catalog(row).find((item) => item.id === modelId);
+    if (!model) return saved;
+    if (model.thinking === false) return undefined;
+    const allowed = model.thinkingLevels;
+    if (!allowed) return saved;
+    if (allowed.length === 0) return undefined;
+    return saved && allowed.includes(saved) ? saved : allowed[0];
   }
 
   protected stamp(): string {
@@ -196,22 +231,25 @@ export class AdminModelsPage {
   }
 
   protected setChat(key: 'model' | 'thinking', value: string): void {
-    this.form.update((f) => (f ? { ...f, chat: { ...f.chat, [key]: value } } : f));
+    this.form.update((f) => {
+      if (!f) return f;
+      if (key === 'model') {
+        return { ...f, chat: { model: value, thinking: this.thinkingForModel('chat', value, f.chat.thinking) ?? f.chat.thinking } };
+      }
+      return { ...f, chat: { ...f.chat, thinking: value as ThinkingLevel } };
+    });
   }
 
   protected setTool(tool: ModelTool, key: 'model' | 'thinking', value: string): void {
     this.form.update((f) => {
       if (!f) return f;
       const { thinking: _thinking, ...rest } = f.tools[tool];
-      let choice: ModelSettings['tools'][ModelTool];
       if (key === 'model') {
-        // Un modello che non ragiona perde il livello.
-        const reasons = this.catalog(tool).find((model) => model.id === value)?.thinking !== false;
-        choice = reasons ? { ...f.tools[tool], model: value } : { ...rest, model: value };
-      } else {
-        choice = { ...rest, ...(value && { thinking: value as ThinkingLevel }) };
+        // Un modello che non ragiona (o non supporta il livello salvato) perde o aggiusta il livello.
+        const thinking = this.thinkingForModel(tool, value, f.tools[tool].thinking);
+        return { ...f, tools: { ...f.tools, [tool]: { model: value, ...(thinking && { thinking }) } } };
       }
-      return { ...f, tools: { ...f.tools, [tool]: choice } };
+      return { ...f, tools: { ...f.tools, [tool]: { ...rest, ...(value && { thinking: value as ThinkingLevel }) } } };
     });
   }
 
