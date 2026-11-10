@@ -114,7 +114,7 @@ const CREDITS = `Prima di fare un carosello o un video, di' all'utente cosa fara
 // La memoria del brand (tool ricorda), nel prompt di sistema dopo l'istruzione.
 const memory = await brandMemory(brandDir);
 // Com'è la grafica: l'HTML è il mezzo, non deve vedersi.
-const GRAPHICS = 'Post, caroselli, foto e video devono sembrare fatti da un grafico e un montatore professionisti, senza l’aspetto di una pagina HTML/CSS: niente card, box arrotondati, ombre, gradienti, badge e gli altri cliché da grafica AI.';
+const GRAPHICS = 'Post, caroselli, foto e video devono sembrare fatti da un grafico e un montatore professionisti, senza l’aspetto di una pagina HTML/CSS.';
 
 // I testi li scrive un altro modello (testi.ts): la chat li chiede ai tool e li usa così come sono.
 const WRITING = 'Caption e scritte dei post, brief di caroselli e video, parlati e testi delle canzoni li scrivono scrivi_copy, scrivi_brief_carosello, scrivi_brief_video, scrivi_parlato e scrivi_testo_canzone: seguili e usa i testi così come sono, al massimo accorciali perché stiano nella grafica. Per cambiarli richiama il tool con il testo di prima e la modifica.';
