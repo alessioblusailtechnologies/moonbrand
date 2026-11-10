@@ -449,3 +449,26 @@ migration, l'API non cambia, `AI_ENGINE` resta `v2`.
 systemctl daemon-reload && systemctl restart moonbrand-worker`. Il v2 resta installato e il deploy lo aggiorna.
 Nell'`.env` dell'API `AI_WORKER_DIR=/home/moonbrand/moonbrand/moonbrand-be/moonbrand-ai-v3` (29/10) fa vedere nello studio la
 versione del v3; tornando al v2 va tolta.
+
+## 16. Motore v4
+
+Fatto il 10/11 sera. Il v4 (`moonbrand-be/moonbrand-ai-v4`) è il worker del v3 con la chat fatta da Pi
+(`@earendil-works/pi-coding-agent`) e i tool del v3 nell'estensione `pi/moonbrand.ts`. Stessa coda, stessi job; modello e
+ragionamento di chat e tool dalla sezione Modelli dell'admin (`presenza.settings`). Niente migrazione dei brand: le chat
+aperte nel v3 ripartono senza contesto e la memoria del v4 è `memoria.md` nella cartella del brand (tool `ricorda`); le
+sessioni di Pi stanno in `<brand>/.pi-sessioni/` e tornano sullo storage con la cartella.
+
+1. Migration `20261107100000_settings.sql` (tabella `presenza.settings`).
+2. Pi globale: `npm i -g @earendil-works/pi-coding-agent@1.5.0` da root, in `/usr/lib/node_modules` (lo trova
+   `src/lib/pi-cli.ts`; altrimenti `PI_CLI` nel `.env`). Nessun `~/.pi/agent/auth.json`: Pi legge `ANTHROPIC_API_KEY` e
+   `GEMINI_API_KEY` dall'`.env` del worker. Controllo: `pi --list-models` come `moonbrand` con l'`.env` caricato.
+3. `deploy.sh` fa `npm ci` anche in `moonbrand-ai-v4`; `.env` e `.env.lambda` copiati da quelli del v3.
+4. Prova a mano in `/tmp/prova-v4` (ffmpeg, scrittura in `lavoro/`, `renderizza`, lettura fuori dal brand rifiutata):
+   30 s, 0,11 $. Al primo `renderizza` Remotion scarica Chrome headless (92 MB).
+5. `WorkingDirectory` del servizio `moonbrand-worker` e `AI_WORKER_DIR` dell'API su `moonbrand-ai-v4`, `daemon-reload`,
+   riavvio di worker e API. Nel log: «worker v4 worker-1 pronto» e «[catalogo] modelli scritti».
+
+**Per tornare indietro**: `sed -i 's#moonbrand-ai-v4$#moonbrand-ai-v3#' /etc/systemd/system/moonbrand-worker.service &&
+sed -i 's#moonbrand-ai-v4$#moonbrand-ai-v3#' /home/moonbrand/moonbrand/moonbrand-be/moonbrand-api/.env &&
+systemctl daemon-reload && systemctl restart moonbrand-worker moonbrand-api`. Il v3 resta installato e il deploy lo
+aggiorna; le chat fatte nel v4 riprese dal v3 ripartono senza contesto.
