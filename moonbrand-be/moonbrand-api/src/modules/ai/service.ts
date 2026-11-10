@@ -15,6 +15,7 @@ import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
 import type { BrandFiles } from '../brand-files/files';
+import { accountLocale, publicJobError } from './public-error';
 import { findExamplesJob, findJob, insertJob, isDraftBrand } from './repository';
 import { EXAMPLES_DIR, FOLLOW_DIR } from '../brand-files/files';
 
@@ -84,7 +85,8 @@ export function getJob(pool: pg.Pool, files: BrandFiles, identity: Identity, job
   return withIdentity(pool, identity, async (db) => {
     const found = await findJob(db, jobId);
     if (!found) throw ApiError.notFound('Lavoro non trovato.');
-    return found.brandId ? withExampleUrls(found.job, found.brandId, files) : found.job;
+    const job = { ...found.job, error: publicJobError(found.job.error, await accountLocale(db, identity.accountId)) };
+    return found.brandId ? withExampleUrls(job, found.brandId, files) : job;
   });
 }
 

@@ -15,22 +15,26 @@ export interface PendingTile {
   label?: string;
 }
 
-const SAVE_TOOLS = /^mcp__moonbrand__contenuto_(salva|aggiorna)$/;
+// contenuto_salva e contenuto_aggiorna fino al v2, salva_contenuto dal v3 (con il prefisso del server MCP nel v3).
+const SAVE_TOOLS = /^(mcp__moonbrand__)?(contenuto_(salva|aggiorna)|salva_contenuto)$/;
 
 // Le card che l'AI sta preparando, dai passaggi che generano immagini e video dopo l'ultimo salvataggio di un contenuto:
 // una per proporzione, perché foto, clip e prove intermedie diventano la stessa uscita. Un video in una proporzione
-// vale per tutta la proporzione; un file rifatto più volte si conta una volta.
-export function pendingFromSteps(steps: readonly AiStep[]): PendingTile[] {
+// vale per tutta la proporzione; un file rifatto più volte si conta una volta. running: solo i passaggi ancora in corso,
+// come nella chat, dove un file finito diventa una card da aprire nel pannello.
+export function pendingFromSteps(steps: readonly AiStep[], { running = false }: { running?: boolean } = {}): PendingTile[] {
   const lastSave = steps.reduce((last, step, index) => (step.tool && SAVE_TOOLS.test(step.tool) && step.status === 'done' ? index : last), -1);
   const byAspect = new Map<string, { video: boolean; files: Set<string>; loose: number }>();
   for (const step of steps.slice(lastSave + 1)) {
-    if (step.status === 'failed') continue;
+    if (step.status === 'failed' || (running && step.status !== 'running')) continue;
     for (const item of step.media ?? []) {
-      const group = byAspect.get(item.aspect) ?? { video: false, files: new Set<string>(), loose: 0 };
+      if (item.kind !== 'image' && item.kind !== 'video') continue;
+      const aspect = item.aspect ?? (item.kind === 'video' ? '9:16' : '1:1');
+      const group = byAspect.get(aspect) ?? { video: false, files: new Set<string>(), loose: 0 };
       if (item.kind === 'video') group.video = true;
       else if (item.file) group.files.add(item.file);
       else group.loose += 1;
-      byAspect.set(item.aspect, group);
+      byAspect.set(aspect, group);
     }
   }
   return [...byAspect].map(([aspect, group]) => ({

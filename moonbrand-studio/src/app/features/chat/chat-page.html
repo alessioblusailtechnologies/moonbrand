@@ -1,4 +1,5 @@
 @if (brands.activeBrand(); as brand) {
+  <div class="workspace" [class.with-panel]="!!panelItem()" [style.--panel-width.px]="panelWidth()">
   <section class="chat">
     <div class="thread" #thread (scroll)="scrolled()">
       @if (loading()) {
@@ -78,78 +79,40 @@
                   <mb-step-list class="tools" [steps]="block.steps" [live]="active(turn) && lastBlock" />
                 }
               }
-              @for (content of turn.contents; track content.id) {
-                <article class="content-card">
-                  <header class="content-card-head">
-                    <div class="content-card-titles">
-                      <div class="content-card-meta">
-                        <span class="badge">{{ formatLabel(content) }}</span>
-                        <span class="badge" [class.mint]="content.status === 'approved'">{{ statusLabel(content) }}</span>
-                      </div>
-                      <h3 class="strong">{{ content.title }}</h3>
-                    </div>
-                    <a class="btn btn-secondary btn-sm open-content" [routerLink]="['/contenuti', content.id]">
-                      {{ 'chat.page.openInContents' | t }} <mb-icon name="chevron-right" [size]="14" />
-                    </a>
-                  </header>
-                  <mb-content-preview [content]="content" [compact]="true" />
-                </article>
-              }
-              @for (proposal of turn.proposals; track proposal.content.id) {
-                <article class="content-card">
-                  <header class="content-card-head">
-                    <div class="content-card-titles">
-                      <div class="content-card-meta">
-                        <span class="badge">{{ formatLabel(proposal.content) }}</span>
-                        @if (proposal.publications.length > 0) {
-                          <span class="badge" [class]="stateTone(proposalState(proposal))">{{ stateLabel(proposal) }}</span>
+              @if (turn.cards.length > 0) {
+                <!-- Quello che il turno ha prodotto: card piccole, un click le apre nel pannello. -->
+                <div class="cards">
+                  @for (card of turn.cards.slice(0, turn.cards.length - turn.hiddenCards); track card.id) {
+                    <button
+                      class="card"
+                      type="button"
+                      [class.open]="panelItem()?.id === card.id"
+                      [attr.aria-label]="'chat.artifacts.open' | t: { title: card.title }"
+                      (click)="openItem(card.id)"
+                    >
+                      <span class="card-thumb">
+                        @if (card.thumb) {
+                          <img [src]="card.thumb" alt="" loading="lazy" />
                         } @else {
-                          <span class="badge">{{ 'chat.publish.kind' | t }}</span>
+                          <mb-icon [name]="kindIcon[card.kind]" [size]="18" />
                         }
-                      </div>
-                      <h3 class="strong">{{ proposal.content.title }}</h3>
-                    </div>
-                    <a class="btn btn-secondary btn-sm open-content" [routerLink]="['/contenuti', proposal.content.id]">
-                      {{ 'chat.page.openInContents' | t }} <mb-icon name="chevron-right" [size]="14" />
-                    </a>
-                  </header>
-                  <mb-content-preview [content]="proposal.content" [compact]="true" />
-                  @if (proposal.publications.length > 0) {
-                    <ul class="publications">
-                      @for (item of proposal.publications; track item.channel) {
-                        <li class="publication">
-                          <span class="strong-sm">{{ channelLabel(item.channel) }}</span>
-                          @switch (item.status) {
-                            @case ('published') {
-                              <span class="badge mint">{{ 'chat.publish.published' | t }}</span>
-                              @if (item.url) {
-                                <a class="caption" [href]="item.url" target="_blank" rel="noopener">{{ 'chat.publish.openPost' | t }}</a>
-                              }
-                            }
-                            @case ('publishing') {
-                              <span class="caption thinking"><span class="spinner"></span> {{ 'chat.publish.publishing' | t }}</span>
-                            }
-                            @case ('failed') {
-                              <span class="caption failed">{{ 'chat.publish.failed' | t: { error: problem(item) } }}</span>
-                            }
-                          }
-                        </li>
-                      }
-                    </ul>
+                      </span>
+                      <span class="card-texts">
+                        <span class="strong-sm card-title">{{ card.title }}</span>
+                        <span class="caption">{{ cardLabel(card) }}</span>
+                      </span>
+                    </button>
                   }
-                  @if (toPublish(proposal); as channels) {
-                    @if (channels.length > 0) {
-                      <button class="btn btn-primary btn-sm publish" type="button" [disabled]="starting().has(proposal.content.id)" (click)="publish(proposal)">
-                        <mb-icon name="send" [size]="14" />
-                        @if (proposal.publications.length > 0) {
-                          {{ 'chat.publish.retry' | t }}
-                        } @else {
-                          {{ 'chat.publish.button' | t: { channels: channelNames(channels) } }}
-                        }
-                      </button>
-                    }
+                  @if (turn.hiddenCards > 0) {
+                    <button class="cards-toggle" type="button" (click)="toggleCards(turn.id)">
+                      <mb-icon name="chevron-down" [size]="14" /> {{ 'chat.artifacts.showMore' | t: { n: turn.hiddenCards } }}
+                    </button>
+                  } @else if (turn.cards.length > CARDS_COLLAPSE) {
+                    <button class="cards-toggle" type="button" (click)="toggleCards(turn.id)">
+                      {{ 'chat.artifacts.showLess' | t }}
+                    </button>
                   }
-                </article>
+                </div>
               }
               <mb-pending-media [tiles]="turn.pending" />
               @if (waiting(turn.blocks, turn)) {
@@ -169,27 +132,37 @@
 
     @if (current()) {
       <div class="bottom">
-        @if (contents().length > 0) {
-          <div class="saved" [attr.aria-label]="'chat.page.savedContents' | t">
-            @for (content of contents(); track content.id) {
-              <a class="saved-card" [routerLink]="['/contenuti', content.id]">
-                <span class="thumb">
-                  @if (coverOf(content); as cover) {
-                    <img [src]="cover" alt="" loading="lazy" />
-                  }
-                </span>
-                <span class="saved-texts">
-                  <span class="strong-sm saved-title">{{ content.title }}</span>
-                  <span class="caption">{{ formatLabel(content) }} · {{ statusLabel(content) }}</span>
-                </span>
-              </a>
-            }
-          </div>
-        }
         <ng-container [ngTemplateOutlet]="composerBox" />
       </div>
     }
   </section>
+
+  @if (panelItem(); as item) {
+    <!-- Il bordo da trascinare per allargare o stringere il pannello; con le frecce dalla tastiera. -->
+    <div
+      class="resizer"
+      role="separator"
+      tabindex="0"
+      aria-orientation="vertical"
+      [attr.aria-label]="'chat.artifacts.resize' | t"
+      [attr.aria-valuenow]="panelWidth()"
+      (pointerdown)="startResize($event)"
+      (keydown.arrowleft)="resizeByKey(24)"
+      (keydown.arrowright)="resizeByKey(-24)"
+    ></div>
+    <aside class="side">
+      <span class="grip" aria-hidden="true" (pointerdown)="sheetStart($event)" (pointerup)="sheetEnd($event)"></span>
+      <mb-artifact-panel
+        [item]="item"
+        [groups]="groups()"
+        [starting]="starting()"
+        (closed)="closePanel()"
+        (selected)="openItem($event)"
+        (publish)="publish($event)"
+      />
+    </aside>
+  }
+  </div>
 
   <!-- La casella: al centro del benvenuto per una conversazione nuova, in fondo per una aperta. -->
   <ng-template #composerBox>
@@ -210,6 +183,45 @@
   <a class="kit" routerLink="/impostazioni" [title]="'chat.page.kitTitle' | t">
     <span class="kit-dot"></span> {{ 'chat.page.kit' | t }}
   </a>
+  @if (current() && menu().length > 0) {
+    <!-- Quello che è nato nella conversazione, come in Claude: i post in cima, poi i file per tipo. -->
+    <div class="generated" (click)="$event.stopPropagation()">
+      <button
+        class="kit panel-toggle"
+        type="button"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="menuOpen()"
+        [class.on]="menuOpen()"
+        [title]="'chat.artifacts.buttonTitle' | t"
+        (click)="toggleMenu($event)"
+      >
+        <mb-icon name="layers" [size]="14" /> {{ 'chat.artifacts.button' | t }} · {{ menu().length }}
+        <mb-icon name="chevron-down" [size]="14" />
+      </button>
+      @if (menuOpen()) {
+        <div class="generated-menu" role="menu">
+          @for (group of groups(); track group.kind) {
+            <p class="group-label">{{ groupLabel(group.kind) }}</p>
+            @for (entry of group.items; track entry.id) {
+              <button class="generated-item" type="button" role="menuitem" [class.open]="panelItem()?.id === entry.id" (click)="pickFromMenu(entry.id)">
+                <span class="card-thumb small">
+                  @if (entry.thumb) {
+                    <img [src]="entry.thumb" alt="" loading="lazy" />
+                  } @else {
+                    <mb-icon [name]="kindIcon[entry.kind]" [size]="15" />
+                  }
+                </span>
+                <span class="card-texts">
+                  <span class="strong-sm card-title">{{ entry.title }}</span>
+                  <span class="caption">{{ cardLabel(entry) }}</span>
+                </span>
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+  }
   @if (current()) {
     <button
       class="icon-btn"

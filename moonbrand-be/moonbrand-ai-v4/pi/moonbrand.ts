@@ -14,6 +14,7 @@ import { guardaServer } from '../src/jobs/chat/guarda';
 import { lambdaKeys, lambdaServer } from '../src/jobs/chat/lambda';
 import { mediaServer } from '../src/jobs/chat/media';
 import { moonbrandServer } from '../src/jobs/chat/moonbrand';
+import { mostraServer } from '../src/jobs/chat/mostra';
 import { testiServer } from '../src/jobs/chat/testi';
 import type { ToolDefinition, ToolGroup } from '../src/jobs/chat/sdk';
 import { videoServer } from '../src/jobs/chat/video';
@@ -53,6 +54,7 @@ export default function (pi: ExtensionAPI) {
     videoServer(brandDir, gemini),
     ...(lambda ? [lambdaServer(brandDir, lambda)] : []),
     web.server,
+    mostraServer(brandDir),
   ];
   for (const definition of groups.flatMap((group) => group.tools)) register(pi, brandDir, definition);
 

@@ -16,5 +16,8 @@ Strumenti in più rispetto al v3 (`src/jobs/chat/web.ts`), perché Pi non ha ric
 - `cerca_web`: Gemini 3.8 Flash con la ricerca Google, risposta con le fonti; costo = token + 0,014 $ a query.
 - `leggi_pagina`: il testo di una pagina web (niente indirizzi locali o interni), 20.000 caratteri di default; con `modo: grafica` la apre in Chrome headless e dà screenshot (salvato in lavoro/pagine/), colori e font calcolati, possibili loghi e testo (funzione nella pagina in web-stile.js).
 - `ricorda`: aggiunge una riga a `memoria.md` nella cartella del brand, anche di sua iniziativa; chat.ts la mette nel prompt di sistema di ogni chat (le ultime 8.000 battute).
+- `mostra` (`src/jobs/chat/mostra.ts`): un file del brand nel pannello dello studio accanto alla chat (documento .md/.pdf/.txt, pagina .html, immagine, video, audio); con `testo` scrive prima il file.
+
+Artefatti (`src/lib/artifacts.ts`, ARTEFATTI-STUDIO.md nella radice): quando un tool che produce un file finisce bene (renderizza, genera_immagine, genera_clip, migliora, musica, canzone, voce, effetto, esporta_video, render di Remotion da bash, mostra), il worker copia il file in `artefatti/<id>.<ext>`, lo carica subito sullo storage e scrive una riga in `presenza.artifacts`. Rifatto lo stesso percorso, la riga nuova punta alla precedente (`parent_id`). I file li riconosce `toolMedia` di moonbrand-shared dall'input del tool: niente nel prompt.
 
 Data: Pi non la dice al modello, quindi chat.ts apre ogni turno con «(Adesso è …, ora di Roma.)». Serve anche perché 26 CLAUDE.md di brand hanno ancora la sezione «Il piano» con la data del giorno in cui sono stati scritti.

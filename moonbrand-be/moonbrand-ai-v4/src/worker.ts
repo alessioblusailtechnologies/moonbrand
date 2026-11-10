@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
-import { toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
+import { toolMedia, toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
 import type { ChatJobInput, IdeasJobInput, StyleJobInput, WebsiteJobRequest, WelcomeJobInput } from '@moonbrand/shared/api/contract';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
@@ -18,6 +18,7 @@ import { archiveV1 } from './jobs/cartella/migrate';
 import { saveIdeas } from './jobs/ideas/save';
 import { saveWelcome } from './jobs/welcome/save';
 import { writeBrandLogo } from './lib/brand-logo';
+import { artifactRecorder } from './lib/artifacts';
 import { pullBrand, pushBrand } from './lib/brand-sync';
 import { CATALOG_MS, refreshCatalog } from './lib/catalog';
 import { estimatesEnv, measureEstimates, measurePrices } from './lib/estimate';
@@ -321,6 +322,13 @@ async function run(job: Job): Promise<void> {
     await writeBrandLogo(pool, path.join(BRANDS_DIR, brandId), brandId).catch((error: unknown) => console.error(`[${job.id}] logo non scritto`, error));
   }
 
+  // Nella chat i file che i tool producono diventano artefatti della conversazione (lib/artifacts.ts).
+  const conversationId = kind.reply ? (job.input as Partial<ChatJobInput> | null)?.conversationId : undefined;
+  const artifacts =
+    brandId && conversationId
+      ? artifactRecorder(pool, path.join(BRANDS_DIR, brandId), { jobId: job.id, accountId: job.account_id, brandId, conversationId })
+      : null;
+
   let launch: Awaited<ReturnType<JobKind['launch']>>;
   try {
     launch = await kind.launch(job.input, job);
@@ -393,6 +401,8 @@ async function run(job: Job): Promise<void> {
         } else if (block.type === 'tool_use') {
           const input = block.input as Record<string, unknown>;
           const known = toolStep(block.name, input, job.locale);
+          // I file che il passaggio produce: lo studio mostra i segnaposto, poi diventano artefatti.
+          const media = toolMedia(block.name, input);
           steps.set(block.id, {
             id: block.id,
             label: known?.label ?? fallbackStep,
@@ -401,6 +411,7 @@ async function run(job: Job): Promise<void> {
             kind: 'tool',
             tool: block.name,
             startedAt: now,
+            ...(media && { media }),
           });
           if (known === null) hidden.add(block.id);
           else if (known === undefined) readStep(block.id, block.name, input, fallbackStep);
@@ -413,7 +424,9 @@ async function run(job: Job): Promise<void> {
       for (const block of message.message.content) {
         if (block.type !== 'tool_result') continue;
         const step = steps.get(block.tool_use_id);
-        if (step) steps.set(step.id, { ...step, status: block.is_error ? 'failed' : 'done', endedAt: lastEventAt });
+        if (!step) continue;
+        steps.set(step.id, { ...step, status: block.is_error ? 'failed' : 'done', endedAt: lastEventAt });
+        if (!block.is_error && step.media) artifacts?.record(step.media);
       }
       changed();
     } else if (message.type === 'result') {
@@ -432,6 +445,7 @@ async function run(job: Job): Promise<void> {
   await reader.close(stopping || cancelled.has(job.id) ? 0 : READ_GRACE_MS);
   clearTimeout(flushTimer);
   await saved;
+  await artifacts?.done();
   const wasCancelled = cancelled.delete(job.id);
   if (stopping) {
     clearInterval(heartbeat);
@@ -465,6 +479,8 @@ async function run(job: Job): Promise<void> {
   clearInterval(heartbeat);
   await finish(job.id, { status: error ? 'failed' : 'done', result: outcome.result, error, steps: visible(), cost: outcome.cost, sessionId });
   console.log(`[${job.id}] ${error ? `fallito: ${error}` : 'completato'}${outcome.cost ? ` ($${outcome.cost.toFixed(4)})` : ''}`);
+  // Il motivo vero di un fallimento spesso sta solo nello stderr dello script (Pi che non parte, un'eccezione): nel log.
+  if (error && stderr.trim()) console.log(`[${job.id}] stderr: ${stderr.trim().slice(-1500)}`);
 }
 
 // cost: il costo che riporta Claude Code, cioè il totale della sessione anche quando il job ne riprende una.

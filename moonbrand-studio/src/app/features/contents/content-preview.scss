@@ -47,6 +47,21 @@
   }
 }
 
+// Nel pannello della chat: una colonna, la cornice della misura di un post sul telefono, centrata.
+:host(.stacked) {
+  gap: 14px;
+
+  .preview {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .feed {
+    width: min(420px, 100%);
+    margin: 0 auto;
+  }
+}
+
 // La cornice del canale: la larghezza di un feed sul telefono, i font di sistema come nelle app.
 .feed {
   min-width: 0;

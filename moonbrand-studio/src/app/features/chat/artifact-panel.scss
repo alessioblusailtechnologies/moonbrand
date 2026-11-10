@@ -1,0 +1,225 @@
+// Il pannello: l'intestazione ferma in alto, sotto il visualizzatore che scorre.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 14px 12px 16px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.kind-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+}
+
+.titles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  .btn {
+    gap: 4px;
+    text-decoration: none;
+  }
+}
+
+.picker {
+  flex: 1 1 180px;
+  min-width: 0;
+  max-width: 320px;
+
+  select {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  &.versions {
+    flex: 0 0 auto;
+    width: 76px;
+  }
+}
+
+.grow {
+  flex: 1;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+
+  // Pagine e PDF: l'iframe prende tutto il pannello.
+  &.flush {
+    padding: 0;
+    overflow: hidden;
+  }
+}
+
+.shot {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  cursor: zoom-in;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.player {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100% - 4px);
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+}
+
+.tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.track-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  audio {
+    width: 100%;
+  }
+}
+
+.frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--white);
+}
+
+.loading {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.document {
+  display: block;
+}
+
+.plain {
+  margin: 0;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.publish {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-card);
+}
+
+.publications {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.publication {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.publish-btn {
+  gap: 6px;
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.failed {
+  color: var(--danger);
+}
