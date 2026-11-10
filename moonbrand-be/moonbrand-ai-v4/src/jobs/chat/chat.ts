@@ -11,6 +11,7 @@ import { matchLocale } from '@moonbrand/shared/i18n/locales';
 import { estimatesFromEnv } from '../../lib/estimate';
 import { languageName, uiLocale } from '../../lib/language';
 import { measuredPrices } from '../../lib/prices';
+import { piCli } from '../../lib/pi-cli';
 import { modelSettings } from '../../lib/settings';
 import { USAGE_MESSAGE } from '../../lib/usage';
 import { MOONBRAND } from '../cartella/moonbrand';
@@ -25,7 +26,7 @@ import { brandMemory, MEMORY_FILE } from './web';
 // Dalla sezione Modelli dell'admin (lib/settings.ts, dal worker in MOONBRAND_MODELLI); a mano PI_MODEL e PI_THINKING.
 const { model: PI_MODEL, thinking: PI_THINKING } = modelSettings().chat;
 const EXTENSION = fileURLToPath(new URL('../../../pi/moonbrand.ts', import.meta.url));
-const PI_CLI = process.env.PI_CLI || path.join(process.env.APPDATA ?? '', 'npm/node_modules/@earendil-works/pi-coding-agent/dist/cli.js');
+const PI_CLI = piCli();
 
 // Il blocco «Come parli all'utente» dell'inizio del CLAUDE.md dei brand.
 const VOICE = MOONBRAND.slice(MOONBRAND.indexOf('## Come parli'));
@@ -119,7 +120,12 @@ const GRAPHICS = 'Post, caroselli, foto e video devono sembrare fatti da un graf
 // I testi li scrive un altro modello (testi.ts): la chat li chiede ai tool e li usa così come sono.
 const WRITING = 'Caption e scritte dei post, brief di caroselli e video, parlati e testi delle canzoni li scrivono scrivi_copy, scrivi_brief_carosello, scrivi_brief_video, scrivi_parlato e scrivi_testo_canzone: seguili e usa i testi così come sono, al massimo accorciali perché stiano nella grafica. Per cambiarli richiama il tool con il testo di prima e la modifica.';
 
-const SYSTEM = [VOICE, FOLDERS, GRAPHICS, WRITING, CREDITS, memory &&`## Cosa ricordi di questo brand\n\nCose imparate nelle conversazioni passate (${MEMORY_FILE}):\n\n${memory}`].filter(Boolean).join('\n\n');
+// Copertina e TikTok, come nel v3: la copertina non è un fotogramma, e TikTok ha la sua versione del video. Il resto dei
+// canali non ha una riga sua: niente che spinga Instagram verso un taglio editoriale.
+const COVER = 'La copertina di un video è un contenuto a sé, quello che si vede nella griglia e fa fermare chi scorre: non un fotogramma preso dal video, ma un’immagine pensata, con il momento più forte reso nitido, un titolo che si legge da piccolo e lo stile del brand.';
+const TIKTOK = 'Un video per TikTok ha le scritte a schermo nello stile di TikTok, copertina compresa, nei colori e nei caratteri del brand: salvalo con canale tiktok accanto alla versione per gli altri canali.';
+
+const SYSTEM = [VOICE, FOLDERS, GRAPHICS, COVER, TIKTOK, WRITING, CREDITS, memory &&`## Cosa ricordi di questo brand\n\nCose imparate nelle conversazioni passate (${MEMORY_FILE}):\n\n${memory}`].filter(Boolean).join('\n\n');
 
 // Le sessioni stanno nella cartella del brand, così tornano sullo storage con lei.
 // Pi dà un costo per risposta: il totale della sessione, che il worker si aspetta, si tiene in un file accanto.
@@ -169,16 +175,21 @@ const pi = spawn(
     SYSTEM,
     prompt,
   ],
-  { cwd: brandDir, env: withFfmpeg(process.env), stdio: ['ignore', 'pipe', 'pipe'] },
+  // Il canale IPC serve allo stop (pi/moonbrand.ts).
+  { cwd: brandDir, env: withFfmpeg(process.env), stdio: ['ignore', 'pipe', 'pipe', 'ipc'] },
 );
-pi.stderr.on('data', (chunk: Buffer) => process.stderr.write(chunk));
+pi.stderr!.on('data', (chunk: Buffer) => process.stderr.write(chunk));
 
-// Lo stop arriva dal worker sullo stdin: Pi si chiude, la sessione è già scritta e si riprende al turno dopo.
+// Lo stop arriva dal worker sullo stdin e va a Pi sul canale IPC: l'estensione conta le clip in sospeso, chiude Chrome
+// e Pi esce; la sessione è già scritta e si riprende al turno dopo. Se non esce entro STOP_GRACE_MS si termina.
+const STOP_GRACE_MS = 20_000;
 let stopped = false;
 process.stdin.on('data', (chunk: Buffer) => {
-  if (!chunk.toString().includes('stop')) return;
+  if (!chunk.toString().includes('stop') || stopped) return;
   stopped = true;
-  pi.kill();
+  if (pi.connected) pi.send('stop');
+  else pi.kill();
+  setTimeout(() => pi.kill('SIGKILL'), STOP_GRACE_MS).unref();
 });
 
 const out = (item: Record<string, unknown>) => console.log(JSON.stringify({ ...item, session_id: sessionId }));
@@ -248,8 +259,8 @@ function handle(event: Record<string, any>): void {
 
 // JSONL di Pi: si divide solo sugli a capo (readline taglierebbe anche su U+2028 e U+2029, che stanno nelle stringhe).
 let rest = '';
-pi.stdout.setEncoding('utf8');
-pi.stdout.on('data', (chunk: string) => {
+pi.stdout!.setEncoding('utf8');
+pi.stdout!.on('data', (chunk: string) => {
   rest += chunk;
   const lines = rest.split('\n');
   rest = lines.pop() ?? '';

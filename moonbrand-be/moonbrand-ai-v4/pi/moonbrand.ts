@@ -84,11 +84,29 @@ export default function (pi: ExtensionAPI) {
 
   pi.on('session_before_compact', async () => ({ cancel: true }));
 
-  pi.on('session_shutdown', async () => {
-    // Le clip avviate e non aspettate si pagano lo stesso, se Atlas le ha fatte (il costo va sullo stdout).
-    await media.close().catch((error: unknown) => console.error('clip in sospeso non controllate', error));
-    await grafica.close();
-    await web.close();
+  let closing: Promise<void> | undefined;
+  const shutdown = () =>
+    (closing ??= (async () => {
+      // Le clip avviate e non aspettate si pagano lo stesso, se Atlas le ha fatte (il costo va sullo stdout).
+      await media.close().catch((error: unknown) => console.error('clip in sospeso non controllate', error));
+      await grafica.close();
+      await web.close();
+    })());
+  pi.on('session_shutdown', shutdown);
+
+  // Lo stop della chat arriva da chat.ts sul canale IPC: si interrompe il turno come con Esc, Pi ferma i comandi di bash
+  // in corso, finisce ed esce da sé passando da session_shutdown, su Linux come su Windows (dove un segnale terminerebbe
+  // e basta). Se non esce entro STOP_GRACE_MS, si chiude qui e si esce. Il canale non tiene in vita Pi a fine turno.
+  const STOP_GRACE_MS = 10_000;
+  let context: { abort(): void } | undefined;
+  pi.on('session_start', async (_event, ctx) => {
+    context = ctx;
+  });
+  process.channel?.unref();
+  process.on('message', (message) => {
+    if (message !== 'stop') return;
+    context?.abort();
+    setTimeout(() => void shutdown().finally(() => process.exit(143)), context ? STOP_GRACE_MS : 0).unref();
   });
 }
 
