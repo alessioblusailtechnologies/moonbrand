@@ -29,6 +29,11 @@ cd ~/moonbrand/moonbrand-be/moonbrand-ai-v3
 npm ci --no-audit --no-fund >/tmp/ai-v3-ci.log 2>&1
 echo "worker v3 ok"
 
+# Il motore v4 (PRODUZIONE.md, «Motore v4»): la chat con Pi, installato a parte con npm i -g; il v3 resta per tornare indietro.
+cd ~/moonbrand/moonbrand-be/moonbrand-ai-v4
+npm ci --no-audit --no-fund >/tmp/ai-v4-ci.log 2>&1
+echo "worker v4 ok"
+
 cd ~/moonbrand/moonbrand-studio
 npm ci --no-audit --no-fund >/tmp/st-ci.log 2>&1
 npm run build >/tmp/st-build.log 2>&1
