@@ -45,8 +45,12 @@ export default function (pi: ExtensionAPI) {
   const media = mediaServer(brandDir, { gemini, atlas });
   const grafica = graficaServer(brandDir, gemini);
   const web = webServer(brandDir, gemini);
+  const moonbrand = moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir);
+  // Pi esegue insieme i tool chiamati nello stesso messaggio: con un tool di moonbrand li esegue uno dopo l'altro, così
+  // salva_contenuto parte dopo il cp o il render chiamati accanto e carica i file nuovi, non quelli di prima.
+  sequential = new Set(moonbrand.tools.map((tool) => tool.name));
   const groups: ToolGroup[] = [
-    moonbrandServer(API_URL, MOONBRAND_AGENT_TOKEN, brandDir),
+    moonbrand,
     media.server,
     grafica.server,
     ...(gemini ? [guardaServer(brandDir, gemini), testiServer(brandDir, gemini)] : []),
@@ -114,6 +118,9 @@ export default function (pi: ExtensionAPI) {
 
 // Un tool del v3 come tool di Pi: lo schema zod diventa JSON Schema per il modello, gli argomenti si rileggono con zod
 // (default e controlli come nell'SDK) e i costi delle generazioni tornano nei details.
+// I tool che fanno eseguire in ordine tutte le chiamate del loro messaggio.
+let sequential = new Set<string>();
+
 function register(pi: ExtensionAPI, brandDir: string, definition: ToolDefinition) {
   const schema = z.object(definition.inputSchema);
   const { $schema: _schema, ...parameters } = z.toJSONSchema(schema, { io: 'input', unrepresentable: 'any' }) as Record<string, unknown>;
@@ -122,6 +129,7 @@ function register(pi: ExtensionAPI, brandDir: string, definition: ToolDefinition
     label: definition.name,
     description: definition.description,
     parameters: parameters as never,
+    ...(sequential.has(definition.name) && { executionMode: 'sequential' as const }),
     async execute(_id, params) {
       const parsed = schema.safeParse(params);
       if (!parsed.success) {
