@@ -19,7 +19,7 @@ import type pg from 'pg';
 
 import type { Config } from '../../config';
 import { ApiError } from '../../errors';
-import { CONTENT_TYPES, DIR_NAME, fileLinks, OWNER_FILE, RELATIVE_PATH, SESSION_ID, type BrandFiles } from './files';
+import { CONTENT_TYPES, DIR_NAME, fileLinks, isPiSession, MEMORY_FILE, OWNER_FILE, PI_SESSIONS_DIR, RELATIVE_PATH, SESSION_ID, type BrandFiles } from './files';
 
 // Quanto vale il link allo storage: firmato sull'ora intera, così nella stessa ora il link è lo stesso e il browser
 // tiene in cache il file; vale almeno un'ora da quando l'API lo manda.
@@ -155,16 +155,22 @@ export function s3BrandFiles(
     // Il worker le copia sullo storage dopo ogni lavoro, in _sessions/<brand>/ (brand-sync di moonbrand-ai).
     async session(brandId, sessionId) {
       if (!SESSION_ID.test(sessionId)) return null;
-      return (await get(`_sessions/${brandId}/${sessionId}.jsonl`))?.toString('utf8') ?? null;
+      const claude = await get(`_sessions/${brandId}/${sessionId}.jsonl`);
+      if (claude) return claude.toString('utf8');
+      // Il v4 (Pi) tiene le sessioni nella cartella del brand, che torna sullo storage con lei.
+      const prefix = `${brandId}/${PI_SESSIONS_DIR}/`;
+      const key = (await keysUnder(prefix)).filter((Key) => isPiSession(Key.slice(prefix.length), sessionId)).sort().at(-1);
+      return key ? ((await get(key))?.toString('utf8') ?? null) : null;
     },
     // Il CLAUDE.md lo ricarica il worker a fine lavoro con il resto della cartella; la memoria arriva con le sessioni.
     async promptFiles(brandId) {
       const memoryKeys = (await keysUnder(`_sessions/${brandId}/memory/`)).filter((Key) => Key.endsWith('.md')).sort();
-      const [guide, memory] = await Promise.all([
+      const [guide, memory, notes] = await Promise.all([
         get(`${brandId}/CLAUDE.md`),
         Promise.all(memoryKeys.map(async (Key) => ({ name: path.basename(Key), text: (await get(Key))?.toString('utf8') ?? '' }))),
+        get(`${brandId}/${MEMORY_FILE}`),
       ]);
-      return { guide: guide?.toString('utf8') ?? null, memory };
+      return { guide: guide?.toString('utf8') ?? null, memory: notes ? [...memory, { name: MEMORY_FILE, text: notes.toString('utf8') }] : memory };
     },
     client,
     bucket: Bucket,

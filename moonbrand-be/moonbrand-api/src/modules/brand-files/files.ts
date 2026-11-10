@@ -66,14 +66,21 @@ export interface BrandFiles {
   open(brandId: string, relativePath: string): Promise<OpenFile | { redirect: string }>;
   url(brandId: string, relativePath: string): string;
   verify(brandId: string, relativePath: string, signature: string): boolean;
-  // La sessione di Claude Code di un lavoro del brand (il .jsonl), per l'admin; null se non c'è.
+  // La sessione di un lavoro del brand (il .jsonl), per l'admin; null se non c'è. Quella di Claude Code (motori fino al
+  // v3) o, se non c'è, quella di Pi (motore v4, in .pi-sessioni/ dentro la cartella del brand).
   session(brandId: string, sessionId: string): Promise<string | null>;
-  // Quello che Claude legge del brand oltre al codice, per l'admin: il CLAUDE.md dell'ultimo lavoro e la memoria che
-  // Claude Code si scrive da solo (memory/ accanto alle sessioni), in ordine di nome.
+  // Quello che il modello legge del brand oltre al codice, per l'admin: il CLAUDE.md dell'ultimo lavoro e la memoria, cioè
+  // le note che Claude Code si scrive da solo (memory/ accanto alle sessioni, fino al v3) in ordine di nome e il
+  // memoria.md del brand (tool ricorda del v4).
   promptFiles(brandId: string): Promise<{ guide: string | null; memory: { name: string; text: string }[] }>;
 }
 
 export const SESSION_ID = /^[0-9a-f-]{36}$/;
+// Le sessioni di Pi (motore v4) nella cartella del brand: Pi chiama il file <data>_<id>.jsonl.
+export const PI_SESSIONS_DIR = '.pi-sessioni';
+export const isPiSession = (name: string, sessionId: string) => name.endsWith(`_${sessionId}.jsonl`) || name === `${sessionId}.jsonl`;
+// La memoria del brand del v4 (tool ricorda).
+export const MEMORY_FILE = 'memoria.md';
 
 // I file dei brand sul disco di questa macchina: per lo sviluppo, o con API e worker sulla stessa macchina.
 export function localBrandFiles(
@@ -157,16 +164,21 @@ export function localBrandFiles(
     verify,
     async session(brandId, sessionId) {
       if (!SESSION_ID.test(sessionId)) return null;
-      return readFile(path.join(sessionsDir(brandId), `${sessionId}.jsonl`), 'utf8').catch(() => null);
+      const claude = await readFile(path.join(sessionsDir(brandId), `${sessionId}.jsonl`), 'utf8').catch(() => null);
+      if (claude !== null) return claude;
+      const piDir = path.join(brandDir(brandId), PI_SESSIONS_DIR);
+      const name = (await readdir(piDir).catch(() => [] as string[])).filter((entry) => isPiSession(entry, sessionId)).sort().at(-1);
+      return name ? readFile(path.join(piDir, name), 'utf8').catch(() => null) : null;
     },
     async promptFiles(brandId) {
       const memoryDir = path.join(sessionsDir(brandId), 'memory');
       const names = (await readdir(memoryDir).catch(() => [])).filter((name) => name.endsWith('.md')).sort();
-      const [guide, memory] = await Promise.all([
+      const [guide, memory, notes] = await Promise.all([
         readFile(path.join(brandDir(brandId), 'CLAUDE.md'), 'utf8').catch(() => null),
         Promise.all(names.map(async (name) => ({ name, text: await readFile(path.join(memoryDir, name), 'utf8') }))),
+        readFile(path.join(brandDir(brandId), MEMORY_FILE), 'utf8').catch(() => null),
       ]);
-      return { guide, memory };
+      return { guide, memory: notes === null ? memory : [...memory, { name: MEMORY_FILE, text: notes }] };
     },
   };
 }

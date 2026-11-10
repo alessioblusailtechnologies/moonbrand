@@ -81,7 +81,7 @@ const NO_COST: ContentCost = { cost: cost(0, 0), parts: [] };
 interface SessionLine {
   type?: string;
   timestamp?: string;
-  message?: { content?: unknown };
+  message?: { role?: string; content?: unknown; toolCallId?: string };
 }
 
 interface ContentPart {
@@ -90,6 +90,20 @@ interface ContentPart {
   tool_use_id?: string;
   name?: string;
   input?: unknown;
+  arguments?: unknown;
+}
+
+// Una riga della sessione di Pi (motore v4) nella forma di Claude Code: i messaggi sono tutti di tipo message con il
+// ruolo dentro; le chiamate ai tool sono blocchi toolCall dell'assistente e ogni risposta è un messaggio toolResult a sé.
+function fromPi(line: SessionLine): { type: string; parts: ContentPart[] } | null {
+  const { role, content, toolCallId } = line.message ?? {};
+  if (role === 'assistant') {
+    const parts = Array.isArray(content) ? (content as ContentPart[]) : [];
+    return { type: 'assistant', parts: parts.map((part) => (part.type === 'toolCall' ? { type: 'tool_use', id: part.id, name: part.name, input: part.arguments } : part)) };
+  }
+  if (role === 'toolResult') return { type: 'user', parts: toolCallId ? [{ type: 'tool_result', tool_use_id: toolCallId }] : [] };
+  if (role === 'user') return { type: 'user', parts: [] };
+  return null;
 }
 
 const MAX_STEPS = 400;
@@ -116,8 +130,11 @@ export function sessionTimeline(text: string, from: number, to: number): Omit<Ad
     }
     const at = line.timestamp ? Date.parse(line.timestamp) : NaN;
     if (!Number.isFinite(at) || at < from || at > to) continue;
-    const parts = Array.isArray(line.message?.content) ? (line.message.content as ContentPart[]) : [];
-    if (line.type === 'assistant') {
+    const pi = line.type === 'message' ? fromPi(line) : null;
+    if (line.type === 'message' && !pi) continue;
+    const type = pi?.type ?? line.type;
+    const parts = pi?.parts ?? (Array.isArray(line.message?.content) ? (line.message.content as ContentPart[]) : []);
+    if (type === 'assistant') {
       if (waitingSince !== null) model += at - waitingSince;
       waitingSince = null;
       for (const part of parts) {
@@ -125,7 +142,7 @@ export function sessionTimeline(text: string, from: number, to: number): Omit<Ad
         const detail = JSON.stringify(part.input ?? {});
         asked.set(part.id, { at, name: toolName(part.name ?? 'tool'), detail: detail.length > MAX_DETAIL ? `${detail.slice(0, MAX_DETAIL)}…` : detail });
       }
-    } else if (line.type === 'user') {
+    } else if (type === 'user') {
       waitingSince = at;
       for (const part of parts) {
         const call = part.type === 'tool_result' && part.tool_use_id ? asked.get(part.tool_use_id) : undefined;

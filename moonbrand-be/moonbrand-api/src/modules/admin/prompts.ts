@@ -61,9 +61,9 @@ const BRAND_GUIDE: PieceSource = {
 };
 const BRAND_MEMORY: PieceSource = {
   kind: 'external',
-  label: 'Memoria automatica del brand',
-  file: 'Claude Code',
-  text: 'Le note che Claude Code si scrive da solo per ogni brand (memory/ accanto alle sessioni): l’indice entra in ogni sessione e Claude apre le note quando gli servono. Si vedono qui sotto, scegliendo un brand.',
+  label: 'Memoria del brand',
+  file: 'Claude Code / memoria.md',
+  text: 'Fino al v3 le note che Claude Code si scrive da solo per ogni brand (memory/ accanto alle sessioni): l’indice entra in ogni sessione e Claude apre le note quando gli servono. Dal v4 il memoria.md del brand, scritto dal tool ricorda, che entra intero nel prompt di ogni chat. Si vedono qui sotto, scegliendo un brand.',
 };
 const LANGUAGE_RULES: PieceSource = { kind: 'message', label: 'Le lingue', file: 'src/lib/language.ts', symbol: 'languageRules' };
 const REPLY_RULE: PieceSource = { kind: 'message', label: 'La lingua della risposta', file: 'src/lib/language.ts', symbol: 'replyRule' };
