@@ -2,6 +2,7 @@ import type { AiStep } from '../ai/steps';
 import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
+import type { ModelCatalog, ModelSettings } from '../domain/models';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { SubscriptionPlanId } from '../domain/subscription';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
@@ -1035,6 +1036,19 @@ export interface AdminCreateAccountRequest {
 export interface AdminAddCreditsRequest {
   amount: number;
 }
+
+// La sezione Modelli: le scelte salvate (presenza.settings) sopra i predefiniti (domain/models), con chi e quando le ha
+// cambiate; null finché valgono i predefiniti.
+export interface AdminModelSettings {
+  settings: ModelSettings;
+  updatedAt: string | null;
+  updatedBy: string | null;
+  // Il catalogo che il worker scrive (domain/models), con quando l'ha scritto; null finché il worker non è mai partito.
+  catalog: ModelCatalog | null;
+  catalogAt: string | null;
+}
+
+export type AdminModelSettingsRequest = ModelSettings;
 
 // L'header con cui un admin guarda lo studio come un'altra utenza, in sola lettura.
 export const VIEW_AS_HEADER = 'x-moonbrand-view-as';

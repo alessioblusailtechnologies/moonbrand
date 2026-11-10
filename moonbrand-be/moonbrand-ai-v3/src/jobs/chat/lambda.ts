@@ -83,7 +83,14 @@ export function lambdaServer(brandDir: string, keys: Record<string, string>) {
         throw error;
       });
       if (progress?.fatalErrorEncountered) {
-        throw new Error(progress.errors.map((error) => error.message).join('; ').slice(0, 800) || `render di ${item.composizione} non riuscito`);
+        const message = progress.errors.map((error) => error.message).join('; ');
+        // OffthreadVideo su Lambda non regge clip sopra il 1080p (prova del 3/11 sulle clip 2560×1440 di un brand: falliva
+        // con qualunque codifica e impostazione); <Video> di @remotion/media sì, con lo stesso risultato. Remotion
+        // invece parla di disco pieno, che non c'entra.
+        if (/localhost:\d+\/proxy\?src=/.test(message)) {
+          throw new Error('su Lambda OffthreadVideo non riesce a leggere le clip (succede con quelle oltre il 1080p): usa <Video> di @remotion/media con le stesse props e riesporta.');
+        }
+        throw new Error(message.slice(0, 800) || `render di ${item.composizione} non riuscito`);
       }
       if (progress?.done) {
         const target = inside(item.file);

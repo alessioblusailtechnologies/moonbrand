@@ -1,0 +1,20 @@
+# moonbrand-ai-v4
+
+Il motore v4 (PIANO-MOTORE-V4.md): il worker del v3, con la chat fatta da **Pi** (`@earendil-works/pi-coding-agent`, il pi globale della macchina) al posto di Claude Code.
+
+- `src/jobs/chat/chat.ts` lancia Pi in `--mode json` nella cartella del brand, con il modello e il ragionamento della sezione Modelli dell'admin (di default `anthropic/claude-opus-5-5` e `high`; a mano `PI_MODEL` e `PI_THINKING`). L'unica istruzione nostra è il blocco «Come parli all'utente» (`--append-system-prompt`). Niente estensioni, skill, template e MCP della macchina.
+- Modelli e ragionamento di chat e strumenti (testi, immagini, clip per persone e per il resto da testo o da immagine, vista, ricerca, voce, musica) li sceglie l'admin dallo studio (`/admin/modelli`): stanno in `presenza.settings` (chiave `models`) sopra i predefiniti di `moonbrand-shared/src/domain/models.ts`; il worker li legge a ogni lavoro e li passa in `MOONBRAND_MODELLI` (`src/lib/settings.ts`), quindi valgono dal turno dopo senza riavvii. `TESTI_MODEL` resta per le prove a mano. Le tendine della sezione vengono dal catalogo che il worker scrive in `presenza.settings` (chiave `models.catalog`, `src/lib/catalog.ts`) all'avvio e poi ogni ora, dalle fonti a runtime: la lista di Pi (`pi --list-models`) per la chat, Google con le modalità di OpenRouter per i tool su Gemini, Atlas per immagini, clip e Suno, ElevenLabs per la voce.
+- `pi/moonbrand.ts` è l'estensione di Pi: registra i 28 tool del v3 (tutti tranne `attendi`) da `src/jobs/chat/*.ts`, che sono i file del v3 con `sdk.ts` al posto dell'Agent SDK. Toglie le chiavi all'ambiente di bash, blocca read/write/edit fuori dalla cartella del brand, su `.env` e su `v1/`, e spegne la compattazione automatica.
+- `genera_clip` e `migliora` aspettano da soli il risultato: Pi esegue in parallelo i tool chiesti insieme.
+- I costi delle generazioni vanno nei `details` del risultato (`lib/usage.ts`, AsyncLocalStorage) e chat.ts li manda al worker.
+- Prezzi a runtime, nessun listino nostro (`src/lib/prices.ts`): i modelli (Gemini testo e immagini, la ricerca Google a query) dal listino pubblico di OpenRouter, in cache un giorno, con il listino di Pi come riserva; Atlas dal prezzo che addebita; ElevenLabs dai crediti nell'header della risposta per il prezzo del credito ricavato dall'uso fatturato dell'account; Lambda dalla stima di Remotion; la chat di Opus da Pi. Quando nessuno sa il prezzo il costo resta vuoto, con un avviso nel log. Le stime dette prima di partire e i crediti nel prompt della chat vengono da `ai_usage` degli ultimi 30 giorni (`MOONBRAND_PREZZI`, `lib/estimate.ts`).
+- Passaggio di sessione come nel v3 (`passaggio.ts`, sul JSONL di `<brand>/.pi-sessioni`): oltre 100K o dopo 55 minuti si apre una sessione nuova con il dialogo. `MOONBRAND_CHAT_MAX_CONTEXT`, `MOONBRAND_CHAT_HANDOVER=off`.
+
+Collaudo: riga `worker` di `collaudo-servizio/processi.conf` su questa cartella, poi `Restart-Service MoonbrandCollaudo`. Rollback: `moonbrand-ai-v3`.
+
+Strumenti in più rispetto al v3 (`src/jobs/chat/web.ts`), perché Pi non ha ricerca web né memoria:
+- `cerca_web`: Gemini 3.8 Flash con la ricerca Google, risposta con le fonti; costo = token + 0,014 $ a query.
+- `leggi_pagina`: il testo di una pagina web (niente indirizzi locali o interni), 20.000 caratteri di default; con `modo: grafica` la apre in Chrome headless e dà screenshot (salvato in lavoro/pagine/), colori e font calcolati, possibili loghi e testo (funzione nella pagina in web-stile.js).
+- `ricorda`: aggiunge una riga a `memoria.md` nella cartella del brand, anche di sua iniziativa; chat.ts la mette nel prompt di sistema di ogni chat (le ultime 8.000 battute).
+
+Data: Pi non la dice al modello, quindi chat.ts apre ogni turno con «(Adesso è …, ora di Roma.)». Serve anche perché 26 CLAUDE.md di brand hanno ancora la sezione «Il piano» con la data del giorno in cui sono stati scritti.

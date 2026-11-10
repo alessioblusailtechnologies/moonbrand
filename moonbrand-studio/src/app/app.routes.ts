@@ -94,6 +94,7 @@ export const routes: Routes = [
           { path: 'gratuiti', loadComponent: () => import('./features/admin/admin-free').then((m) => m.AdminFreePage) },
           { path: 'salute', loadComponent: () => import('./features/admin/admin-health').then((m) => m.AdminHealthPage) },
           { path: 'prompt', loadComponent: () => import('./features/admin/admin-prompts').then((m) => m.AdminPromptsPage) },
+          { path: 'modelli', loadComponent: () => import('./features/admin/admin-models').then((m) => m.AdminModelsPage) },
         ],
       },
     ],
