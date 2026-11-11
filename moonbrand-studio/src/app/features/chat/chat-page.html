@@ -116,7 +116,7 @@
               }
               <mb-pending-media [tiles]="turn.pending" />
               @if (waiting(turn.blocks, turn)) {
-                <p class="caption thinking"><span class="spinner"></span> {{ 'chat.page.thinking' | t }}</p>
+                <mb-step-list [steps]="[]" [waiting]="'chat.page.thinking' | t" />
               } @else if (turn.job.status === 'stopped') {
                 <p class="caption">{{ 'chat.page.stopped' | t }}</p>
               } @else if (turn.job.status === 'failed') {
