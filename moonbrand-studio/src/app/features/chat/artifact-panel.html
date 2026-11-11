@@ -1,0 +1,171 @@
+@let current = item();
+@let shown = version();
+
+<header class="head">
+  <div class="title-row">
+    <span class="kind-icon" aria-hidden="true"><mb-icon [name]="icon[current.kind]" [size]="16" /></span>
+    <div class="titles">
+      <h2 class="title">{{ current.title }}</h2>
+      <p class="caption">
+        {{ formatLabel(current) }}
+        @if (current.kind === 'content') {
+          · {{ statusLabel(current) }}
+        }
+      </p>
+    </div>
+    <button class="icon-btn" type="button" [attr.aria-label]="'chat.artifacts.close' | t" [title]="'chat.artifacts.close' | t" (click)="closed.emit()">
+      <mb-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  <div class="tools">
+    @if (count() > 1) {
+      <label class="picker">
+        <select class="sunken" [attr.aria-label]="'chat.artifacts.menu' | t" (change)="pick($event)">
+          @for (group of groups(); track group.kind) {
+            <optgroup [label]="groupLabel(group.kind)">
+              @for (entry of group.items; track entry.id) {
+                <option [value]="entry.id" [selected]="entry.id === current.id">{{ entry.title }} · {{ formatLabel(entry) }}</option>
+              }
+            </optgroup>
+          }
+        </select>
+      </label>
+    }
+    @if (current.kind !== 'content' && current.versions.length > 1) {
+      <label class="picker versions">
+        <select class="sunken" [attr.aria-label]="'chat.artifacts.versions' | t" (change)="pickVersion($event)">
+          @for (artifact of current.versions; track artifact.id; let i = $index) {
+            <option [value]="artifact.id" [selected]="i === versionIndex()">v{{ i + 1 }}</option>
+          }
+        </select>
+      </label>
+    }
+    <span class="grow"></span>
+    @if (current.kind === 'content') {
+      <a class="btn btn-secondary btn-sm" [routerLink]="['/contenuti', current.content.id]">
+        {{ 'chat.page.openInContents' | t }} <mb-icon name="chevron-right" [size]="14" />
+      </a>
+    } @else if (shown) {
+      @if (shown.kind === 'image') {
+        <button class="icon-btn" type="button" [attr.aria-label]="'chat.artifacts.zoom' | t" [title]="'chat.artifacts.zoom' | t" (click)="zoom()">
+          <mb-icon name="maximize" [size]="18" />
+        </button>
+      }
+      @if (text.hasValue()) {
+        <button class="icon-btn" type="button" [attr.aria-label]="'chat.artifacts.copy' | t" [title]="'chat.artifacts.copy' | t" (click)="copy()">
+          <mb-icon name="clipboard" [size]="18" />
+        </button>
+      }
+      <!-- Con più versioni insieme (le musiche) il download sta accanto a ognuna, nel corpo. -->
+      @if (shown.files.length === 1) {
+        <a class="icon-btn" [href]="shown.files[0].url" [download]="downloadName(shown.files[0].file, shown.title)"
+          [attr.aria-label]="'chat.artifacts.download' | t" [title]="'chat.artifacts.download' | t">
+          <mb-icon name="download" [size]="18" />
+        </a>
+      }
+    }
+  </div>
+</header>
+
+<div class="body" [class.flush]="shown?.kind === 'html' || !!pdf()">
+  @switch (current.kind) {
+    @case ('content') {
+      @if (current.kind === 'content') {
+        <mb-content-preview [content]="current.content" [stacked]="true" />
+        @if (current.proposal; as proposal) {
+          <section class="publish">
+            @if (proposal.publications.length > 0) {
+              <span class="badge" [class]="stateTone(stateOf(proposal))">{{ stateLabel(proposal) }}</span>
+              <ul class="publications">
+                @for (entry of proposal.publications; track entry.channel) {
+                  <li class="publication">
+                    <span class="strong-sm">{{ channelLabel(entry.channel) }}</span>
+                    @switch (entry.status) {
+                      @case ('published') {
+                        <span class="badge mint">{{ 'chat.publish.published' | t }}</span>
+                        @if (entry.url) {
+                          <a class="caption" [href]="entry.url" target="_blank" rel="noopener">{{ 'chat.publish.openPost' | t }}</a>
+                        }
+                      }
+                      @case ('publishing') {
+                        <span class="caption thinking"><span class="spinner"></span> {{ 'chat.publish.publishing' | t }}</span>
+                      }
+                      @case ('failed') {
+                        <span class="caption failed">{{ 'chat.publish.failed' | t: { error: problem(entry) } }}</span>
+                      }
+                    }
+                  </li>
+                }
+              </ul>
+            }
+            @if (toPublish(proposal); as channels) {
+              @if (channels.length > 0) {
+                <button class="btn btn-primary btn-sm publish-btn" type="button" [disabled]="starting().has(proposal.content.id)" (click)="publish.emit(proposal)">
+                  <mb-icon name="send" [size]="14" />
+                  @if (proposal.publications.length > 0) {
+                    {{ 'chat.publish.retry' | t }}
+                  } @else {
+                    {{ 'chat.publish.button' | t: { channels: channelNames(channels) } }}
+                  }
+                </button>
+              }
+            }
+          </section>
+        }
+      }
+    }
+    @default {
+      @if (shown) {
+        @switch (shown.kind) {
+          @case ('image') {
+            <button class="shot" type="button" [attr.aria-label]="'chat.artifacts.zoom' | t" (click)="zoom()">
+              <img [src]="shown.files[0]?.url" [alt]="shown.title" />
+            </button>
+          }
+          @case ('video') {
+            <!-- Al cambio di versione il player si ricrea: un <video> non ricarica da solo un src nuovo in tutti i browser. -->
+            @for (clip of [shown]; track clip.id) {
+              <video class="player" [src]="clip.files[0]?.url" controls playsinline preload="metadata" [style.aspect-ratio]="clip.aspect?.replace(':', ' / ')"></video>
+            }
+          }
+          @case ('audio') {
+            <div class="tracks">
+              @for (file of shown.files; track file.file; let i = $index) {
+                <div class="track">
+                  @if (shown.files.length > 1) {
+                    <div class="track-head">
+                      <p class="strong-sm">{{ 'chat.artifacts.version' | t: { n: i + 1 } }}</p>
+                      <a class="icon-btn" [href]="file.url" [download]="downloadName(file.file, shown.title + ' ' + (i + 1))"
+                        [attr.aria-label]="'chat.artifacts.downloadVersion' | t: { n: i + 1 }" [title]="'chat.artifacts.downloadVersion' | t: { n: i + 1 }">
+                        <mb-icon name="download" [size]="16" />
+                      </a>
+                    </div>
+                  }
+                  <audio [src]="file.url" controls preload="metadata"></audio>
+                </div>
+              }
+            </div>
+          }
+          @default {
+            @if (pdf(); as url) {
+              <iframe class="frame" [src]="url" [title]="shown.title"></iframe>
+            } @else if (text.isLoading()) {
+              <div class="loading"><mb-loader /></div>
+            } @else if (text.error()) {
+              <p class="caption failed">{{ 'chat.artifacts.loadFailed' | t }}</p>
+            } @else if (page(); as html) {
+              <iframe class="frame" sandbox="allow-scripts" referrerpolicy="no-referrer" [srcdoc]="html" [title]="shown.title"></iframe>
+            } @else if (text.hasValue()) {
+              @if (shown.mime === 'text/markdown') {
+                <mb-markdown class="document" [text]="text.value()" />
+              } @else {
+                <pre class="document plain">{{ text.value() }}</pre>
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+</div>

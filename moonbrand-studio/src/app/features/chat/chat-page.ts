@@ -13,13 +13,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import type { AiStep } from '@moonbrand/shared/ai/steps';
+import type { Artifact } from '@moonbrand/shared/domain/artifact';
 import type { ChannelId } from '@moonbrand/shared/domain/brand';
 import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Content } from '@moonbrand/shared/domain/content';
-import { contentState, publicationProblem, type ContentState, type Publication } from '@moonbrand/shared/domain/plan';
 import type { MessageKey } from '@moonbrand/shared/i18n/translate';
 import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import type { ConversationSummary, ConversationTurn, PublishProposal, WelcomeResponse } from '@moonbrand/shared/api/contract';
@@ -40,8 +40,8 @@ import { PendingMedia, pendingFromSteps } from '../../ui/pending-media';
 import { Markdown } from '../../ui/markdown';
 import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
-import { ContentPreview } from '../contents/content-preview';
-import { stateTone, statusLabel } from '../contents/labels';
+import { ArtifactPanel, KIND_ICON } from './artifact-panel';
+import { contentItemId, groupItems, latestOnly, panelItems, type PanelItem } from './artifacts';
 import { Composer, type ComposerMessage } from './composer';
 import { type ShownGreeting, fallbackGreeting, greetingText, pickGreeting } from './greeting';
 
@@ -68,11 +68,27 @@ const STICK_PX = 80;
 // qualche decina; poi si smette, e il resto si vede riaprendo la conversazione.
 const PUBLISH_POLL_MS = 3000;
 const PUBLISH_POLL_MAX = 100;
+// Un file appena fatto diventa artefatto poco dopo la fine del passaggio (copia, storage, riga): si rilegge due volte.
+const ARTIFACT_RELOAD_MS = [1500, 5000];
+// Nel filo, oltre tante card per turno si vedono le prime e il resto si apre con «Mostra altri».
+const CARDS_COLLAPSE = 4;
+const CARDS_SHOWN = 3;
+// La larghezza del pannello, trascinando il bordo: tra questi limiti, ricordata nel browser.
+const PANEL_MIN = 340;
+const PANEL_MAX = 900;
+const PANEL_DEFAULT = 480;
+const PANEL_WIDTH_KEY = 'mb.chat.panelWidth';
 
 @Component({
   selector: 'mb-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, Icon, Loader, Markdown, StepList, PendingMedia, ContentPreview, Composer, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterLink, Icon, Loader, Markdown, StepList, PendingMedia, ArtifactPanel, Composer, TranslatePipe],
+  host: {
+    '(window:pointermove)': 'resizing($event)',
+    '(window:pointerup)': 'resized()',
+    '(document:click)': 'menuOpen.set(false)',
+    '(document:keydown.escape)': 'menuOpen.set(false)',
+  },
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
 })
@@ -80,6 +96,7 @@ export class ChatPage {
   private readonly chat = inject(ChatService);
   private readonly ai = inject(AiJobsService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly lightbox = inject(LightboxService);
@@ -89,11 +106,32 @@ export class ChatPage {
 
   // Dal percorso /assistente/:conversationId; senza, è una conversazione nuova.
   readonly conversationId = input<string>();
+  // ?artefatto=<id>: l'elemento aperto nel pannello a destra.
+  readonly artefatto = input<string>();
 
   protected readonly current = signal<ConversationSummary | null>(null);
   protected readonly turns = signal<ConversationTurn[]>([]);
   protected readonly contents = signal<Content[]>([]);
   protected readonly proposals = signal<PublishProposal[]>([]);
+  protected readonly artifacts = signal<Artifact[]>([]);
+  // Tutto quello che è nato nella conversazione; nel menu del pannello l'ultima versione di ogni file.
+  protected readonly items = computed(() => panelItems(this.contents(), this.proposals(), this.artifacts()));
+  protected readonly menu = computed(() => latestOnly(this.items()));
+  // La tendina nella topbar e il menu del pannello: i post in cima, poi i file per tipo, i più recenti per primi.
+  protected readonly groups = computed(() => groupItems(this.menu()));
+  protected readonly menuOpen = signal(false);
+  // I turni con tutte le card aperte.
+  protected readonly expanded = signal<ReadonlySet<string>>(new Set());
+  protected readonly panelItem = computed(() => {
+    const id = this.artefatto();
+    return id ? (this.items().find((item) => item.id === id) ?? null) : null;
+  });
+  protected readonly panelWidth = signal(readPanelWidth());
+  private resizeFrom: { x: number; width: number } | null = null;
+  // Gli elementi già visti in questa conversazione: uno nuovo, arrivato mentre si segue il turno, si apre da solo.
+  private seen: Set<string> | null = null;
+  protected readonly kindIcon = KIND_ICON;
+  protected readonly CARDS_COLLAPSE = CARDS_COLLAPSE;
   // I contenuti per cui si è appena premuto «Pubblica ora» e la risposta non è ancora arrivata.
   protected readonly starting = signal<ReadonlySet<string>>(new Set());
   private readonly watching = new Set<string>();
@@ -137,17 +175,25 @@ export class ChatPage {
   protected readonly view = computed(() => {
     const turns = this.turns();
     const contents = this.contents();
-    const proposals = new Map(this.proposals().map((proposal) => [proposal.content.id, proposal]));
+    const items = new Map(this.items().map((item) => [item.id, item]));
+    const artifacts = this.artifacts();
     return turns.map((turn, index) => {
       const next = turns[index + 1]?.createdAt;
+      // Le card del turno: i contenuti nati qui, quelli proposti per la pubblicazione e l'ultima versione di ogni file.
+      const born = contents.filter((content) => content.createdAt >= turn.createdAt && (!next || content.createdAt < next)).map((content) => content.id);
+      const ids = [...new Set([...born, ...turn.publishRequests])].map(contentItemId);
+      const lastOfSource = new Map<string, string>();
+      for (const artifact of artifacts) if (artifact.jobId === turn.job.id) lastOfSource.set(artifact.source, artifact.id);
+      // Come nella tendina: i post in cima, poi i file per tipo, i più recenti per primi.
+      const cards = groupItems([...ids, ...lastOfSource.values()].flatMap((id) => items.get(id) ?? [])).flatMap((group) => group.items);
       return {
         ...turn,
         blocks: blocksOf(turn.job.steps),
-        contents: contents.filter((content) => content.createdAt >= turn.createdAt && (!next || content.createdAt < next)),
-        // I contenuti che l'assistente ha proposto di pubblicare in questo turno, con il pulsante.
-        proposals: turn.publishRequests.flatMap((id) => proposals.get(id) ?? []),
-        // Le card che il turno in corso sta preparando: al loro posto arriva il contenuto, quando lo salva.
-        pending: turn.job.status === 'queued' || turn.job.status === 'running' ? pendingFromSteps(turn.job.steps) : [],
+        cards,
+        // Tante card: si vedono le prime, finché non si apre il resto.
+        hiddenCards: cards.length > CARDS_COLLAPSE && !this.expanded().has(turn.id) ? cards.length - CARDS_SHOWN : 0,
+        // I file che il turno in corso sta facendo: al loro posto arriva la card, quando il passaggio finisce.
+        pending: turn.job.status === 'queued' || turn.job.status === 'running' ? pendingFromSteps(turn.job.steps, { running: true }) : [],
       };
     });
   });
@@ -175,6 +221,20 @@ export class ChatPage {
       const brand = this.brands.activeBrand();
       const open = untracked(this.current);
       if (brand && open && open.brandId !== brand.id) void this.router.navigateByUrl('/assistente');
+    });
+    // Un elemento nuovo arrivato mentre si segue il turno si apre da solo nel pannello, come in Claude.
+    effect(() => {
+      const ids = this.items().map((item) => item.id);
+      if (this.loading()) return;
+      untracked(() => {
+        if (!this.seen) {
+          this.seen = new Set(ids);
+          return;
+        }
+        const fresh = ids.filter((id) => !this.seen!.has(id));
+        for (const id of fresh) this.seen.add(id);
+        if (fresh.length > 0 && this.live()) this.openItem(fresh.at(-1)!);
+      });
     });
     // Un messaggio nuovo porta in fondo al filo.
     afterRenderEffect(() => {
@@ -208,6 +268,8 @@ export class ChatPage {
     this.turns.set([]);
     this.contents.set([]);
     this.proposals.set([]);
+    this.artifacts.set([]);
+    this.seen = null;
     queueMicrotask(() => this.composer()?.focus());
   }
 
@@ -243,6 +305,8 @@ export class ChatPage {
       this.turns.set([]);
       this.contents.set([]);
       this.proposals.set([]);
+      this.artifacts.set([]);
+      this.seen = null;
     }
     try {
       await this.refresh(conversationId);
@@ -263,20 +327,22 @@ export class ChatPage {
   }
 
   private async refresh(conversationId: string): Promise<void> {
-    const { conversation, turns, contents, proposals } = await this.chat.get(conversationId);
+    const { conversation, turns, contents, proposals, artifacts } = await this.chat.get(conversationId);
     if (this.conversationId() !== conversationId) return;
     this.current.set(conversation);
     this.turns.set(turns);
     this.contents.set(contents);
     this.proposals.set(proposals);
+    this.artifacts.set(artifacts ?? []);
   }
 
-  // I contenuti e le proposte di pubblicazione, con com'è andata; dei turni, che si stanno seguendo, solo le proposte.
+  // I contenuti, le proposte di pubblicazione con com'è andata e i file; dei turni, che si stanno seguendo, solo le proposte.
   private async refreshContents(conversationId: string): Promise<void> {
     const response = await this.chat.get(conversationId).catch(() => null);
     if (!response || this.conversationId() !== conversationId) return;
     this.contents.set(response.contents);
     this.proposals.set(response.proposals);
+    this.artifacts.set(response.artifacts ?? []);
     const requests = new Map(response.turns.map((turn) => [turn.id, turn.publishRequests]));
     this.turns.update((turns) => turns.map((turn) => ({ ...turn, publishRequests: requests.get(turn.id) ?? turn.publishRequests })));
   }
@@ -287,6 +353,7 @@ export class ChatPage {
     const turn = this.turns().find((item) => item.job.id === jobId);
     this.live.set({ jobId, known: new Set(blocksOf(turn?.job.steps ?? []).map((block) => block.id)) });
     let saved = savesOf(turn?.job.steps ?? []);
+    let made = madeOf(turn?.job.steps ?? []);
     const update = (steps: AiStep[]) => {
       if (this.live()?.jobId !== jobId) return;
       // Un contenuto appena salvato o aggiornato compare subito, senza aspettare la fine del turno.
@@ -294,6 +361,14 @@ export class ChatPage {
       if (now > saved) {
         saved = now;
         void this.refreshContents(conversationId);
+      }
+      // Un file appena fatto: lo registra il worker poco dopo, e si rilegge quando c'è.
+      const files = madeOf(steps);
+      if (files > made) {
+        made = files;
+        for (const delay of ARTIFACT_RELOAD_MS) {
+          setTimeout(() => this.live()?.jobId === jobId && void this.refreshContents(conversationId), delay);
+        }
       }
       this.turns.update((turns) =>
         turns.map((item) =>
@@ -399,11 +474,6 @@ export class ChatPage {
     return !last || (last.kind === 'text' && !last.streaming);
   }
 
-  // La copertina o la prima slide, per la chip in fondo.
-  protected coverOf(content: Content): string | null {
-    return content.visual.files?.find((file) => file.index === 0)?.url ?? null;
-  }
-
   // L'uscita menzionata in un messaggio, in breve: «gio 2 ott · 18:30 · Instagram».
   protected slotLabel(slot: { date: string; time: string; channels: ChannelId[] }): string {
     return `${formatWeekdayShort(slot.date, this.i18n.locale())} · ${slot.time} · ${slot.channels.map(channelName).join(', ')}`;
@@ -416,27 +486,8 @@ export class ChatPage {
     return proposal.content.channels.filter((channel) => !done.has(channel));
   }
 
-  protected readonly stateTone = stateTone;
-
-  protected proposalState(proposal: PublishProposal): ContentState {
-    return contentState(proposal.content.status, proposal.content.channels, proposal.publications);
-  }
-
-  protected stateLabel(proposal: PublishProposal): string {
-    return statusLabel(this.proposalState(proposal), this.i18n.locale());
-  }
-
   protected channelNames(channels: readonly ChannelId[]): string {
     return channels.map(channelName).join(', ');
-  }
-
-  protected channelLabel(channel: ChannelId): string {
-    return channelName(channel);
-  }
-
-  // Perché non è uscito su un canale, e quando moonbrand riprova da solo.
-  protected problem(item: Publication): string {
-    return publicationProblem(item, this.i18n.locale());
   }
 
   // La conferma è dell'utente: il pulsante chiede ancora una volta, poi il contenuto si approva ed esce subito.
@@ -481,19 +532,109 @@ export class ChatPage {
     }
   }
 
-  protected formatLabel(content: Content): string {
-    return this.i18n.t(`chat.format.${content.format}`);
+  // Sotto il titolo di una card: il formato del contenuto o il tipo del file.
+  protected cardLabel(item: PanelItem): string {
+    return item.kind === 'content' ? this.i18n.t(`chat.format.${item.content.format}`) : this.i18n.t(`chat.artifacts.kind.${item.kind}`);
   }
 
-  protected statusLabel(content: Content): string {
-    return this.i18n.t(`chat.status.${content.status}`);
+  // Il pannello segue il link: aprire, cambiare e chiudere cambiano ?artefatto= senza aggiungere passi alla cronologia.
+  protected openItem(id: string): void {
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { artefatto: id }, queryParamsHandling: 'merge', replaceUrl: true });
+  }
+
+  protected closePanel(): void {
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { artefatto: null }, queryParamsHandling: 'merge', replaceUrl: true });
+  }
+
+  // La tendina nella topbar: un clic su una voce la apre nell'anteprima.
+  protected toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.menuOpen.update((open) => !open);
+  }
+
+  protected pickFromMenu(id: string): void {
+    this.menuOpen.set(false);
+    this.openItem(id);
+  }
+
+  protected groupLabel(kind: PanelItem['kind']): string {
+    return this.i18n.t(`chat.artifacts.group.${kind}`);
+  }
+
+  protected toggleCards(turnId: string): void {
+    this.expanded.update((set) => {
+      const next = new Set(set);
+      if (!next.delete(turnId)) next.add(turnId);
+      return next;
+    });
+  }
+
+  protected startResize(event: PointerEvent): void {
+    event.preventDefault();
+    this.resizeFrom = { x: event.clientX, width: this.panelWidth() };
+  }
+
+  protected resizing(event: PointerEvent): void {
+    if (!this.resizeFrom) return;
+    // Il pannello sta a destra: trascinando il bordo verso sinistra si allarga.
+    this.panelWidth.set(clampWidth(this.resizeFrom.width + this.resizeFrom.x - event.clientX));
+  }
+
+  protected resized(): void {
+    if (!this.resizeFrom) return;
+    this.resizeFrom = null;
+    this.saveWidth();
+  }
+
+  protected resizeByKey(step: number): void {
+    this.panelWidth.update((width) => clampWidth(width + step));
+    this.saveWidth();
+  }
+
+  private saveWidth(): void {
+    try {
+      localStorage.setItem(PANEL_WIDTH_KEY, String(this.panelWidth()));
+    } catch {
+      // Senza storage la larghezza vale finché la pagina resta aperta.
+    }
+  }
+
+  // Sul telefono il pannello è un foglio: trascinato in giù dalla maniglia si chiude.
+  private sheetFrom: number | null = null;
+
+  protected sheetStart(event: PointerEvent): void {
+    this.sheetFrom = event.clientY;
+  }
+
+  protected sheetEnd(event: PointerEvent): void {
+    if (this.sheetFrom !== null && event.clientY - this.sheetFrom > 80) this.closePanel();
+    this.sheetFrom = null;
   }
 }
 
-// I tool che salvano o aggiornano un contenuto o ne propongono la pubblicazione, già conclusi. Negli step più vecchi il nome del tool era la label.
+function clampWidth(width: number): number {
+  return Math.round(Math.min(PANEL_MAX, Math.max(PANEL_MIN, width)));
+}
+
+function readPanelWidth(): number {
+  try {
+    const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY));
+    return saved > 0 ? clampWidth(saved) : PANEL_DEFAULT;
+  } catch {
+    return PANEL_DEFAULT;
+  }
+}
+
+// I passaggi conclusi che hanno prodotto un file: ognuno diventa un artefatto.
+function madeOf(steps: AiStep[]): number {
+  return steps.filter((step) => step.kind === 'tool' && step.status === 'done' && step.media?.some((item) => item.file)).length;
+}
+
+// I tool che salvano o aggiornano un contenuto o ne propongono la pubblicazione, già conclusi: contenuto_salva fino al v2,
+// salva_contenuto dal v3 (con il prefisso del server MCP nel v3, senza nel v4). Negli step più vecchi il nome del tool era la label.
 function savesOf(steps: AiStep[]): number {
   return steps.filter(
-    (step) => step.kind === 'tool' && /(contenuto_(salva|aggiorna)|pubblicazione_proponi)$/.test(step.tool ?? step.label) && step.status === 'done',
+    (step) => step.kind === 'tool' && /(contenuto_(salva|aggiorna)|salva_contenuto|pubblicazione_proponi)$/.test(step.tool ?? step.label) && step.status === 'done',
   ).length;
 }
 

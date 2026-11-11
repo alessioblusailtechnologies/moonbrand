@@ -25,6 +25,7 @@ import { formatWeekdayShort } from '@moonbrand/shared/lib/dates';
 import { withIdentity, type Identity } from '../../db/identity';
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
+import { accountLocale, publicJobError } from '../ai/public-error';
 import { insertJob } from '../ai/repository';
 import { findAccount } from '../auth/accounts';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
@@ -43,6 +44,7 @@ import {
   insertConversation,
   insertTurn,
   lastSession,
+  listArtifacts,
   listConversations,
   listTurns,
 } from './repository';
@@ -164,7 +166,12 @@ export function getConversation(pool: pg.Pool, files: BrandFiles, identity: Iden
   return withIdentity(pool, identity, async (db) => {
     const conversation = await findConversation(db, conversationId);
     if (!conversation) throw ApiError.notFound('Conversazione non trovata.');
-    const [turns, contents] = await Promise.all([listTurns(db, conversationId), listConversationContents(db, conversationId)]);
+    const [turns, contents, artifacts, locale] = await Promise.all([
+      listTurns(db, conversationId),
+      listConversationContents(db, conversationId),
+      listArtifacts(db, conversationId),
+      accountLocale(db, identity.accountId),
+    ]);
     // I contenuti proposti per la pubblicazione, con com'è andata: anche quelli nati fuori da questa conversazione.
     const requested = [...new Set(turns.flatMap((turn) => turn.publishRequests))];
     const [proposed, publications] = await Promise.all([
@@ -173,11 +180,19 @@ export function getConversation(pool: pg.Pool, files: BrandFiles, identity: Iden
     ]);
     return {
       conversation,
-      turns: turns.map((turn) => ({ ...turn, attachments: turn.attachments.map((file) => attachment(files, conversation.brandId, file)) })),
+      turns: turns.map((turn) => ({
+        ...turn,
+        job: { ...turn.job, error: publicJobError(turn.job.error, locale) },
+        attachments: turn.attachments.map((file) => attachment(files, conversation.brandId, file)),
+      })),
       contents: contents.map((content) => withUrls(content, files)),
       proposals: proposed
         .filter((content) => content !== null)
         .map((content) => ({ content: withUrls(content, files), publications: publications.get(content.id) ?? [] })),
+      artifacts: artifacts.map((artifact) => ({
+        ...artifact,
+        files: artifact.files.map((file) => ({ file, url: files.url(conversation.brandId, file) })),
+      })),
     };
   });
 }

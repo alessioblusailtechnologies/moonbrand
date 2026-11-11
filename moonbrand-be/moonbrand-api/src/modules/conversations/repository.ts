@@ -1,4 +1,5 @@
 import type { ConversationSummary, ConversationTurn } from '@moonbrand/shared/api/contract';
+import type { Artifact } from '@moonbrand/shared/domain/artifact';
 
 import type { Queryable } from '../../db/pool';
 import { aiEngine } from '../ai/engine';
@@ -122,4 +123,36 @@ export async function lastSession(db: Queryable, conversationId: string): Promis
     [conversationId, aiEngine()],
   );
   return rows[0]?.session_id ?? null;
+}
+
+// Gli artefatti dei turni, in ordine di arrivo; i link firmati li aggiunge il service.
+export async function listArtifacts(db: Queryable, conversationId: string): Promise<(Omit<Artifact, 'files'> & { files: string[] })[]> {
+  const { rows } = await db.query<{
+    id: string;
+    job_id: string;
+    kind: Artifact['kind'];
+    title: string;
+    source: string;
+    files: string[];
+    mime: string;
+    parent_id: string | null;
+    aspect: string | null;
+    created_at: Date;
+  }>(
+    `select id, job_id, kind, title, source, files, mime, parent_id, aspect, created_at
+     from presenza.artifacts where conversation_id = $1 order by created_at, id`,
+    [conversationId],
+  );
+  return rows.map((row) => ({
+    id: row.id,
+    jobId: row.job_id,
+    kind: row.kind,
+    title: row.title,
+    source: row.source,
+    files: row.files,
+    mime: row.mime,
+    parentId: row.parent_id,
+    aspect: row.aspect,
+    createdAt: row.created_at.toISOString(),
+  }));
 }

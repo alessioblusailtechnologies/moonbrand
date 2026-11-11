@@ -1,11 +1,135 @@
-// La chat sta sul bianco della pagina, senza riquadro e a tutta larghezza: il filo e la casella in fondo.
-.chat {
+// La pagina: la chat a sinistra e, quando c'è qualcosa da guardare, il pannello a destra con il bordo da trascinare.
+.workspace {
   display: flex;
-  flex-direction: column;
   height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 2 * var(--content-padding, 32px));
   min-height: 480px;
-  margin: 0 auto;
+}
+
+// La chat sta sul bianco della pagina, senza riquadro. Il filo che scorre prende tutta la larghezza, così la
+// scrollbar sta sul bordo dell'area e non accanto ai messaggi; i messaggi e la casella stanno in una colonna centrata
+// (--column), che prende tutto lo spazio rimasto quando a destra si apre l'anteprima.
+.chat {
+  --column: 880px;
+  --gutter: 24px;
+  --inline: max(var(--gutter), calc((100% - var(--column)) / 2));
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
   animation: fade-up 240ms var(--ease);
+}
+
+.with-panel .chat {
+  --column: 100%;
+  --gutter: 4px;
+}
+
+@media (max-width: 760px) {
+  .chat {
+    --gutter: 4px;
+  }
+}
+
+.resizer {
+  position: relative;
+  flex: none;
+  width: 14px;
+  cursor: col-resize;
+  touch-action: none;
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    width: 4px;
+    height: 44px;
+    border-radius: 2px;
+    background: var(--grey-300);
+    content: '';
+    transform: translateY(-50%);
+    transition: background-color 120ms var(--ease);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    background: var(--grey-500);
+  }
+
+  &:focus-visible {
+    outline: 0;
+  }
+}
+
+.side {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: min(var(--panel-width, 480px), 62%);
+  min-width: 0;
+  animation: fade-up 200ms var(--ease);
+
+  mb-artifact-panel {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// La maniglia del foglio: solo sul telefono.
+.grip {
+  display: none;
+}
+
+// Sotto i 900 px il pannello non sta accanto alla chat: diventa un foglio a tutto schermo, che si chiude con la X o
+// trascinando in giù la maniglia.
+@media (max-width: 900px) {
+  .resizer {
+    display: none;
+  }
+
+  .side {
+    position: fixed;
+    z-index: 60;
+    inset: 0;
+    width: auto;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(16, 24, 40, 0.35);
+    animation: sheet-up 220ms var(--ease);
+  }
+
+  .grip {
+    display: block;
+    flex: none;
+    align-self: center;
+    width: 64px;
+    height: 22px;
+    margin-bottom: 2px;
+    cursor: grab;
+    touch-action: none;
+
+    &::after {
+      display: block;
+      width: 40px;
+      height: 5px;
+      margin: 9px auto 0;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.85);
+      content: '';
+    }
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .side {
+    animation: none;
+  }
 }
 
 .thread {
@@ -13,8 +137,12 @@
   flex: 1;
   flex-direction: column;
   gap: 28px;
-  padding: 0 4px 24px;
+  padding: 0 var(--inline) 24px;
   overflow-y: auto;
+  // Sottile e discreta, sul bordo dell'area.
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-300) transparent;
+  scrollbar-gutter: stable;
 }
 
 .empty {
@@ -143,7 +271,7 @@
     font-size: 34px;
   }
 
-  .kit {
+  .kit:not(.panel-toggle) {
     display: none;
   }
 }
@@ -211,23 +339,9 @@
   margin-top: 4px;
 }
 
-// I passaggi di un blocco: la stessa lista delle idee e dell'onboarding, in un riquadro.
+// I passaggi di un blocco: la stessa lista delle idee e dell'onboarding, una riga come in Claude.
 .tools {
   width: min(560px, 100%);
-  padding: 12px 14px;
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
-}
-
-.thinking {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .spinner {
-    width: 12px;
-    height: 12px;
-  }
 }
 
 .failed {
@@ -238,39 +352,69 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 8px;
+  padding: 8px var(--inline) 0;
 }
 
-.saved {
+// Quello che un turno ha prodotto: card in colonna, una sotto l'altra; la card aperta nell'anteprima è segnata.
+.cards {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
+  flex-direction: column;
+  gap: 6px;
+  width: min(460px, 100%);
+  margin-top: 4px;
 }
 
-.saved-card {
+.card {
   display: flex;
-  flex: none;
   align-items: center;
   gap: 10px;
-  max-width: 280px;
+  width: 100%;
   padding: 6px 12px 6px 6px;
   border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
+  background: var(--white);
   color: inherit;
-  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms var(--ease);
 
   &:hover {
     border-color: var(--grey-500);
   }
+
+  &.open {
+    border-color: var(--primary);
+  }
 }
 
-.thumb {
+// «Mostra altri n» / «Mostra meno» sotto le card di un turno.
+.cards-toggle {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  color: var(--text-body);
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-title);
+  }
+}
+
+.card-thumb {
+  display: grid;
   flex: none;
+  place-items: center;
   width: 36px;
   height: 45px;
   overflow: hidden;
   border-radius: 6px;
-  background: var(--grey-300);
+  background: var(--accent-tint);
+  color: var(--accent-strong);
 
   img {
     width: 100%;
@@ -279,75 +423,90 @@
   }
 }
 
-.saved-texts {
+.card-texts {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.saved-title {
+.card-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// Un contenuto salvato nella conversazione, intero: immagini e testi come nella pagina del contenuto.
-.content-card {
+// Nella topbar: la tendina con quello che è nato nella conversazione, come la pillola del brand kit.
+.generated {
+  position: relative;
+}
+
+.generated-menu {
+  position: absolute;
+  z-index: 70;
+  top: calc(100% + 6px);
+  right: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 6px;
-  padding: 18px;
+  gap: 2px;
+  width: min(340px, calc(100vw - 24px));
+  max-height: min(520px, 70vh);
+  padding: 6px;
+  overflow-y: auto;
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--white);
+  box-shadow: 0 12px 32px rgba(16, 24, 40, 0.14);
+  animation: fade-up 140ms var(--ease);
 }
 
-.content-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+.group-label {
+  padding: 10px 8px 4px;
+  color: var(--text-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &:first-child {
+    padding-top: 4px;
+  }
 }
 
-.content-card-titles {
+.generated-item {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.content-card-meta {
-  display: flex;
-  gap: 6px;
-}
-
-// Com'è andata la pubblicazione, canale per canale, e il pulsante per pubblicare.
-.publications {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.publication {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &.open {
+    background: var(--grey-100);
+  }
 }
 
-.publish {
-  align-self: flex-start;
-  gap: 6px;
+.card-thumb.small {
+  width: 28px;
+  height: 35px;
 }
 
-.open-content {
-  flex: none;
-  gap: 4px;
-  text-decoration: none;
+.panel-toggle {
+  border: 0;
+  cursor: pointer;
+
+  &.on {
+    background: var(--primary);
+    color: var(--white);
+
+    &:hover {
+      color: var(--white);
+    }
+  }
 }
 
 // L'idea menzionata nel messaggio: sotto la bolla, come un riferimento da aprire.

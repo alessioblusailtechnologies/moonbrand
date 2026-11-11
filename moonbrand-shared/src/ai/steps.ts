@@ -19,12 +19,14 @@ export interface AiStep {
   media?: StepMedia[];
 }
 
-// Un'immagine o un video in arrivo: la proporzione per il segnaposto e, quando si sa, il file nella cartella del brand,
-// per contare una volta sola un file rifatto più volte.
+// Un file in arrivo: immagine, video, audio, documento o pagina HTML. La proporzione per il segnaposto e, quando si sa,
+// il file nella cartella del brand, per contare una volta sola un file rifatto più volte; il worker lo registra come
+// artefatto della conversazione quando il passaggio finisce. title: quando il modello lo dà (tool mostra).
 export interface StepMedia {
-  kind: 'image' | 'video';
-  aspect: string;
+  kind: 'image' | 'video' | 'audio' | 'document' | 'html';
+  aspect?: string;
   file?: string;
+  title?: string;
 }
 
 export type OnAiSteps = (steps: AiStep[]) => void;
@@ -260,25 +262,55 @@ function remotionRender(command: string): StepMedia | null {
   return { kind: 'video', aspect: (file && aspectInName(file)) ?? '9:16', ...(file && { file }) };
 }
 
-// Le immagini e i video che una chiamata a un tool produce: le card di renderizza, le foto di genera_immagine,
-// le clip di gira_clip, il video esportato da Remotion. undefined se non produce media.
+// Che cosa è un file, dall'estensione: undefined se non si mostra (JSON, codice, note di lavoro).
+export function fileKind(file: string): StepMedia['kind'] | undefined {
+  const extension = /\.([a-z0-9]+)$/i.exec(file)?.[1]?.toLowerCase() ?? '';
+  if (['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(extension)) return 'image';
+  if (['mp4', 'mov', 'webm'].includes(extension)) return 'video';
+  if (['mp3', 'wav', 'm4a', 'ogg', 'aac'].includes(extension)) return 'audio';
+  if (['md', 'pdf', 'txt'].includes(extension)) return 'document';
+  if (['html', 'htm'].includes(extension)) return 'html';
+  return undefined;
+}
+
+// I file che una chiamata a un tool produce: le card di renderizza, le foto di genera_immagine, le clip, la musica, le
+// voci e gli effetti, i video esportati su Lambda o con Remotion, il file che il modello mostra con mostra.
+// undefined se non produce niente da mostrare. I nomi dei tool arrivano con il prefisso del server MCP (v1-v3,
+// mcp__media__genera_immagine) o senza (v4, genera_immagine); nella v1 il file stava in file, dal v3 in salva.
 export function toolMedia(name: string, input: Record<string, unknown>): StepMedia[] | undefined {
-  if (name === 'mcp__grafica__renderizza' && Array.isArray(input['uscite'])) {
+  const bare = name.split('__').pop() ?? name;
+  const saved = brandFile(input['salva']) ?? brandFile(input['file']);
+  const aspect = (fallback: string) => aspectOf(input['proporzione'] ?? input['formato'], fallback);
+  if (bare === 'renderizza' && Array.isArray(input['uscite'])) {
     const outputs = (input['uscite'] as Record<string, unknown>[]).filter((output) => output && typeof output === 'object');
     return outputs.slice(0, MAX_MEDIA).map((output) => {
       const file = brandFile(output['file']);
       return { kind: 'image' as const, aspect: aspectOf(output['formato'], '1:1'), ...(file && { file }) };
     });
   }
-  if (name === 'mcp__immagini__genera_immagine') {
-    const file = brandFile(input['file']);
-    return [{ kind: 'image', aspect: aspectOf(input['formato'], '1:1'), ...(file && { file }) }];
+  if (bare === 'esporta_video' && Array.isArray(input['video'])) {
+    const outputs = (input['video'] as Record<string, unknown>[]).filter((output) => output && typeof output === 'object');
+    return outputs.slice(0, MAX_MEDIA).map((output) => {
+      const file = brandFile(output['file']);
+      return { kind: 'video' as const, aspect: (file && aspectInName(file)) ?? '9:16', ...(file && { file }) };
+    });
   }
-  if (name === 'mcp__clip__gira_clip') {
-    const file = brandFile(input['file']);
-    return [{ kind: 'video', aspect: aspectOf(input['formato'], '9:16'), ...(file && { file }) }];
+  if (bare === 'genera_immagine') return [{ kind: 'image', aspect: aspect('1:1'), ...(saved && { file: saved }) }];
+  if (bare === 'genera_clip' || bare === 'gira_clip') return [{ kind: 'video', aspect: aspect('9:16'), ...(saved && { file: saved }) }];
+  if (['genera_musica', 'genera_canzone', 'genera_voce', 'genera_effetto'].includes(bare)) return [{ kind: 'audio', ...(saved && { file: saved }) }];
+  if (bare === 'migliora') {
+    const file = brandFile(input['salva']);
+    const kind = file && fileKind(file);
+    return kind ? [{ kind, file }] : undefined;
   }
-  if (name === 'Bash' && typeof input['command'] === 'string') {
+  if (bare === 'mostra') {
+    const file = brandFile(input['file']);
+    const kind = file && fileKind(file);
+    const title = typeof input['titolo'] === 'string' && input['titolo'].trim() ? input['titolo'].trim().slice(0, 120) : undefined;
+    return kind ? [{ kind, file, ...(title && { title }) }] : undefined;
+  }
+  // Bash in Claude Code, bash in Pi.
+  if (bare.toLowerCase() === 'bash' && typeof input['command'] === 'string') {
     const video = remotionRender(input['command']);
     return video ? [video] : undefined;
   }

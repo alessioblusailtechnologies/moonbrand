@@ -27,8 +27,20 @@ const CONTENT_TYPES: Record<string, string> = {
   '.svg': 'image/svg+xml',
   '.gif': 'image/gif',
   '.mp4': 'video/mp4',
+  '.mov': 'video/quicktime',
+  '.webm': 'video/webm',
   '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
+  '.m4a': 'audio/mp4',
+  '.ogg': 'audio/ogg',
+  '.aac': 'audio/aac',
   '.pdf': 'application/pdf',
+  // I documenti e le pagine degli artefatti: lo studio li legge come testo. L'HTML non va mai come text/html, perché
+  // aperto da solo girerebbe sul dominio dell'API: lo studio lo mostra in un iframe isolato (srcdoc, sandbox).
+  '.md': 'text/markdown; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.html': 'text/plain; charset=utf-8',
+  '.htm': 'text/plain; charset=utf-8',
 };
 
 // Com'era ogni file all'ultimo giro: etag sullo storage, dimensione e data di modifica sul disco.

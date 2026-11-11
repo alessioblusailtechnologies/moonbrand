@@ -1,4 +1,5 @@
 import type { AiStep } from '../ai/steps';
+import type { Artifact } from '../domain/artifact';
 import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
 import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
@@ -448,6 +449,8 @@ export interface ConversationResponse {
   contents: Content[];
   // I contenuti proposti per la pubblicazione nei turni, anche se nati altrove.
   proposals: PublishProposal[];
+  // I file prodotti nei turni (immagini, clip, audio, documenti, pagine), in ordine di arrivo, con i link.
+  artifacts: Artifact[];
 }
 
 // La dettatura: il testo di quello che si è detto al microfono, da rileggere nella casella.

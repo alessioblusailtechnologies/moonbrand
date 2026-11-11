@@ -28,12 +28,13 @@ const HASHTAG = /(#[\p{L}\p{N}_]+)/u;
 
 // Il contenuto come si vede sul canale scelto: nella cornice del canale (chi pubblica, testo piegato a «…altro», immagini,
 // slide o video nella proporzione del canale, azioni) e accanto il testo intero, da copiare o, se editable, da correggere a mano.
-// Nella pagina del contenuto a tutta larghezza; nella chat (compact) dentro una card, più stretto.
+// Nella pagina del contenuto a tutta larghezza; nella chat (compact) dentro una card, più stretto; nel pannello della
+// chat (stacked) in colonna.
 @Component({
   selector: 'mb-content-preview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, NgTemplateOutlet, TranslatePipe],
-  host: { '[class.compact]': 'compact()' },
+  host: { '[class.compact]': 'compact()', '[class.stacked]': 'stacked()' },
   templateUrl: './content-preview.html',
   styleUrl: './content-preview.scss',
 })
@@ -46,6 +47,8 @@ export class ContentPreview {
 
   readonly content = input.required<Content>();
   readonly compact = input(false);
+  // Nel pannello accanto alla chat: la cornice sopra e il testo sotto, a qualunque larghezza.
+  readonly stacked = input(false);
   // Il testo si corregge a mano solo dove il contenuto si gestisce: nella sua pagina.
   readonly editable = input(false);
   readonly updated = output<Content>();
