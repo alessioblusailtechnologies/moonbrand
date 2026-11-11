@@ -35,7 +35,8 @@ export function useTextPrices(lookup: (model: string) => TextPrice | undefined) 
 const OPENROUTER = 'https://openrouter.ai/api/v1/models';
 // Il nome della cache cambia quando cambia cosa si tiene di ogni modello (v2: anche le modalità).
 const CACHE_FILE = path.join(os.tmpdir(), 'moonbrand', 'listino-openrouter-v2.json');
-const CACHE_MS = 24 * 60 * 60_000;
+// Un'ora, come il giro del catalogo dei modelli (lib/catalog.ts): un modello nuovo arriva nella sezione Modelli entro l'ora.
+const CACHE_MS = 60 * 60_000;
 
 export interface OpenRouterModel {
   id: string;
@@ -45,10 +46,15 @@ export interface OpenRouterModel {
 }
 
 let listing: Promise<OpenRouterModel[] | undefined> | undefined;
+let listingAt = 0;
 
-// La lista di OpenRouter: dalla cache se è di oggi, altrimenti dalla rete (e si salva); se la rete non risponde, la cache
-// anche vecchia. Una sola lettura per processo.
+// La lista di OpenRouter: dalla cache se ha meno di CACHE_MS, altrimenti dalla rete (e si salva); se la rete non risponde,
+// la cache anche vecchia. In memoria la si tiene per CACHE_MS, poi si rilegge: il worker resta acceso per giorni.
 export function openRouter(): Promise<OpenRouterModel[] | undefined> {
+  if (Date.now() - listingAt >= CACHE_MS) {
+    listing = undefined;
+    listingAt = Date.now();
+  }
   return (listing ??= (async () => {
     const cached = async () => JSON.parse(await readFile(CACHE_FILE, 'utf8')) as OpenRouterModel[];
     const age = await stat(CACHE_FILE).then((info) => Date.now() - info.mtimeMs).catch(() => Infinity);

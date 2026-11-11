@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { measuredPrice } from '../../lib/prices';
@@ -71,7 +71,13 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
       signal: AbortSignal.timeout(60_000),
     });
     const raw = await response.text();
-    if (!response.ok) throw new Error(`${response.status}: ${raw.slice(0, 500)}`);
+    if (!response.ok) {
+      // Una generazione fallita Atlas la dice con un 400 che ha dentro lo stato: va restituita, altrimenti chi aspetta
+      // il risultato prende l'errore per un intoppo di rete e riprova fino al limite di 15 minuti.
+      const failed = (() => { try { return (JSON.parse(raw) as { data?: { status?: string } }).data; } catch { return undefined; } })();
+      if (failed?.status === 'failed' || failed?.status === 'error') return failed as T;
+      throw new Error(`${response.status}: ${raw.slice(0, 500)}`);
+    }
     const parsed = JSON.parse(raw) as { data?: T };
     return (parsed.data ?? parsed) as T;
   };
@@ -148,7 +154,16 @@ export function atlasClient(apiKey: string, inside: (relative: string) => string
       }
       request[name] = resolved;
     }
-    return { request: { ...request, ...extra }, notes };
+    // Anche nei parametri propri del modello (reference_images, reference_audios…) i file del brand vanno caricati:
+    // un percorso locale Atlas non lo legge e la generazione fallisce subito.
+    const local = async (value: unknown): Promise<unknown> => {
+      if (typeof value !== 'string' || /^[a-z]+:/i.test(value) || !path.extname(value)) return value;
+      const exists = await Promise.resolve().then(() => access(inside(value))).then(() => true, () => false);
+      return exists ? upload(value) : value;
+    };
+    const resolvedExtra: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(extra)) resolvedExtra[key] = Array.isArray(value) ? await Promise.all(value.map(local)) : await local(value);
+    return { request: { ...request, ...resolvedExtra }, notes };
   };
 
   // La stima prima di partire (a lavoro finito si conta quanto Atlas addebita, charged): quanto è costato davvero per
