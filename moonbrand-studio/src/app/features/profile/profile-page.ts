@@ -253,8 +253,8 @@ export class ProfilePage {
     return {
       id: credits.plan,
       summary: this.i18n.t('plans.settingsSummary', { plan: plan.name, ...plan.monthly }),
-      status: subscriptionStatusLine(this.i18n, credits.subscription),
-      warn: !subscriptionLive(credits.subscription) || status === 'past_due' || status === 'on_hold',
+      status: subscriptionStatusLine(this.i18n, credits.subscription, credits.trialEndsAt),
+      warn: (!subscriptionLive(credits.subscription) && !credits.trialEndsAt) || status === 'past_due' || status === 'on_hold',
       // In omaggio: niente cambio di piano né portale dei pagamenti.
       free: Boolean(credits.subscription?.free),
       subscribed: subscriptionLive(credits.subscription) && !credits.subscription?.free,

@@ -128,15 +128,13 @@ export class BrandsService {
     return firstValueFrom(this.http.post<ChannelConnectionResponse>(`/v1/brands/${brandId}/channels/${channel}/select`, request));
   }
 
-  // Solo negli ambienti di prova (SIMULATE_SOCIAL nell'API): si chiede una volta.
-  private simulation: Promise<boolean> | null = null;
-
-  simulationEnabled(): Promise<boolean> {
-    this.simulation ??= firstValueFrom(this.http.get<SocialSimulationResponse>('/v1/social/simulation')).then(
+  // Negli ambienti di prova (SIMULATE_SOCIAL nell'API) e per i brand nella prova gratuita: lo dice l'API, brand per brand.
+  simulationEnabled(brandId: string | null): Promise<boolean> {
+    const params = brandId ? { brandId } : undefined;
+    return firstValueFrom(this.http.get<SocialSimulationResponse>('/v1/social/simulation', { params })).then(
       ({ enabled }) => enabled,
       () => false,
     );
-    return this.simulation;
   }
 
   simulateChannel(brandId: string, channel: ChannelId): Promise<ChannelConnectionResponse> {

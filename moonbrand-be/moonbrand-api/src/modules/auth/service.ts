@@ -27,7 +27,7 @@ export interface AuthMail {
 
 // freePlan: l'utenza con il piano Ultra in omaggio (free-plan.ts), per cui lo studio non propone pagamenti.
 // aiEngine: il motore v2 (ai/engine.ts), per cui lo studio accorcia l'onboarding.
-const publicAccount = ({ id, email, name, locale, emailConfirmed, newsSeen }: Account): Account => ({
+const publicAccount = ({ id, email, name, locale, emailConfirmed, newsSeen, trialEndsAt }: Account): Account => ({
   id,
   email,
   name,
@@ -35,6 +35,7 @@ const publicAccount = ({ id, email, name, locale, emailConfirmed, newsSeen }: Ac
   emailConfirmed,
   newsSeen,
   freePlan: isFreeUltra(email),
+  trialEndsAt: trialEndsAt ?? null,
   ...(isEngineV2() && { aiEngine: 'v2' as const }),
 });
 

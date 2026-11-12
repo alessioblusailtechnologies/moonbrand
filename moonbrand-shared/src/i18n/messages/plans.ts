@@ -21,6 +21,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts} post, {carousels, plural, one {# carosello} other {# caroselli}} e {videos} video al mese',
     status: {
       none: 'Da attivare',
+      trial: 'Prova gratuita fino al {date}',
       free: 'In omaggio · Ultra senza pagamento',
       pending: 'In attivazione',
       active: 'Attivo · si rinnova il {date}',
@@ -95,6 +96,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carousel} other {# carousels}} and {videos, plural, one {# video} other {# videos}} a month',
     status: {
       none: 'Not active yet',
+      trial: 'Free trial until {date}',
       free: 'Complimentary · Ultra, nothing to pay',
       pending: 'Activating',
       active: 'Active · renews on {date}',
@@ -169,6 +171,7 @@ export const plans = defineMessages({
     settingsSummary: '{plan} · {posts, plural, one {# post} other {# posts}}, {carousels, plural, one {# carrousel} other {# carrousels}} et {videos, plural, one {# vidéo} other {# vidéos}} par mois',
     status: {
       none: 'À activer',
+      trial: 'Essai gratuit jusqu’au {date}',
       free: 'Offert · Ultra, rien à payer',
       pending: 'Activation en cours',
       active: 'Actif · renouvelé le {date}',

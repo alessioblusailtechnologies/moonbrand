@@ -19,6 +19,8 @@ export interface Account {
   emailConfirmed: boolean;
   // Il piano Ultra in omaggio (FREE_ULTRA_EMAILS dell'API): niente da pagare, lo studio non propone il checkout.
   freePlan?: boolean;
+  // La fine della prova gratuita (TRIAL in domain/subscription.ts), ISO; null per gli account nati prima della prova.
+  trialEndsAt?: string | null;
   // Il motore dei job (AI_ENGINE dell'API), solo se non è quello di sempre: con v2 l'onboarding è più corto.
   aiEngine?: 'v2';
   // false finché l'account non ha chiuso l'annuncio delle novità di LATEST_NEWS: lo studio glielo mostra una volta.
@@ -712,6 +714,8 @@ export interface CreditsResponse {
   subscription: BrandSubscription | null;
   // Perché i lavori a pagamento del brand non partono: senza piano attivo o senza crediti; null se partono.
   blocked: SpendBlock | null;
+  // Il brand è nella prova gratuita, senza abbonamento: la fine della prova, ISO (lì finiscono anche i crediti).
+  trialEndsAt?: string;
 }
 
 export type SpendBlock = 'PLAN_REQUIRED' | 'NO_CREDITS';

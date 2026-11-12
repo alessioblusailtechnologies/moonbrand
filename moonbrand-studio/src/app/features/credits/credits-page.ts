@@ -63,7 +63,7 @@ import { ToastService } from '../../ui/toast';
                 @if (card.over) {
                   {{ 'credits.over' | t: { n: card.over } }}
                 } @else if (card.current) {
-                  {{ (card.paid ? 'credits.renewsPaid' : 'credits.renews') | t: { date: card.renews, total: card.renewal, plan: card.plan } }}
+                  {{ (card.trial ? 'credits.trialEnds' : card.paid ? 'credits.renewsPaid' : 'credits.renews') | t: { date: card.renews, total: card.renewal, plan: card.plan } }}
                 } @else {
                   {{ 'credits.closed' | t }}
                 }
@@ -420,6 +420,7 @@ export class CreditsPage {
       // pagato prima di scendere, le ricariche).
       renewal: SUBSCRIPTION_PLANS[credits.plan].monthlyCredits.toLocaleString(intl),
       paid: subscriptionLive(credits.subscription),
+      trial: Boolean(credits.trialEndsAt),
       over: used > total ? round(used - total) : null,
       renews: new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'long' }).format(new Date(`${credits.renewsOn}T12:00:00`)),
     };

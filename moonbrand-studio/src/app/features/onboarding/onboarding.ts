@@ -11,6 +11,7 @@ import { translate } from '@moonbrand/shared/i18n/translate';
 
 import { AiJobsService } from '../../core/ai/ai-jobs.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { trialRunning } from '../../core/billing/subscription-status';
 import { BrandsService } from '../../core/brands/brands.service';
 import { ChannelConnectionService } from '../../core/brands/channel-connection';
 import { errorMessage } from '../../core/errors';
@@ -223,9 +224,10 @@ export class Onboarding {
     }
     // Creato il brand, il piano si sceglie in una finestra che non si chiude (mb-plan-choice): da lì il browser va alla
     // pagina di pagamento di Dodo Payments e torna nella chat. Intanto stile e prime idee si preparano sul server, e qui
-    // dietro si vede l'avanzamento. Chi ha il piano in omaggio salta la scelta e aspetta la preparazione.
+    // dietro si vede l'avanzamento. Chi ha il piano in omaggio o è nella prova gratuita salta la scelta e aspetta la
+    // preparazione: in prova il piano si attiva dal banner in alto o dalle Impostazioni.
     this.creating.set(false);
-    if (!free) {
+    if (!free && !trialRunning(this.auth.account()?.trialEndsAt)) {
       this.choosingPlan.set(brandId);
       void this.prepare(jobs);
       return;

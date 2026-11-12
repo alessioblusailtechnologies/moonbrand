@@ -7,6 +7,7 @@ import type { Config } from '../../config';
 import { isEngineV2 } from '../ai/engine';
 import type { DodoApi } from '../billing/dodo-api';
 import { freePlanError, isFreeUltra } from '../billing/free-plan';
+import { canSimulate } from '../billing/trial';
 import { isUpgrade, liveSubscription, ownedBrand } from '../billing/routes';
 import { EXAMPLES_DIR, FOLLOW_DIR, LEGACY_WORK_DIR, type BrandFiles } from '../brand-files/files';
 import { FIRST_IDEAS, queueIdeasJob } from '../ideas/service';
@@ -48,7 +49,8 @@ export function registerBrandRoutes(
   app.post('/v1/brands', async (request, reply) => {
     const body = createBrandSchema.parse(request.body);
     await files.claim(body.id, request.identity.accountId);
-    const connected = await onboardingConnections(settings.ZERNIO_API_KEY, body.id, body.channels, settings.SIMULATE_SOCIAL);
+    const simulate = await canSimulate(pool, settings.SIMULATE_SOCIAL, request.identity.accountId, null);
+    const connected = await onboardingConnections(settings.ZERNIO_API_KEY, body.id, body.channels, simulate);
     const brand = await createBrand(pool, request.identity, body, connected);
     await adoptExamples(files, body.id, body.referenceExamples ?? [], request.log);
     // Lo stile dai riferimenti, le prime idee e il progetto video partono subito, lato server, e insieme: si preparano
