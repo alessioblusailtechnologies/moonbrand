@@ -17,5 +17,9 @@ export const SUBSCRIPTION_PLAN_IDS: SubscriptionPlanId[] = ['start', 'pro', 'ult
 // La ricarica quando i crediti del mese finiscono: con Ultra costa meno.
 export const CREDIT_TOPUP = { credits: 1_000, priceEur: 50, ultraPriceEur: 40 } as const;
 
+// La prova gratuita, senza carta: per TRIAL.days giorni dall'iscrizione tutti i brand dell'utenza lavorano con il piano
+// TRIAL.plan, crediti pieni, e i canali si possono collegare in modo simulato. Poi il brand si ferma finché non attiva un piano.
+export const TRIAL = { days: 7, plan: 'pro' } as const satisfies { days: number; plan: SubscriptionPlanId };
+
 // Finché non ci sono i pagamenti, ogni account conta i crediti come se avesse il piano medio.
 export const DEFAULT_SUBSCRIPTION_PLAN: SubscriptionPlanId = 'pro';

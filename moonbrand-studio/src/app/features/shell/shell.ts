@@ -800,6 +800,12 @@ export class Shell {
     if (credits.subscription?.status === 'past_due' || credits.subscription?.status === 'on_hold') {
       return { kind: 'card' as const, text: this.i18n.t('shell.billing.pastDue', { brand: brand.name }), action: this.i18n.t('shell.billing.pastDueAction') };
     }
+    // La prova gratuita: quanti giorni restano, e il piano si può attivare subito.
+    if (credits.trialEndsAt) {
+      const days = Math.max(Math.ceil((new Date(credits.trialEndsAt).getTime() - Date.now()) / 86_400_000), 1);
+      const text = this.i18n.t(days > 1 ? 'shell.billing.trialMany' : 'shell.billing.trialOne', { days, plan });
+      return { kind: 'plan' as const, text, action: this.i18n.t('shell.billing.planAction', { plan }) };
+    }
     return null;
   });
 

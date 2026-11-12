@@ -9,6 +9,7 @@ import { channelName } from '@moonbrand/shared/domain/catalog';
 import type { Config } from '../../config';
 import { withIdentity } from '../../db/identity';
 import { ApiError } from '../../errors';
+import { canSimulate } from '../billing/trial';
 import type { BrandFiles } from '../brand-files/files';
 import { channelId } from '../brands/schemas';
 import { findChannel, storeChannel } from './repository';
@@ -27,6 +28,7 @@ const choicesSchema = z.object({
   organizations: z.string().max(100_000).optional(),
 });
 const selectSchema = choicesSchema.extend({ choiceId: z.string().trim().min(1).max(100) });
+const simulationQuery = z.object({ brandId: z.uuid('Brand non trovato.').optional() });
 
 // Pagine e organizzazioni si mostrano con il loro nome, gli altri account con @.
 export function handle(channel: ChannelId, account: ZernioAccount): string | null {
@@ -74,13 +76,20 @@ export function registerSocialRoutes(
     return (await client().accounts(brandId, channel)).map((account) => account._id);
   };
 
-  app.get('/v1/social/simulation', (): SocialSimulationResponse => ({ enabled: settings.SIMULATE_SOCIAL }));
+  // La simulazione c'è negli ambienti di prova e, in produzione, per i brand nella prova gratuita (billing/trial.ts).
+  // Senza brandId: quello dell'onboarding, non ancora creato.
+  app.get('/v1/social/simulation', async (request): Promise<SocialSimulationResponse> => {
+    const { brandId } = simulationQuery.parse(request.query);
+    return { enabled: await canSimulate(pool, settings.SIMULATE_SOCIAL, request.identity.accountId, brandId ?? null) };
+  });
 
-  // Il collegamento finto degli ambienti di prova: niente Zernio, il canale risulta collegato a un account di prova.
+  // Il collegamento finto: niente Zernio, il canale risulta collegato a un account di prova.
   app.post('/v1/brands/:brandId/channels/:channel/simulate', async (request): Promise<ChannelConnectionResponse> => {
-    if (!settings.SIMULATE_SOCIAL) throw ApiError.notFound('Il collegamento simulato non è attivo in questo ambiente.');
     const { brandId, channel } = channelParams.parse(request.params);
     const before = await channelOf(request.identity, brandId, channel);
+    if (!(await canSimulate(pool, settings.SIMULATE_SOCIAL, request.identity.accountId, before.pending ? null : brandId))) {
+      throw ApiError.forbidden('SIMULATION_OFF', 'Il collegamento simulato è solo per la prova gratuita: collega il canale per davvero.');
+    }
     const state: ChannelState = {
       selected: true,
       handle: channel === 'facebook' || channel === 'linkedin' ? 'Account di prova' : '@account.di.prova',

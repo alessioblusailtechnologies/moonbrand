@@ -9,6 +9,7 @@ import { channelFiles, postText, sortFiles, type Content, type ContentFile } fro
 import type { PublicationReason } from '@moonbrand/shared/domain/plan';
 
 import { ApiError } from '../../errors';
+import { expireSimulatedChannels } from '../billing/trial';
 import type { BrandFiles } from '../brand-files/files';
 import { findContent } from '../contents/repository';
 import { platformOf, zernio, type PostOutcome, type PostRequest, type Zernio } from './zernio';
@@ -304,7 +305,15 @@ export function publishSoon(): void {
   wake?.();
 }
 
-export function schedulePublishing(pool: pg.Pool, files: BrandFiles, apiKey: string | undefined, log: FastifyBaseLogger): () => void {
+// simulateSocial: negli ambienti di prova i canali simulati valgono sempre; altrimenti solo durante la prova gratuita, e a
+// ogni giro quelli dei brand usciti dalla prova si segnano persi.
+export function schedulePublishing(
+  pool: pg.Pool,
+  files: BrandFiles,
+  apiKey: string | undefined,
+  simulateSocial: boolean,
+  log: FastifyBaseLogger,
+): () => void {
   if (!apiKey) {
     log.warn('pubblicazione spenta: manca ZERNIO_API_KEY');
     return () => undefined;
@@ -322,6 +331,7 @@ export function schedulePublishing(pool: pg.Pool, files: BrandFiles, apiKey: str
     try {
       do {
         again = false;
+        if (!simulateSocial) await expireSimulatedChannels(pool);
         for (const claimed of await claimDue(pool)) await publishOne(pool, files, client, claimed, log);
         for (const claimed of await claimRetries(pool)) await publishOne(pool, files, client, claimed, log);
         await recheck(pool, client, log);

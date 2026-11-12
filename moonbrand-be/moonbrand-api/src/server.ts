@@ -32,7 +32,7 @@ const port = Number(process.env.PORT) || settings.API_PORT;
 
 const stopMorningWelcome = scheduleMorningWelcome(pool, app.log);
 // La pubblicazione vera, con Zernio: all'ora dell'uscita il contenuto approvato esce sui canali collegati.
-const stopPublishing = schedulePublishing(pool, files, settings.ZERNIO_API_KEY, app.log);
+const stopPublishing = schedulePublishing(pool, files, settings.ZERNIO_API_KEY, settings.SIMULATE_SOCIAL, app.log);
 
 const shutdown = async () => {
   stopMorningWelcome();

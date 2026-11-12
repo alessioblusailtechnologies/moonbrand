@@ -1,5 +1,5 @@
 import type { BrandSubscription, CreditsResponse, SpendBlock, SubscriptionStatus } from '@moonbrand/shared/api/contract';
-import { DEFAULT_SUBSCRIPTION_PLAN, SUBSCRIPTION_PLANS, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
+import { DEFAULT_SUBSCRIPTION_PLAN, SUBSCRIPTION_PLANS, TRIAL, type SubscriptionPlanId } from '@moonbrand/shared/domain/subscription';
 
 import type { Queryable } from '../../db/pool';
 import { ApiError } from '../../errors';
@@ -15,33 +15,55 @@ import { isFreeUltra } from '../billing/free-plan';
 //   più quelli aggiunti nel mese dall'admin. Con BILLING_ENFORCED è comunque fermo finché non attiva un piano, a meno
 //   che l'utenza abbia il piano Ultra in omaggio (free-plan.ts): allora il piano è Ultra e conta come un abbonamento
 //   attivo senza pagamento.
+// - Un brand senza abbonamento di un'utenza nella prova gratuita (billing/trial.ts) ha il piano della prova, con i suoi
+//   crediti pieni dall'inizio della prova alla fine, e lavora come con un abbonamento attivo. Finita la prova si ferma.
 export async function brandCredits(db: Queryable, accountId: string, brandId: string | null): Promise<CreditsResponse> {
   const subscription = await brandSubscription(db, accountId, brandId);
   if (subscription) {
     const paid = await paidCredits(db, accountId, brandId, subscription);
     return { ...paid, subscription, blocked: blockOf(subscription, paid.remaining) };
   }
-  const { rows } = await db.query<{ plan: SubscriptionPlanId | null; email: string; used: string; added: string; renews_on: string }>(
-    `with month as (select date_trunc('month', now() at time zone 'Europe/Rome') as start),
+  const { rows: owner } = await db.query<{ email: string; trial_ends_at: Date | null }>(
+    "select email, case when trial_ends_at > now() then trial_ends_at end as trial_ends_at from presenza.accounts where id = $1",
+    [accountId],
+  );
+  const free = isFreeUltra(owner[0]?.email);
+  const trialEndsAt = free ? null : (owner[0]?.trial_ends_at ?? null);
+  // Il periodo che conta: la prova se è in corso, altrimenti il mese di calendario a Roma.
+  const { rows } = await db.query<{ plan: SubscriptionPlanId | null; used: string; added: string; renews_on: string }>(
+    `with period as (
+            select case when $3::timestamptz is not null then $3::timestamptz - make_interval(days => ${TRIAL.days})
+                        else date_trunc('month', now() at time zone 'Europe/Rome') at time zone 'Europe/Rome' end as start,
+                   coalesce($3::timestamptz, (date_trunc('month', now() at time zone 'Europe/Rome') + interval '1 month') at time zone 'Europe/Rome') as ends
+          ),
           brand as (
             select b.id, b.plan from presenza.brands b
             where b.id = coalesce($2::uuid, (select a.active_brand_id from presenza.accounts a where a.id = $1))
           )
-     select (select plan from brand) as plan, (select email from presenza.accounts where id = $1) as email,
-       coalesce(-sum(m.amount) filter (where m.amount < 0 and m.created_at >= month.start at time zone 'Europe/Rome'), 0) as used,
-       coalesce(sum(m.amount) filter (where m.amount > 0 and m.kind = 'topup' and m.created_at >= month.start at time zone 'Europe/Rome'), 0) as added,
-       to_char(month.start + interval '1 month', 'YYYY-MM-DD') as renews_on
-     from month left join presenza.credit_movements m on m.brand_id = (select id from brand)
-     group by month.start`,
-    [accountId, brandId],
+     select (select plan from brand) as plan,
+       coalesce(-sum(m.amount) filter (where m.amount < 0 and m.created_at >= period.start), 0) as used,
+       coalesce(sum(m.amount) filter (where m.amount > 0 and m.kind = 'topup' and m.created_at >= period.start), 0) as added,
+       to_char(period.ends at time zone 'Europe/Rome', 'YYYY-MM-DD') as renews_on
+     from period left join presenza.credit_movements m on m.brand_id = (select id from brand)
+     group by period.start, period.ends`,
+    [accountId, brandId, trialEndsAt],
   );
-  const free = isFreeUltra(rows[0].email);
-  const plan = free ? 'ultra' : (rows[0].plan ?? DEFAULT_SUBSCRIPTION_PLAN);
+  const plan = free ? 'ultra' : trialEndsAt ? TRIAL.plan : (rows[0].plan ?? DEFAULT_SUBSCRIPTION_PLAN);
   const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits + Math.round(Number(rows[0].added));
   const usedThisMonth = Math.round(Number(rows[0].used));
   const remaining = monthlyCredits - usedThisMonth;
   const granted: BrandSubscription | null = free ? { plan: 'ultra', status: 'active', periodEnd: null, cancelsAt: null, free: true } : null;
-  return { plan, monthlyCredits, usedThisMonth, remaining, renewsOn: rows[0].renews_on, subscription: granted, blocked: blockOf(granted, remaining) };
+  const blocked = trialEndsAt ? blockOf({ plan, status: 'active', periodEnd: null, cancelsAt: null }, remaining) : blockOf(granted, remaining);
+  return {
+    plan,
+    monthlyCredits,
+    usedThisMonth,
+    remaining,
+    renewsOn: rows[0].renews_on,
+    subscription: granted,
+    blocked,
+    ...(trialEndsAt && { trialEndsAt: trialEndsAt.toISOString() }),
+  };
 }
 
 // I crediti pagati. Ogni periodo ha i crediti del suo piano (l'ultimo movimento plan del periodo: un passaggio di piano a

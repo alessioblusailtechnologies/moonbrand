@@ -28,6 +28,8 @@ export const shell = defineMessages({
     billing: {
       plan: 'Il piano di {brand} non è attivo: chat e contenuti sono fermi finché non lo attivi.',
       planAction: 'Attiva {plan}',
+      trialOne: 'Prova gratuita del piano {plan}: ultimo giorno. I canali simulati vanno collegati per davvero quando attivi il piano.',
+      trialMany: 'Prova gratuita del piano {plan}: restano {days} giorni. I canali simulati vanno collegati per davvero quando attivi il piano.',
       credits: '{brand} ha finito i crediti: chat e contenuti ripartono con una ricarica o al rinnovo.',
       creditsAction: 'Ricarica',
       creditsFree: '{brand} ha finito i crediti del mese: chat e contenuti ripartono il primo del mese.',
@@ -62,6 +64,8 @@ export const shell = defineMessages({
     billing: {
       plan: '{brand}’s plan isn’t active: chat and posts are on hold until you activate it.',
       planAction: 'Activate {plan}',
+      trialOne: 'Free trial of the {plan} plan: last day. Simulated channels need a real connection once you activate the plan.',
+      trialMany: 'Free trial of the {plan} plan: {days} days left. Simulated channels need a real connection once you activate the plan.',
       credits: '{brand} is out of credits: chat and posts resume with a top-up or at renewal.',
       creditsAction: 'Top up',
       creditsFree: '{brand} is out of credits for this month: chat and posts resume on the 1st.',
@@ -96,6 +100,8 @@ export const shell = defineMessages({
     billing: {
       plan: 'Le forfait de {brand} n’est pas actif : discussion et contenus sont en pause tant que vous ne l’activez pas.',
       planAction: 'Activer {plan}',
+      trialOne: 'Essai gratuit du forfait {plan} : dernier jour. Les canaux simulés devront être connectés pour de vrai une fois le forfait activé.',
+      trialMany: 'Essai gratuit du forfait {plan} : encore {days} jours. Les canaux simulés devront être connectés pour de vrai une fois le forfait activé.',
       credits: '{brand} n’a plus de crédits : discussion et contenus reprennent avec une recharge ou au renouvellement.',
       creditsAction: 'Recharger',
       creditsFree: '{brand} n’a plus de crédits ce mois-ci : discussion et contenus reprennent le 1er du mois.',

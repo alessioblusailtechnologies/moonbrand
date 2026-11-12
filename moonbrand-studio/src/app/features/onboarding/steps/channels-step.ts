@@ -102,11 +102,11 @@ export class ChannelsStep {
   protected readonly needsReconnect = needsReconnect;
   protected readonly disconnected = DISCONNECTED;
   protected readonly busy = signal<ChannelId | null>(null);
-  // Il pulsante «Simula connessione» c'è solo negli ambienti di prova.
+  // Il pulsante «Simula connessione» c'è negli ambienti di prova e durante la prova gratuita.
   protected readonly canSimulate = signal(false);
 
   constructor() {
-    void this.brands.simulationEnabled().then((enabled) => this.canSimulate.set(enabled));
+    void this.brands.simulationEnabled(this.store.brandId()).then((enabled) => this.canSimulate.set(enabled));
   }
 
   protected status(id: ChannelId, state: ChannelState): string {
@@ -144,7 +144,7 @@ export class ChannelsStep {
     }
   }
 
-  // Ambienti di prova: il canale risulta collegato senza passare dal social.
+  // Ambienti di prova e prova gratuita: il canale risulta collegato senza passare dal social.
   protected async simulate(id: ChannelId): Promise<void> {
     const brandId = this.store.brandId();
     if (!brandId) return;
