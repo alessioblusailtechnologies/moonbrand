@@ -98,6 +98,14 @@ const STATUS: Record<SectionStatus, { color: string; label: MessageKey | null }>
                 </button>
               }
             }
+            <a class="row-btn" routerLink="/impostazioni/voci">
+              <mb-icon name="mic" [size]="18" class="row-icon" />
+              <span class="grow texts">
+                <span class="strong-sm">{{ 'voices.settingsRow' | t }}</span>
+                <span class="caption summary">{{ 'voices.settingsRowHint' | t }}</span>
+              </span>
+              <mb-icon name="chevron-right" [size]="16" class="chevron" />
+            </a>
             <a class="row-btn" routerLink="/impostazioni/crediti">
               <mb-icon name="bar-chart" [size]="18" class="row-icon" />
               <span class="grow texts">

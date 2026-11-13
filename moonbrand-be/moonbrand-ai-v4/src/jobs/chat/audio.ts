@@ -160,9 +160,11 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
     PARALLEL,
   );
 
+  // Solo la libreria pubblica: le voci del nostro account ElevenLabs sono quelle clonate dei brand, e ognuno vede le sue
+  // con voci_brand.
   const voices = tool(
     'cerca_voci',
-    'Cerca le voci per la voce fuori campo: quelle dell’account e quelle condivise di ElevenLabs, con id, descrizione e lingua.',
+    'Cerca nella libreria pubblica di ElevenLabs le voci per la voce fuori campo, con id, descrizione e lingua. Prima guarda voci_brand: se il brand ha già le sue voci, usa quelle.',
     {
       cerca: z.string().optional().describe('es. calda, narratore, giovane'),
       lingua: z.string().optional().describe('Codice della lingua, es. it, en, fr'),
@@ -170,18 +172,13 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
     },
     async ({ cerca, lingua, genere }) => {
       try {
-        const own = new URLSearchParams({ page_size: '30', ...(cerca && { search: cerca }) });
         const shared = new URLSearchParams({ page_size: '30', ...(cerca && { search: cerca }), ...(lingua && { language: lingua }), ...(genere && { gender: genere }) });
-        const [mine, library] = await Promise.all([
-          request(`/v2/voices?${own}`).then((response) => response.json() as Promise<{ voices?: { voice_id: string; name: string; description?: string; labels?: Record<string, string> }[] }>),
-          request(`/v1/shared-voices?${shared}`).then((response) => response.json() as Promise<{ voices?: { voice_id: string; name: string; description?: string; language?: string; gender?: string; accent?: string; use_case?: string }[] }>),
-        ]);
-        const lines = [
-          ...(mine.voices ?? []).map((voice) => `- ${voice.voice_id} ${voice.name} (account): ${[voice.description, ...Object.values(voice.labels ?? {})].filter(Boolean).join(', ').slice(0, 160)}`),
-          ...(library.voices ?? []).map(
-            (voice) => `- ${voice.voice_id} ${voice.name}: ${[voice.language, voice.gender, voice.accent, voice.use_case, voice.description].filter(Boolean).join(', ').slice(0, 200)}`,
-          ),
-        ];
+        const library = (await request(`/v1/shared-voices?${shared}`).then((response) => response.json())) as {
+          voices?: { voice_id: string; name: string; description?: string; language?: string; gender?: string; accent?: string; use_case?: string }[];
+        };
+        const lines = (library.voices ?? []).map(
+          (voice) => `- ${voice.voice_id} ${voice.name}: ${[voice.language, voice.gender, voice.accent, voice.use_case, voice.description].filter(Boolean).join(', ').slice(0, 200)}`,
+        );
         return text(lines.length > 0 ? lines.join('\n') : 'Nessuna voce trovata.');
       } catch (error) {
         return failure(error);
@@ -192,7 +189,7 @@ export function audioServer(brandDir: string, keys: Pick<ServiceKeys, 'atlas' | 
 
   const voice = tool(
     'genera_voce',
-    `Legge un testo con una voce (cerca_voci) e salva l’audio. Di default ${DEFAULT_VOICE_MODEL}, che capisce i tag di intonazione tra parentesi quadre.`,
+    `Legge un testo con una voce (voci_brand, o cerca_voci se il brand non ne ha) e salva l’audio. Di default ${DEFAULT_VOICE_MODEL}, che capisce i tag di intonazione tra parentesi quadre.`,
     {
       testo: z.string().min(1),
       voce: z.string().describe('L’id della voce'),

@@ -51,3 +51,11 @@ export async function normalizeVideo(input: string, output: string, poster: stri
   );
   if (!made) await ffmpeg(['-i', output, '-frames:v', '1', '-q:v', '3', poster]);
 }
+
+// Un audio caricato (dal telefono, registrato nel browser, o la traccia di un video) diventa un MP3 mono a 128 kbps
+// costanti: lo leggono ElevenLabs e i montaggi, e la durata si conta dalla dimensione (AUDIO_BYTES_PER_SECOND).
+export const AUDIO_BYTES_PER_SECOND = 128_000 / 8;
+
+export async function normalizeAudio(input: string, output: string): Promise<void> {
+  await ffmpeg(['-i', input, '-map', '0:a:0', '-vn', '-ac', '1', '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k', output]);
+}

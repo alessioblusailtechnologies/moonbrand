@@ -20,6 +20,8 @@ interface PendingAttachment {
   file: string | null;
   failed: boolean;
   video: boolean;
+  // Un audio: niente anteprima, il suo nome nel riquadro.
+  audio: string | null;
   progress: number;
 }
 
@@ -148,7 +150,7 @@ export class Composer {
 
   // Una foto o un video incollato nella casella vale come una scelta dal pulsante.
   protected pasted(event: ClipboardEvent): void {
-    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/'));
+    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('audio/'));
     if (media.length === 0) return;
     event.preventDefault();
     this.attach(media);
@@ -166,10 +168,11 @@ export class Composer {
         file: null,
         failed: false,
         video: file.type.startsWith('video/'),
+        audio: file.type.startsWith('audio/') ? file.name : null,
         progress: 0,
       };
       this.attachments.update((list) => [...list, pending]);
-      void (pending.video ? this.uploadVideo(brand.id, file, pending.id) : this.upload(brand.id, file, pending.id));
+      void (pending.video || pending.audio ? this.uploadVideo(brand.id, file, pending.id, pending.audio ? 'audio' : 'video') : this.upload(brand.id, file, pending.id));
     }
   }
 
@@ -177,13 +180,13 @@ export class Composer {
     this.attachments.update((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   }
 
-  private async uploadVideo(brandId: string, file: File, id: number): Promise<void> {
+  private async uploadVideo(brandId: string, file: File, id: number, kind: 'video' | 'audio'): Promise<void> {
     try {
-      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => this.set(id, { progress }));
+      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => this.set(id, { progress }), kind);
       this.set(id, { file: uploaded.file, progress: 1 });
     } catch (error) {
       this.set(id, { failed: true });
-      this.toast.show(errorMessage(error, this.i18n.t('chat.composer.videoFailed')));
+      this.toast.show(errorMessage(error, this.i18n.t(kind === 'audio' ? 'chat.composer.audioFailed' : 'chat.composer.videoFailed')));
     }
   }
 

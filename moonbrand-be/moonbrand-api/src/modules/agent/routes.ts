@@ -10,6 +10,8 @@ import { channelId, MAX_CHANNELS } from '../brands/schemas';
 import { sceneSchema } from '../contents/routes';
 import { channelsSchema, daySchema, slotCreateSchema, slotPatchSchema } from '../plan/routes';
 import { createAgentSlots, listAgentPlan, patchAgentSlot, proposeAgentPlan, removeAgentSlot } from './plan';
+import { registerAgentVoiceRoutes } from '../voices/routes';
+import type { VoiceService } from '../voices/service';
 import { findAgentJob, type AgentJob } from './repository';
 import {
   changeAgentContentStatus,
@@ -87,7 +89,7 @@ function parse<T>(schema: z.ZodType<T>, body: unknown): T {
 
 // Le rotte dei tool della chat. Niente sessione dell'utente: il token del job (Authorization: Job <token>)
 // dice account, brand e conversazione, e vale solo mentre il job è in corso.
-export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): Promise<void> {
+export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles, voices: VoiceService): Promise<void> {
   app.decorateRequest('agent');
 
   app.addHook('preValidation', async (request) => {
@@ -145,4 +147,6 @@ export async function registerAgentRoutes(app: FastifyInstance, pool: pg.Pool, f
     const saved = await createAgentIdea(pool, request.agent, parse(ideaSchema, request.body));
     return reply.code(201).send(saved);
   });
+
+  registerAgentVoiceRoutes(app, pool, files, voices);
 }

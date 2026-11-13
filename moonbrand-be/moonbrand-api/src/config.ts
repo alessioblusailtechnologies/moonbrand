@@ -38,6 +38,9 @@ const schema = z.object({
   // Le ricerche delle tendenze (tab Tendenze nelle Idee), con SocialCrawl: senza chiave la ricerca non è attiva e Ricrea
   // non prepara il riferimento.
   SOCIALCRAWL_API_KEY: optional,
+  // Le voci del brand (Impostazioni → Voci, tool salva_voce): clonarle e cercarle nella libreria, con ElevenLabs. È la
+  // stessa chiave del worker; senza, le voci non sono attive.
+  ELEVENLABS_API_KEY: optional,
   // Il segreto del webhook registrato su Zernio (POST /v1/webhooks/zernio, eventi account.*): dice quando un social chiude
   // l'accesso. Senza, il webhook risponde 503 e un canale scollegato si scopre solo quando un post fallisce.
   ZERNIO_WEBHOOK_SECRET: optional,

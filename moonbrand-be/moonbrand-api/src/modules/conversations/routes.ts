@@ -18,6 +18,7 @@ import {
   startConversation,
   stopTurn,
   uploadAttachment,
+  uploadAudioAttachment,
   uploadVideoAttachment,
   type ChatMessage,
 } from './service';
@@ -26,7 +27,7 @@ const brandParams = z.object({ brandId: z.uuid('Brand non trovato.') });
 const conversationParams = z.object({ conversationId: z.uuid('Conversazione non trovata.') });
 
 const MAX_ATTACHMENTS = 10;
-const attachmentPath = new RegExp(`^${ATTACHMENTS_DIR}/[0-9a-f-]{36}\\.(png|jpg|webp|mp4)$`);
+const attachmentPath = new RegExp(`^${ATTACHMENTS_DIR}/[0-9a-f-]{36}\\.(png|jpg|webp|mp4|mp3)$`);
 
 // Il testo può mancare se ci sono allegati: «ecco le foto del salone» è anche solo tre immagini. O se c'è l'idea da cui partire.
 const messageSchema = z
@@ -76,6 +77,10 @@ export function registerConversationRoutes(
     scope.post('/v1/brands/:brandId/attachments/video', async (request, reply) => {
       const { brandId } = brandParams.parse(request.params);
       return reply.code(201).send(await uploadVideoAttachment(files, request.identity, brandId, request.body as Readable));
+    });
+    scope.post('/v1/brands/:brandId/attachments/audio', async (request, reply) => {
+      const { brandId } = brandParams.parse(request.params);
+      return reply.code(201).send(await uploadAudioAttachment(files, request.identity, brandId, request.body as Readable));
     });
   });
 
