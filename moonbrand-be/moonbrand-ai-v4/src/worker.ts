@@ -174,9 +174,14 @@ const url = process.env.DATABASE_URL ?? '';
 // ai suoi tool e non a Claude.
 // I connettori dell'account claude.ai di questa macchina non servono ai job: accesi, finirebbero nel contesto.
 process.env.ENABLE_CLAUDEAI_MCP_SERVERS = 'false';
-const { DATABASE_URL: _database, GEMINI_API_KEY, ATLASCLOUD_API_KEY, ELEVENLABS_API_KEY, ...jobEnv } = process.env;
+const { DATABASE_URL: _database, GEMINI_API_KEY, ATLASCLOUD_API_KEY, ELEVENLABS_API_KEY, SOCIALCRAWL_API_KEY, ...jobEnv } = process.env;
 const SERVICE_KEYS = Object.fromEntries(
-  Object.entries({ MOONBRAND_GEMINI_KEY: GEMINI_API_KEY, MOONBRAND_ATLAS_KEY: ATLASCLOUD_API_KEY, MOONBRAND_ELEVENLABS_KEY: ELEVENLABS_API_KEY }).filter(([, key]) => key),
+  Object.entries({
+    MOONBRAND_GEMINI_KEY: GEMINI_API_KEY,
+    MOONBRAND_ATLAS_KEY: ATLASCLOUD_API_KEY,
+    MOONBRAND_ELEVENLABS_KEY: ELEVENLABS_API_KEY,
+    MOONBRAND_SOCIALCRAWL_KEY: SOCIALCRAWL_API_KEY,
+  }).filter(([, key]) => key),
 ) as Record<string, string>;
 const local = url.includes('localhost') || url.includes('127.0.0.1');
 const pool = new pg.Pool({ connectionString: url, ...(local ? {} : { ssl: { rejectUnauthorized: false } }), max: CONCURRENCY + 2 });
