@@ -86,8 +86,3 @@ export const STUDIO_URL = 'https://studio.moonbrand.app';
 export function signupUrl(lang: Lang): string {
   return `${STUDIO_URL}/register?lang=${lang}`;
 }
-
-/** Le immagini con del testo dentro esistono una per lingua, in /images/<lingua>/; le foto sono uguali per tutte. */
-export function imagePath(lang: Lang, file: string, localized: boolean): string {
-  return localized ? `/images/${lang}/${file}` : `/images/${file}`;
-}

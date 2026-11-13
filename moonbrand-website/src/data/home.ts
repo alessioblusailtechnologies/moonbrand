@@ -1,6 +1,8 @@
 // La struttura della home, uguale in ogni lingua: canali, colori, proporzioni, numeri, immagini.
 // I testi sono in src/i18n/<lingua>.ts; qui si uniscono con getPosts e simili.
-import { getCopy, imagePath, type Lang } from '../i18n';
+import type { ImageMetadata } from 'astro';
+import { getCopy, type Lang } from '../i18n';
+import { siteImage } from './images';
 
 export type Channel = 'instagram' | 'carousel' | 'reel' | 'story' | 'tiktok' | 'facebook' | 'linkedin';
 
@@ -39,7 +41,7 @@ interface PostBase {
 }
 
 export interface ExamplePost extends PostBase {
-  imageUrl: string;
+  picture: ImageMetadata;
   sub?: string;
   ph: string;
   text: string;
@@ -112,7 +114,7 @@ const POSTS: PostBase[] = [
 
 export function getPosts(lang: Lang): ExamplePost[] {
   const copy = getCopy(lang).posts;
-  return POSTS.map((post) => ({ ...post, ...copy[post.id], imageUrl: imagePath(lang, post.image, post.localized) }));
+  return POSTS.map((post) => ({ ...post, ...copy[post.id], picture: siteImage(lang, post.image, post.localized) }));
 }
 
 /** Spazio occupato dall'interfaccia del canale attorno al media, a 330px di larghezza. */
