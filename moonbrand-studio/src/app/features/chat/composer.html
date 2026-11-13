@@ -40,7 +40,7 @@
     (paste)="pasted($event)"
   ></textarea>
   <div class="composer-bar">
-    <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*,audio/*" multiple hidden (change)="picked($event)" />
+    <input #picker class="file-input" type="file" accept="image/*,video/*,audio/*" multiple tabindex="-1" (change)="picked($event)" />
     <button class="attach" type="button" [title]="'chat.composer.attachTitle' | t" (click)="pick()">
       <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> {{ 'chat.composer.attach' | t }}
     </button>

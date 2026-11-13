@@ -124,7 +124,7 @@ function clock(seconds: number): string {
                 </button>
               } @else {
                 <div class="row">
-                  <input #picker type="file" accept="audio/*,video/*" hidden (change)="picked($event)" />
+                  <input #picker class="file-input" type="file" accept="audio/*,video/*" tabindex="-1" (change)="picked($event)" />
                   <button class="btn btn-secondary btn-sm" type="button" [disabled]="recording()" (click)="picker.click()">
                     <mb-icon name="paperclip" [size]="14" /> {{ 'voices.pickFile' | t }}
                   </button>
