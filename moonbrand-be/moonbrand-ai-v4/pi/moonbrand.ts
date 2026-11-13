@@ -15,6 +15,7 @@ import { lambdaKeys, lambdaServer } from '../src/jobs/chat/lambda';
 import { mediaServer } from '../src/jobs/chat/media';
 import { moonbrandServer } from '../src/jobs/chat/moonbrand';
 import { mostraServer } from '../src/jobs/chat/mostra';
+import { socialServer } from '../src/jobs/chat/social';
 import { testiServer } from '../src/jobs/chat/testi';
 import type { ToolDefinition, ToolGroup } from '../src/jobs/chat/sdk';
 import { videoServer } from '../src/jobs/chat/video';
@@ -38,6 +39,7 @@ export default function (pi: ExtensionAPI) {
     MOONBRAND_GEMINI_KEY: gemini,
     MOONBRAND_ATLAS_KEY: atlas,
     MOONBRAND_ELEVENLABS_KEY: elevenlabs,
+    MOONBRAND_SOCIALCRAWL_KEY: socialcrawl,
     API_URL = 'http://localhost:3012',
   } = process.env;
 
@@ -58,6 +60,7 @@ export default function (pi: ExtensionAPI) {
     videoServer(brandDir, gemini),
     ...(lambda ? [lambdaServer(brandDir, lambda)] : []),
     web.server,
+    ...(socialcrawl ? [socialServer(brandDir, socialcrawl)] : []),
     mostraServer(brandDir),
   ];
   for (const definition of groups.flatMap((group) => group.tools)) register(pi, brandDir, definition);
