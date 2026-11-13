@@ -38,6 +38,7 @@ export const credits = defineMessages({
       export: 'Esportazione dei video',
       download: 'Download dei post di riferimento',
       dictation: 'Dettatura',
+      trends: 'Ricerche delle tendenze',
       other: 'Altre elaborazioni',
     },
     kind: {
@@ -47,6 +48,7 @@ export const credits = defineMessages({
       brand: 'Impostazione del brand',
       welcome: 'Saluto della chat',
       dictation: 'Dettatura',
+      trends: 'Tendenze',
       other: 'Altro',
     },
     csv: {
@@ -96,6 +98,7 @@ export const credits = defineMessages({
       export: 'Video export',
       download: 'Reference post downloads',
       dictation: 'Dictation',
+      trends: 'Trend searches',
       other: 'Other processing',
     },
     kind: {
@@ -105,6 +108,7 @@ export const credits = defineMessages({
       brand: 'Brand setup',
       welcome: 'Chat greeting',
       dictation: 'Dictation',
+      trends: 'Trends',
       other: 'Other',
     },
     csv: {
@@ -154,6 +158,7 @@ export const credits = defineMessages({
       export: 'Export des vidéos',
       download: 'Téléchargement des posts de référence',
       dictation: 'Dictée',
+      trends: 'Recherches de tendances',
       other: 'Autres traitements',
     },
     kind: {
@@ -163,6 +168,7 @@ export const credits = defineMessages({
       brand: 'Configuration de la marque',
       welcome: 'Message d’accueil',
       dictation: 'Dictée',
+      trends: 'Tendances',
       other: 'Autre',
     },
     csv: {

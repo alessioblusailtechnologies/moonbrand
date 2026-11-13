@@ -39,6 +39,7 @@ export const CATEGORY_LABELS: Record<CreditCategory, string> = {
   export: 'Esportazione video (Lambda)',
   download: 'Download dei post (Zernio)',
   dictation: 'Dettatura',
+  trends: 'Ricerche tendenze (SocialCrawl)',
   other: 'Altro',
 };
 

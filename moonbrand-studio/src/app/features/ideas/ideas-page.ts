@@ -35,8 +35,9 @@ import { StepList } from '../../ui/step-list';
 import { ToastService } from '../../ui/toast';
 import { CreateContentDialog, type IdeaContentRequest } from './create-content-dialog';
 import { SIGNAL_LABELS } from './labels';
+import { TrendsPanel } from './trends-panel';
 
-type View = 'new' | 'saved';
+type View = 'new' | 'saved' | 'trends';
 
 // Masonry: colonne larghe almeno così, separate da questo spazio.
 const MIN_COLUMN = 320;
@@ -45,7 +46,7 @@ const COLUMN_GAP = 16;
 @Component({
   selector: 'mb-ideas-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, Icon, Loader, StepList, CreateContentDialog, TranslatePipe],
+  imports: [RouterOutlet, Icon, Loader, StepList, CreateContentDialog, TrendsPanel, TranslatePipe],
   host: { '(window:resize)': 'updateScroll()' },
   templateUrl: './ideas-page.html',
   styleUrl: './ideas-page.scss',

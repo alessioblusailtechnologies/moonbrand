@@ -7,6 +7,8 @@ import { z } from 'zod';
 import type { ChatAttachmentUpload, ChatMessageRequest } from '@moonbrand/shared/api/contract';
 
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
+import type { MediaStorage } from '../media/storage';
+import type { SocialCrawl } from '../trends/socialcrawl';
 import { uploadSchema } from '../media/routes';
 import {
   getConversation,
@@ -36,21 +38,29 @@ const messageSchema = z
       .default([]),
     ideaId: z.uuid('Idea non trovata.').optional(),
     slotId: z.uuid('Uscita non trovata.').optional(),
+    trendId: z.uuid('Tendenza non trovata.').optional(),
   })
   .refine(
-    (body) => body.message.length > 0 || body.attachments.length > 0 || body.ideaId !== undefined || body.slotId !== undefined,
+    (body) => body.message.length > 0 || body.attachments.length > 0 || body.ideaId !== undefined || body.slotId !== undefined || body.trendId !== undefined,
     'Scrivi un messaggio.',
   ) satisfies z.ZodType<
   ChatMessage,
   ChatMessageRequest
 >;
 
-export function registerConversationRoutes(app: FastifyInstance, pool: pg.Pool, files: BrandFiles): void {
+export function registerConversationRoutes(
+  app: FastifyInstance,
+  pool: pg.Pool,
+  files: BrandFiles,
+  storage: MediaStorage,
+  crawl: SocialCrawl | null,
+): void {
+  const trends = { files, storage, crawl };
   app.get('/v1/brands/:brandId/conversations', (request) => getConversations(pool, request.identity, brandParams.parse(request.params).brandId));
 
   app.post('/v1/brands/:brandId/conversations', async (request, reply) => {
     const { brandId } = brandParams.parse(request.params);
-    const created = await startConversation(pool, request.identity, brandId, messageSchema.parse(request.body));
+    const created = await startConversation(pool, request.identity, brandId, messageSchema.parse(request.body), trends);
     return reply.code(202).send(created);
   });
 
@@ -75,7 +85,7 @@ export function registerConversationRoutes(app: FastifyInstance, pool: pg.Pool, 
 
   app.post('/v1/conversations/:conversationId/messages', async (request, reply) => {
     const { conversationId } = conversationParams.parse(request.params);
-    const created = await sendMessage(pool, request.identity, conversationId, messageSchema.parse(request.body));
+    const created = await sendMessage(pool, request.identity, conversationId, messageSchema.parse(request.body), trends);
     return reply.code(202).send(created);
   });
 

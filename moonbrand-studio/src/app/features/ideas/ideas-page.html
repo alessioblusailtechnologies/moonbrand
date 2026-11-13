@@ -8,8 +8,11 @@
         <button type="button" role="tab" [attr.aria-selected]="view() === 'saved'" [class.selected]="view() === 'saved'" (click)="view.set('saved')">
           {{ 'ideas.page.saved' | t: { n: counts().saved } }}
         </button>
+        <button type="button" role="tab" [attr.aria-selected]="view() === 'trends'" [class.selected]="view() === 'trends'" (click)="view.set('trends')">
+          {{ 'ideas.page.trends' | t }}
+        </button>
       </div>
-      @if (themes().length > 0) {
+      @if (themes().length > 0 && view() !== 'trends') {
         <div class="filters-wrap">
           @if (canScrollLeft()) {
             <button class="scroll left" type="button" [attr.aria-label]="'ideas.page.previousThemes' | t" (click)="scrollThemes(-1)">
@@ -34,6 +37,9 @@
       }
     </div>
 
+    @if (view() === 'trends') {
+      <mb-trends-panel />
+    } @else {
     @if (preparing()) {
       <div class="panel preparing">
         <p class="strong-sm">{{ (ideas().length > 0 ? 'ideas.page.preparingMore' : 'ideas.page.preparingFirst') | t }}</p>
@@ -107,6 +113,7 @@
           </div>
         }
       </div>
+    }
     }
   </section>
 }

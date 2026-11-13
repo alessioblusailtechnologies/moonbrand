@@ -33,6 +33,8 @@ import { registerPlanRoutes } from './modules/plan/routes';
 import { registerSocialRoutes } from './modules/social/routes';
 import { registerZernioWebhook } from './modules/social/webhooks';
 import { registerTranscriptionRoutes } from './modules/transcription/routes';
+import { registerTrendRoutes } from './modules/trends/routes';
+import { socialCrawl } from './modules/trends/socialcrawl';
 import { registerWelcomeRoutes } from './modules/welcome/routes';
 import type { MediaStorage } from './modules/media/storage';
 import { registerAuth, type VerifyToken } from './plugins/auth';
@@ -53,6 +55,7 @@ export interface AppOptions {
     | 'MISTRAL_API_KEY'
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
+    | 'SOCIALCRAWL_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
     | 'DODO_PAYMENTS_API_KEY'
     | 'DODO_PAYMENTS_WEBHOOK_KEY'
@@ -100,7 +103,9 @@ export function buildApp(options: AppOptions) {
   registerAiRoutes(app, options.pool, options.files);
   registerIdeaRoutes(app, options.pool);
   registerContentRoutes(app, options.pool, options.files);
-  registerConversationRoutes(app, options.pool, options.files);
+  const crawl = options.settings.SOCIALCRAWL_API_KEY ? socialCrawl(options.settings.SOCIALCRAWL_API_KEY) : null;
+  registerConversationRoutes(app, options.pool, options.files, options.storage, crawl);
+  registerTrendRoutes(app, options.pool, options.storage, crawl);
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);

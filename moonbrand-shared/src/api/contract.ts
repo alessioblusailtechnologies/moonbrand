@@ -6,6 +6,7 @@ import type { Idea, IdeaSignalKind, IdeaStatus } from '../domain/idea';
 import type { ModelCatalog, ModelSettings } from '../domain/models';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { SubscriptionPlanId } from '../domain/subscription';
+import type { Trend, TrendMarket, TrendPlatform, TrendSearchSummary } from '../domain/trend';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 import type { Locale } from '../i18n/locales';
 
@@ -287,6 +288,26 @@ export interface IdeasResponse {
   jobId: string | null;
 }
 
+// La tab Tendenze: i video trovati dalle ricerche del brand (su TikTok e Instagram, nel suo mercato, cioè la lingua dei
+// post) e le parole cercate. free: le ricerche gratis che restano nel mese (TREND_SEARCH), poi ognuna scala i crediti;
+// left: quelle che restano nelle prossime 24 ore.
+export interface TrendsResponse {
+  market: TrendMarket;
+  searches: TrendSearchSummary[];
+  trends: Trend[];
+  free: number;
+  left: number;
+}
+
+export interface TrendSearchRequest {
+  query: string;
+}
+
+// Dopo una ricerca, la tab intera com'è adesso; query è la parola appena cercata, già pulita.
+export interface TrendSearchResponse extends TrendsResponse {
+  query: string;
+}
+
 export interface IdeaStatusRequest {
   status: IdeaStatus;
 }
@@ -520,6 +541,8 @@ export interface ChatMessageRequest {
   attachments?: string[];
   ideaId?: string;
   slotId?: string;
+  // Il video di tendenza da ricreare: l'API ne prepara il riferimento (il video o la copertina tra gli allegati).
+  trendId?: string;
 }
 
 // L'uscita menzionata in un messaggio, per Claude: quando, dove, con quale tema.
@@ -552,6 +575,25 @@ export interface ChatJobInput {
   attachments: string[];
   idea: ChatIdea | null;
   slot: ChatSlot | null;
+  // Manca nei job nati prima delle tendenze.
+  trend?: ChatTrend | null;
+}
+
+// Il video di tendenza da ricreare, per Claude: da dove viene, i numeri, e quello che SocialCrawl ne ha letto quando il
+// video non si è potuto scaricare (TikTok): il parlato e le scritte a schermo. file: il video o la copertina tra gli allegati.
+export interface ChatTrend {
+  platform: TrendPlatform;
+  url: string;
+  author: string;
+  caption: string;
+  views: number | null;
+  likes: number | null;
+  durationSeconds: number | null;
+  music: string | null;
+  file: string | null;
+  video: boolean;
+  transcript: string | null;
+  screenText: string | null;
 }
 
 // L'API che i tool della chat chiamano con il token del job: agisce solo sul brand del job.
@@ -775,10 +817,11 @@ export type CreditCategory =
   | 'export'
   | 'download'
   | 'dictation'
+  | 'trends'
   | 'other';
 
 // Da dove è partita l'attività: una richiesta in chat, un contenuto, le idee, l'impostazione del brand…
-export type CreditActivityKind = 'chat' | 'content' | 'ideas' | 'brand' | 'welcome' | 'dictation' | 'other';
+export type CreditActivityKind = 'chat' | 'content' | 'ideas' | 'brand' | 'welcome' | 'dictation' | 'trends' | 'other';
 
 export interface CreditPart {
   category: CreditCategory;

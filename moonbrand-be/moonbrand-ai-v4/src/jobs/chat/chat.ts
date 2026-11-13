@@ -37,7 +37,7 @@ if (!brandDir || !inputJson) {
   process.exit(1);
 }
 
-const { sessionId: previous, message, attachments, idea = null, slot = null, brand } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
+const { sessionId: previous, message, attachments, idea = null, slot = null, trend = null, brand } = JSON.parse(inputJson) as Omit<ChatJobInput, 'brandId'>;
 
 // Il turno dell'utente, uguale a quello del v3: il messaggio, l'uscita del piano e l'idea da cui è partito, gli allegati.
 const slotBlock =
@@ -50,6 +50,24 @@ const ideaBlock =
     idea.angle && `Cosa raccontare: ${idea.angle}`,
     idea.rationale && `Perché adesso: ${idea.rationale}`,
     idea.theme && `Tema: ${idea.theme}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+// Il video di tendenza da ricreare: da dove viene e i suoi numeri; il file (video, o la copertina quando TikTok non lo
+// dà) è tra gli allegati, e senza video arrivano il parlato e le scritte a schermo lette da SocialCrawl.
+const platformName = { tiktok: 'TikTok', instagram: 'Instagram' } as const;
+const trendBlock =
+  trend &&
+  [
+    `Il video di tendenza da ricreare per il brand: ${trend.url} (${platformName[trend.platform]}, di @${trend.author})`,
+    [trend.views !== null && `${trend.views} visualizzazioni`, trend.likes !== null && `${trend.likes} like`, trend.durationSeconds && `${Math.round(trend.durationSeconds)} s`]
+      .filter(Boolean)
+      .join(', '),
+    trend.music && `Musica: ${trend.music}`,
+    trend.caption && `Didascalia: ${trend.caption}`,
+    trend.file && (trend.video ? `Il video è negli allegati: ${trend.file}` : `La copertina è negli allegati: ${trend.file} (il video non si è potuto scaricare)`),
+    trend.transcript && `Il parlato:\n${trend.transcript}`,
+    trend.screenText && `Le scritte a schermo:\n${trend.screenText}`,
   ]
     .filter(Boolean)
     .join('\n');
@@ -79,6 +97,7 @@ const turn = [
   message,
   slotBlock,
   ideaBlock,
+  trendBlock,
   attachments.length > 0 && `Allegati:\n${attachments.map((file) => `- ${file}`).join('\n')}`,
   references.length > 0 && `I riferimenti di stile del brand:\n${references.map((file) => `- ${file}`).join('\n')}`,
 ]
