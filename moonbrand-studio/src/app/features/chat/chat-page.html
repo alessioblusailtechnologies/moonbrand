@@ -75,8 +75,8 @@
               @for (block of turn.blocks; track block.id; let lastBlock = $last) {
                 @if (block.kind === 'text') {
                   <mb-markdown [text]="block.text" [animate]="animated(turn, block.id)" />
-                } @else {
-                  <mb-step-list class="tools" [steps]="block.steps" [live]="active(turn) && lastBlock" />
+                } @else if (!(lastBlock && active(turn))) {
+                  <mb-step-list class="tools" [steps]="block.steps" [live]="false" />
                 }
               }
               @if (turn.cards.length > 0) {
@@ -143,6 +143,10 @@
                     </button>
                   }
                 </div>
+              }
+              <!-- I passaggi in corso stanno in fondo, sotto le card e i post: si vede che sta ancora lavorando. -->
+              @if (liveTools(turn.blocks, turn); as block) {
+                <mb-step-list class="tools" [steps]="block.steps" [live]="true" />
               }
               @if (waiting(turn.blocks, turn)) {
                 <mb-step-list [steps]="[]" [waiting]="'chat.page.thinking' | t" />

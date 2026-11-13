@@ -477,6 +477,12 @@ export class ChatPage {
 
   // Finché il turno non è finito qualcosa si muove sempre: prima della risposta e dopo un testo concluso si dice che
   // sta pensando; tra un passaggio e l'altro lo dice il blocco dei passaggi, che resta vivo finché è l'ultimo.
+  // L'ultimo blocco di passaggi del turno in corso: va in fondo alla risposta, sotto quello che il turno ha già fatto.
+  protected liveTools(blocks: Block[], turn: ConversationTurn): Extract<Block, { kind: 'tools' }> | null {
+    const last = blocks.at(-1);
+    return this.active(turn) && last?.kind === 'tools' ? last : null;
+  }
+
   protected waiting(blocks: Block[], turn: ConversationTurn): boolean {
     if (!this.active(turn)) return false;
     const last = blocks.at(-1);
