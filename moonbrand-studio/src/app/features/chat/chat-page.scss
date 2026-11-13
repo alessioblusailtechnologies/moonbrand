@@ -387,6 +387,97 @@
   }
 }
 
+// Il post del turno: grande, con la copertina e il pulsante, così a fine risposta si vede che è pronto.
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(520px, 100%);
+  margin-top: 6px;
+}
+
+.post {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  animation: fade-up 220ms var(--ease);
+  transition:
+    border-color 120ms var(--ease),
+    box-shadow 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--grey-500);
+    box-shadow: 0 10px 28px rgba(16, 24, 40, 0.12);
+  }
+
+  &.open {
+    border-color: var(--primary);
+  }
+}
+
+.post-thumb {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 128px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.post-texts {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.post-kind {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.post-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.post-open {
+  align-self: flex-start;
+  gap: 4px;
+  margin-top: 4px;
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .post-thumb {
+    width: 96px;
+  }
+}
+
 // «Mostra altri n» / «Mostra meno» sotto le card di un turno.
 .cards-toggle {
   display: inline-flex;

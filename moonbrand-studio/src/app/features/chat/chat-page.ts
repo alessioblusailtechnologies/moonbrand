@@ -68,6 +68,9 @@ const STICK_PX = 80;
 // qualche decina; poi si smette, e il resto si vede riaprendo la conversazione.
 const PUBLISH_POLL_MS = 3000;
 const PUBLISH_POLL_MAX = 100;
+// Sotto questa larghezza il pannello è un foglio sopra la chat (chat-page.scss).
+const SHEET_MEDIA = window.matchMedia('(max-width: 900px)');
+
 // Un file appena fatto diventa artefatto poco dopo la fine del passaggio (copia, storage, riga): si rilegge due volte.
 const ARTIFACT_RELOAD_MS = [1500, 5000];
 // Nel filo, oltre tante card per turno si vedono le prime e il resto si apre con «Mostra altri».
@@ -185,10 +188,14 @@ export class ChatPage {
       const lastOfSource = new Map<string, string>();
       for (const artifact of artifacts) if (artifact.jobId === turn.job.id) lastOfSource.set(artifact.source, artifact.id);
       // Come nella tendina: i post in cima, poi i file per tipo, i più recenti per primi.
-      const cards = groupItems([...ids, ...lastOfSource.values()].flatMap((id) => items.get(id) ?? [])).flatMap((group) => group.items);
+      const all = groupItems([...ids, ...lastOfSource.values()].flatMap((id) => items.get(id) ?? [])).flatMap((group) => group.items);
+      // I post stanno in fondo alla risposta, grandi, perché si veda che il lavoro è pronto; i file restano card piccole.
+      const posts = all.filter((item) => item.kind === 'content');
+      const cards = all.filter((item) => item.kind !== 'content');
       return {
         ...turn,
         blocks: blocksOf(turn.job.steps),
+        posts,
         cards,
         // Tante card: si vedono le prime, finché non si apre il resto.
         hiddenCards: cards.length > CARDS_COLLAPSE && !this.expanded().has(turn.id) ? cards.length - CARDS_SHOWN : 0,
@@ -233,7 +240,9 @@ export class ChatPage {
         }
         const fresh = ids.filter((id) => !this.seen!.has(id));
         for (const id of fresh) this.seen.add(id);
-        if (fresh.length > 0 && this.live()) this.openItem(fresh.at(-1)!);
+        // Sul telefono il pannello è un foglio a tutto schermo: aprirlo da solo coprirebbe la chat mentre si legge. Lì
+        // basta la card del post in fondo alla risposta, che si apre con un tocco.
+        if (fresh.length > 0 && this.live() && !SHEET_MEDIA.matches) this.openItem(fresh.at(-1)!);
       });
     });
     // Un messaggio nuovo porta in fondo al filo.
@@ -535,6 +544,12 @@ export class ChatPage {
   // Sotto il titolo di una card: il formato del contenuto o il tipo del file.
   protected cardLabel(item: PanelItem): string {
     return item.kind === 'content' ? this.i18n.t(`chat.format.${item.content.format}`) : this.i18n.t(`chat.artifacts.kind.${item.kind}`);
+  }
+
+  // Sopra il titolo del post in evidenza: il formato e lo stato (bozza, approvato).
+  protected postLabel(item: PanelItem): string {
+    if (item.kind !== 'content') return this.cardLabel(item);
+    return `${this.cardLabel(item)} · ${this.i18n.t(`chat.status.${item.content.status}`)}`;
   }
 
   // Il pannello segue il link: aprire, cambiare e chiudere cambiano ?artefatto= senza aggiungere passi alla cronologia.

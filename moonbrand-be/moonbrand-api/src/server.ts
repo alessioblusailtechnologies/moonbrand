@@ -14,6 +14,7 @@ import { supabaseVerifier } from './plugins/auth';
 
 const settings = config();
 const pool = createPool(settings.DATABASE_URL);
+const storage = supabaseStorage(settings);
 const files = settings.S3_ENDPOINT ? s3BrandFiles(pool, settings) : localBrandFiles(pool, settings);
 await ensureBrandsBucket(files);
 
@@ -22,7 +23,7 @@ const app = buildApp({
   pool,
   verifyToken: supabaseVerifier(settings),
   auth: supabaseAuthGateway(settings),
-  storage: supabaseStorage(settings),
+  storage,
   files,
   mailer: resendMailer(settings),
   settings,

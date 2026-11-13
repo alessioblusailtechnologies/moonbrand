@@ -13,6 +13,7 @@ import type {
   ChatIdea,
   ChatJobInput,
   ChatSlot,
+  ChatTrend,
   ChatTurnCreated,
   ConversationResponse,
   ConversationSummary,
@@ -34,9 +35,13 @@ import { findContent, listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
 import { findBrandForIdeas, findIdea, updateIdeaStatus } from '../ideas/repository';
 import { EXTENSIONS, parseImage } from '../media/routes';
+import type { MediaStorage } from '../media/storage';
 import { normalizeVideo } from '../media/video';
 import { findSlot } from '../plan/repository';
 import { listPublications } from '../social/publications';
+import { prepareTrendReference } from '../trends/reference';
+import { findTrend } from '../trends/repository';
+import type { SocialCrawl } from '../trends/socialcrawl';
 import {
   activeJob,
   deleteConversation,
@@ -58,11 +63,38 @@ export interface ChatMessage {
   attachments: string[];
   ideaId?: string;
   slotId?: string;
+  trendId?: string;
 }
 
 interface Mentions {
   idea: ChatIdea | null;
   slot: ChatSlot | null;
+  trend?: ChatTrend | null;
+}
+
+// Quello che serve per preparare il riferimento di una tendenza da ricreare (trends/reference.ts).
+export interface TrendTools {
+  files: BrandFiles;
+  storage: MediaStorage;
+  crawl: SocialCrawl | null;
+}
+
+// La tendenza da ricreare: il video (o la copertina) va tra gli allegati del messaggio prima che il turno parta. Si
+// prepara fuori dalla transazione, perché SocialCrawl può metterci qualche decina di secondi.
+async function withTrend(
+  pool: pg.Pool,
+  tools: TrendTools,
+  identity: Identity,
+  brandId: string,
+  message: ChatMessage,
+): Promise<{ message: ChatMessage; trend: ChatTrend | null }> {
+  if (!message.trendId) return { message, trend: null };
+  const trend = await findTrend(pool, message.trendId, brandId);
+  if (!trend) throw ApiError.notFound('Tendenza non trovata.');
+  await tools.files.claim(brandId, identity.accountId);
+  const upload = (stream: Readable) => uploadVideoAttachment(tools.files, identity, brandId, stream);
+  const reference = await prepareTrendReference(tools.crawl, tools.storage, tools.files, brandId, trend, upload);
+  return { message: { ...message, attachments: [...message.attachments, ...reference.attachments] }, trend: reference.trend };
 }
 
 // Il titolo è l'idea da cui parte la conversazione, o l'uscita, o il primo messaggio, accorciato; nella lingua dell'account.
@@ -120,7 +152,7 @@ async function queueTurn(
   identity: Identity,
   conversation: Pick<ConversationSummary, 'id' | 'brandId'>,
   { message, attachments }: ChatMessage,
-  { idea, slot }: Mentions,
+  { idea, slot, trend = null }: Mentions,
 ): Promise<ChatTurnCreated> {
   const brand = await findBrandForIdeas(db, conversation.brandId);
   if (!brand) throw ApiError.notFound('Brand non trovato.');
@@ -134,6 +166,7 @@ async function queueTurn(
     attachments,
     idea,
     slot,
+    trend,
   };
   const jobId = await insertJob(db, identity.accountId, 'chat', input, { agentToken: randomBytes(32).toString('base64url') });
   const turnId = await insertTurn(db, { conversationId: conversation.id, accountId: identity.accountId, message, attachments, jobId });
@@ -144,21 +177,37 @@ export function getConversations(pool: pg.Pool, identity: Identity, brandId: str
   return withIdentity(pool, identity, (db) => listConversations(db, brandId));
 }
 
-export function startConversation(pool: pg.Pool, identity: Identity, brandId: string, message: ChatMessage): Promise<ChatTurnCreated> {
+export async function startConversation(
+  pool: pg.Pool,
+  identity: Identity,
+  brandId: string,
+  request: ChatMessage,
+  tools: TrendTools,
+): Promise<ChatTurnCreated> {
+  const { message, trend } = await withTrend(pool, tools, identity, brandId, request);
   return withIdentity(pool, identity, async (db) => {
-    const mentions = await mentionsOf(db, brandId, message);
+    const mentions = { ...(await mentionsOf(db, brandId, message)), trend };
     const locale = (await findAccount(db, identity.accountId))?.locale ?? 'it';
     const id = await insertConversation(db, brandId, identity.accountId, titleOf(message, mentions, locale));
     return queueTurn(db, identity, { id, brandId }, message, mentions);
   });
 }
 
-export function sendMessage(pool: pg.Pool, identity: Identity, conversationId: string, message: ChatMessage): Promise<ChatTurnCreated> {
+export async function sendMessage(
+  pool: pg.Pool,
+  identity: Identity,
+  conversationId: string,
+  request: ChatMessage,
+  tools: TrendTools,
+): Promise<ChatTurnCreated> {
+  const found = await withIdentity(pool, identity, (db) => findConversation(db, conversationId));
+  if (!found) throw ApiError.notFound('Conversazione non trovata.');
+  const { message, trend } = await withTrend(pool, tools, identity, found.brandId, request);
   return withIdentity(pool, identity, async (db) => {
     const conversation = await findConversation(db, conversationId);
     if (!conversation) throw ApiError.notFound('Conversazione non trovata.');
     if (conversation.busy) throw ApiError.conflict('BUSY', 'Sto ancora rispondendo al messaggio di prima.');
-    return queueTurn(db, identity, conversation, message, await mentionsOf(db, conversation.brandId, message));
+    return queueTurn(db, identity, conversation, message, { ...(await mentionsOf(db, conversation.brandId, message)), trend });
   });
 }
 

@@ -51,7 +51,8 @@ export function registerCreditRoutes(app: FastifyInstance, pool: pg.Pool): void 
 
     const { rows } = await pool.query<MovementRow>(
       `select m.id, m.amount, m.kind, m.job_id, m.created_at, u.task, u.units, u.unit,
-         j.kind as job_kind, j.created_at as job_at, c.title as conversation_title, t.message, ct.title as content_title
+         j.kind as job_kind, j.created_at as job_at, c.title as conversation_title, t.message, ct.title as content_title,
+         (select s.query from presenza.trend_searches s where s.search_id = m.trend_search_id limit 1) as trend_query
        from presenza.credit_movements m
        left join presenza.ai_usage u on u.id = m.usage_id
        left join presenza.ai_jobs j on j.id = m.job_id
@@ -78,7 +79,7 @@ const usageSchema = z.object({
 interface MovementRow {
   id: string;
   amount: string;
-  kind: 'claude' | 'generation' | 'plan' | 'topup' | 'refund' | 'dispute';
+  kind: 'claude' | 'generation' | 'plan' | 'topup' | 'refund' | 'dispute' | 'trends';
   job_id: string | null;
   created_at: Date;
   task: string | null;
@@ -89,6 +90,8 @@ interface MovementRow {
   conversation_title: string | null;
   message: string | null;
   content_title: string | null;
+  // La parola cercata, per le ricerche delle tendenze a pagamento.
+  trend_query: string | null;
 }
 
 // Le voci del consumo dai task di ai_usage, compresi quelli dei primi mesi; quello che non si riconosce è «altro».
@@ -134,18 +137,19 @@ function summarize(rows: MovementRow[]): Omit<CreditUsageResponse, 'month' | 'mo
   const totals = new Map<CreditCategory, number>();
   for (const row of rows) {
     const credits = -Number(row.amount);
-    const category: CreditCategory = row.kind === 'claude' ? 'assistant' : (CATEGORY_BY_TASK[row.task ?? ''] ?? 'other');
+    const category: CreditCategory =
+      row.kind === 'claude' ? 'assistant' : row.kind === 'trends' ? 'trends' : (CATEGORY_BY_TASK[row.task ?? ''] ?? 'other');
     totals.set(category, (totals.get(category) ?? 0) + credits);
 
     // Un'attività è un lavoro; le generazioni senza lavoro (la dettatura) sono un'attività ciascuna.
     const key = row.job_id ?? row.id;
     let activity = activities.get(key);
     if (!activity) {
-      const request = row.message?.replace(/\s+/g, ' ').trim() ?? null;
+      const request = (row.message ?? row.trend_query)?.replace(/\s+/g, ' ').trim() ?? null;
       activity = {
         id: key,
         at: (row.job_at ?? row.created_at).toISOString(),
-        kind: row.job_kind ? (ACTIVITY_BY_JOB[row.job_kind] ?? 'other') : category === 'dictation' ? 'dictation' : 'other',
+        kind: row.job_kind ? (ACTIVITY_BY_JOB[row.job_kind] ?? 'other') : category === 'dictation' || category === 'trends' ? category : 'other',
         title: row.conversation_title ?? row.content_title ?? null,
         request: request && request.length > MAX_REQUEST ? `${request.slice(0, MAX_REQUEST - 1)}…` : request,
         credits: 0,

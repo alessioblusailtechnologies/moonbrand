@@ -115,6 +115,35 @@
                 </div>
               }
               <mb-pending-media [tiles]="turn.pending" />
+              @if (turn.posts.length > 0) {
+                <!-- Il post fatto in questo turno, in evidenza in fondo alla risposta: un tocco lo apre nell'anteprima. -->
+                <div class="posts">
+                  @for (post of turn.posts; track post.id) {
+                    <button
+                      class="post"
+                      type="button"
+                      [class.open]="panelItem()?.id === post.id"
+                      [attr.aria-label]="'chat.artifacts.open' | t: { title: post.title }"
+                      (click)="openItem(post.id)"
+                    >
+                      <span class="post-thumb">
+                        @if (post.thumb) {
+                          <img [src]="post.thumb" alt="" loading="lazy" />
+                        } @else {
+                          <mb-icon [name]="kindIcon[post.kind]" [size]="24" />
+                        }
+                      </span>
+                      <span class="post-texts">
+                        <span class="caption post-kind">{{ postLabel(post) }}</span>
+                        <span class="strong post-title">{{ post.title }}</span>
+                        <span class="btn btn-primary btn-sm post-open">
+                          {{ 'chat.artifacts.postOpen' | t }} <mb-icon name="chevron-right" [size]="14" />
+                        </span>
+                      </span>
+                    </button>
+                  }
+                </div>
+              }
               @if (waiting(turn.blocks, turn)) {
                 <mb-step-list [steps]="[]" [waiting]="'chat.page.thinking' | t" />
               } @else if (turn.job.status === 'stopped') {
