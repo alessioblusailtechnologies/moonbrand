@@ -22,6 +22,10 @@ const KEEP_DAYS = 21;
 const MIN_VIEWS = 300;
 // relevant_to accetta al massimo 200 caratteri.
 const ABOUT_MAX = 200;
+// Con il filtro di pertinenza le parole di nicchia danno pochi video: sotto questi si rifà la ricerca senza.
+const MIN_RESULTS = 10;
+// Oltre il minuto e mezzo non sono video da cui partire per un post.
+const MAX_SECONDS = 90;
 
 export interface TrendBrand {
   id: string;
@@ -39,6 +43,7 @@ function recordOf(brand: TrendBrand, platform: TrendPlatform, query: string, row
   const externalId = platform === 'tiktok' ? post.id : instagramCode(post.url);
   if (!externalId || !post.url) return null;
   if (platform === 'instagram' && (post.engagement?.likes ?? 0) < MIN_LIKES_INSTAGRAM) return null;
+  if ((post.content.duration_seconds ?? 0) > MAX_SECONDS) return null;
   const music = post.ext?.music_title && !post.ext.music_is_original ? [post.ext.music_title, post.ext.music_artist].filter(Boolean).join(' · ') : null;
   return {
     category: brand.category,
@@ -62,9 +67,9 @@ function recordOf(brand: TrendBrand, platform: TrendPlatform, query: string, row
   };
 }
 
-// Le parole dell'utente fanno anche da filtro di pertinenza: via i video che hanno solo l'hashtag in comune.
-async function crawlSearch(crawl: SocialCrawl, platform: TrendPlatform, market: TrendMarket, query: string) {
-  const common = { query, relevance: 'filter', relevant_to: query.slice(0, ABOUT_MAX) };
+// Le parole dell'utente fanno anche da filtro di pertinenza (strict): via i video che hanno solo l'hashtag in comune.
+async function crawlSearch(crawl: SocialCrawl, platform: TrendPlatform, market: TrendMarket, query: string, strict: boolean) {
+  const common = strict ? { query, relevance: 'filter', relevant_to: query.slice(0, ABOUT_MAX) } : { query };
   const { data, credits } =
     platform === 'tiktok'
       ? await crawl.get<{ items: SocialRow[] }>('tiktok/search', {
@@ -93,8 +98,9 @@ async function saveThumbnail(storage: MediaStorage, platform: TrendPlatform, ext
   return path;
 }
 
-// Una chiamata: i video salvati con la copertina e la riga con i crediti. Se SocialCrawl fallisce la riga resta
-// (failed) e l'errore sale.
+// Una ricerca su un social: i video salvati con la copertina e la riga con i crediti. Se restano meno di MIN_RESULTS
+// video si rifà senza filtro di pertinenza e si aggiungono gli altri (i crediti sono la somma). Se SocialCrawl fallisce
+// la prima chiamata la riga resta (failed) e l'errore sale; se fallisce la seconda si tiene quello che c'è.
 async function searchOn(
   pool: pg.Pool,
   storage: MediaStorage,
@@ -107,24 +113,35 @@ async function searchOn(
   const entry = { searchId, brandId: brand.id, category: brand.category, market: brand.market, platform, query };
   let found: { rows: SocialRow[]; credits: number };
   try {
-    found = await crawlSearch(crawl, platform, brand.market, query);
+    found = await crawlSearch(crawl, platform, brand.market, query, true);
   } catch (error) {
     await logTrendSearch(pool, { ...entry, results: 0, credits: 0, failed: true }).catch(() => undefined);
     throw error;
   }
-  let saved = 0;
-  for (const row of found.rows) {
-    const record = recordOf(brand, platform, query, row);
-    if (!record) continue;
-    const { id, thumbnailPath } = await upsertTrend(pool, record);
-    saved += 1;
-    const thumbnail = row.post.content.thumbnail_url;
-    if (!thumbnailPath && thumbnail) {
-      const path = await saveThumbnail(storage, platform, record.externalId, thumbnail).catch(() => null);
-      if (path) await setTrendThumbnail(pool, id, path);
+  const seen = new Set<string>();
+  const save = async (rows: SocialRow[]) => {
+    for (const row of rows) {
+      const record = recordOf(brand, platform, query, row);
+      if (!record || seen.has(record.externalId)) continue;
+      seen.add(record.externalId);
+      const { id, thumbnailPath } = await upsertTrend(pool, record);
+      const thumbnail = row.post.content.thumbnail_url;
+      if (!thumbnailPath && thumbnail) {
+        const path = await saveThumbnail(storage, platform, record.externalId, thumbnail).catch(() => null);
+        if (path) await setTrendThumbnail(pool, id, path);
+      }
+    }
+  };
+  await save(found.rows);
+  let credits = found.credits;
+  if (seen.size < MIN_RESULTS) {
+    const wider = await crawlSearch(crawl, platform, brand.market, query, false).catch(() => null);
+    if (wider) {
+      credits += wider.credits;
+      await save(wider.rows);
     }
   }
-  await logTrendSearch(pool, { ...entry, results: saved, credits: found.credits, failed: false }).catch(() => undefined);
+  await logTrendSearch(pool, { ...entry, results: seen.size, credits, failed: false }).catch(() => undefined);
 }
 
 // La ricerca dalla tab: le due chiamate insieme; la tab si rilegge dopo (routes.ts).
