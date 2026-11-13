@@ -35,6 +35,9 @@ import { registerZernioWebhook } from './modules/social/webhooks';
 import { registerTranscriptionRoutes } from './modules/transcription/routes';
 import { registerTrendRoutes } from './modules/trends/routes';
 import { socialCrawl } from './modules/trends/socialcrawl';
+import { elevenLabs } from './modules/voices/elevenlabs';
+import { registerVoiceRoutes } from './modules/voices/routes';
+import { voiceService } from './modules/voices/service';
 import { registerWelcomeRoutes } from './modules/welcome/routes';
 import type { MediaStorage } from './modules/media/storage';
 import { registerAuth, type VerifyToken } from './plugins/auth';
@@ -56,6 +59,7 @@ export interface AppOptions {
     | 'TRANSCRIPTION_MODEL'
     | 'ZERNIO_API_KEY'
     | 'SOCIALCRAWL_API_KEY'
+    | 'ELEVENLABS_API_KEY'
     | 'ZERNIO_WEBHOOK_SECRET'
     | 'DODO_PAYMENTS_API_KEY'
     | 'DODO_PAYMENTS_WEBHOOK_KEY'
@@ -106,6 +110,8 @@ export function buildApp(options: AppOptions) {
   const crawl = options.settings.SOCIALCRAWL_API_KEY ? socialCrawl(options.settings.SOCIALCRAWL_API_KEY) : null;
   registerConversationRoutes(app, options.pool, options.files, options.storage, crawl);
   registerTrendRoutes(app, options.pool, options.storage, crawl);
+  const voices = voiceService(options.files, options.settings.ELEVENLABS_API_KEY ? elevenLabs(options.settings.ELEVENLABS_API_KEY) : null);
+  registerVoiceRoutes(app, options.pool, voices);
   registerPlanRoutes(app, options.pool, options.files);
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
@@ -116,7 +122,7 @@ export function buildApp(options: AppOptions) {
   registerOnboardingRoutes(app, options.pool);
   registerCreditRoutes(app, options.pool);
   registerAdminRoutes(app, options.pool, options.files, options.auth, options.settings);
-  void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files));
+  void app.register(async (scope) => registerAgentRoutes(scope, options.pool, options.files, voices));
 
   return app;
 }

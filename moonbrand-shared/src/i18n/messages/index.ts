@@ -20,6 +20,7 @@ import { server } from './server';
 import { shell } from './shell';
 import { steps } from './steps';
 import { ui } from './ui';
+import { voices } from './voices';
 
 // Le aree dei testi: il nome dell'area è la prima parte della chiave ('shell.newChat').
 export const NAMESPACES = {
@@ -45,4 +46,5 @@ export const NAMESPACES = {
   shell,
   steps,
   ui,
+  voices,
 };

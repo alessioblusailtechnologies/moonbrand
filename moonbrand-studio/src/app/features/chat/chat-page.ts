@@ -446,7 +446,7 @@ export class ChatPage {
 
   // Nella lightbox solo le foto: i video si guardano nel messaggio.
   protected openPhoto(turn: ConversationTurn, file: string): void {
-    const photos = turn.attachments.filter((item) => !item.poster);
+    const photos = turn.attachments.filter((item) => !item.poster && !item.file.endsWith('.mp3'));
     this.lightbox.open(
       photos.map((item, i) => ({ url: item.url, alt: this.i18n.t('chat.page.photoAlt', { n: i + 1 }) })),
       photos.findIndex((item) => item.file === file),

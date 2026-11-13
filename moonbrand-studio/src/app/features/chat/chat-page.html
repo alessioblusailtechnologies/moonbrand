@@ -35,7 +35,9 @@
             @if (turn.attachments.length > 0) {
               <div class="photos">
                 @for (photo of turn.attachments; track photo.file; let i = $index) {
-                  @if (photo.poster) {
+                  @if (photo.file.endsWith('.mp3')) {
+                    <audio class="attached-audio" [src]="photo.url" controls preload="none"></audio>
+                  } @else if (photo.poster) {
                     <video class="attached-video" [src]="photo.url" [poster]="photo.poster" controls playsinline preload="none"></video>
                   } @else {
                     <button

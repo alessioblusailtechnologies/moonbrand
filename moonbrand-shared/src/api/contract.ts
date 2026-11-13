@@ -7,6 +7,7 @@ import type { ModelCatalog, ModelSettings } from '../domain/models';
 import type { ContentState, PlanRequest, PlanSlot, Publication, SlotDraft, SlotStatus } from '../domain/plan';
 import type { SubscriptionPlanId } from '../domain/subscription';
 import type { Trend, TrendMarket, TrendPlatform, TrendSearchSummary } from '../domain/trend';
+import type { BrandVoice, LibraryVoice } from '../domain/voice';
 import type { Greeting, Occasion, WelcomeSuggestion } from '../domain/welcome';
 import type { Locale } from '../i18n/locales';
 
@@ -306,6 +307,39 @@ export interface TrendSearchRequest {
 // Dopo una ricerca, la tab intera com'è adesso; query è la parola appena cercata, già pulita.
 export interface TrendSearchResponse extends TrendsResponse {
   query: string;
+}
+
+// Le voci del brand (Impostazioni → Voci) e la libreria pubblica di ElevenLabs. cloning: se il nostro account
+// ElevenLabs permette di clonare voci; senza, si possono solo scegliere quelle della libreria.
+export interface VoicesResponse {
+  voices: BrandVoice[];
+  max: number;
+  cloning: boolean;
+}
+
+export interface VoiceLibraryResponse {
+  voices: LibraryVoice[];
+}
+
+// Una voce della libreria da aggiungere al brand: i dati sono quelli della ricerca.
+export interface VoiceLibraryAddRequest {
+  voiceId: string;
+  name: string;
+  language?: string | null;
+  description?: string | null;
+  previewUrl?: string | null;
+}
+
+export interface VoiceUpdateRequest {
+  name?: string;
+  isDefault?: boolean;
+}
+
+// Dalla chat: un audio della cartella del brand diventa una voce clonata. consent: l'utente ha detto di averne il diritto.
+export interface AgentVoiceRequest {
+  file: string;
+  name: string;
+  consent: true;
 }
 
 export interface IdeaStatusRequest {

@@ -89,6 +89,26 @@
   gap: 8px;
 }
 
+.pending-audio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  color: var(--text-body);
+}
+
+.pending-audio-name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pending-photo {
   position: relative;
   width: 64px;

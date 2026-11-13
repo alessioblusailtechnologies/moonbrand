@@ -591,3 +591,15 @@ p {
     transform: translate(-50%, -48%) scale(0.98);
   }
 }
+
+// I campi file restano nella pagina, solo invisibili: con display:none Safari su iPhone/iPad
+// a volte non consegna i file scelti nel picker delle foto.
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}

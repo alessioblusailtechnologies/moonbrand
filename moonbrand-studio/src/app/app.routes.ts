@@ -78,6 +78,11 @@ export const routes: Routes = [
         canActivate: [hasBrandsGuard],
         loadComponent: () => import('./features/credits/credits-page').then((m) => m.CreditsPage),
       },
+      {
+        path: 'impostazioni/voci',
+        canActivate: [hasBrandsGuard],
+        loadComponent: () => import('./features/voices/voices-page').then((m) => m.VoicesPage),
+      },
       // La sezione admin: utenze, consumi e lavori di tutti, solo per chi è in ADMIN_EMAILS nell'API.
       {
         path: 'admin',

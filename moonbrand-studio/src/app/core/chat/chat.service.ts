@@ -72,13 +72,13 @@ export class ChatService {
     await firstValueFrom(this.http.post(`/v1/conversations/${conversationId}/stop`, {}));
   }
 
-  // Un video parte così com'è, anche di qualche GB: con XMLHttpRequest, perché fetch non dice quanto è già partito.
+  // Un video (o un audio, con kind) parte così com'è, anche di qualche GB: con XMLHttpRequest, perché fetch non dice quanto è già partito.
   // progress va da 0 a 1; a 1 il server sta ancora convertendo il video. Come l'interceptor, a token scaduto riprova una volta.
-  async uploadVideo(brandId: string, file: File, progress: (fraction: number) => void): Promise<ChatAttachment> {
+  async uploadVideo(brandId: string, file: File, progress: (fraction: number) => void, kind: 'video' | 'audio' = 'video'): Promise<ChatAttachment> {
     const send = (token: string | null) =>
       new Promise<{ status: number; body: unknown }>((resolve) => {
         const request = new XMLHttpRequest();
-        request.open('POST', `/v1/brands/${brandId}/attachments/video`);
+        request.open('POST', `/v1/brands/${brandId}/attachments/${kind}`);
         if (token) request.setRequestHeader('Authorization', `Bearer ${token}`);
         request.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
         request.responseType = 'json';

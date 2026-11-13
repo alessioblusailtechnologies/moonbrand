@@ -128,6 +128,28 @@ export function moonbrandServer(apiUrl: string, token: string, brandDir: string)
           contentId ? save(`/contents/${encodeURIComponent(contentId)}`, 'PUT', input) : save('/contents', 'POST', input),
         options,
       ),
+      tool(
+        'voci_brand',
+        'Le voci del brand per la voce fuori campo, con l’id da passare a genera_voce: usa la predefinita, salvo che l’utente ne chieda un’altra.',
+        {},
+        () => call('GET', '/voices'),
+        options,
+      ),
+      tool(
+        'salva_voce',
+        'Clona una voce da un audio della cartella del brand (un allegato, almeno 20 secondi di parlato pulito) e la aggiunge alle voci del brand, ' +
+          'che si vedono anche nelle Impostazioni. Prima chiedi all’utente se ha il diritto di usare quella voce: consenso solo se ha detto di sì.',
+        {
+          file: z.string().describe('Relativo alla cartella del brand, es. allegati/voce.mp3'),
+          nome: z.string().min(1).max(60),
+          consenso: z.literal(true).describe('L’utente ha confermato di avere il diritto di usare questa voce'),
+        },
+        async ({ file, nome, consenso }) => {
+          await putBrandFiles(brandDir, [file]).catch((error: unknown) => console.error('audio della voce non caricato', error));
+          return call('POST', '/voices', { file, name: nome, consent: consenso });
+        },
+        options,
+      ),
       tool('contenuti_elenca', 'Elenca i contenuti del brand, con stato, uscita nel piano e com’è andata sui canali.', {}, () => call('GET', '/contents'), options),
       tool('contenuto_leggi', 'Legge un contenuto: testi, file, uscita nel piano e com’è andata sui canali.', id, ({ id: contentId }) => call('GET', `/contents/${encodeURIComponent(contentId)}`), options),
       tool(

@@ -30,6 +30,7 @@ import { accountLocale, publicJobError } from '../ai/public-error';
 import { insertJob } from '../ai/repository';
 import { findAccount } from '../auth/accounts';
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
+import { withMp3 } from '../voices/service';
 import { ensureStyleJob } from '../brands/style';
 import { findContent, listConversationContents } from '../contents/repository';
 import { withUrls } from '../contents/service';
@@ -302,6 +303,14 @@ export async function uploadVideoAttachment(files: BrandFiles, identity: Identit
   } finally {
     await rm(work, { recursive: true, force: true });
   }
+  return attachment(files, brandId, file);
+}
+
+// Un audio per la chat (un parlato da usare come voce, un riferimento): diventa un MP3 in allegati/.
+export async function uploadAudioAttachment(files: BrandFiles, identity: Identity, brandId: string, stream: Readable): Promise<ChatAttachment> {
+  await files.claim(brandId, identity.accountId);
+  const file = `${ATTACHMENTS_DIR}/${randomUUID()}.mp3`;
+  await withMp3({ stream }, (mp3) => files.saveFile(brandId, file, mp3));
   return attachment(files, brandId, file);
 }
 

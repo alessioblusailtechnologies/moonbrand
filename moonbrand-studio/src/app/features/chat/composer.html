@@ -3,23 +3,25 @@
     <div class="pending">
       @for (item of attachments(); track item.id) {
         <div class="pending-photo" [class.failed]="item.failed">
-          @if (item.video) {
+          @if (item.audio) {
+            <span class="pending-audio" [title]="item.audio"><mb-icon name="music" [size]="18" /><span class="pending-audio-name">{{ item.audio }}</span></span>
+          } @else if (item.video) {
             <video [src]="item.preview" muted playsinline preload="metadata"></video>
           } @else {
             <img [src]="item.preview" alt="" />
           }
           @if (!item.file && !item.failed) {
             <span class="pending-state">
-              @if (item.video && item.progress < 1) {
+              @if ((item.video || item.audio) && item.progress < 1) {
                 <span class="pending-progress">{{ progressLabel(item.progress) }}</span>
               } @else {
                 <span class="spinner"></span>
               }
             </span>
-          } @else if (item.video) {
+          } @else if (item.video && !item.audio) {
             <span class="pending-video"><mb-icon name="play" [size]="14" /></span>
           }
-          <button class="pending-remove" type="button" [attr.aria-label]="(item.video ? 'chat.composer.removeVideo' : 'chat.composer.removePhoto') | t" (click)="unattach(item.id)">
+          <button class="pending-remove" type="button" [attr.aria-label]="(item.audio ? 'chat.composer.removeAudio' : item.video ? 'chat.composer.removeVideo' : 'chat.composer.removePhoto') | t" (click)="unattach(item.id)">
             <mb-icon name="x" [size]="12" [stroke]="3" />
           </button>
         </div>
@@ -38,7 +40,7 @@
     (paste)="pasted($event)"
   ></textarea>
   <div class="composer-bar">
-    <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
+    <input #picker class="file-input" type="file" accept="image/*,video/*,audio/*" multiple tabindex="-1" (change)="picked($event)" />
     <button class="attach" type="button" [title]="'chat.composer.attachTitle' | t" (click)="pick()">
       <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> {{ 'chat.composer.attach' | t }}
     </button>
