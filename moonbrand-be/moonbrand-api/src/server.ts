@@ -8,6 +8,8 @@ import { localBrandFiles } from './modules/brand-files/files';
 import { ensureBrandsBucket, s3BrandFiles } from './modules/brand-files/s3';
 import { resendMailer } from './modules/email/mailer';
 import { supabaseStorage } from './modules/media/storage';
+import { adsService, scheduleAdsSync } from './modules/ads/service';
+import { adsClient } from './modules/ads/zernio-ads';
 import { schedulePublishing } from './modules/social/publisher';
 import { scheduleMorningWelcome } from './modules/welcome/service';
 import { supabaseVerifier } from './plugins/auth';
@@ -34,8 +36,11 @@ const port = Number(process.env.PORT) || settings.API_PORT;
 const stopMorningWelcome = scheduleMorningWelcome(pool, app.log);
 // La pubblicazione vera, con Zernio: all'ora dell'uscita il contenuto approvato esce sui canali collegati.
 const stopPublishing = schedulePublishing(pool, files, settings.ZERNIO_API_KEY, settings.SIMULATE_SOCIAL, app.log);
+// Le campagne pubblicitarie: ogni ora stato, metriche e pausa a fine campagna.
+const stopAdsSync = scheduleAdsSync(pool, adsService(adsClient(settings.ZERNIO_API_KEY)), app.log);
 
 const shutdown = async () => {
+  stopAdsSync();
   stopMorningWelcome();
   stopPublishing();
   await app.close();

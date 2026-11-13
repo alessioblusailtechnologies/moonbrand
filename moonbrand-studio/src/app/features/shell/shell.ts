@@ -37,6 +37,7 @@ const SECTIONS: { path: string; label: MessageKey; icon: IconName; exact: boolea
   { path: '/', label: 'shell.ideas', icon: 'lightbulb', exact: true },
   { path: '/contenuti', label: 'shell.contents', icon: 'file-text', exact: false },
   { path: '/piano', label: 'shell.plan', icon: 'calendar', exact: false },
+  { path: '/campagne', label: 'shell.ads', icon: 'megaphone', exact: false },
 ];
 
 @Component({

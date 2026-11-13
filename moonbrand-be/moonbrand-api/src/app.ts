@@ -8,6 +8,9 @@ import { registerErrorHandler } from './errors';
 import { readVersions } from './version';
 import { adminCheck } from './modules/admin/queries';
 import { registerAdminRoutes } from './modules/admin/routes';
+import { registerAdsRoutes } from './modules/ads/routes';
+import { adsService } from './modules/ads/service';
+import { adsClient } from './modules/ads/zernio-ads';
 import { registerAgentRoutes } from './modules/agent/routes';
 import { registerAiRoutes } from './modules/ai/routes';
 import { accountExists } from './modules/auth/accounts';
@@ -116,6 +119,8 @@ export function buildApp(options: AppOptions) {
   registerTranscriptionRoutes(app, options.pool, options.settings);
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
+  const adsZernio = adsClient(options.settings.ZERNIO_API_KEY);
+  registerAdsRoutes(app, options.pool, adsService(adsZernio), adsZernio, options.settings);
   registerDodoWebhook(app, options.pool, dodo, options.settings);
   registerBillingRoutes(app, options.pool, dodo, options.settings);
   registerWelcomeRoutes(app, options.pool);

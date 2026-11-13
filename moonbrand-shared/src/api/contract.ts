@@ -1,4 +1,5 @@
 import type { AiStep } from '../ai/steps';
+import type { Ad, AdAccount, AdConnection, AdDraft } from '../domain/ads';
 import type { Artifact } from '../domain/artifact';
 import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
@@ -334,6 +335,38 @@ export interface VoiceUpdateRequest {
   name?: string;
   isDefault?: boolean;
 }
+
+// La pubblicità del brand (sezione Pubblicità): il collegamento Google Ads e le campagne, bozze comprese.
+// simulation: si può collegare per finta (collaudo, prova gratuita).
+export interface AdsResponse {
+  connection: AdConnection | null;
+  ads: Ad[];
+  simulation: boolean;
+  // Per una campagna nuova: il sito e la lingua del brand.
+  defaults: { linkUrl: string; language: string };
+}
+
+// Collega: la pagina di consenso di Google, o niente se il brand era già collegato (connection).
+export interface AdConnectResponse {
+  authUrl: string | null;
+  connection: AdConnection | null;
+}
+
+export interface AdConfirmRequest {
+  accountId: string;
+}
+
+// Dopo il collegamento: se c'è un solo account Google Ads è già scelto, se ce n'è più d'uno si sceglie dall'elenco.
+export interface AdAccountsResponse {
+  connection: AdConnection;
+  accounts: AdAccount[];
+}
+
+export interface AdAccountRequest {
+  adAccountId: string;
+}
+
+export type AdDraftRequest = AdDraft;
 
 // Dalla chat: un audio della cartella del brand diventa una voce clonata. consent: l'utente ha detto di averne il diritto.
 export interface AgentVoiceRequest {
