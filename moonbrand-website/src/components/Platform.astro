@@ -2,7 +2,9 @@
 // Tre schermate di Moonbrand Studio (chat, idee, contenuti) dentro la sua cornice, con il brand Solco.
 // Struttura, misure e colori vengono da moonbrand-studio: shell.ts, chat-page, ideas-page, contents-page e styles.scss.
 import { studioChatImage, studioContents, studioIdeaColors, studioNav, studioViews } from '../data/home';
-import { getCopy, imagePath, type Lang } from '../i18n';
+import { Image } from 'astro:assets';
+import { siteImage } from '../data/images';
+import { getCopy, type Lang } from '../i18n';
 import StudioIcon from './studio/StudioIcon.astro';
 
 interface Props {
@@ -12,7 +14,7 @@ interface Props {
 const { lang } = Astro.props;
 const { platform, studio } = getCopy(lang);
 const initial = studioViews[0];
-const chatImage = imagePath(lang, studioChatImage, true);
+const chatImage = siteImage(lang, studioChatImage, true);
 const crumbs = {
   chat: [studio.nav.assistant, studio.chat.title],
   ideas: [studio.nav.ideas],
@@ -23,7 +25,7 @@ const crumbs = {
 const contents = studioContents.map((content, i) => ({
   ...content,
   ...studio.contents.items[i],
-  coverUrl: content.cover ? imagePath(lang, content.cover, content.localized) : null,
+  cover: content.cover ? siteImage(lang, content.cover, content.localized) : null,
 }));
 const contentColumns: (typeof contents)[] = [[], [], []];
 const heights = [0, 0, 0];
@@ -132,7 +134,7 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
         <div class="content chat" data-panel="chat" hidden={initial.id !== 'chat'}>
           <div class="thread">
             <div class="turn">
-              <div class="photos"><img class="photo" src={chatImage} alt="" loading="lazy" /></div>
+              <div class="photos"><Image class="photo" src={chatImage} alt="" loading="lazy" /></div>
               <p class="mine">{studio.chat.message}</p>
               <div class="reply">
                 <div class="tools">
@@ -154,7 +156,7 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
                     <span class="btn btn-secondary btn-sm">{studio.chat.open} <StudioIcon name="chevron-right" size={14} /></span>
                   </header>
                   <div class="preview">
-                    <img src={chatImage} alt="" loading="lazy" />
+                    <Image src={chatImage} alt="" loading="lazy" />
                     <div class="preview-text">
                       <span class="label">{studio.chat.channels}</span>
                       <p class="body ink"><strong>solco.tech</strong> {studio.chat.caption}</p>
@@ -224,9 +226,9 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
                 {column.map((content) => (
                   <article class="panel card">
                     <div class="cover" style={`aspect-ratio:${content.aspect}`}>
-                      {content.coverUrl ? (
+                      {content.cover ? (
                         <>
-                          <img src={content.coverUrl} alt="" loading="lazy" />
+                          <Image src={content.cover} alt="" loading="lazy" />
                           {content.format === 'video' && <span class="play"><StudioIcon name="play" size={18} /></span>}
                         </>
                       ) : (
@@ -471,7 +473,7 @@ const ideaColumns = [ideas.filter((_, i) => i % 2 === 0), ideas.filter((_, i) =>
   .content-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   .content-card-titles { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .preview { display: flex; gap: 14px; align-items: flex-start; }
-  .preview img { flex: none; width: 92px; aspect-ratio: 4 / 5; border-radius: 10px; object-fit: cover; }
+  .preview img { flex: none; width: 92px; height: auto; aspect-ratio: 4 / 5; border-radius: 10px; object-fit: cover; }
   .preview-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .preview-text .body { font-size: 13.5px; line-height: 1.5; }
   .composer {

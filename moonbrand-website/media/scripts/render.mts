@@ -1,4 +1,4 @@
-// Esporta ogni Still di src/Root.tsx in ../public/images, alla larghezza che serve al sito (circa 720px, il doppio della card).
+// Esporta ogni Still di src/Root.tsx in ../src/assets/images (Astro le converte in WebP alla build), alla larghezza che serve al sito (circa 720px, il doppio della card).
 // Le immagini con del testo escono una volta per lingua, in images/<lingua>/; le foto senza testo una volta sola.
 // L'anteprima per i social e le icone vanno fuori da images, in PNG: il percorso lo dà `file`, relativo a ../public.
 // Le icone dello studio e dell'app escono da qui anche loro, nelle cartelle di quei progetti.
@@ -48,7 +48,7 @@ const temp = mkdtempSync(path.join(tmpdir(), 'moonbrand-render-'));
 const scelte = process.argv.slice(2);
 for (const { id, out, scale, testo, file } of stills.filter((s) => !scelte.length || scelte.includes(s.id))) {
   for (const lingua of testo ? LINGUE : [null]) {
-    const target = file ? path.resolve('../public', file(lingua)) : path.resolve('../public/images', lingua ?? '', out);
+    const target = file ? path.resolve('../public', file(lingua)) : path.resolve('../src/assets/images', lingua ?? '', out);
     const png = target.endsWith('.png');
     // Le props passano da un file: in una riga di comando su Windows le virgolette del JSON si perdono.
     const props = path.join(temp, `${lingua ?? 'foto'}.json`);

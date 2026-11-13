@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import socialManager from '../assets/images/social-manager.jpg';
 import { getCopy, pagePath, type Lang } from '../i18n';
 
 interface Props {
@@ -18,7 +20,7 @@ const { result: r } = getCopy(lang);
 
     <div class="cards">
       <div class="photo">
-        <img src="/images/social-manager.jpg" alt={r.photoAlt} loading="lazy" />
+        <Image src={socialManager} alt={r.photoAlt} loading="lazy" />
         <span class="photo-title">{r.photoTitle}</span>
       </div>
 

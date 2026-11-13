@@ -12,7 +12,7 @@ Osteria del Porto (trattoria di mare), Studio Riva (studio di design, griglia sv
 - `scripts/foto.mts`: le descrizioni delle foto e la chiamata a Gemini (`gemini-3.1-flash-image`). Salva in `public/foto/`.
 - `src/sito/Post.tsx`: i montaggi, foto più testi e grafica nello stile di ogni brand.
 - `src/Root.tsx`: una `Still` per immagine.
-- `scripts/render.mts`: esporta le Still in `../public/images/` alla misura del sito.
+- `scripts/render.mts`: esporta le Still in `../src/assets/images/` alla misura del sito.
 
 ## I comandi
 
