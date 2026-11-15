@@ -64,6 +64,7 @@
 }
 
 .attach {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -76,6 +77,7 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+  user-select: none;
   transition: background-color 120ms var(--ease);
 
   &:hover {

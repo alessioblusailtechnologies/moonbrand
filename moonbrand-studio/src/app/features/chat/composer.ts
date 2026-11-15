@@ -37,6 +37,14 @@ const MAX_ATTACHMENTS = 10;
 // Una dettatura si chiude da sola dopo cinque minuti: oltre, meglio in più riprese.
 const MAX_DICTATION_S = 300;
 
+function isVideoFile(file: File): boolean {
+  return file.type.startsWith('video/') || (!file.type && /\.(mp4|mov|m4v|webm)$/i.test(file.name));
+}
+
+function isAudioFile(file: File): boolean {
+  return file.type.startsWith('audio/') || (!file.type && /\.(mp3|m4a|wav|aac|ogg|flac)$/i.test(file.name));
+}
+
 // La casella dell'assistente: il testo sopra, allegati, dettatura e invio in una barra sotto. Foto e video si scelgono dal
 // pulsante o si incollano, e partono subito. Il microfono registra fino al secondo clic e il testo trascritto (Voxtral)
 // si aggiunge a quello scritto, da rileggere prima di mandarlo. La usano la chat e la finestra che crea un contenuto da un'idea.
@@ -69,7 +77,6 @@ export class Composer {
   readonly stopped = output();
 
   private readonly input = viewChild<ElementRef<HTMLTextAreaElement>>('field');
-  private readonly picker = viewChild<ElementRef<HTMLInputElement>>('picker');
   protected readonly draft = signal('');
   protected readonly attachments = signal<PendingAttachment[]>([]);
   private nextAttachment = 0;
@@ -138,42 +145,48 @@ export class Composer {
     this.submit();
   }
 
-  protected pick(): void {
-    this.picker()?.nativeElement.click();
-  }
-
   protected picked(event: Event): void {
     const element = event.target as HTMLInputElement;
-    this.attach([...(element.files ?? [])]);
-    element.value = '';
+    const files = [...(element.files ?? [])];
+    if (files.length === 0) {
+      element.value = '';
+      return;
+    }
+    void this.attach(files).finally(() => {
+      element.value = '';
+    });
   }
 
   // Una foto o un video incollato nella casella vale come una scelta dal pulsante.
   protected pasted(event: ClipboardEvent): void {
-    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('audio/'));
+    const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || isVideoFile(file) || isAudioFile(file));
     if (media.length === 0) return;
     event.preventDefault();
-    this.attach(media);
+    void this.attach(media);
   }
 
-  private attach(files: File[]): void {
+  private async attach(files: File[]): Promise<void> {
     const brand = this.brands.activeBrand();
     if (!brand) return;
     const room = MAX_ATTACHMENTS - this.attachments().length;
     if (files.length > room) this.toast.show(this.i18n.t('chat.composer.tooMany', { n: MAX_ATTACHMENTS }));
+    const uploads: Promise<void>[] = [];
     for (const file of files.slice(0, Math.max(0, room))) {
+      const video = isVideoFile(file);
+      const audio = isAudioFile(file) ? file.name : null;
       const pending: PendingAttachment = {
         id: ++this.nextAttachment,
         preview: URL.createObjectURL(file),
         file: null,
         failed: false,
-        video: file.type.startsWith('video/'),
-        audio: file.type.startsWith('audio/') ? file.name : null,
+        video,
+        audio,
         progress: 0,
       };
       this.attachments.update((list) => [...list, pending]);
-      void (pending.video || pending.audio ? this.uploadVideo(brand.id, file, pending.id, pending.audio ? 'audio' : 'video') : this.upload(brand.id, file, pending.id));
+      uploads.push(pending.video || pending.audio ? this.uploadVideo(brand.id, file, pending.id, pending.audio ? 'audio' : 'video') : this.upload(brand.id, file, pending.id));
     }
+    await Promise.allSettled(uploads);
   }
 
   private set(id: number, patch: Partial<PendingAttachment>): void {

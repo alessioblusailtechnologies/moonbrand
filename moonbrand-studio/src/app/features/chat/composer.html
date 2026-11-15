@@ -40,10 +40,10 @@
     (paste)="pasted($event)"
   ></textarea>
   <div class="composer-bar">
-    <input #picker class="file-input" type="file" accept="image/*,video/*,audio/*" multiple tabindex="-1" (change)="picked($event)" />
-    <button class="attach" type="button" [title]="'chat.composer.attachTitle' | t" (click)="pick()">
+    <label class="attach" [title]="'chat.composer.attachTitle' | t">
+      <input class="file-input" type="file" accept="image/*,video/*,audio/*" multiple (change)="picked($event)" />
       <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> {{ 'chat.composer.attach' | t }}
-    </button>
+    </label>
     <span class="grow"></span>
     @if (dictation() === 'recording') {
       <span class="elapsed" aria-live="polite">{{ elapsedLabel() }}</span>

@@ -124,10 +124,10 @@ function clock(seconds: number): string {
                 </button>
               } @else {
                 <div class="row">
-                  <input #picker class="file-input" type="file" accept="audio/*,video/*" tabindex="-1" (change)="picked($event)" />
-                  <button class="btn btn-secondary btn-sm" type="button" [disabled]="recording()" (click)="picker.click()">
+                  <label class="btn btn-secondary btn-sm" [class.disabled]="recording()">
+                    <input class="file-input" type="file" accept="audio/*,video/*" [disabled]="recording()" (change)="picked($event)" />
                     <mb-icon name="paperclip" [size]="14" /> {{ 'voices.pickFile' | t }}
-                  </button>
+                  </label>
                   <button class="btn btn-secondary btn-sm" type="button" [class.recording]="recording()" (click)="toggleRecording()">
                     <mb-icon [name]="recording() ? 'square' : 'mic'" [size]="14" />
                     {{ (recording() ? 'voices.stopRecording' : 'voices.record') | t }}
@@ -499,11 +499,19 @@ export class VoicesPage {
     this.sample.set(null);
   }
 
-  protected picked(event: Event): void {
+  protected async picked(event: Event): Promise<void> {
     const element = event.target as HTMLInputElement;
     const file = element.files?.[0];
-    element.value = '';
-    if (file) this.setSample(file, file.name);
+    if (!file) {
+      element.value = '';
+      return;
+    }
+    try {
+      const blob = new Blob([await file.arrayBuffer()], { type: file.type || 'audio/mp4' });
+      this.setSample(blob, file.name);
+    } finally {
+      element.value = '';
+    }
   }
 
   protected async toggleRecording(): Promise<void> {
