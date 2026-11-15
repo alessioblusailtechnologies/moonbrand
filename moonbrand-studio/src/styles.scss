@@ -161,6 +161,7 @@ p {
 }
 
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -179,13 +180,18 @@ p {
     transform 120ms var(--ease),
     opacity 120ms var(--ease);
 
-  &:active:not(:disabled) {
+  &:active:not(:disabled, .disabled) {
     transform: scale(0.97);
   }
 
-  &:disabled {
+  &:disabled,
+  &.disabled {
     cursor: not-allowed;
     opacity: 0.45;
+  }
+
+  &.disabled {
+    pointer-events: none;
   }
 
   &.busy {
@@ -596,6 +602,8 @@ p {
 // a volte non consegna i file scelti nel picker delle foto.
 .file-input {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   opacity: 0;

@@ -1,5 +1,3 @@
-const ACCEPTED = ['image/png', 'image/jpeg', 'image/webp'];
-
 // Il lato massimo del logo del brand, caricato a mano o preso dal sito.
 export const LOGO_SIDE = 512;
 
@@ -19,8 +17,10 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
+// Converte nel canvas qualunque immagine che il browser sa leggere (inclusi HEIC/HEIF su Safari iPhone/iPad
+// e file con MIME vuoto scelti da File/iCloud).
 export async function resizedDataUri(file: File, maxSide: number, type: 'image/png' | 'image/jpeg'): Promise<string> {
-  if (!ACCEPTED.includes(file.type) && file.type !== 'image/svg+xml') throw new Error('formato');
+  if (file.type && !file.type.startsWith('image/')) throw new Error('formato');
   const image = await loadImage(file);
   const scale = Math.min(1, maxSide / Math.max(image.naturalWidth || maxSide, image.naturalHeight || maxSide));
   const width = Math.max(1, Math.round((image.naturalWidth || maxSide) * scale));

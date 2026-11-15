@@ -57,8 +57,11 @@ function normalizeHex(input: string): string | null {
   styleUrl: './visual-step.scss',
 })
 export class VisualStep implements OnInit {
+  private static nextPickerId = 0;
+
   // Gli esempi in arrivo, dai passaggi del job.
   protected readonly pending = pendingFromSteps;
+  protected readonly refPickerId = `visual-ref-picker-${++VisualStep.nextPickerId}`;
 
   private readonly ai = inject(AiJobsService);
   private readonly brands = inject(BrandsService);
@@ -192,37 +195,49 @@ export class VisualStep implements OnInit {
   protected async pickLogo(event: Event): Promise<void> {
     const inputEl = event.target as HTMLInputElement;
     const file = inputEl.files?.[0];
-    inputEl.value = '';
-    if (!file) return;
+    if (!file) {
+      inputEl.value = '';
+      return;
+    }
     try {
       this.set({ logoUri: await resizedDataUri(file, LOGO_SIDE, 'image/png') });
       this.toast.show(this.i18n.t('onboarding.visual.logo.uploaded'));
     } catch {
       this.toast.show(this.i18n.t('onboarding.visual.logo.unreadable'));
+    } finally {
+      inputEl.value = '';
     }
   }
 
   protected async pickReferences(event: Event): Promise<void> {
     const inputEl = event.target as HTMLInputElement;
     const brandId = this.store.brandId();
+    const selected = Array.from(inputEl.files ?? []);
+    if (!brandId || selected.length === 0) {
+      inputEl.value = '';
+      return;
+    }
     const room = MAX_REFERENCES - this.references().length - this.uploading();
-    const files = Array.from(inputEl.files ?? []).slice(0, Math.max(0, room));
-    inputEl.value = '';
-    if (!brandId) return;
+    const files = selected.slice(0, Math.max(0, room));
     if (files.length === 0) {
+      inputEl.value = '';
       this.toast.show(this.i18n.t('onboarding.visual.references.max', { n: MAX_REFERENCES }));
       return;
     }
     this.uploading.update((count) => count + files.length);
-    for (const file of files) {
-      try {
-        const uploaded = await this.brands.uploadReference(brandId, await resizedDataUri(file, 1600, 'image/jpeg'));
-        this.set({ references: [...(this.current().references ?? []), uploaded] });
-      } catch (error) {
-        this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.uploadFailed')));
-      } finally {
-        this.uploading.update((count) => Math.max(0, count - 1));
+    try {
+      for (const file of files) {
+        try {
+          const uploaded = await this.brands.uploadReference(brandId, await resizedDataUri(file, 1600, 'image/jpeg'));
+          this.set({ references: [...(this.current().references ?? []), uploaded] });
+        } catch (error) {
+          this.toast.show(errorMessage(error, this.i18n.t('onboarding.visual.references.uploadFailed')));
+        } finally {
+          this.uploading.update((count) => Math.max(0, count - 1));
+        }
       }
+    } finally {
+      inputEl.value = '';
     }
   }
 

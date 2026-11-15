@@ -216,6 +216,7 @@
       <p class="strong-sm">{{ 'onboarding.visual.references.own' | t }}</p>
     }
     <div class="references">
+      <input [id]="refPickerId" class="file-input" type="file" accept="image/*" multiple (change)="pickReferences($event)" />
       @for (file of references(); track file.path ?? file.url; let i = $index) {
         <div class="reference">
           <button class="zoom" type="button" [attr.aria-label]="'onboarding.visual.references.zoom' | t: { n: i + 1 }" (click)="openReference(i)">
@@ -231,9 +232,8 @@
         <div class="reference empty"><span class="spinner"></span></div>
       }
       @if (references().length + uploading() < maxReferences) {
-        <label class="reference empty add" [attr.aria-label]="'onboarding.visual.references.add' | t">
+        <label class="reference empty add" [attr.for]="refPickerId" [attr.aria-label]="'onboarding.visual.references.add' | t">
           <mb-icon name="plus" />
-          <input class="file-input" type="file" accept="image/*" multiple (change)="pickReferences($event)" />
         </label>
       }
     </div>
