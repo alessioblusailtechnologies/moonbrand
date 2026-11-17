@@ -51,6 +51,16 @@ export async function deleteConversation(db: Queryable, conversationId: string):
   await db.query('delete from presenza.conversations where id = $1', [conversationId]);
 }
 
+// Un allegato già partito con un messaggio del brand: non si cancella più.
+export async function attachmentInUse(db: Queryable, brandId: string, file: string): Promise<boolean> {
+  const { rows } = await db.query(
+    `select 1 from presenza.conversation_turns t join presenza.conversations c on c.id = t.conversation_id
+     where c.brand_id = $1 and $2 = any(t.attachments) limit 1`,
+    [brandId, file],
+  );
+  return rows.length > 0;
+}
+
 export async function insertTurn(
   db: Queryable,
   turn: { conversationId: string; accountId: string; message: string; attachments: string[]; jobId: string },

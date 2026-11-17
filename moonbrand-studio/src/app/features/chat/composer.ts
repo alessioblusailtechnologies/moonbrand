@@ -16,6 +16,8 @@ import { ToastService } from '../../ui/toast';
 // progress: per un video, quanto è già partito (da 0 a 1); a 1 il server lo sta convertendo.
 interface PendingAttachment {
   id: number;
+  // Il percorso che avrà sul server, scelto qui: se lo si toglie mentre parte, o la risposta si perde, si fa cancellare.
+  path: string;
   preview: string;
   file: string | null;
   failed: boolean;
@@ -80,6 +82,8 @@ export class Composer {
   protected readonly draft = signal('');
   protected readonly attachments = signal<PendingAttachment[]>([]);
   private nextAttachment = 0;
+  // Per ogni allegato che sta ancora partendo: la × lo ferma.
+  private readonly uploads = new Map<number, AbortController>();
   protected readonly dictation = signal<'idle' | 'recording' | 'transcribing'>('idle');
   protected readonly elapsed = signal(0);
   private readonly recorder = new Recorder();
@@ -98,6 +102,7 @@ export class Composer {
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
+      for (const item of this.attachments()) this.discard(item);
       this.clear();
       clearInterval(this.timer);
       this.recorder.cancel();
@@ -176,6 +181,7 @@ export class Composer {
       const audio = isAudioFile(file) ? file.name : null;
       const pending: PendingAttachment = {
         id: ++this.nextAttachment,
+        path: `allegati/${crypto.randomUUID()}.${video ? 'mp4' : audio ? 'mp3' : 'jpg'}`,
         preview: URL.createObjectURL(file),
         file: null,
         failed: false,
@@ -184,7 +190,9 @@ export class Composer {
         progress: 0,
       };
       this.attachments.update((list) => [...list, pending]);
-      uploads.push(pending.video || pending.audio ? this.uploadVideo(brand.id, file, pending.id, pending.audio ? 'audio' : 'video') : this.upload(brand.id, file, pending.id));
+      this.uploads.set(pending.id, new AbortController());
+      const upload = pending.video || pending.audio ? this.uploadVideo(brand.id, file, pending, pending.audio ? 'audio' : 'video') : this.upload(brand.id, file, pending);
+      uploads.push(upload.finally(() => this.uploads.delete(pending.id)));
     }
     await Promise.allSettled(uploads);
   }
@@ -193,22 +201,47 @@ export class Composer {
     this.attachments.update((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   }
 
-  private async uploadVideo(brandId: string, file: File, id: number, kind: 'video' | 'audio'): Promise<void> {
+  // Un file che non partirà con il messaggio non deve restare tra gli allegati del brand, dove la chat lo prenderebbe
+  // per uno di quelli mandati. Se sta ancora arrivando, il server lo butta appena finisce.
+  private forget(brandId: string, path: string): void {
+    void this.chat.removeAttachment(brandId, path).catch(() => undefined);
+  }
+
+  // Un caricamento finito dopo che l'allegato è stato tolto dalla casella.
+  private arrived(brandId: string, id: number, file: string, patch: Partial<PendingAttachment> = {}): void {
+    if (this.attachments().some((item) => item.id === id)) this.set(id, { ...patch, file });
+    else this.forget(brandId, file);
+  }
+
+  // Tolto prima dell'invio: se sta partendo si ferma, e sul server si cancella (o si cancellerà appena arriva).
+  private discard(item: PendingAttachment): void {
+    this.uploads.get(item.id)?.abort();
+    const brand = this.brands.activeBrand();
+    if (brand && !item.failed) this.forget(brand.id, item.file ?? item.path);
+  }
+
+  private async uploadVideo(brandId: string, file: File, pending: PendingAttachment, kind: 'video' | 'audio'): Promise<void> {
+    const { id, path } = pending;
     try {
-      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => this.set(id, { progress }), kind);
-      this.set(id, { file: uploaded.file, progress: 1 });
+      const uploaded = await this.chat.uploadVideo(brandId, file, (progress) => this.set(id, { progress }), kind, this.uploads.get(id)?.signal, idOf(path));
+      this.arrived(brandId, id, uploaded.file, { progress: 1 });
     } catch (error) {
+      if (this.uploads.get(id)?.signal.aborted) return;
+      // Fallito per noi, ma il server potrebbe averlo ricevuto lo stesso (la risposta persa per strada).
+      this.forget(brandId, path);
       this.set(id, { failed: true });
       this.toast.show(errorMessage(error, this.i18n.t(kind === 'audio' ? 'chat.composer.audioFailed' : 'chat.composer.videoFailed')));
     }
   }
 
-  private async upload(brandId: string, file: File, id: number): Promise<void> {
+  private async upload(brandId: string, file: File, pending: PendingAttachment): Promise<void> {
+    const { id, path } = pending;
     try {
       const dataUri = await resizedDataUri(file, ATTACHMENT_SIDE, 'image/jpeg');
-      const uploaded: ChatAttachment = await this.chat.upload(brandId, dataUri);
-      this.set(id, { file: uploaded.file });
+      const uploaded: ChatAttachment = await this.chat.upload(brandId, dataUri, idOf(path));
+      this.arrived(brandId, id, uploaded.file);
     } catch (error) {
+      this.forget(brandId, path);
       this.set(id, { failed: true });
       this.toast.show(errorMessage(error, this.i18n.t('chat.composer.photoFailed')));
     }
@@ -267,7 +300,13 @@ export class Composer {
 
   protected unattach(id: number): void {
     const item = this.attachments().find((attachment) => attachment.id === id);
-    if (item) URL.revokeObjectURL(item.preview);
+    if (item) {
+      URL.revokeObjectURL(item.preview);
+      this.discard(item);
+    }
     this.attachments.update((list) => list.filter((attachment) => attachment.id !== id));
   }
 }
+
+// allegati/<id>.mp4 → <id>
+const idOf = (path: string): string => path.slice(path.indexOf('/') + 1, path.lastIndexOf('.'));
