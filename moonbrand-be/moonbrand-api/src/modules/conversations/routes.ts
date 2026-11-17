@@ -1,4 +1,4 @@
-import type { Readable } from 'node:stream';
+import { Transform, type Readable } from 'node:stream';
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type pg from 'pg';
@@ -65,6 +65,58 @@ async function created(request: FastifyRequest, reply: FastifyReply, files: Bran
   return reply.code(201).send(uploaded);
 }
 
+// Com'è andato l'invio di un video o di un audio: byte attesi e arrivati, secondi di invio e di lavorazione (conversione
+// e salvataggio), velocità, browser e IP di chi carica. Davanti a un caricamento lento dice se è la rete o il server.
+function measured(request: FastifyRequest, kind: 'video' | 'audio') {
+  const started = Date.now();
+  let bytes = 0;
+  let received: number | null = null;
+  const source = request.body as Readable;
+  const body = new Transform({
+    transform(chunk: Buffer, _encoding, done) {
+      bytes += chunk.length;
+      done(null, chunk);
+    },
+    flush(done) {
+      received = Date.now();
+      done();
+    },
+  });
+  // pipe non passa gli errori: un invio interrotto deve far fallire anche il resto.
+  source.on('error', (error) => body.destroy(error));
+  source.on('close', () => {
+    if (!source.readableEnded) body.destroy(new Error('aborted'));
+  });
+  source.pipe(body);
+  const seconds = (ms: number) => Math.round(ms / 100) / 10;
+  return {
+    body,
+    log(outcome: 'ok' | 'errore', error?: unknown) {
+      const now = Date.now();
+      const sending = (received ?? now) - started;
+      const expected = Number(request.headers['content-length']) || null;
+      const forwarded = request.headers['x-forwarded-for'];
+      request.log.info(
+        {
+          caricamento: {
+            tipo: kind,
+            esito: outcome,
+            errore: error instanceof Error ? error.message : undefined,
+            byteAttesi: expected,
+            byteArrivati: bytes,
+            secondiInvio: seconds(sending),
+            secondiLavorazione: received ? seconds(now - received) : null,
+            kbitAlSecondo: sending > 0 ? Math.round((bytes * 8) / sending) : null,
+            browser: request.headers['user-agent'],
+            ip: (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0].trim() ?? request.ip,
+          },
+        },
+        'caricamento allegato',
+      );
+    },
+  };
+}
+
 export function registerConversationRoutes(
   app: FastifyInstance,
   pool: pg.Pool,
@@ -97,14 +149,22 @@ export function registerConversationRoutes(
   // Il video arriva così com'è, non in JSON: il corpo della richiesta passa a pezzi fino al disco.
   void app.register(async (scope) => {
     scope.addContentTypeParser('*', (_request, payload, done) => done(null, payload));
-    scope.post('/v1/brands/:brandId/attachments/video', async (request, reply) => {
-      const { brandId } = brandParams.parse(request.params);
-      return created(request, reply, files, brandId, await uploadVideoAttachment(files, request.identity, brandId, request.body as Readable, attachmentId(request)));
-    });
-    scope.post('/v1/brands/:brandId/attachments/audio', async (request, reply) => {
-      const { brandId } = brandParams.parse(request.params);
-      return created(request, reply, files, brandId, await uploadAudioAttachment(files, request.identity, brandId, request.body as Readable, attachmentId(request)));
-    });
+    for (const kind of ['video', 'audio'] as const) {
+      const upload = kind === 'video' ? uploadVideoAttachment : uploadAudioAttachment;
+      scope.post(`/v1/brands/:brandId/attachments/${kind}`, async (request, reply) => {
+        const { brandId } = brandParams.parse(request.params);
+        const id = attachmentId(request);
+        const sent = measured(request, kind);
+        try {
+          const uploaded = await upload(files, request.identity, brandId, sent.body, id);
+          sent.log('ok');
+          return created(request, reply, files, brandId, uploaded);
+        } catch (error) {
+          sent.log('errore', error);
+          throw error;
+        }
+      });
+    }
   });
 
   app.get('/v1/conversations/:conversationId', (request) =>
