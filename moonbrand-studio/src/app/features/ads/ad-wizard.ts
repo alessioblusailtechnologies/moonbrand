@@ -336,7 +336,7 @@ interface Exchange {
 
                 @case ('audience') {
                   <mb-ad-search-picker [label]="'ads.form.locations' | t" [hint]="'ads.form.locationsHint' | t" [placeholder]="'ads.form.locationsPlaceholder' | t"
-                    [search]="searchLocations" [selected]="placeItems(f.locations)" (picked)="addPlace('locations', $event)" (removed)="removePlace('locations', $event)" />
+                    [note]="canLaunch() ? '' : ('ads.form.countriesOnly' | t)" [search]="searchLocations" [selected]="placeItems(f.locations)" (picked)="addPlace('locations', $event)" (removed)="removePlace('locations', $event)" />
                   <mb-ad-search-picker [label]="'ads.form.excluded' | t" [hint]="'ads.form.excludedHint' | t" [placeholder]="'ads.form.locationsPlaceholder' | t"
                     [search]="searchLocations" [selected]="placeItems(f.excludedLocations)" (picked)="addPlace('excludedLocations', $event)"
                     (removed)="removePlace('excludedLocations', $event)" />

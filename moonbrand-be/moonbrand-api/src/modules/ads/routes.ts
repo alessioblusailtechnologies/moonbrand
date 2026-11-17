@@ -39,6 +39,7 @@ import {
   type DemandGenChannel,
   type AdImageRole,
   type AdKeyword,
+  type AdLocation,
   type AdSpec,
 } from '@moonbrand/shared/domain/ads';
 import { SIMULATED_ACCOUNT } from '@moonbrand/shared/domain/brand';
@@ -327,6 +328,29 @@ const invitationSchema = z.object({
   role: z.enum(['ADMIN', 'STANDARD', 'READ_ONLY', 'EMAIL_ONLY']),
 });
 
+// I paesi con il nome in italiano e in inglese, per cercarli senza Google.
+const COUNTRY_CODES = (() => {
+  const it = new Intl.DisplayNames(['it'], { type: 'region' });
+  const en = new Intl.DisplayNames(['en'], { type: 'region' });
+  const codes: { id: string; it: string; en: string }[] = [];
+  for (let a = 65; a <= 90; a++) {
+    for (let b = 65; b <= 90; b++) {
+      const code = String.fromCharCode(a, b);
+      const name = it.of(code);
+      if (name && name !== code && !/^(EU|EZ|UN|QO|XA|XB|ZZ)$/.test(code)) codes.push({ id: code, it: name, en: en.of(code) ?? name });
+    }
+  }
+  return codes;
+})();
+const fold = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function searchCountries(q: string): AdLocation[] {
+  const query = fold(q.trim());
+  return COUNTRY_CODES.filter((c) => fold(c.it).includes(query) || fold(c.en).includes(query) || c.id.toLowerCase() === query)
+    .sort((a, b) => Number(!fold(a.it).startsWith(query)) - Number(!fold(b.it).startsWith(query)))
+    .slice(0, 15)
+    .map((c) => ({ id: c.id, name: c.it, type: 'country' as const }));
+}
+
 const daysAgo = (days: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date(Date.now() - days * 86_400_000));
 
 // La sezione Campagne: il collegamento Google Ads del brand, le sue campagne e gli strumenti di Google (PIANO-ADS.md §0).
@@ -496,6 +520,12 @@ export function registerAdsRoutes(
   app.get('/v1/brands/:brandId/ads/google/locations', async (request): Promise<AdLocationsResponse> => {
     const { brandId } = brandParams.parse(request.params);
     const { q } = searchQuery.parse(request.query);
+    // Senza Google Ads collegato (o senza account scelto) non si può chiedere a Google: si cercano solo i paesi.
+    const connection = await run(request.identity, (db) => findConnection(db, brandId, 'google'));
+    if (!connection || connection.lost || !connection.ad_account_id) {
+      await own(request.identity, brandId);
+      return { locations: searchCountries(q) };
+    }
     const { client, ref: account } = await google(request.identity, brandId);
     const found = await client.searchTargeting(account, q, 'geo');
     return {

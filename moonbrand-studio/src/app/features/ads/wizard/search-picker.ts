@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output, signal, type OnDestroy } from '@angular/core';
 
+import { errorMessage } from '../../../core/errors';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { Icon } from '../../../ui/icon';
 
@@ -41,8 +42,8 @@ export interface PickerItem<T> {
         <div class="results" role="listbox">
           @if (searching()) {
             <span class="caption">{{ 'ads.form.searching' | t }}</span>
-          } @else if (failed()) {
-            <span class="caption danger">{{ 'ads.form.searchFailed' | t }}</span>
+          } @else if (failed() !== null) {
+            <span class="caption danger">{{ failed() || ('ads.form.searchFailed' | t) }}</span>
           } @else {
             @for (item of results(); track item.id) {
               <button class="result" type="button" role="option" [disabled]="isPicked(item)" (click)="pick(item)">
@@ -56,6 +57,9 @@ export interface PickerItem<T> {
             }
           }
         </div>
+      }
+      @if (note()) {
+        <span class="caption">{{ note() }}</span>
       }
     </div>
   `,
@@ -112,6 +116,8 @@ export class AdSearchPicker<T> implements OnDestroy {
   readonly label = input.required<string>();
   readonly hint = input('');
   readonly placeholder = input('');
+  // Una riga sotto la ricerca, per esempio quando si cerca solo tra i paesi.
+  readonly note = input('');
   readonly search = input.required<(query: string) => Promise<PickerItem<T>[]>>();
   readonly selected = input.required<PickerItem<T>[]>();
   readonly picked = output<T>();
@@ -120,7 +126,8 @@ export class AdSearchPicker<T> implements OnDestroy {
   protected readonly query = signal('');
   protected readonly results = signal<PickerItem<T>[]>([]);
   protected readonly searching = signal(false);
-  protected readonly failed = signal(false);
+  // Il messaggio dell'errore, o stringa vuota per quello generico; null se non è fallita.
+  protected readonly failed = signal<string | null>(null);
   private timer: ReturnType<typeof setTimeout> | null = null;
   private round = 0;
 
@@ -137,12 +144,12 @@ export class AdSearchPicker<T> implements OnDestroy {
 
   private async run(text: string): Promise<void> {
     const round = ++this.round;
-    this.failed.set(false);
+    this.failed.set(null);
     try {
       const found = await this.search()(text);
       if (round === this.round) this.results.set(found);
-    } catch {
-      if (round === this.round) this.failed.set(true);
+    } catch (error) {
+      if (round === this.round) this.failed.set(errorMessage(error, ''));
     } finally {
       if (round === this.round) this.searching.set(false);
     }
