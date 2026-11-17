@@ -45,6 +45,7 @@ import { findTrend } from '../trends/repository';
 import type { SocialCrawl } from '../trends/socialcrawl';
 import {
   activeJob,
+  attachmentInUse,
   deleteConversation,
   findConversation,
   insertConversation,
@@ -264,10 +265,11 @@ function attachment(files: BrandFiles, brandId: string, file: string): ChatAttac
 }
 
 // Una foto per la chat: finisce in allegati/ nella cartella del brand, e il messaggio la cita per percorso.
-export async function uploadAttachment(files: BrandFiles, identity: Identity, brandId: string, dataUri: string): Promise<ChatAttachment> {
+// id: il nome lo sceglie la casella, così può cancellare il file anche se la risposta non le arriva mai.
+export async function uploadAttachment(files: BrandFiles, identity: Identity, brandId: string, dataUri: string, id: string = randomUUID()): Promise<ChatAttachment> {
   const { bytes, mimeType } = parseImage(dataUri);
   await files.claim(brandId, identity.accountId);
-  const file = `${ATTACHMENTS_DIR}/${randomUUID()}.${EXTENSIONS[mimeType]}`;
+  const file = `${ATTACHMENTS_DIR}/${id}.${EXTENSIONS[mimeType]}`;
   await files.save(brandId, file, bytes);
   return { file, url: files.url(brandId, file) };
 }
@@ -277,9 +279,14 @@ export async function uploadAttachment(files: BrandFiles, identity: Identity, br
 export const MAX_VIDEO_BYTES = 2 * 1024 ** 3;
 
 // Il lavoro di ffmpeg si fa in una cartella temporanea di questa macchina; nel brand vanno solo MP4 e copertina.
-export async function uploadVideoAttachment(files: BrandFiles, identity: Identity, brandId: string, stream: Readable): Promise<ChatAttachment> {
+export async function uploadVideoAttachment(
+  files: BrandFiles,
+  identity: Identity,
+  brandId: string,
+  stream: Readable,
+  id: string = randomUUID(),
+): Promise<ChatAttachment> {
   await files.claim(brandId, identity.accountId);
-  const id = randomUUID();
   const file = `${ATTACHMENTS_DIR}/${id}.mp4`;
   const poster = `${ATTACHMENTS_DIR}/${id}.jpg`;
   const work = await mkdtemp(path.join(tmpdir(), 'moonbrand-video-'));
@@ -307,11 +314,42 @@ export async function uploadVideoAttachment(files: BrandFiles, identity: Identit
 }
 
 // Un audio per la chat (un parlato da usare come voce, un riferimento): diventa un MP3 in allegati/.
-export async function uploadAudioAttachment(files: BrandFiles, identity: Identity, brandId: string, stream: Readable): Promise<ChatAttachment> {
+export async function uploadAudioAttachment(
+  files: BrandFiles,
+  identity: Identity,
+  brandId: string,
+  stream: Readable,
+  id: string = randomUUID(),
+): Promise<ChatAttachment> {
   await files.claim(brandId, identity.accountId);
-  const file = `${ATTACHMENTS_DIR}/${randomUUID()}.mp3`;
+  const file = `${ATTACHMENTS_DIR}/${id}.mp3`;
   await withMp3({ stream }, (mp3) => files.saveFile(brandId, file, mp3));
   return attachment(files, brandId, file);
+}
+
+// Un allegato tolto dalla casella prima dell'invio, o arrivato quando chi l'ha mandato non c'era più: via dalla cartella,
+// così la chat non lo trova in allegati/ e non lo prende per uno dei file dell'utente. Con il video va la sua copertina.
+export async function discardAttachment(files: BrandFiles, brandId: string, file: string): Promise<void> {
+  await files.remove(brandId, file);
+  if (file.endsWith('.mp4')) await files.remove(brandId, file.replace(/\.mp4$/, '.jpg'));
+}
+
+// Tolti mentre stavano ancora arrivando: quando il caricamento finisce, il file va via subito. Un'ora basta e avanza.
+const cancelled = new Map<string, number>();
+const CANCEL_TTL = 60 * 60 * 1000;
+
+export function wasCancelled(brandId: string, file: string): boolean {
+  const now = Date.now();
+  for (const [key, at] of cancelled) if (now - at > CANCEL_TTL) cancelled.delete(key);
+  return cancelled.delete(`${brandId}/${file}`);
+}
+
+export async function removeAttachment(pool: pg.Pool, files: BrandFiles, identity: Identity, brandId: string, file: string): Promise<void> {
+  await files.claim(brandId, identity.accountId);
+  const used = await withIdentity(pool, identity, (db) => attachmentInUse(db, brandId, file));
+  if (used) return;
+  cancelled.set(`${brandId}/${file}`, Date.now());
+  await discardAttachment(files, brandId, file);
 }
 
 // Ferma il turno in corso: se è ancora in coda si chiude subito, altrimenti lo chiude il worker quando vede la richiesta.

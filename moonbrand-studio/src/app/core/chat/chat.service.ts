@@ -74,12 +74,25 @@ export class ChatService {
 
   // Un video (o un audio, con kind) parte così com'è, anche di qualche GB: con XMLHttpRequest, perché fetch non dice quanto è già partito.
   // progress va da 0 a 1; a 1 il server sta ancora convertendo il video. Come l'interceptor, a token scaduto riprova una volta.
-  async uploadVideo(brandId: string, file: File, progress: (fraction: number) => void, kind: 'video' | 'audio' = 'video'): Promise<ChatAttachment> {
+  // id: il nome del file lo sceglie la casella, così può farlo cancellare anche se la risposta non arriva.
+  // signal: la × nella casella ferma l'invio a metà.
+  async uploadVideo(
+    brandId: string,
+    file: File,
+    progress: (fraction: number) => void,
+    kind: 'video' | 'audio' = 'video',
+    signal?: AbortSignal,
+    id?: string,
+  ): Promise<ChatAttachment> {
     const send = (token: string | null) =>
       new Promise<{ status: number; body: unknown }>((resolve) => {
         const request = new XMLHttpRequest();
+        if (signal?.aborted) return resolve({ status: 0, body: null });
+        signal?.addEventListener('abort', () => request.abort(), { once: true });
+        request.onabort = () => resolve({ status: 0, body: null });
         request.open('POST', `/v1/brands/${brandId}/attachments/${kind}`);
         if (token) request.setRequestHeader('Authorization', `Bearer ${token}`);
+        if (id) request.setRequestHeader('X-Attachment-Id', id);
         request.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
         request.responseType = 'json';
         request.upload.onprogress = (event) => event.lengthComputable && progress(event.loaded / event.total);
@@ -96,6 +109,11 @@ export class ChatService {
     return response.body as ChatAttachment;
   }
 
+  // Un allegato tolto dalla casella prima dell'invio: il server lo cancella dalla cartella del brand.
+  async removeAttachment(brandId: string, file: string): Promise<void> {
+    await firstValueFrom(this.http.delete(`/v1/brands/${brandId}/attachments`, { params: { file } }));
+  }
+
   // La dettatura: l'audio del microfono così com'è, e torna il testo da rileggere nella casella.
   async transcribe(brandId: string, audio: Blob): Promise<string> {
     const { text } = await firstValueFrom(
@@ -104,9 +122,11 @@ export class ChatService {
     return text;
   }
 
-  upload(brandId: string, dataUri: string): Promise<ChatAttachment> {
+  upload(brandId: string, dataUri: string, id?: string): Promise<ChatAttachment> {
     return firstValueFrom(
-      this.http.post<ChatAttachment>(`/v1/brands/${brandId}/attachments`, { dataUri } satisfies ChatAttachmentUpload),
+      this.http.post<ChatAttachment>(`/v1/brands/${brandId}/attachments`, { dataUri } satisfies ChatAttachmentUpload, {
+        headers: id ? { 'X-Attachment-Id': id } : {},
+      }),
     );
   }
 

@@ -1,18 +1,20 @@
 import type { Readable } from 'node:stream';
 
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type pg from 'pg';
 import { z } from 'zod';
 
-import type { ChatAttachmentUpload, ChatMessageRequest } from '@moonbrand/shared/api/contract';
+import type { ChatAttachment, ChatAttachmentUpload, ChatMessageRequest } from '@moonbrand/shared/api/contract';
 
 import { ATTACHMENTS_DIR, type BrandFiles } from '../brand-files/files';
 import type { MediaStorage } from '../media/storage';
 import type { SocialCrawl } from '../trends/socialcrawl';
 import { uploadSchema } from '../media/routes';
 import {
+  discardAttachment,
   getConversation,
   getConversations,
+  removeAttachment,
   removeConversation,
   sendMessage,
   startConversation,
@@ -20,6 +22,7 @@ import {
   uploadAttachment,
   uploadAudioAttachment,
   uploadVideoAttachment,
+  wasCancelled,
   type ChatMessage,
 } from './service';
 
@@ -49,6 +52,19 @@ const messageSchema = z
   ChatMessageRequest
 >;
 
+const attachmentId = (request: FastifyRequest): string | undefined =>
+  z.uuid('Allegato non valido.').optional().parse(request.headers['x-attachment-id'] || undefined);
+
+const attachmentQuery = z.object({ file: z.string().regex(attachmentPath, 'Allegato non valido.') });
+
+// Se l'allegato è stato tolto dalla casella mentre arrivava, o chi l'ha caricato se n'è già andato, nessun messaggio lo
+// citerà: non resta in allegati/, dove la chat lo prenderebbe per un file mandato dall'utente.
+// Il nome lo sceglie la casella (intestazione x-attachment-id), così può chiederne la cancellazione anche senza risposta.
+async function created(request: FastifyRequest, reply: FastifyReply, files: BrandFiles, brandId: string, uploaded: ChatAttachment) {
+  if (wasCancelled(brandId, uploaded.file) || request.raw.socket?.destroyed) await discardAttachment(files, brandId, uploaded.file);
+  return reply.code(201).send(uploaded);
+}
+
 export function registerConversationRoutes(
   app: FastifyInstance,
   pool: pg.Pool,
@@ -68,7 +84,14 @@ export function registerConversationRoutes(
   app.post('/v1/brands/:brandId/attachments', async (request, reply) => {
     const { brandId } = brandParams.parse(request.params);
     const { dataUri } = uploadSchema.parse(request.body) satisfies ChatAttachmentUpload;
-    return reply.code(201).send(await uploadAttachment(files, request.identity, brandId, dataUri));
+    return created(request, reply, files, brandId, await uploadAttachment(files, request.identity, brandId, dataUri, attachmentId(request)));
+  });
+
+  // Un allegato tolto dalla casella prima di mandare il messaggio.
+  app.delete('/v1/brands/:brandId/attachments', async (request, reply) => {
+    const { brandId } = brandParams.parse(request.params);
+    await removeAttachment(pool, files, request.identity, brandId, attachmentQuery.parse(request.query).file);
+    return reply.code(204).send();
   });
 
   // Il video arriva così com'è, non in JSON: il corpo della richiesta passa a pezzi fino al disco.
@@ -76,11 +99,11 @@ export function registerConversationRoutes(
     scope.addContentTypeParser('*', (_request, payload, done) => done(null, payload));
     scope.post('/v1/brands/:brandId/attachments/video', async (request, reply) => {
       const { brandId } = brandParams.parse(request.params);
-      return reply.code(201).send(await uploadVideoAttachment(files, request.identity, brandId, request.body as Readable));
+      return created(request, reply, files, brandId, await uploadVideoAttachment(files, request.identity, brandId, request.body as Readable, attachmentId(request)));
     });
     scope.post('/v1/brands/:brandId/attachments/audio', async (request, reply) => {
       const { brandId } = brandParams.parse(request.params);
-      return reply.code(201).send(await uploadAudioAttachment(files, request.identity, brandId, request.body as Readable));
+      return created(request, reply, files, brandId, await uploadAudioAttachment(files, request.identity, brandId, request.body as Readable, attachmentId(request)));
     });
   });
 
