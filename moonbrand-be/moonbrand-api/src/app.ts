@@ -120,7 +120,7 @@ export function buildApp(options: AppOptions) {
   registerSocialRoutes(app, options.pool, options.files, options.settings);
   registerZernioWebhook(app, options.pool, options.mailer, options.settings);
   const adsZernio = adsClient(options.settings.ZERNIO_API_KEY);
-  registerAdsRoutes(app, options.pool, adsService(adsZernio), adsZernio, options.settings);
+  registerAdsRoutes(app, options.pool, adsService(adsZernio, options.files), options.files, options.settings);
   registerDodoWebhook(app, options.pool, dodo, options.settings);
   registerBillingRoutes(app, options.pool, dodo, options.settings);
   registerWelcomeRoutes(app, options.pool);

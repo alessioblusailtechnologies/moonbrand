@@ -1,4 +1,5 @@
 import { ads } from './ads';
+import { adsManage } from './adsManage';
 import { auth } from './auth';
 import { brand } from './brand';
 import { catalog } from './catalog';
@@ -26,6 +27,7 @@ import { voices } from './voices';
 // Le aree dei testi: il nome dell'area è la prima parte della chiave ('shell.newChat').
 export const NAMESPACES = {
   ads,
+  adsManage,
   auth,
   brand,
   catalog,

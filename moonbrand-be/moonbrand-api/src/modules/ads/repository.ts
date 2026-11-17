@@ -1,4 +1,4 @@
-import type { Ad, AdConnection, AdDraft, AdMetrics, AdPlatform, AdStatus, SearchSpec } from '@moonbrand/shared/domain/ads';
+import type { Ad, AdCampaignType, AdConnection, AdDraft, AdGoal, AdMetrics, AdPlatform, AdSpec, AdStatus } from '@moonbrand/shared/domain/ads';
 import { SIMULATED_ACCOUNT } from '@moonbrand/shared/domain/brand';
 
 import type { Queryable } from '../../db/pool';
@@ -21,11 +21,11 @@ export interface AdRow {
   account_id: string;
   brand_id: string;
   platform: AdPlatform;
-  campaign_type: 'search';
+  campaign_type: AdCampaignType;
   source: 'studio' | 'chat';
   name: string;
-  goal: string;
-  spec: SearchSpec;
+  goal: AdGoal;
+  spec: AdSpec;
   daily_budget: string;
   currency: string | null;
   starts_on: string;
@@ -70,6 +70,7 @@ export function toAd(row: AdRow): Ad {
     id: row.id,
     platform: row.platform,
     campaignType: row.campaign_type,
+    goal: row.goal,
     source: row.source,
     name: row.name,
     spec: row.spec,
@@ -146,10 +147,10 @@ export async function insertDraft(
   source: 'studio' | 'chat',
 ): Promise<AdRow> {
   const { rows } = await db.query<AdRow>(
-    `insert into presenza.ads (account_id, brand_id, platform, campaign_type, source, name, spec, daily_budget, starts_on, ends_on)
-     values ($1, $2, 'google', 'search', $3, $4, $5, $6, $7, $8)
+    `insert into presenza.ads (account_id, brand_id, platform, campaign_type, goal, source, name, spec, daily_budget, starts_on, ends_on)
+     values ($1, $2, 'google', $3, $4, $5, $6, $7, $8, $9, $10)
      returning ${AD_COLUMNS}`,
-    [owner.accountId, owner.brandId, source, draft.name, JSON.stringify(draft.spec), draft.dailyBudget, draft.startsOn, draft.endsOn],
+    [owner.accountId, owner.brandId, draft.campaignType, draft.goal, source, draft.name, JSON.stringify(draft.spec), draft.dailyBudget, draft.startsOn, draft.endsOn],
   );
   return rows[0]!;
 }
@@ -157,10 +158,10 @@ export async function insertDraft(
 // Si cambia solo una bozza (o una creazione fallita, che torna bozza): quello che è su Google non si tocca da qui.
 export async function updateDraft(db: Queryable, id: string, draft: AdDraft): Promise<AdRow> {
   const { rows } = await db.query<AdRow>(
-    `update presenza.ads set name = $2, spec = $3, daily_budget = $4, starts_on = $5, ends_on = $6, status = 'draft', error = null, detail = null,
-       idempotency_key = gen_random_uuid(), updated_at = now()
+    `update presenza.ads set name = $2, spec = $3, daily_budget = $4, starts_on = $5, ends_on = $6, campaign_type = $7, goal = $8,
+       status = 'draft', error = null, detail = null, idempotency_key = gen_random_uuid(), updated_at = now()
      where id = $1 returning ${AD_COLUMNS}`,
-    [id, draft.name, JSON.stringify(draft.spec), draft.dailyBudget, draft.startsOn, draft.endsOn],
+    [id, draft.name, JSON.stringify(draft.spec), draft.dailyBudget, draft.startsOn, draft.endsOn, draft.campaignType, draft.goal],
   );
   return rows[0]!;
 }
@@ -171,6 +172,9 @@ export async function deleteAdRow(db: Queryable, id: string): Promise<void> {
 
 export interface AdPatch {
   status?: AdStatus;
+  spec?: AdSpec;
+  dailyBudget?: number;
+  endsOn?: string | null;
   currency?: string | null;
   adAccountId?: string | null;
   zernioAdId?: string | null;
@@ -188,6 +192,9 @@ export interface AdPatch {
 
 const PATCH_COLUMNS: Record<Exclude<keyof AdPatch, 'synced' | 'launched'>, string> = {
   status: 'status',
+  spec: 'spec',
+  dailyBudget: 'daily_budget',
+  endsOn: 'ends_on',
   currency: 'currency',
   adAccountId: 'ad_account_id',
   zernioAdId: 'zernio_ad_id',
@@ -207,7 +214,7 @@ export async function patchAd(db: Queryable, id: string, patch: AdPatch): Promis
   for (const [key, column] of Object.entries(PATCH_COLUMNS) as [keyof typeof PATCH_COLUMNS, string][]) {
     if (!(key in patch)) continue;
     const value = patch[key];
-    values.push(key === 'metrics' || key === 'detail' ? (value == null ? null : JSON.stringify(value)) : value);
+    values.push(key === 'metrics' || key === 'detail' || key === 'spec' ? (value == null ? null : JSON.stringify(value)) : value);
     sets.push(`${column} = $${values.length}`);
   }
   if (patch.synced) sets.push('synced_at = now()');
@@ -220,7 +227,7 @@ export async function patchAd(db: Queryable, id: string, patch: AdPatch): Promis
 export async function liveAds(db: Queryable, olderThanMinutes: number, brandId?: string): Promise<AdRow[]> {
   const { rows } = await db.query<AdRow>(
     `select ${AD_COLUMNS} from presenza.ads
-     where status in ('in_review', 'active', 'paused') and zernio_ad_id is not null
+     where status in ('scheduled', 'in_review', 'active', 'paused') and zernio_ad_id is not null
        and (synced_at is null or synced_at < now() - make_interval(mins => $1))
        and ($2::uuid is null or brand_id = $2::uuid)
      order by synced_at nulls first limit 200`,

@@ -2,8 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { AdAccountsResponse, AdConnectResponse, AdsResponse } from '@moonbrand/shared/api/contract';
-import type { Ad, AdDraft } from '@moonbrand/shared/domain/ads';
+import type {
+  AdAccountsResponse,
+  AdAudiencesResponse,
+  AdConnectResponse,
+  AdImagesResponse,
+  AdInterestsResponse,
+  AdKeywordIdeasRequest,
+  AdKeywordIdeasResponse,
+  AdLocationsResponse,
+  AdsResponse,
+} from '@moonbrand/shared/api/contract';
+import type { Ad, AdAudience, AdAudienceRef, AdDraft, AdImageOption, AdKeywordIdea, AdLocation } from '@moonbrand/shared/domain/ads';
 
 // La sezione Campagne: il collegamento Google Ads del brand e le sue campagne.
 @Injectable({ providedIn: 'root' })
@@ -60,5 +70,33 @@ export class AdsService {
 
   async remove(brandId: string, adId: string): Promise<void> {
     await firstValueFrom(this.http.delete(`/v1/brands/${brandId}/ads/${adId}`));
+  }
+
+  // Gli strumenti della bozza: immagini, luoghi, interessi, pubblici e idee per le parole chiave.
+
+  async images(brandId: string): Promise<AdImageOption[]> {
+    return (await firstValueFrom(this.http.get<AdImagesResponse>(`/v1/brands/${brandId}/ads/images`))).images;
+  }
+
+  uploadImage(brandId: string, dataUri: string): Promise<AdImageOption> {
+    return firstValueFrom(this.http.post<AdImageOption>(`/v1/brands/${brandId}/ads/images`, { dataUri }));
+  }
+
+  async locations(brandId: string, query: string): Promise<AdLocation[]> {
+    const params = { q: query };
+    return (await firstValueFrom(this.http.get<AdLocationsResponse>(`/v1/brands/${brandId}/ads/google/locations`, { params }))).locations;
+  }
+
+  async interests(brandId: string, query: string): Promise<AdAudienceRef[]> {
+    const params = { q: query };
+    return (await firstValueFrom(this.http.get<AdInterestsResponse>(`/v1/brands/${brandId}/ads/google/interests`, { params }))).interests;
+  }
+
+  async audiences(brandId: string): Promise<AdAudience[]> {
+    return (await firstValueFrom(this.http.get<AdAudiencesResponse>(`/v1/brands/${brandId}/ads/google/audiences`))).audiences;
+  }
+
+  async keywordIdeas(brandId: string, request: AdKeywordIdeasRequest): Promise<AdKeywordIdea[]> {
+    return (await firstValueFrom(this.http.post<AdKeywordIdeasResponse>(`/v1/brands/${brandId}/ads/google/keyword-ideas`, request))).ideas;
   }
 }

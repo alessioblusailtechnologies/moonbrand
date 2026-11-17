@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import type { OnAiSteps, WebsiteInsights } from '@moonbrand/shared/ai/steps';
 import type {
+  AdAssistRequest,
   AiJob,
   AiJobCreated,
   VisualEditJobRequest,
@@ -13,6 +14,7 @@ import type {
   WebsiteJobRequest,
   WebsiteReading,
 } from '@moonbrand/shared/api/contract';
+import type { AdAssistResult } from '@moonbrand/shared/domain/ads';
 import type { Palette } from '@moonbrand/shared/domain/brand';
 import { siteLanguage } from '@moonbrand/shared/i18n/locales';
 import { normalizeSite } from '@moonbrand/shared/lib/site';
@@ -55,6 +57,11 @@ export class AiJobsService {
       fonts: reading.fonts ?? null,
       language: siteLanguage(reading.language),
     };
+  }
+
+  // Il wizard delle campagne: la richiesta di un passaggio, il risultato sono i campi da cambiare.
+  assistAd(brandId: string, request: AdAssistRequest, onSteps?: OnAiSteps): Promise<AdAssistResult> {
+    return this.run<AdAssistResult>(`/v1/brands/${brandId}/ads/assist`, request, onSteps);
   }
 
   // Gli esempi si mettono in coda e poi si seguono a parte: chi li chiede tiene l'id, per riprenderli dopo un ricaricamento

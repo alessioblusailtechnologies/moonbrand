@@ -25,9 +25,24 @@
 - **API** (`moonbrand-api/src/modules/ads/`): collegamento (`connect`, `confirm`, scelta account, scollega, simulato), bozze (crea, modifica, elimina), `launch`, `pause`, `resume`, elimina, `sync`. Scheduler ogni ora per stato e metriche, più la pausa a fine campagna.
 - **Studio**: nuova sezione **Pubblicità** nel menu (`/pubblicita`): collegamento Google Ads, elenco delle campagne con stato e metriche (speso, impressioni, clic, CTR, CPC), editor della campagna Search con i contatori dei caratteri e «spesa massima», «Avvia» con conferma esplicita della cifra.
 - **Niente chat** (decisione del 13/11): la pubblicità vive solo nella sezione Campagne, la chat non la propone e non la legge.
+- **Wizard** (13/11 sera): «Nuova campagna» e «Modifica» aprono una modale a 6 passaggi (Obiettivo, Annuncio, Parole chiave, Pubblico, Budget e date, Riepilogo). In ogni passaggio c'è una casella in linguaggio naturale: lavoro `ad-step` nel worker v4 (`src/jobs/ads/step.ts`, Sonnet 5.5 senza tool, ~15 s, ~2 centesimi), che restituisce `reply` + `patch` dei campi. Nel primo passaggio prepara la campagna intera. Rotta `POST /v1/brands/:id/ads/assist`, migration `20261114110000_ai_jobs_ad_step`. Non è la chat: niente conversazione salvata, solo i campi.
 - **Collaudo**: `SIMULATE_SOCIAL` o prova gratuita → collegamento e campagne simulate (in revisione, dopo 1 minuto attiva con metriche finte). Poi una prova vera con un account Google Ads con carta: 1-2 € al giorno per 1 giorno.
 
-Dopo G1: ricerca di città e province (`/v1/ads/targeting/search`), Display e PMax con la grafica generata dalla chat.
+### 0.2b Google completo (fase G2, 17/11)
+
+Tutto quello che Zernio permette con Google, nella sezione Campagne (sempre niente chat). Migration `20261117100000_ads_google` (solo sviluppo).
+
+- **Tipi**: rete di ricerca, Display, Performance Max, Demand Gen (immagini, video YouTube, carosello). Le immagini si scelgono tra i contenuti del brand, il logo o una caricata (`pubblicita/`); il server le taglia al centro nella proporzione di Google (ffmpeg) e le carica su Zernio (`/media/presign`). Asset di PMax che la creazione non prende (titoli lunghi oltre il primo, verticali, video oltre il primo) si attaccano subito dopo al gruppo di asset.
+- **Pubblico**: luoghi cercati su Google (paesi, regioni, città, CAP), esclusi, «solo chi è lì» o anche chi li cerca, lingue, età, genere, redditi più alti, interessi, pubblici del brand inclusi o esclusi, dispositivi, canali di Demand Gen.
+- **Offerte**: auto, massimizza clic con tetto, massimizza conversioni, CPA target, ROAS target, CPC manuale (per tipo: `AD_BID_STRATEGIES`). Reti di ricerca partner e Display per Search.
+- **Estensioni**: sitelink, callout, snippet strutturati, alla creazione e dopo.
+- **Dopo l'avvio**: andamento giornaliero (`/ads/tree`), quota di impressioni, punteggio di PMax; modifica di budget, offerta, reti, monitoraggio (`trackingUrlTemplate`, `finalUrlSuffix`), testi e immagini, luoghi/lingue/dispositivi; parole chiave con punteggio di qualità (aggiungi, pausa, togli), parole escluse della campagna, termini di ricerca (da aggiungere o escludere).
+- **Strumenti di Google**: Keyword Planner (idee con ricerche al mese, concorrenza e offerte), consigli di Google (applica, ignora), pubblici (lista clienti con email, visitatori del sito, simili), conversioni (azioni e obiettivi usati per le offerte), fatturazione dell'account (avviso se manca il pagamento), inviti all'account Google Ads.
+- **Date**: non si mandano a Google. Se la campagna parte più avanti si crea in pausa (stato `scheduled`) e lo scheduler la accende il giorno d'inizio; PMax e Demand Gen nascono in pausa e si accendono subito dopo la creazione (campagna, gruppi di asset o gruppo e annuncio).
+- **Pausa e ripresa**: `PUT /ads/campaigns/{id}/status` con `active`/`paused` minuscoli (era maiuscolo, sbagliato).
+- **Simulazione**: `simulated-ads.ts` risponde a tutte le chiamate con dati finti e stato in memoria.
+- **Fuori, per ora**: Shopping e campagne video (Zernio non le crea), Merchant Center per PMax, account Google Ads creati da noi sotto un nostro MCC con fatturazione mensile, etichette, collegamenti MCC, budget condivisi e strategie di portafoglio, programmazione oraria (percorso non verificato), invio di conversioni dal sito (serve il tag del cliente), raggio intorno a un punto dallo studio (servono le coordinate).
+- **Da verificare con l'account vero**: forme non documentate (sitelink/callout/snippet nella creazione, `interests`, `devices`, nomi degli elenchi nelle risposte di keywords/search-terms/targeting/audiences, carosello `imageUrl`), budget minimi, fatturazione.
 
 ### 0.3 OpenAI Ads (fase O1)
 

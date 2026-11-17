@@ -75,6 +75,8 @@ export class Composer {
   readonly busy = input(false);
   readonly empty = input(false);
   readonly send = input(true);
+  // false: niente allegati (né pulsante né incolla), solo testo e dettatura. La usa il wizard delle campagne.
+  readonly media = input(true);
   readonly submitted = output<ComposerMessage>();
   readonly stopped = output();
 
@@ -164,6 +166,7 @@ export class Composer {
 
   // Una foto o un video incollato nella casella vale come una scelta dal pulsante.
   protected pasted(event: ClipboardEvent): void {
+    if (!this.media()) return;
     const media = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith('image/') || isVideoFile(file) || isAudioFile(file));
     if (media.length === 0) return;
     event.preventDefault();

@@ -8,7 +8,7 @@ import type { SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import pg from 'pg';
 
 import { toolMedia, toolStep, type AiStep } from '@moonbrand/shared/ai/steps';
-import type { ChatJobInput, IdeasJobInput, StyleJobInput, WebsiteJobRequest, WelcomeJobInput } from '@moonbrand/shared/api/contract';
+import type { AdStepJobInput, ChatJobInput, IdeasJobInput, StyleJobInput, WebsiteJobRequest, WelcomeJobInput } from '@moonbrand/shared/api/contract';
 import type { Locale } from '@moonbrand/shared/i18n/locales';
 import { translate } from '@moonbrand/shared/i18n/translate';
 
@@ -139,6 +139,13 @@ const JOBS: Record<string, JobKind> = {
       return { script: 'src/jobs/welcome/welcome.ts', args: [JSON.stringify(rest)] };
     },
     save: (job, result) => saveWelcome(pool, job.id, job.input as WelcomeJobInput, result),
+  },
+  // Il wizard delle campagne: una richiesta in linguaggio naturale per un passaggio, il risultato sono i campi da cambiare.
+  'ad-step': {
+    launch: async (input) => {
+      const { brandId: _brand, ...rest } = input as AdStepJobInput;
+      return { script: 'src/jobs/ads/step.ts', args: [JSON.stringify(rest)] };
+    },
   },
 };
 

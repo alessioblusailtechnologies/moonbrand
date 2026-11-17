@@ -1,5 +1,34 @@
 import type { AiStep } from '../ai/steps';
-import type { Ad, AdAccount, AdConnection, AdDraft } from '../domain/ads';
+import type {
+  Ad,
+  AdAccessRole,
+  AdAccount,
+  AdAudience,
+  AdAudienceRef,
+  AdAudienceType,
+  AdBidding,
+  AdBilling,
+  AdConnection,
+  AdConversionAction,
+  AdConversionGoal,
+  AdDevice,
+  AdDraft,
+  AdDraftInProgress,
+  AdExtensions,
+  AdImageOption,
+  AdInsights,
+  AdInvitation,
+  AdKeyword,
+  AdKeywordIdea,
+  AdKeywordRow,
+  AdLocation,
+  AdRadius,
+  AdRecommendation,
+  AdSearchTerm,
+  AdSitelink,
+  AdSnippet,
+  AdStep,
+} from '../domain/ads';
 import type { Artifact } from '../domain/artifact';
 import type { BrandCategory, BrandDraft, BrandFonts, BrandKind, ChannelId, ChannelState, Identity, MediaFile, Positioning } from '../domain/brand';
 import type { CarouselSlide, ChannelVariant, Content, ContentFile, ContentFormat, ContentStatus, VideoScene } from '../domain/content';
@@ -367,6 +396,173 @@ export interface AdAccountRequest {
 }
 
 export type AdDraftRequest = AdDraft;
+
+// Il wizard: la richiesta in linguaggio naturale per un passaggio, con la bozza com'è adesso. Il risultato del lavoro è
+// AdAssistResult (domain/ads).
+export interface AdAssistRequest {
+  step: AdStep;
+  instruction: string;
+  draft: AdDraftInProgress;
+}
+
+// Il lavoro ad-step nel worker: la richiesta più quello che serve sapere del brand.
+export interface AdStepJobInput extends AdAssistRequest {
+  brandId: string;
+  today: string;
+  brand: { name: string; sector: string; pitch: string; site: string; language: string };
+}
+
+// --- Campagne Google: strumenti per la bozza e gestione dopo l'avvio ---
+
+// Le immagini che si possono mettere negli annunci.
+export interface AdImagesResponse {
+  images: AdImageOption[];
+}
+
+// Un'immagine caricata apposta per la pubblicità (va nella cartella pubblicita/ del brand).
+export interface AdImageUpload {
+  dataUri: string;
+}
+
+export interface AdLocationsResponse {
+  locations: AdLocation[];
+}
+
+export interface AdInterestsResponse {
+  interests: AdAudienceRef[];
+}
+
+export interface AdKeywordIdeasRequest {
+  seedKeywords: string[];
+  seedUrl?: string;
+  countries: string[];
+  language: string;
+}
+export interface AdKeywordIdeasResponse {
+  ideas: AdKeywordIdea[];
+}
+
+// Le modifiche di una campagna già su Google: ogni campo mandato cambia, gli altri restano.
+export interface AdSettingsRequest {
+  dailyBudget?: number;
+  endsOn?: string | null;
+  bidding?: AdBidding;
+  network?: { searchPartners: boolean; displayNetwork: boolean };
+  trackingUrlTemplate?: string;
+  finalUrlSuffix?: string;
+}
+export interface AdCreativeRequest {
+  headlines?: string[];
+  headlinePins?: (number | null)[];
+  descriptions?: string[];
+  descriptionPins?: (number | null)[];
+  longHeadlines?: string[];
+  businessName?: string;
+  linkUrl?: string;
+  images?: { landscape: string[]; square: string[]; portrait: string[]; logo: string[] };
+  youtubeVideoIds?: string[];
+  callToAction?: string | null;
+}
+export interface AdTargetingRequest {
+  locations?: AdLocation[];
+  excludedLocations?: AdLocation[];
+  radius?: AdRadius[];
+  languages?: string[];
+  devices?: AdDevice[];
+  presenceOnly?: boolean;
+}
+
+export interface AdInsightsResponse {
+  insights: AdInsights;
+}
+
+export interface AdKeywordsResponse {
+  keywords: AdKeywordRow[];
+  // Le parole chiave escluse a livello di campagna.
+  negatives: AdKeyword[];
+}
+export interface AdKeywordsAddRequest {
+  keywords: AdKeyword[];
+  negative: boolean;
+}
+export interface AdKeywordStatusRequest {
+  status: 'active' | 'paused';
+}
+export interface AdNegativesRequest {
+  negatives: AdKeyword[];
+}
+
+export interface AdSearchTermsResponse {
+  terms: AdSearchTerm[];
+}
+
+export interface AdExtensionsResponse {
+  extensions: AdExtensions;
+}
+export interface AdExtensionsAddRequest {
+  sitelinks?: AdSitelink[];
+  callouts?: string[];
+  snippets?: AdSnippet[];
+}
+export interface AdExtensionsRemoveRequest {
+  resources: string[];
+}
+
+export interface AdRecommendationsResponse {
+  recommendations: AdRecommendation[];
+}
+export interface AdRecommendationsActionRequest {
+  resources: string[];
+}
+export interface AdRecommendationsActionResponse {
+  results: { resource: string; status: 'applied' | 'dismissed' | 'failed'; error: string | null }[];
+}
+
+export interface AdAudiencesResponse {
+  audiences: AdAudience[];
+}
+export interface AdAudienceCreateRequest {
+  type: AdAudienceType;
+  name: string;
+  description?: string;
+  // website: per quanti giorni resta nel pubblico chi visita, e quali pagine (parte dell'indirizzo).
+  retentionDays?: number;
+  urlContains?: string;
+  // lookalike: il pubblico di partenza e quanto largo.
+  sourceAudienceId?: string;
+  size?: 'narrow' | 'balanced' | 'broad';
+}
+export interface AdAudienceUsersRequest {
+  emails: string[];
+}
+export interface AdAudienceUsersResponse {
+  received: number;
+  invalid: number;
+}
+
+export interface AdConversionsResponse {
+  actions: AdConversionAction[];
+  goals: AdConversionGoal[];
+}
+export interface AdConversionCreateRequest {
+  name: string;
+  type: string;
+  primary: boolean;
+}
+export interface AdConversionGoalRequest {
+  category: string;
+  origin: string;
+  biddable: boolean;
+}
+
+export interface AdAccountInfoResponse {
+  billing: AdBilling;
+  invitations: AdInvitation[];
+}
+export interface AdInvitationRequest {
+  email: string;
+  role: AdAccessRole;
+}
 
 // Dalla chat: un audio della cartella del brand diventa una voce clonata. consent: l'utente ha detto di averne il diritto.
 export interface AgentVoiceRequest {
